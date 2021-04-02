@@ -1,4 +1,5 @@
 .idea/*
+.DS_Store
 *.vpp.bak_*
 package-lock.json
 node_modules
