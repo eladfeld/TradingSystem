@@ -1,15 +1,15 @@
 import { Logger } from "./Logger"
-import {UserData} from "./UserData"
+import {SubscriberData} from "./UserData"
 import {User} from "./User";
 export class Register
 {
 
     public static register(username:string, password:string) : boolean 
     {
-        if (!UserData.UsernameExist(username)){
+        if (!SubscriberData.checkedUsedUserName(username)){
             if (this.checkPassword(password)){
                 Logger.log(`Guest user ${username} registered successfully `);
-                UserData.addUser(new User(username,password));
+                SubscriberData.addSubscriber(new User(username,password));
                 return true;
             }
             else{

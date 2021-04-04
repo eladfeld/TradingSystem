@@ -1,31 +1,31 @@
-import {User} from './User'
+import { Subscriber } from './Subscriber';
 
-export class UserData
+export class SubscriberData
 {
-    private static users: User[]  = [];
+    private static subscribers: Subscriber[]  = [];
 
-    public static addUser(u: User): void
+    public static addSubscriber(subscriber: Subscriber): void
     {
-        this.users.push(u);
+        this.subscribers.push(subscriber);
     }
     public static clean(): void
     {
-        this.users = [];
+        this.subscribers = [];
     }
 
-    public static UsernameExist(username: string): boolean
+    public static checkedUsedUserName(username: string): boolean
     {
-        return this.users.some( user => user.getUsername() === username )
+        return this.subscribers.some( user => user.getUsername() === username )
     }
 
-    public static getUser(username: string): User
+    public static getSubscriber(username: string): Subscriber
     {
-        return this.users.find(user => user.getUsername() === username);
+        return this.subscribers.find(user => user.getUsername() === username);
     }
 
     public static checkPassword(username: string, password: string) :boolean
     {
-        return this.users.some( user => user.getUsername() === username && user.getPassword() === password )
+        return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === password )
     }
 
 }

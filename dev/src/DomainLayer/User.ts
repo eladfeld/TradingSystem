@@ -1,32 +1,20 @@
-
+import { ShoppingCart} from './ShoppingCart'
 
 
 export class User
 {
-    private username: string;
-    private password: string;
+    private shoppingCart: ShoppingCart;
 
-    public constructor(username: string, password: string){
-        this.username = username;
-        this.password = password;
-    }
-    
 
-    public getUsername(): string
+    public constructor()
     {
-        return this.username;
+        this.shoppingCart = new ShoppingCart();
     }
 
-
-    public getPassword(): string
+    public addProductToShoppingCart(storeId: number,  productId: number, quntity: number)
     {
-        return this.password;
+        this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-
-    public printUser(): string
-    {
-        return `username: ${this.username} password: ${this.password}`
-    }
 
 }
