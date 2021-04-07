@@ -1,53 +1,72 @@
 import { Product } from "./Product";
+import { Logger } from "./Logger";
 
 export class Inventory
 {
 
-    private products: Map<string, Product>
+    private products: Map<number, Product>
 
     public constructor(){
-        this.products = new Map<string, Product>();
+        this.products = new Map<number, Product>();
     }
 
-    public addNewProduct(productName: string, storeId: number, price: number, quantity = 0){
+    public addNewProduct(productName: string, storeId: number, price: number, quantity = 0) : boolean{
         if (quantity < 0){
-            throw "Quantity must be non negative";
+            Logger.error("Quantity must be non negative")
+            return false;
         }
 
         if (price < 0){
-            throw "Price must be non negative";
+            Logger.error("Price must be non negative")
+            return false;
         }
 
-        if(this.products.has(productName)){
-            throw "Product already exist in inventory!";
+        if(this.hasProductWithName(productName)){
+            Logger.error("Product already exist in inventory!")
+            return false;
         }
 
         let product = new Product(productName,storeId,price,quantity);
-        this.products.set(productName, product); 
+        this.products.set(product.getProductId(), product);
+        return true; 
     }
 
-    public addProductQuantity(productName: string, quantity: number){
-        let product = this.products.get(productName);
+    public addProductQuantity(productId: number, quantity: number) : boolean{
+        let product = this.products.get(productId);
         if(product == null){
-            throw "Product does not exist in inventory!";
+            Logger.error("Product does not exist in inventory!")
+            return false;  
         }
         product.addQuantity(quantity);
+        return true;
     }
 
-    public setProductQuantity(productName: string, quantity: number){
-        let product = this.products.get(productName);
+    public setProductQuantity(productId: number, quantity: number) : boolean{
+        let product = this.products.get(productId);
         if(product==null){
-            throw "Product does not exist in inventory!";
+            Logger.error("Product does not exist in inventory!")
+            return false;  
         }
         product.setQuantity(quantity);
+        return true;
     }
 
-    public isProductAvailable(productName:string, quantity: number){
-        let product = this.products.get(productName);
+    public isProductAvailable(productId: number, quantity: number) : boolean{
+        let product = this.products.get(productId);
         if(product==null){
-            throw "Product does not exist in inventory!";
+            Logger.error("Product does not exist in inventory!")
+            return false;   
         }
         return product.getQuantity() >= quantity;
+    }
+
+    public hasProductWithName(productName: string) : boolean{
+        for(let product of this.products.values()){
+            if(product.getName() == productName){
+                return true;
+            }
+        }
+        return false;
     }
 
 

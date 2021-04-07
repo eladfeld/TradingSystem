@@ -1,3 +1,5 @@
+import { Logger } from "./Logger";
+
 export class Product
 {
 
@@ -40,23 +42,24 @@ export class Product
         return this.quantity;
     }
 
-    public setQuantity(quantity: number){
+    public setQuantity(quantity: number): boolean{
         if(quantity < 0){
-            throw "Quantity has to be non negative";
-            
+            Logger.error("Quantity has to be non negative")
+            return false;            
         }
         this.quantity = quantity;
+        Logger.log(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`)
+        return true;
     }
 
     public addQuantity(amount:number){
         if(amount < 0){
-            throw "Amount has to be non negative";
-            
+            Logger.error("Amount has to be non negative")
+            return false;             
         }
         this.quantity = this.quantity + amount;
+        Logger.log(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`)
+        return true;
     }
 
-    isProductAvailable(productId: number, quantity: number): boolean {
-        return false;
-    }
 }

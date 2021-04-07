@@ -28,14 +28,11 @@ export class Store
         return this.storeId;
     }
 
-    // TODO: decide on primary key for product (name, storeID) or (productId)
-    // searching a product by id or by name ?
-    // how do you get the id when we only get the name from the user ?
-    public isProductAvailable(productName: string, quantity: number): boolean {
-        return this.inventory.isProductAvailable(productName, quantity);
+    public isProductAvailable(productId: number, quantity: number): boolean {
+        return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(productName: string, storeId: number, price: number, quantity = 0) {
-        this.inventory.addNewProduct(productName, storeId, price, quantity);
+    public addNewProduct(productName: string, price: number, quantity = 0) {
+        this.inventory.addNewProduct(productName, this.storeId, price, quantity);
     }
 }
