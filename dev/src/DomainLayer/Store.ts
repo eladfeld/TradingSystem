@@ -12,7 +12,6 @@ export class Store
     private discountPolicy: DiscountPolicy;
     private buyingPolicy: BuyingPolicy;
     private inventory: Inventory;
-    private productsPrices: Map<Product, number>;
 
     // TODO: change store owner type
     public constructor(storeOwner: number, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
@@ -21,8 +20,7 @@ export class Store
         this.storeOwner = storeOwner;
         this.discountPolicy = new DiscountPolicy(discountPolicy);
         this.buyingPolicy = new BuyingPolicy(buyingPolicy);
-        this.inventory = new Inventory()
-        this.productsPrices = new Map<Product, number>();
+        this.inventory = new Inventory();
     }
 
     public getStoreId()
@@ -33,12 +31,11 @@ export class Store
     // TODO: decide on primary key for product (name, storeID) or (productId)
     // searching a product by id or by name ?
     // how do you get the id when we only get the name from the user ?
-    public isProductAvailable(productId: number, quantity: number): boolean {
-        return false;
+    public isProductAvailable(productName: string, quantity: number): boolean {
+        return this.inventory.isProductAvailable(productName, quantity);
     }
 
-    public addNewProduct(name: number, quantity: number): boolean {
-        return false;
+    public addNewProduct(productName: string, storeId: number, price: number, quantity = 0) {
+        this.inventory.addNewProduct(productName, storeId, price, quantity);
     }
-
 }
