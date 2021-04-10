@@ -1,5 +1,6 @@
+import { createHash } from 'crypto';
+import { Logger } from './Logger';
 import { Subscriber } from './Subscriber'; 
-var CryptoJS = require("crypto-js");
 
 export class SubscriberData
 {
@@ -7,8 +8,9 @@ export class SubscriberData
 
     public static addSubscriber(subscriber: Subscriber , password:string): void
     {
-        var hashed_pass : string = CryptoJS.createHash('sha1').update(password).digest('hex');
-        subscriber.setPassword(hashed_pass);
+        var hashedPass : string = createHash('sha1').update(password).digest('hex');
+        console.log(`hash of ${password} is ${hashedPass}`);
+        subscriber.setPassword(hashedPass);
         this.subscribers.push(subscriber);
     }
     public static clean(): void
@@ -28,7 +30,9 @@ export class SubscriberData
 
     public static checkPassword(username: string, password: string) :boolean
     {
-        return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === password )
+        var hashedPass : string = createHash('sha1').update(password).digest('hex');
+        console.log(`hash of ${password} is ${hashedPass}`);
+        return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === hashedPass )
     }
 
 }
