@@ -1,11 +1,14 @@
-import { Subscriber } from './Subscriber';
+import { Subscriber } from './Subscriber'; 
+var CryptoJS = require("crypto-js");
 
 export class SubscriberData
 {
     private static subscribers: Subscriber[]  = [];
 
-    public static addSubscriber(subscriber: Subscriber): void
+    public static addSubscriber(subscriber: Subscriber , password:string): void
     {
+        var hashed_pass : string = CryptoJS.createHash('sha1').update(password).digest('hex');
+        subscriber.setPassword(hashed_pass);
         this.subscribers.push(subscriber);
     }
     public static clean(): void

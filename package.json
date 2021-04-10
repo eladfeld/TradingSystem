@@ -1,0 +1,27 @@
+{
+  "name": "tradingsystem",
+  "version": "1.0.0",
+  "description": "trading system for workshop project",
+  "main": "index.js",
+  "dependencies": {
+    "crypto-js": "^4.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eladfeld/TradingSystem.git"
+  },
+  "keywords": [
+    "trading",
+    "system"
+  ],
+  "author": "elad michael shir tzuri alon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eladfeld/TradingSystem/issues"
+  },
+  "homepage": "https://github.com/eladfeld/TradingSystem#readme"
+}

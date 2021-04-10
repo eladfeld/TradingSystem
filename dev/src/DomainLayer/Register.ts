@@ -1,5 +1,5 @@
 import { Logger } from "./Logger"
-import {SubscriberData} from "./UserData"
+import {SubscriberData} from "./Authentication"
 import { Subscriber } from "./Subscriber";
 export class Register
 {
@@ -9,7 +9,7 @@ export class Register
         if (!SubscriberData.checkedUsedUserName(username)){
             if (this.checkPassword(password)){
                 Logger.log(`Guest user ${username} registered successfully `);
-                SubscriberData.addSubscriber(new Subscriber(username, password));
+                SubscriberData.addSubscriber(new Subscriber(username),password);
                 return true;
             }
             else{

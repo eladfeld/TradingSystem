@@ -10,6 +10,9 @@ export class ShoppingBasket
 
     public constructor(storeid:number)
     {
+
+        //TODO: access store database and get the store that have this id
+    
     }
 
     getStoreId() {
