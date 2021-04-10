@@ -6,7 +6,7 @@ export class ShoppingBasket
 
 
     private store : Store ;
-    private products: Pair<number,number>[];
+    private products: Pair<number,number>[];    //key: productId, value: quantity
 
     public constructor(storeid:number)
     {
