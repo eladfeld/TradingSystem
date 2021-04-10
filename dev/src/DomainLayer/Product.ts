@@ -61,5 +61,4 @@ export class Product
         Logger.log(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`)
         return true;
     }
-
 }
