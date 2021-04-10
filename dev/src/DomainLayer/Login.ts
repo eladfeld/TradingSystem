@@ -1,5 +1,5 @@
 import { Logger } from "./Logger";
-import { UserData } from "./UserData";
+import { SubscriberData } from "./UserData";
 import {User} from "./User"
 
 
@@ -8,10 +8,10 @@ export class Login
 
     public static login(username: string, password: string) : User
     {
-        if(UserData.checkPassword(username, password))
+        if(SubscriberData.checkPassword(username, password))
         {
             Logger.log(`user ${username} is succefully logged in!`);
-            return UserData.getUser(username);
+            return SubscriberData.getSubscriber(username);
         }
         else
         {

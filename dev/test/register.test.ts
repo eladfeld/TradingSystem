@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import { Register } from '../src/DomainLayer/Register';
-import { UserData } from '../src/DomainLayer/UserData';
+import { SubscriberData } from '../src/DomainLayer/UserData';
 
 describe('register tests' , function() {
-    UserData.clean();
+    SubscriberData.clean();
     
     it('good register', function(){
         expect(Register.register("avi","123456")).to.equal(true);
