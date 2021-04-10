@@ -2,6 +2,7 @@ import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
 import { Product } from "./Product";
+import {ID} from './Common'
 
 
 export class Store

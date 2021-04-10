@@ -1,6 +1,6 @@
 // Use:
 //
 //     var privateID = ID();
-var ID = function () {
+export var ID = function () {
     return Date.now();
   };

@@ -23,6 +23,7 @@ export class Register
         }
     }
 
+    //function to check password rules if any (e.g at least 1 number)
     private static checkPassword(password : string) : boolean
     {
         return true;

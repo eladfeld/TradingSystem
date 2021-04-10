@@ -1,5 +1,5 @@
 import { Product } from "./Product";
-import { Logger } from "./Logger";
+import { Logger } from "../Logger";
 
 export class Inventory
 {

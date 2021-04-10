@@ -1,4 +1,4 @@
-import { Pair, ShoppingBasket } from "./ShoppingBasket";
+import { ShoppingBasket } from "./ShoppingBasket";
 
 export class ShoppingCart
 {
@@ -12,7 +12,7 @@ export class ShoppingCart
     addProduct(storeId:number, productId:number, quantity:number) : number
     {
         var basket: ShoppingBasket = this.baskets.get(storeId);
-        if(basket === null )
+        if(basket === undefined) 
         {
             //TODO: if (shop exist)
             //{
@@ -24,8 +24,15 @@ export class ShoppingCart
                 //return -1 (shop doesnt exist);
             //}
         }
-        basket.addProduct(productId, quantity);
-        return 0; //Ok
+        return basket.addProduct(productId, quantity);
+    }
+
+    editStoreCart(storeId : number , productId:number , newQuantity:number) : number
+    {
+        var basket: ShoppingBasket = this.baskets.get(storeId);
+        if (basket === undefined)
+            return -1;
+        return basket.edit(productId,newQuantity);
     }
 
     getShoppingCart() : number[]
@@ -33,7 +40,7 @@ export class ShoppingCart
         return Array.from(this.baskets.keys());
     }
 
-    getShoppingBasket(storeId: number): Pair<number,number>[]
+    getShoppingBasket(storeId: number): Map<number,number>
     {
         return this.baskets.get(storeId).getProducts();
     }

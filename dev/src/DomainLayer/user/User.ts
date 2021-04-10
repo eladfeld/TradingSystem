@@ -1,4 +1,3 @@
-import { Pair } from './ShoppingBasket';
 import { ShoppingCart} from './ShoppingCart'
 
 
@@ -22,7 +21,7 @@ export class User
         return this.shoppingCart.getShoppingCart();
     }
 
-    public getShoppingBasket(storeId: number): Pair<number, number>[]
+    public getShoppingBasket(storeId: number): Map<number, number>
     {
         return this.shoppingCart.getShoppingBasket(storeId);
     }

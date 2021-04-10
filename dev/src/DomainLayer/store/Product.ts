@@ -1,4 +1,5 @@
-import { Logger } from "./Logger";
+import { Logger } from "../Logger";
+import {ID} from './Common';
 
 export class Product
 {
