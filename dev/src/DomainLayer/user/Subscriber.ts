@@ -4,14 +4,17 @@ import { User } from "./User";
 export class Subscriber extends User
 {
     private username: string;
-    private password: string;
+    private hashPassword: string;
     
-    public constructor(username: string, password: string){
+    public constructor(username: string){
         super();
         this.username = username;
-        this.password = password;
     }
     
+
+    public setPassword(hashPassword: string){
+        this.hashPassword = hashPassword;
+    }
 
 
     public getUsername(): string
@@ -22,12 +25,12 @@ export class Subscriber extends User
 
     public getPassword(): string
     {
-        return this.password;
+        return this.hashPassword;
     }
 
 
     public printUser(): string
     {
-        return `username: ${this.username} password: ${this.password}`
+        return `username: ${this.username}`
     }
 }

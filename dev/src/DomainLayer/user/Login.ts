@@ -1,5 +1,5 @@
 import { Logger } from "./Logger";
-import { SubscriberData } from "./UserData";
+import { SubscriberData } from "./Authentication";
 import {User} from "./User"
 
 

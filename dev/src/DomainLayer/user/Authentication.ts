@@ -1,11 +1,15 @@
-import { Subscriber } from './Subscriber';
+import { createHash } from 'crypto';
+import { Logger } from './Logger';
+import { Subscriber } from './Subscriber'; 
 
 export class SubscriberData
 {
     private static subscribers: Subscriber[]  = [];
 
-    public static addSubscriber(subscriber: Subscriber): void
+    public static addSubscriber(subscriber: Subscriber , password:string): void
     {
+        var hashedPass : string = createHash('sha1').update(password).digest('hex');
+        subscriber.setPassword(hashedPass);
         this.subscribers.push(subscriber);
     }
     public static clean(): void
@@ -25,7 +29,8 @@ export class SubscriberData
 
     public static checkPassword(username: string, password: string) :boolean
     {
-        return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === password )
+        var hashedPass : string = createHash('sha1').update(password).digest('hex');
+        return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === hashedPass )
     }
 
 }

@@ -4,8 +4,9 @@ import {Register} from '../src/DomainLayer/Register'
 
 
 describe('login test' , function() {
-    Register.register("yosi", "1234");
+    
     it('postive log in', function(){
+        Register.register("yosi", "1234");
         expect(Login.login("yosi", "1234")).to.not.null;
     })
 
