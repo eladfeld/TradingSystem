@@ -1,5 +1,5 @@
 import { Store } from "./Store";
-type Pair<T,K> = [T,K];
+export type Pair<T,K> = [T,K];
 
 export class ShoppingBasket
 {
@@ -15,8 +15,14 @@ export class ShoppingBasket
     
     }
 
-    getStoreId() {
+    getStoreId(): number
+    {
         return this.store.getStoreId();
+    }
+
+    getProducts(): Pair<number,number>[]
+    {
+        return this.products;
     }
 
     addProduct(productId: number, quantity: number): number {

@@ -5,6 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "strictNullChecks": false,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true , 
+  } ,
+  "typedef": [ true, "call-signature", "arrow-call-signature" ]
 }
