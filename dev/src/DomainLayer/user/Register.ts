@@ -1,4 +1,4 @@
-import { Logger } from "./Logger"
+import { Logger } from "../Logger"
 import {SubscriberData} from "./Authentication"
 import { Subscriber } from "./Subscriber";
 export class Register

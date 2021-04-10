@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import { Register } from '../src/DomainLayer/Register';
-import { SubscriberData } from '../src/DomainLayer/Authentication';
+import { Register } from '../../src/DomainLayer/user/Register'
+import { SubscriberData } from '../../src/DomainLayer/user/Authentication';
 
 describe('register tests' , function() {
     SubscriberData.clean();

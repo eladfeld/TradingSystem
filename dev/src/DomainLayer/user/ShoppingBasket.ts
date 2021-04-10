@@ -1,4 +1,4 @@
-import { Store } from "./Store";
+import { Store } from "../store/Store";
 export type Pair<T,K> = [T,K];
 
 export class ShoppingBasket

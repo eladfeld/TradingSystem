@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { Logger } from './Logger';
+import { Logger } from '../Logger';
 import { Subscriber } from './Subscriber'; 
 
 export class SubscriberData

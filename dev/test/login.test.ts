@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import { Login } from '../../src/DomainLayer/user/Login';
-import { Register } from '../../src/DomainLayer/user/Register';
+import { Login } from '../src/DomainLayer/user/Login';
+import { Register } from '../src/DomainLayer/user/Register';
 
 
 

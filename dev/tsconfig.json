@@ -7,5 +7,4 @@
     "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true , 
   } ,
-  "typedef": [ true, "call-signature", "arrow-call-signature" ]
 }
