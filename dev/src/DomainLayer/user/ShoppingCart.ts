@@ -11,7 +11,7 @@ export class ShoppingCart
 
     addProduct(storeId:number, productId:number, quantity:number) : number
     {
-        var basket: ShoppingBasket = this.baskets.get(storeId);
+        let basket: ShoppingBasket = this.baskets.get(storeId);
         if(basket === undefined) 
         {
             //TODO: if (shop exist)
@@ -29,7 +29,7 @@ export class ShoppingCart
 
     editStoreCart(storeId : number , productId:number , newQuantity:number) : number
     {
-        var basket: ShoppingBasket = this.baskets.get(storeId);
+        let basket: ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
             return -1;
         return basket.edit(productId,newQuantity);

@@ -29,7 +29,7 @@ export class ShoppingBasket
             return -1;
         if(!this.store.isProductAvailable(productId, quantity))
             return -1;
-        var prevQuantity : number = 0;
+        let prevQuantity : number = 0;
         if (this.products.get(productId) != undefined)
             prevQuantity = this.products.get(productId);
         this.products.set(productId, prevQuantity+quantity);

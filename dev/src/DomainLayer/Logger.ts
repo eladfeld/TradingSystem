@@ -1,4 +1,5 @@
 
+import { exception } from 'console';
 import fs from 'fs';
 
 
@@ -9,7 +10,7 @@ export class Logger
 
     public static log(message: string) : void
     {
-        var date = new Date();
+        let date = new Date();
         fs.appendFile("logs/logger.log" , `${date} : ${message}\n` , function(err) {
             if (err)
             {
@@ -26,4 +27,5 @@ export class Logger
             }
         });
     }
+
 }

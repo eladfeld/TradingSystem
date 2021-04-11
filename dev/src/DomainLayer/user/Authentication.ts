@@ -8,7 +8,7 @@ export class SubscriberData
 
     public static addSubscriber(subscriber: Subscriber , password:string): void
     {
-        var hashedPass : string = createHash('sha1').update(password).digest('hex');
+        let hashedPass : string = createHash('sha1').update(password).digest('hex');
         subscriber.setPassword(hashedPass);
         this.subscribers.push(subscriber);
     }
@@ -29,7 +29,7 @@ export class SubscriberData
 
     public static checkPassword(username: string, password: string) :boolean
     {
-        var hashedPass : string = createHash('sha1').update(password).digest('hex');
+        let hashedPass : string = createHash('sha1').update(password).digest('hex');
         return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === hashedPass )
     }
 
