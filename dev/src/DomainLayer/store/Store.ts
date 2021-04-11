@@ -3,6 +3,7 @@ import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
 import { Product } from "./Product";
 import {ID} from './Common'
+import { Appointment } from "../user/Appointment";
 
 
 export class Store
@@ -36,4 +37,13 @@ export class Store
     public addNewProduct(productName: string, price: number, quantity = 0) {
         this.inventory.addNewProduct(productName, this.storeId, price, quantity);
     }
+
+    public addAppointment(appointment : Appointment) : void
+    {}
+
+    public deleteAppointment(appointment : Appointment) : void
+    {}
+
+    public getAppointments(): Appointment[]
+    {return undefined}
 }
