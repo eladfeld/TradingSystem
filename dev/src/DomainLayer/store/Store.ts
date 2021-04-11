@@ -30,6 +30,11 @@ export class Store
         return this.storeId;
     }
 
+    public setStoreId(id : number) : void
+    {
+        this.storeId = id;
+    }
+
     public isProductAvailable(productId: number, quantity: number): boolean {
         return this.inventory.isProductAvailable(productId, quantity);
     }

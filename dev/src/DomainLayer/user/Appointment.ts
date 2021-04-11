@@ -21,7 +21,7 @@ export class Appointment
     private title : JobTitle;
 
 
-    private constructor(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title:JobTitle)
+    public constructor(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title:JobTitle)
     {
         this.appointee = appointee;
         this.appointer = appointer;
@@ -65,6 +65,10 @@ export class Appointment
             if (title != JobTitle.OWNER && title != JobTitle.MANAGER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
                 return this.appointTitle(appointer,store,appointee,permission,JobTitle.MANAGER);
+            }
+            else
+            {
+                return Result.makeFailure("user already appointed");
             }
         }
         return Result.makeFailure("unauthorized try to appoint manager");

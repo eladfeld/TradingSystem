@@ -1,4 +1,4 @@
-//only 2's power to maintain mask!!!
+//only 2's powers to maintain mask!!!
 export enum ACTION{
     APPOINT_MANAGER = 1 ,
     APPOINT_OWNER = 2,

@@ -15,6 +15,7 @@ export class Subscriber extends User
     public constructor(username: string){
         super();
         this.username = username;
+        this.appointments = [];
     }
     
 
@@ -55,6 +56,7 @@ export class Subscriber extends User
     public checkIfPerrmited(action : ACTION , store: Store) : boolean
     {
         let store_app : Appointment = this.getStoreapp(store.getStoreId());
+        if (store_app != undefined)
             if (store_app.getPermissions().check_action(action))
                 return true;
         return false;
@@ -68,7 +70,15 @@ export class Subscriber extends User
         return undefined;
     }
 
-    public deleteAppointment(store_app: Appointment) {
+    public deleteAppointment(store_app: Appointment) 
+    {
         this.appointments = this.appointments.filter(app => app !== store_app);
+    }
+
+
+    //-----------------------------functions for tests---------------------------------------------
+    public getAppointments() : Appointment[]
+    {
+        return this.appointments;
     }
 }
