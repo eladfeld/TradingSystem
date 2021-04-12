@@ -1,4 +1,7 @@
+import { makeFailure, Result } from "../../Result";
+import { Logger } from "../Logger";
 import { ShoppingBasket } from "./ShoppingBasket";
+import { PaymentMeans, SupplyInfo } from "./User";
 
 export class ShoppingCart
 {
@@ -8,8 +11,18 @@ export class ShoppingCart
     {
         this.baskets = new Map();
     }
-
-    addProduct(storeId:number, productId:number, quantity:number) : number
+    
+    public buyBasket(storeId : number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo) : Result<string>
+    {
+        let basket : ShoppingBasket = this.baskets.get(storeId);
+        if (basket === undefined)
+        {
+            Logger.error("no such shopping basket");
+            return makeFailure("no such shopping basket");
+        }
+        return basket.buyAll(paymentMeans, supplyInfo);
+    }
+    addProduct(storeId:number, productId:number, quantity:number) : Result<string>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
         if(basket === undefined) 
@@ -27,11 +40,11 @@ export class ShoppingCart
         return basket.addProduct(productId, quantity);
     }
 
-    editStoreCart(storeId : number , productId:number , newQuantity:number) : number
+    editStoreCart(storeId : number , productId:number , newQuantity:number) : Result<string>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
-            return -1;
+            return makeFailure("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
     }
 

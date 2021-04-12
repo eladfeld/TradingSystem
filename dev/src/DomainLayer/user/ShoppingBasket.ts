@@ -1,4 +1,8 @@
+import { makeFailure, makeOk, Result } from "../../Result";
+import { Logger } from "../Logger";
+import { Purchase } from "../Purchase";
 import { Store } from "../store/Store";
+import { PaymentMeans, SupplyInfo } from "./User";
 
 export class ShoppingBasket
 {
@@ -18,35 +22,54 @@ export class ShoppingBasket
         return this.store.getStoreId();
     }
 
-    getProducts(): Map<number,number>
+    public getProducts(): Map<number,number>
     {
         return this.products;
     }
 
-    addProduct(productId: number, quantity: number): number 
+    public addProduct(productId: number, quantity: number): Result<string> 
     {
         if (quantity < 0)
-            return -1;
+        {            
+            Logger.error("quantity can't be negative number");
+            return makeFailure("quantity can't be negative number");
+        }
+        if (!this.store.openForImmediateAuction(productId))
+        {
+            Logger.error("product not for immediate auction");
+            return makeFailure("product not for immediate auction");
+        }
         if(!this.store.isProductAvailable(productId, quantity))
-            return -1;
+        {
+            Logger.log("product is not available in this quantity");
+            return makeFailure("product is not available in this quantity");
+        }
+
         let prevQuantity : number = 0;
         if (this.products.get(productId) != undefined)
             prevQuantity = this.products.get(productId);
         this.products.set(productId, prevQuantity+quantity);
-        return 0;
+        return makeOk("product added to cart");
+    }
+    
+    public buyAll(paymentMeans: PaymentMeans,supplyInfo: SupplyInfo): Result<string>
+    {
+        //TODO: sync with purchase about checkout!
+        let price: number = this.store.calculatePrice(this.products);
+        return Purchase.checkout(price, this.store, paymentMeans, supplyInfo);
     }
 
-    edit(productId: number, newQuantity: number): number 
+    public edit(productId: number, newQuantity: number): Result<string> 
     {
         if (newQuantity < 0)
-            return -1;
+            return makeFailure("negative quantity");
         if (!this.store.isProductAvailable(productId,newQuantity))
-            return -1;
+            return makeFailure("quantity not available");
 
         this.products.set(productId,newQuantity)
         if (newQuantity === 0)
             this.products.delete(productId);
-        return 0;
+        return makeOk("added to cart");
     }
 
     //------------------------------------functions for tests-------------------------------------

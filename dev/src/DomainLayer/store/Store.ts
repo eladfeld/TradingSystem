@@ -8,6 +8,10 @@ import { Appointment } from "../user/Appointment";
 
 export class Store
 {
+    getStoreOwnerId():number
+    {
+        return this.storeOwner;
+    }
 
     private storeId: number;
     private storeOwner: number;
@@ -51,4 +55,10 @@ export class Store
 
     public getAppointments(): Appointment[]
     {return undefined}
+
+    public openForImmediateAuction(productId : number) : boolean
+    {return true;}
+
+    public calculatePrice(products : Map<number,number>) : number
+    {return 0;}
 }

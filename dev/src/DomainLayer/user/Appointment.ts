@@ -1,4 +1,4 @@
-import { Result } from "../../Result";
+import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
 import { Store } from "../store/Store";
 import { ACTION, Permission } from "./Permission";
@@ -30,12 +30,34 @@ export class Appointment
         this.title = title;
     }
 
+    public static appoint_founder(founder: Subscriber, store: Store): Result<string>
+    {
+        if(founder === undefined || store === undefined)
+        {
+            Logger.error("undefined arrgument given");
+            return makeFailure("undefined arrgument given");
+        }
+
+        if(founder.getUserId() === store.getStoreOwnerId())
+        {
+            // -1 meens 0xFFFFFFF -> so all bits in the mask are turn to 1 and all the actions are permited
+            let allGrantedPermission: Permission = new Permission(-1);
+            let new_appointment = new Appointment(founder, store, founder, allGrantedPermission, JobTitle.FOUNDER);
+            store.addAppointment(new_appointment);
+            founder.addAppointment(new_appointment);
+            Logger.log(`the subscriber ${founder.getUsername} is now appointed to be a new store founder at ${store.getStoreId}`);
+            return makeOk("appointment made successfully"); 
+        }
+        Logger.error("the candidate is not the store founder");
+        return makeFailure("the candidate is not the store founder");
+    }
+
     public static appoint_owner(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission) : Result<string>
     {
         if(appointer === undefined || store === undefined || appointee === undefined || permission === undefined)
         {
             Logger.error("undefined arrgument given");
-            return Result.makeFailure("undefined arrgument given");
+            return makeFailure("undefined arrgument given");
         }
 
         //check if appointer is allowed to appoint owner
@@ -47,7 +69,7 @@ export class Appointment
                 return this.appointTitle(appointer,store,appointee,permission,JobTitle.OWNER);
             }
         }
-        return Result.makeFailure("unauthorized try to appoint owner");
+        return makeFailure("unauthorized try to appoint owner");
     }
 
     public static appoint_manager(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission) : Result<string>
@@ -55,7 +77,7 @@ export class Appointment
         if(appointer === undefined || store === undefined || appointee === undefined || permission === undefined)
         {
             Logger.error("appoint_manager: undefined arrgument given");
-            return Result.makeFailure("undefined arrgument given");
+            return makeFailure("undefined arrgument given");
         }
 
         //check if appointer is allowed to appoint manager
@@ -68,10 +90,10 @@ export class Appointment
             }
             else
             {
-                return Result.makeFailure("user already appointed");
+                return makeFailure("user already appointed");
             }
         }
-        return Result.makeFailure("unauthorized try to appoint manager");
+        return makeFailure("unauthorized try to appoint manager");
     }
 
     private static appointTitle(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title : JobTitle) : Result<string>
@@ -95,7 +117,8 @@ export class Appointment
             store.addAppointment(new_appointment);
             appointee.addAppointment(new_appointment);
         }
-        return Result.makeOk("appointment made successfully");
+        Logger.log(`the subscriber ${appointee.getUsername} is now appointed to be a new store ${title} at ${store.getStoreId}`);
+        return makeOk("appointment made successfully");
     }
 
     private static removeAppointment(appointment: Appointment)

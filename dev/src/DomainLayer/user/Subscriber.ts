@@ -7,7 +7,6 @@ import { User } from "./User";
 
 export class Subscriber extends User
 {
-    private userId: number;
     private username: string;
     private hashPassword: string;
     private appointments: Appointment[];
