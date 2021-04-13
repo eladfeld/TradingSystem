@@ -1,4 +1,4 @@
-import { updateEnumMember } from 'typescript';
+import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
 import { makeFailure, Result } from '../../Result';
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
 import { ShoppingCart} from './ShoppingCart'
@@ -11,13 +11,18 @@ export class User
 {
     private shoppingCart: ShoppingCart;
     private userId: number;
-
+    private static lastId : number = User.getLastId();
 
     public constructor()
     {
         this.shoppingCart = new ShoppingCart();
+        this.userId = User.lastId++;
     }
 
+    private static getLastId() : number
+    {
+        return 0;
+    }
     public buyBasket(shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
     {
         return this.shoppingCart.buyBasket(shopId, paymentMeans, supplyInfo);

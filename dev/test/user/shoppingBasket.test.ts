@@ -1,12 +1,13 @@
 import {expect} from 'chai';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
+import { isOk } from '../../src/Result';
 import { StoreStub } from './StoreStub';
 
 describe('shopping Basket tests' , function() {
     
-    var shoppingBasket : ShoppingBasket = new ShoppingBasket(123);
-    var stabStore : Store = new StoreStub(123);
+    let shoppingBasket : ShoppingBasket = new ShoppingBasket(123);
+    let stabStore : Store = new StoreStub(123);
     shoppingBasket.setStore(stabStore);
 
     describe('add to cart' , function() {
@@ -17,7 +18,7 @@ describe('shopping Basket tests' , function() {
         })
         it('add non existent item to cart' , function(){
             shoppingBasket.clear();
-            expect(shoppingBasket.addProduct(-1,18)).to.equal(-1);
+            expect(isOk(shoppingBasket.addProduct(-1,18))).to.equal(false);
         })
 
         it('add non exsistent item to cart', function(){
@@ -35,7 +36,7 @@ describe('shopping Basket tests' , function() {
 
         it('add negative quantity to cart' , function(){
             shoppingBasket.clear();
-            expect(shoppingBasket.addProduct(5,-3)).to.equal(-1);
+            expect(isOk(shoppingBasket.addProduct(5,-3))).to.equal(false);
         })
         
 
@@ -60,7 +61,7 @@ describe('shopping Basket tests' , function() {
         it('edit to negative quantity' , function(){
             shoppingBasket.clear();
             shoppingBasket.addProduct(1,3);
-            expect(shoppingBasket.edit(1,-5)).to.equal(-1);
+            expect(isOk(shoppingBasket.edit(1,-5))).to.equal(false);
         });
 
         it('edit to quantity 0' , function(){

@@ -11,19 +11,19 @@ export class Logger
     public static log(message: string) : void
     {
         let date = new Date();
-        fs.appendFile("logs/logger.log" , `${date} : ${message}\n` , function(err) {
+        fs.appendFile('logger.log' , `${date} : ${message}\n` , function(err) {
             if (err)
             {
-                console.log("error in log: ${err}");
+                console.log(`error in log.error: ${err}`);
             }
         });
     }
 
     public static error(massage: string) : void
     {
-        fs.appendFile('logs/logger.log', `${new Date()} : error: ${massage}\n`, function(err){
+        fs.appendFile('error.log', `${new Date()} : error: ${massage}\n`, function(err){
             if(err){
-                return console.error(err);
+                console.log(`error in log.log: ${err}`);
             }
         });
     }
