@@ -23,6 +23,7 @@ export class User
     {
         return 0;
     }
+    
     public buyBasket(shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
     {
         return this.shoppingCart.buyBasket(shopId, paymentMeans, supplyInfo);

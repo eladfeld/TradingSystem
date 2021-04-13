@@ -1,22 +1,22 @@
+import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
-import { SubscriberData } from "./Authentication";
-import {User} from "./User"
+import { Authentication } from "./Authentication";
+import { Subscriber } from "./Subscriber";
 
 
 export class Login
 {
 
-    public static login(username: string, password: string) : User
+    public static login(username: string, password: string) : Result<Subscriber>
     {
-        if(SubscriberData.checkPassword(username, password))
+        if(Authentication.checkPassword(username, password))
         {
-            Logger.log(`user ${username} is succefully logged in!`);
-            return SubscriberData.getSubscriber(username);
+            return makeOk(Authentication.getSubscriber(username));
         }
         else
         {
             Logger.log(`user ${username} couldn't log in with the given password!`);
-            return null;
+            return makeFailure(`user ${username} couldn't log in with the given password!`);
         }
     }
 }
