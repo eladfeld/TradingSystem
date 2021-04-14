@@ -5,16 +5,16 @@ import { PaymentMeans, SupplyInfo } from "./User";
 
 export class ShoppingCart
 {
-    private baskets : Map<number,ShoppingBasket>; // <storeId, ShoppingBasket>
+    private baskets : any; // {} <storeId, ShoppingBasket>
 
     public constructor()
     {
-        this.baskets = new Map();
+        this.baskets = {};
     }
     
     public buyBasket(storeId : number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo) : Result<string>
     {
-        let basket : ShoppingBasket = this.baskets.get(storeId);
+        let basket : ShoppingBasket = this.baskets[storeId];
         if (basket === undefined)
         {
             Logger.error("no such shopping basket");
@@ -24,13 +24,13 @@ export class ShoppingCart
     }
     public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
     {
-        let basket: ShoppingBasket = this.baskets.get(storeId);
+        let basket: ShoppingBasket = this.baskets[storeId];
         if(basket === undefined) 
         {
             //TODO: if (shop exist)
             //{
                 basket = new ShoppingBasket(storeId);   
-                this.baskets.set(storeId, basket);
+                this.baskets[storeId]= basket;
             //}
             //else {
                 //Logger.error("shop with id ${storeId} does not exist");
@@ -42,20 +42,15 @@ export class ShoppingCart
 
     editStoreCart(storeId : number , productId:number , newQuantity:number) : Result<string>
     {
-        let basket: ShoppingBasket = this.baskets.get(storeId);
+        let basket: ShoppingBasket = this.baskets[storeId];
         if (basket === undefined)
             return makeFailure("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
     }
 
-    getShoppingCart() : number[]
+    getShoppingBasket(storeId: number): {}
     {
-        return Array.from(this.baskets.keys());
-    }
-
-    getShoppingBasket(storeId: number): Map<number,number>
-    {
-        return this.baskets.get(storeId).getProducts();
+        return this.baskets[storeId].getProducts();
     }
 
 }

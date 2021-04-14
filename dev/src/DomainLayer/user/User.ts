@@ -1,5 +1,5 @@
 import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
-import { makeFailure, Result } from '../../Result';
+import { makeFailure, makeOk, Result } from '../../Result';
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
 import { ShoppingCart} from './ShoppingCart'
 
@@ -39,12 +39,12 @@ export class User
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-    public GetShoppingCart(): number[]
+    public GetShoppingCart(): Result<string>
     {
-        return this.shoppingCart.getShoppingCart();
+        return makeOk(JSON.stringify(this.shoppingCart));
     }
 
-    public getShoppingBasket(storeId: number): Map<number, number>
+    public getShoppingBasket(storeId: number): {}
     {
         return this.shoppingCart.getShoppingBasket(storeId);
     }

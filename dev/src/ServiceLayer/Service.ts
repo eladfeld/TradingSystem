@@ -97,8 +97,7 @@ export class Service
     public getCartInfo(userId: number): Result<string>
     {
         let user: User = this.logged_users.find(user => user.getUserId() === userId);
-        return makeFailure("");
-        //return user.GetShoppingCart();
+        return user.GetShoppingCart();
     }
 
 }
