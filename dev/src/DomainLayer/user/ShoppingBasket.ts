@@ -1,4 +1,4 @@
-import { makeFailure, makeOk, Result } from "../../Result";
+import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
 import { Purchase } from "../Purchase";
 import { Store } from "../store/Store";
@@ -10,11 +10,10 @@ export class ShoppingBasket
     private store : Store ;
     private products: any;    //key: productId, value: quantity
 
-    public constructor(storeid:number)
+    public constructor(store:Store)
     {
         this.products = {};
-        //TODO: access store database and get the store that have this id
-    
+        this.store = store;    
     }
 
     getStoreId(): number
@@ -39,7 +38,7 @@ export class ShoppingBasket
             Logger.error("product not for immediate buy");
             return makeFailure("product not for immediate buy");
         }
-        if(!this.store.isProductAvailable(productId, quantity))
+        if(!isOk(this.store.isProductAvailable(productId, quantity)))
         {
             Logger.log("product is not available in this quantity");
             return makeFailure("product is not available in this quantity");

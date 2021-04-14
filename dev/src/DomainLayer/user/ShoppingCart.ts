@@ -1,5 +1,7 @@
 import { makeFailure, Result } from "../../Result";
 import { Logger } from "../Logger";
+import { Store } from "../store/Store";
+import { StoreDB } from "../store/StoreDB";
 import { ShoppingBasket } from "./ShoppingBasket";
 import { PaymentMeans, SupplyInfo } from "./User";
 
@@ -27,15 +29,16 @@ export class ShoppingCart
         let basket: ShoppingBasket = this.baskets[storeId];
         if(basket === undefined) 
         {
-            //TODO: if (shop exist)
-            //{
-                basket = new ShoppingBasket(storeId);   
+            let store : Store = StoreDB.getStoreByID(storeId);
+            if (store !== undefined)
+            {
+                basket = new ShoppingBasket(store);   
                 this.baskets[storeId]= basket;
-            //}
-            //else {
-                //Logger.error("shop with id ${storeId} does not exist");
-                //return -1 (shop doesnt exist);
-            //}
+            }
+            else {
+                Logger.error(`shop with id ${storeId} does not exist`);
+                makeFailure(`shop with id ${storeId} does not exist`);
+            }
         }
         return basket.addProduct(productId, quantity);
     }

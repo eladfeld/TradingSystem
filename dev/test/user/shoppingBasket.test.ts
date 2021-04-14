@@ -6,8 +6,8 @@ import { StoreStub } from './StoreStub';
 
 describe('shopping Basket tests' , function() {
     
-    let shoppingBasket : ShoppingBasket = new ShoppingBasket(123);
     let stabStore : Store = new StoreStub(123);
+    let shoppingBasket : ShoppingBasket = new ShoppingBasket(stabStore);
     shoppingBasket.setStore(stabStore);
 
     describe('add to cart' , function() {

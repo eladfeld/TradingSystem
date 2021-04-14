@@ -17,7 +17,7 @@ export class Register
             }
         }
         else{
-            return makeFailure("`Guest user tried to register with used username ${username}`")
+            return makeFailure(`Guest user tried to register with used username ${username}`)
         }
     }
 

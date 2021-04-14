@@ -46,12 +46,12 @@ export class Service
     }
 
     //user enter the system
-    public enter(): number
+    public enter(): Result<number>
     {
         Logger.log("new user entered the system");
         let user: User = new User();
         this.logged_users.push(user);
-        return user.getUserId();
+        return makeOk(user.getUserId());
     }
 
     public exit(userId: number): void
@@ -98,6 +98,18 @@ export class Service
     {
         let user: User = this.logged_users.find(user => user.getUserId() === userId);
         return user.GetShoppingCart();
+    }
+
+
+    //------------------------------------------functions for tests-------------------------
+    public getLoggedUsers() : User[] 
+    {
+        return this.logged_users;
+    }
+
+    public clear() : void
+    {
+        this.logged_users = [];
     }
 
 }
