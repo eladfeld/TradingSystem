@@ -1,3 +1,4 @@
+import { makeFailure, makeOk, Result } from "../../Result";
 
 
 export enum buyingOption{
@@ -12,8 +13,16 @@ export class BuyingOption {
 
     private option: string;
 
-    public constructor(option=buyingOption.INSTANT) {
+    public constructor() {
+        this.option = buyingOption.INSTANT;
+    }
+
+    public setBuyingOption(option: string): Result<string> {
+        if (!(option === buyingOption.BID || option === buyingOption.INSTANT || option === buyingOption.OFFER || option == buyingOption.RAFFLE)) {
+            return makeFailure("Received invalid buying option: " + option);
+        }
         this.option = option;
+        return makeOk("Buying option was set")
     }
 
 }

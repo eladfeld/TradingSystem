@@ -4,10 +4,14 @@ import { Inventory } from "./Inventory";
 import { Product } from "./Product";
 import {ID} from './Common'
 import { Appointment } from "../user/Appointment";
+import { Result } from "../../Result";
+import { StoreHistory } from "./StoreHistory";
+import { StoreDB } from "./StoreDB";
 
 
 export class Store
 {
+
     getStoreOwnerId():number
     {
         return this.storeOwner;
@@ -27,6 +31,7 @@ export class Store
         this.discountPolicy = new DiscountPolicy(discountPolicy);
         this.buyingPolicy = new BuyingPolicy(buyingPolicy);
         this.inventory = new Inventory();
+        StoreDB.addStore(this);
     }
 
     public getStoreId()
@@ -39,12 +44,12 @@ export class Store
         this.storeId = id;
     }
 
-    public isProductAvailable(productId: number, quantity: number): boolean {
+    public isProductAvailable(productId: number, quantity: number): Result<string> {
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(productName: string, price: number, quantity = 0) {
-        this.inventory.addNewProduct(productName, this.storeId, price, quantity);
+    public addNewProduct(productName: string, price: number, quantity = 0): Result<string> {
+        return this.inventory.addNewProduct(productName, this.storeId, price, quantity);
     }
 
     public addAppointment(appointment : Appointment) : void
