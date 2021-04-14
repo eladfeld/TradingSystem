@@ -22,7 +22,7 @@ export class ShoppingCart
         }
         return basket.buyAll(paymentMeans, supplyInfo);
     }
-    addProduct(storeId:number, productId:number, quantity:number) : Result<string>
+    public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
         if(basket === undefined) 

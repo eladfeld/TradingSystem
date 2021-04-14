@@ -34,10 +34,10 @@ export class ShoppingBasket
             Logger.error("quantity can't be negative number");
             return makeFailure("quantity can't be negative number");
         }
-        if (!this.store.openForImmediateAuction(productId))
+        if (!this.store.openForImmediateBuy(productId))
         {
-            Logger.error("product not for immediate auction");
-            return makeFailure("product not for immediate auction");
+            Logger.error("product not for immediate buy");
+            return makeFailure("product not for immediate buy");
         }
         if(!this.store.isProductAvailable(productId, quantity))
         {

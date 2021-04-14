@@ -56,7 +56,7 @@ export class Store
     public getAppointments(): Appointment[]
     {return undefined}
 
-    public openForImmediateAuction(productId : number) : boolean
+    public openForImmediateBuy(productId : number) : boolean
     {return true;}
 
     public calculatePrice(products : Map<number,number>) : number

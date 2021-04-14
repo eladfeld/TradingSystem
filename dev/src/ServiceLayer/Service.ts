@@ -3,7 +3,7 @@ import { Login } from "../DomainLayer/user/Login";
 import { Register } from "../DomainLayer/user/Register";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { User } from "../DomainLayer/user/User";
-import { makeFailure, makeOk, Result } from "../Result";
+import { isFailure, makeFailure, makeOk, Result } from "../Result";
 
 
 export class Service
@@ -62,13 +62,43 @@ export class Service
     public register(username: string, password: string): Result<string>
     {
         return Register.register(username, password);
-        
     }
 
-    public login(username: string, password: string): Result<Subscriber>
+    public login(userId: number, username: string, password: string): Result<number>
     {
-        //TODO: need to change the result and replace the subscriber with the user exists in the system.
-        return Login.login(username, password);
+        let res: Result<Subscriber> =  Login.login(username, password);
+        if (isFailure(res))
+        {
+            return makeFailure(res.message);
+        }
+        let sub : Subscriber = res.value;
+        this.logged_users = this.logged_users.map(user => user.getUserId() === userId ? sub : user);
+        return makeOk(sub.getUserId());
+    }
+
+    public getStoreInfo(storeId: number): Result<string>
+    {
+        //TODO: forowrd to the stores system and return a json representation of the store
+        return makeFailure("not yet implemented");
+    }
+
+    public getPruductInfo(): Result<string>
+    {   
+        //TODO: forowrd to the stores system and return a json representation of the store
+        return makeFailure("not yet implemented");
+    }
+
+    public addProductTocart(userId: number, storeId: number, productId: number, quantity: number): Result<string>
+    {
+        let user: User = this.logged_users.find(user => user.getUserId() === userId);
+        return user.addProductToShoppingCart(storeId, productId, quantity);
+    }
+
+    public getCartInfo(userId: number): Result<string>
+    {
+        let user: User = this.logged_users.find(user => user.getUserId() === userId);
+        return makeFailure("");
+        //return user.GetShoppingCart();
     }
 
 }
