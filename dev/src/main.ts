@@ -3,8 +3,8 @@ import { ShoppingBasket } from "./DomainLayer/user/ShoppingBasket";
 import { StoreStub } from '../test/user/StoreStub';
 import { Product } from "./DomainLayer/store/Product";
 
-let shoppingBasket : ShoppingBasket = new ShoppingBasket(123);
 let stabStore : Store = new StoreStub(123);
+let shoppingBasket : ShoppingBasket = new ShoppingBasket(stabStore);
 shoppingBasket.setStore(stabStore);
 shoppingBasket.addProduct(1,2);
 shoppingBasket.addProduct(2,2);

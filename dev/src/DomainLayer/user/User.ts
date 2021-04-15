@@ -1,4 +1,3 @@
-import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
 import { makeFailure, makeOk, Result } from '../../Result';
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
 import { ShoppingCart} from './ShoppingCart'
@@ -9,8 +8,8 @@ export type SupplyInfo = undefined;
 
 export class User
 {
-    private shoppingCart: ShoppingCart;
-    private userId: number;
+    protected shoppingCart: ShoppingCart;
+    protected userId: number;
     private static lastId : number = User.getLastId();
 
     public constructor()
@@ -52,6 +51,11 @@ export class User
     public getUserId(): number
     {
         return this.userId;
+    }
+
+    public editCart(storeId: number, productId: number, quantity: number): Result<string>
+    {
+        return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
 
 

@@ -1,5 +1,6 @@
 import { Store } from "../store/Store";
 import { Appointment, JobTitle } from "./Appointment";
+import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
 import { User } from "./User";
 
@@ -72,6 +73,11 @@ export class Subscriber extends User
     public deleteAppointment(store_app: Appointment) 
     {
         this.appointments = this.appointments.filter(app => app !== store_app);
+    }
+
+    public isSystemManager(): boolean
+    {
+        return Authentication.isSystemManager(this.userId);
     }
 
 
