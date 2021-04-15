@@ -16,10 +16,10 @@ export class StoreHistory
     }
 
     public saveSale(buyerId: number, productId: number, quantity: number) {
-        if(this.sales.has(userId)){
-            this.sales.get(userId).set(productId, quantity)
+        if(this.sales.has(buyerId)){
+            this.sales.get(buyerId).set(productId, quantity)
         } else {
-            this.sales.set(userId, new Map<number, number>().set(productId, quantity))
+            this.sales.set(buyerId, new Map<number, number>().set(productId, quantity))
         }
     }
 
