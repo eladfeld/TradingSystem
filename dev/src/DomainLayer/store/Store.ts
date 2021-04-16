@@ -142,6 +142,14 @@ export class Store
         return makeFailure("Not implemented");
     }
 
+    public completedTransaction(transaction: Transaction) {
+        this.storeHistory.saveTransaction(transaction);
+    }
+
+    public getStoreHistory(): StoreHistory {
+        return this.storeHistory;
+    }
+
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
 
     public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
