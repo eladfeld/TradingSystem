@@ -1,4 +1,4 @@
-import { makeFailure, makeOk, Result } from "../../Result";
+import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
 import { Purchase } from "../Purchase";
 import { Store } from "../store/Store";
@@ -8,13 +8,12 @@ export class ShoppingBasket
 {
     
     private store : Store ;
-    private products: Map<number,number>;    //key: productId, value: quantity
+    private products: any;    //key: productId, value: quantity
 
-    public constructor(storeid:number)
+    public constructor(store:Store)
     {
-        this.products = new Map();
-        //TODO: access store database and get the store that have this id
-    
+        this.products = {};
+        this.store = store;    
     }
 
     getStoreId(): number
@@ -22,7 +21,7 @@ export class ShoppingBasket
         return this.store.getStoreId();
     }
 
-    public getProducts(): Map<number,number>
+    public getProducts(): any
     {
         return this.products;
     }
@@ -34,21 +33,25 @@ export class ShoppingBasket
             Logger.error("quantity can't be negative number");
             return makeFailure("quantity can't be negative number");
         }
-        if (!this.store.openForImmediateAuction(productId))
+        if(quantity === 0)
         {
-            Logger.error("product not for immediate auction");
-            return makeFailure("product not for immediate auction");
+            return makeFailure("quantity can't be set to zero");
         }
-        if(!this.store.isProductAvailable(productId, quantity))
+        if (!this.store.openForImmediateBuy(productId))
+        {
+            Logger.error("product not for immediate buy");
+            return makeFailure("product not for immediate buy");
+        }
+        if(!isOk(this.store.isProductAvailable(productId, quantity)))
         {
             Logger.log("product is not available in this quantity");
             return makeFailure("product is not available in this quantity");
         }
 
         let prevQuantity : number = 0;
-        if (this.products.get(productId) != undefined)
-            prevQuantity = this.products.get(productId);
-        this.products.set(productId, prevQuantity+quantity);
+        if (this.products[productId] != undefined)
+            prevQuantity = this.products[productId];
+        this.products[productId] =prevQuantity+quantity;
         return makeOk("product added to cart");
     }
     
@@ -66,9 +69,9 @@ export class ShoppingBasket
         if (!this.store.isProductAvailable(productId,newQuantity))
             return makeFailure("quantity not available");
 
-        this.products.set(productId,newQuantity)
+        this.products[productId]=newQuantity;
         if (newQuantity === 0)
-            this.products.delete(productId);
+            delete this.products[productId];
         return makeOk("added to cart");
     }
 
@@ -76,7 +79,7 @@ export class ShoppingBasket
     
     public clear() : void
     {
-        this.products = new Map();
+        this.products = {};
     }
     public setStore(store:Store) : void
     {

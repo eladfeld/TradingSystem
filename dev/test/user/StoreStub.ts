@@ -1,4 +1,5 @@
 import { Store } from "../../src/DomainLayer/store/Store";
+import { makeFailure, makeOk, Result } from "../../src/Result";
 
 export class StoreStub extends Store
 {
@@ -6,11 +7,11 @@ export class StoreStub extends Store
     {
         super(storeOwner,"visible","visible");
     }
-    public isProductAvailable(productId: number, quantity: number): boolean 
+    public isProductAvailable(productId: number, quantity: number): Result<string> 
     {
         if (productId > 0)
-            return true;
+            return makeOk("");
         else 
-            return false;
+            return makeFailure("");
     }
 }

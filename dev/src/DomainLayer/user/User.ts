@@ -1,5 +1,4 @@
-import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
-import { makeFailure, Result } from '../../Result';
+import { makeFailure, makeOk, Result } from '../../Result';
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
 import { ShoppingCart} from './ShoppingCart'
 
@@ -9,8 +8,8 @@ export type SupplyInfo = undefined;
 
 export class User
 {
-    private shoppingCart: ShoppingCart;
-    private userId: number;
+    protected shoppingCart: ShoppingCart;
+    protected userId: number;
     private static lastId : number = User.getLastId();
 
     public constructor()
@@ -23,6 +22,7 @@ export class User
     {
         return 0;
     }
+    
     public buyBasket(shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
     {
         return this.shoppingCart.buyBasket(shopId, paymentMeans, supplyInfo);
@@ -38,12 +38,12 @@ export class User
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-    public GetShoppingCart(): number[]
+    public GetShoppingCart(): Result<string>
     {
-        return this.shoppingCart.getShoppingCart();
+        return makeOk(JSON.stringify(this.shoppingCart));
     }
 
-    public getShoppingBasket(storeId: number): Map<number, number>
+    public getShoppingBasket(storeId: number): {}
     {
         return this.shoppingCart.getShoppingBasket(storeId);
     }
@@ -51,6 +51,11 @@ export class User
     public getUserId(): number
     {
         return this.userId;
+    }
+
+    public editCart(storeId: number, productId: number, quantity: number): Result<string>
+    {
+        return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
 
 

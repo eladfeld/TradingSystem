@@ -10,10 +10,9 @@ export class StoreDB
         this.stores.push(store);
     }
 
-    public static getStoreByID(storeId: number): void
+    public static getStoreByID(storeId: number): Store
     {
-
-        this.stores.find(store => store.getStoreId() == storeId);
+        return this.stores.find(store => store.getStoreId() == storeId);
     }
 
 }

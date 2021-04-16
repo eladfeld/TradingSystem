@@ -2,6 +2,7 @@
 export enum ACTION{
     APPOINT_MANAGER = 1 ,
     APPOINT_OWNER = 2,
+    INVENTORY_EDITTION = 3,
 }
 
 export class Permission

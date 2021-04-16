@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import { Login } from '../../src/DomainLayer/user/Login';
 import { Register } from '../../src/DomainLayer/user/Register';
+import { isOk } from '../../src/Result';
 
 
 
@@ -13,7 +14,7 @@ describe('login test' , function() {
 
     it('negative log in' , function ()
     {
-        expect(Login.login("yosi", "123")).to.null;
+        expect(isOk(Login.login("yosi", "123"))).to.equal(false);
     });
 
 
