@@ -1,4 +1,5 @@
 
+import { exception } from 'console';
 import fs from 'fs';
 
 
@@ -9,21 +10,23 @@ export class Logger
 
     public static log(message: string) : void
     {
-        var date = new Date();
-        fs.appendFile("logs/log" , `${date} : ${message}\n` , function(err) {
+        let date = new Date();
+        fs.appendFile('logger.log' , `${date} : ${message}\n` , function(err) {
             if (err)
             {
-                console.log("error in log: ${err}");
+                console.log(`error in log.error: ${err}`);
             }
         });
     }
 
     public static error(massage: string) : void
     {
-        fs.appendFile('logs/error.log', `time: ${new Date()}, error: ${massage}\n`, function(err){
+        fs.appendFile('error.log', `${new Date()} : error: ${massage}\n`, function(err){
             if(err){
-                return console.error(err);
+                console.log(`error in log.log: ${err}`);
             }
         });
     }
+    
 }
+

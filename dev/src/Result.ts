@@ -1,4 +1,7 @@
+<<<<<<< HEAD
   
+=======
+>>>>>>> e8e66ecdbd8d774468f5702383c75af652c2f397
 
 export type Result<T> = Ok<T> | Failure;
 
