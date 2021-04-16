@@ -21,6 +21,7 @@ class Purchase {
         this.dbDummy = new DbDummy();
     }
 
+
     checkout = (user: User) : boolean =>{
         const userId: number = user.getUserId();
         //check if a previous checkout attempt is still "in progress"
@@ -56,8 +57,6 @@ class Purchase {
         }else{
             return false;
         }
-
-
         return false;
     }
 
@@ -101,7 +100,7 @@ class Purchase {
         return false;
     }
 
-    CompleteOrder = (user: User, paymentInfo: PaymentInfo) : boolean => {
+    CompleteOrder = (user: User, custPaymentInfo: PaymentInfo, storeAccount: number, storeAddr, custAddrs) : boolean => {
         const timerId = this.usersCheckoutTimers.get(user.getUserId()); 
         if(timerId !== undefined){
             
