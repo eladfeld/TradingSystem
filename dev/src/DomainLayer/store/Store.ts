@@ -1,7 +1,6 @@
 import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
-import { StoreProduct } from "./StoreProduct";
 import {ID, Rating} from './Common'
 import { Appointment, JobTitle } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
@@ -11,7 +10,6 @@ import { StoreInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
-import Purchase from "../Purchase";
 import { Authentication } from "../user/Authentication";
 
 
@@ -58,6 +56,7 @@ export class Store
         StoreDB.addStore(this);
     }
 
+    public getStoreAddress = () => this.storeAddress;
     public getStoreId()
     {
         return this.storeId;

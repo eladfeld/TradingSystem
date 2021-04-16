@@ -1,4 +1,3 @@
-
 export type Result<T> = Ok<T> | Failure;
 
 interface Ok<T> {
