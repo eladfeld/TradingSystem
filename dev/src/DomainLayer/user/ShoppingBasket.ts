@@ -1,6 +1,5 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
-import { Purchase } from "../Purchase";
 import { Store } from "../store/Store";
 import { PaymentMeans, SupplyInfo } from "./User";
 
@@ -57,9 +56,7 @@ export class ShoppingBasket
     
     public buyAll(paymentMeans: PaymentMeans,supplyInfo: SupplyInfo): Result<string>
     {
-        //TODO: sync with purchase about checkout!
-        let price: number = this.store.calculatePrice(this.products);
-        return Purchase.checkout(price, this.store, paymentMeans, supplyInfo);
+        return this.store.buyShoppingBasket(this.products, paymentMeans, supplyInfo);
     }
 
     public edit(productId: number, newQuantity: number): Result<string> 

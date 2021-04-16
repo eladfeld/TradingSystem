@@ -7,16 +7,16 @@ import { PaymentMeans, SupplyInfo } from "./User";
 
 export class ShoppingCart
 {
-    private baskets : any; // {} <storeId, ShoppingBasket>
+    private baskets : Map<number , ShoppingBasket>; // {} <storeId, ShoppingBasket>
 
     public constructor()
     {
-        this.baskets = {};
+        this.baskets = new Map();
     }
     
     public buyBasket(storeId : number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo) : Result<string>
     {
-        let basket : ShoppingBasket = this.baskets[storeId];
+        let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
         {
             Logger.error("no such shopping basket");
@@ -24,16 +24,25 @@ export class ShoppingCart
         }
         return basket.buyAll(paymentMeans, supplyInfo);
     }
+
+    public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo) :Result<string>
+    {
+        Array.from(this.baskets.keys()).forEach(storeId => {
+            this.buyBasket(storeId,paymentMeans,supplyInfo);
+        });
+        return makeFailure("TODO: each basket can fail/succeed seperatley what to do?");
+    }
+
     public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
     {
-        let basket: ShoppingBasket = this.baskets[storeId];
+        let basket: ShoppingBasket = this.baskets.get(storeId);
         if(basket === undefined) 
         {
             let store : Store = StoreDB.getStoreByID(storeId);
             if (store !== undefined)
             {
                 basket = new ShoppingBasket(store);   
-                this.baskets[storeId]= basket;
+                this.baskets.set(storeId, basket);
             }
             else {
                 Logger.error(`shop with id ${storeId} does not exist`);
@@ -45,7 +54,7 @@ export class ShoppingCart
 
     editStoreCart(storeId : number , productId:number , newQuantity:number) : Result<string>
     {
-        let basket: ShoppingBasket = this.baskets[storeId];
+        let basket: ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
             return makeFailure("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
@@ -53,7 +62,7 @@ export class ShoppingCart
 
     getShoppingBasket(storeId: number): {}
     {
-        return this.baskets[storeId].getProducts();
+        return this.baskets.get(storeId).getProducts();
     }
 
 }

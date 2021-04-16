@@ -9,6 +9,7 @@ export class Authentication
     
     public static addSystemManager(sys_manager : Subscriber):void
     {
+        this.subscribers.push(sys_manager);
         this.system_managers.push(sys_manager);
     }
 

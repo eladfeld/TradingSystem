@@ -1,10 +1,14 @@
 import { Logger } from "../DomainLayer/Logger";
+import { Store } from "../DomainLayer/store/Store";
+import { Appointment } from "../DomainLayer/user/Appointment";
 import { Login } from "../DomainLayer/user/Login";
 import { Register } from "../DomainLayer/user/Register";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { PaymentMeans, SupplyInfo, User } from "../DomainLayer/user/User";
 import { isFailure, makeFailure, makeOk, Result } from "../Result";
-
+import fs from 'fs';
+import { buyingOption } from "../DomainLayer/store/BuyingOption";
+import { Authentication } from "../DomainLayer/user/Authentication";
 
 export class Service
 {
@@ -17,17 +21,23 @@ export class Service
     {
         if (Service.singletone === undefined)
         {
-            Service.singletone = new Service();
-            return Service.singletone;
+            let instance : Service = new Service();
+            if (instance.initPaymentSystem() && instance.initSystemManagers() && instance.initSupplySystem())
+            {
+                Service.singletone = instance;
+                return Service.singletone;
+            }
+            else
+            {
+                Logger.error("initializate system failed");
+                return undefined;
+            }
         }
         return Service.singletone;
     }
     
     private constructor()
     {
-        this.initPaymentSystem();
-        this.initSupplySystem();
-        this.initSystemManagers();
         this.logged_guest_users = [];
         this.logged_subscribers = [];
         this.logged_system_managers = [];
@@ -45,6 +55,19 @@ export class Service
     
     private initSystemManagers() : boolean
     {
+        const data = fs.readFileSync('C:\\Users\\elad\\Desktop\\TradingSystem\\dev\\src\\systemManagers.json' ,  {encoding:'utf8', flag:'r'});
+        let arr: any[] = JSON.parse(data);
+        if (arr.length === 0)
+        {
+            Logger.error("no system managers found!");
+            return false;
+        }
+        for (var i in arr)
+        {
+            let manager: any = arr[i];
+            let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"] )
+            Authentication.addSystemManager(sub);
+        }
         return true
     }
 
@@ -148,12 +171,12 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public buyProduct(userId : number, productNumber: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
+    public buyProduct(userId : number, productId: number, quantity : number , storeId : number ,paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
     {
-        Logger.log(`buyProduct : userId:${userId} , productNumber:${productNumber} , paymentMeans:${paymentMeans} , supplyInfo:${supplyInfo}`);
+        Logger.log(`buyProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  ,paymentMeans : ${paymentMeans}, supplyInfo:${supplyInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.buyProduct(productNumber, paymentMeans, supplyInfo);
+            return user.buyProduct(productId  , quantity, paymentMeans, supplyInfo, storeId , buyingOption.INSTANT);
         return makeFailure("user not found");
     }
 
@@ -165,7 +188,8 @@ export class Service
         let subscriber: Subscriber = this.logged_subscribers.find(sub => sub.getUserId() === userId);
         if(subscriber !== undefined)
         {
-            //TODO: call store manager and open a store with #StoreInfo
+            let store: Store = new Store(subscriber.getUserId());
+            return Appointment.appoint_founder(subscriber, store);
         }
         return makeFailure("user not found");
     }
@@ -197,6 +221,16 @@ export class Service
         let manager: Subscriber = this.logged_system_managers.find(user => user.getUserId() === userId);
         if (manager !== undefined)
             return this.getPurchaseHistory(subscriberId);
+        return makeFailure("user don't have system manager permissions");
+    }
+
+    //TODO: request from storeDB information on store
+    public getStoresInfo(userId: number, storeId: number): Result<string>
+    {
+        Logger.log(`getStoresInfo : userId:${userId}, storeId:${storeId}`);
+        let manager: Subscriber = this.logged_system_managers.find(user => user.getUserId() === userId);
+        if (manager !== undefined)
+            return makeFailure("not yet implemented!!!");
         return makeFailure("user don't have system manager permissions");
     }
 

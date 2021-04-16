@@ -4,9 +4,10 @@ import { Inventory } from "./Inventory";
 import { Product } from "./Product";
 import {ID} from './Common'
 import { Appointment } from "../user/Appointment";
-import { Result } from "../../Result";
+import { makeFailure, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
+import { PaymentMeans, SupplyInfo } from "../user/User";
 
 
 export class Store
@@ -66,4 +67,9 @@ export class Store
 
     public calculatePrice(products : Map<number,number>) : number
     {return 0;}
+
+    public buyShoppingBasket(products : Map<number,number>, paymentMeans : PaymentMeans, supplyInfo : SupplyInfo) : Result<string>
+    {
+        return makeFailure("not yet implemetnted");
+    }
 }

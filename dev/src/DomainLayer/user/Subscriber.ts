@@ -1,21 +1,31 @@
+import { isOk, Result } from "../../Result";
+import { buyingOption } from "../store/BuyingOption";
 import { Store } from "../store/Store";
 import { Appointment, JobTitle } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
-import { User } from "./User";
+import { PaymentMeans, SupplyInfo, User } from "./User";
 
-
+export type HistoryItem = string;
 
 export class Subscriber extends User
 {
+
     private username: string;
     private hashPassword: string;
+    private history: HistoryItem[];
     private appointments: Appointment[];
-    
-    public constructor(username: string){
+
+    public constructor(username: string ){
         super();
         this.username = username;
         this.appointments = [];
+    }
+
+    static buildSubscriber(username: string, hashpassword: string): Subscriber {
+        let subscriber: Subscriber = new Subscriber(username);
+        subscriber.hashPassword = hashpassword;
+        return subscriber;
     }
     
 
@@ -79,6 +89,40 @@ export class Subscriber extends User
     {
         return Authentication.isSystemManager(this.userId);
     }
+
+    
+    public buyProduct(productId :number , quantity: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo, shopId : number , buying_option : buyingOption) : Result<string>
+    {
+        let res: Result<HistoryItem> = super.buyProduct(productId, quantity, paymentMeans, supplyInfo, shopId, buying_option);
+        if(isOk(res))
+        {
+            this.addToHistory(res.value);
+        }
+        return res;
+    }
+    
+    public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo): Result<string>
+    {
+        let res: Result<string> = super.buyCart(paymentMeans, supplyInfo);
+        if(isOk(res))
+        {
+            this.addToHistory(res.value);
+        }
+        return res;
+    }
+
+
+    private addToHistory(item: HistoryItem): void
+    {
+        this.history.push(item);
+    }
+
+    public getHistory(): HistoryItem[]
+    {
+        return this.history;
+    }
+
+
 
 
     //-----------------------------functions for tests---------------------------------------------
