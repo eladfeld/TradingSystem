@@ -108,12 +108,13 @@ export class Store
         // sell product should be called after policies where verified
         let sellResult =  this.inventory.sellProduct(productId, quantity);
         if(isOk(sellResult)){
-            this.storeHistory.saveSale(buyerId, productId, quantity)
+            // TODO: use transaction
+            // this.storeHistory.saveSale(buyerId, productId, quantity)
         }
         return sellResult
     }
 
-    public buyInstant(): Result<string> {
+    private buyInstant(): Result<string> {
         /**
          * Flow
          * check store supports option
@@ -123,15 +124,15 @@ export class Store
         return makeFailure("Not implemented")
     }
 
-    public buyOffer(): Result<string> {
+    private buyOffer(): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    public buyBid(): Result<string> {
+    private buyBid(): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    public buyRaffle(): Result<string> {
+    private buyRaffle(): Result<string> {
         return makeFailure("Not implemented")
     }
 
