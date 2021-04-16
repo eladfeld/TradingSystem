@@ -16,11 +16,6 @@ export class ProductDB
         this.products.push(wproduct);
     }
 
-    public static getProductByStoreID(storeId: number): Product
-    {
-        return this.products.find(product => product.getStoreId() == storeId);
-    }
-
     public static getProductByName(productName: string): Product
     {
         return this.products.find(product => product.getName() == productName);

@@ -7,6 +7,7 @@ import { Appointment } from "../user/Appointment";
 import { makeFailure, makeOk, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
+import { StoreInfo } from "./StoreInfo";
 
 
 export class Store
@@ -42,6 +43,11 @@ export class Store
     public getStoreId()
     {
         return this.storeId;
+    }
+
+    public getStoreName()
+    {
+        return this.storeName;
     }
 
     public setStoreId(id : number) : void
@@ -122,6 +128,10 @@ export class Store
     public ansewrMessage(userId: number, answer: string): Result<string> {
         // send answer somehow to user with userId
         return makeFailure("Not implemented")
+    }
+
+    public getStoreInfo(): StoreInfo {
+        return new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo())
     }
 
     public addAppointment(appointment : Appointment) : void

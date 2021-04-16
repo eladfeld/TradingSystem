@@ -3,6 +3,7 @@ import { Logger } from "../Logger";
 import { makeFailure, makeOk, Result } from "../../Result";
 import { ProductDB } from "./ProductDB";
 import { Product } from "./Product";
+import { StoreProductInfo } from "./StoreInfo";
 
 export class Inventory
 {
@@ -101,5 +102,11 @@ export class Inventory
         return makeOk('Product returned');
     }
 
-
+    public getProductsInfo(): StoreProductInfo[] {
+        let storeProducts: StoreProductInfo[] = []
+        for(let storeProduct of this.products.values()){
+            storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice()))
+        }
+        return storeProducts
+    }
 }

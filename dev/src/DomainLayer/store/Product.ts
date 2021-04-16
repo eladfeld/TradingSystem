@@ -6,9 +6,6 @@ export class Product
 
     private productId: number;
     private name: string;
-    private storeId: number;
-    private price: number;
-    private quantity: number;
 
     public constructor(name: string)
     {
@@ -27,17 +24,4 @@ export class Product
         return this.name;
     }
 
-    public getStoreId()
-    {
-        return this.storeId;
-    }
-
-    public getPrice()
-    {
-        return this.price;
-    }
-    public getQuantity()
-    {
-        return this.quantity;
-    }
 }
