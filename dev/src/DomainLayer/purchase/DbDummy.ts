@@ -1,20 +1,33 @@
 import Transaction from "./Transaction";
 
 class DbDummy{
-    private transactions: Transaction[];
+    private completedTransactions: Transaction[];
+    private transactionsInProgress: Transaction[];
     private usersAtCheckout: Map<number,Map<number,Map<number, number>>>;// userId => storeId => productId => quantity
 
     constructor(){
-        this.transactions = [];
+        this.completedTransactions = [];
         this.usersAtCheckout = new Map();
     }
 
-    storeTransaction = (transaction: Transaction) =>{
-        this.transactions.push(transaction);
+    storeCompletedTransaction = (transaction: Transaction) =>{
+        this.completedTransactions.push(transaction);
     }
-    getTransactions = ():Transaction[] => {
-        return this.transactions;
+    getCompletedTransactions = ():Transaction[] => {
+        return this.completedTransactions;
     }
+
+
+    storeTransactionInProgress = (transaction: Transaction) =>{
+        this.transactionsInProgress.push(transaction);
+    }
+    removeTransactionInProgress = (userId: number, storeId: number):Transaction =>{
+        return null;
+    }
+    getTransactionInProgress = (userId: number, storeId: number):Transaction =>{
+        return null;
+    }
+
 
     storeReservation = (userId:number, cart: Map<number,Map<number, number>>) =>{
         this.usersAtCheckout.set(userId, cart);

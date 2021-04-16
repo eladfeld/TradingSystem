@@ -78,7 +78,7 @@ export class StoreProduct
         this.numOfRaters++
         this.productRating += rating
         this.productRating /= this.numOfRaters
-        Logger.log("Rating was added " + `new product rating: ${this.productRating}`)
+        Logger.log(`Rating was added new product rating: ${this.productRating}`)
         return makeOk("Rating was added ")
     }
 

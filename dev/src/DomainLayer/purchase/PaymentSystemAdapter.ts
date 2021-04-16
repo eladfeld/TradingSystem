@@ -1,9 +1,14 @@
+import { makeOk, Result } from "../../Result";
 
 class PaymentSystemAdapter {
-    charge = (paymentInfo: PaymentInfo):boolean => {
-        return false;
+
+
+    //returns a transaction number
+    transfer = (from: PaymentInfo, to: number, amount: number ):Result<number> => {
+        return makeOk(0)
     }
-    refund = (paymentInfo: PaymentInfo):boolean => {
+
+    refund = (transactionNumber: number):boolean => {
         return false;
     }
 

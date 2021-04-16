@@ -4,7 +4,7 @@ export class StoreHistory
     private storeId: number
     private storeName: string
     private createdAt: number
-    private sales: Map<number, Map<number, number>> // maps userId to productId and quantitiy sold
+    private sales: Transaction[]
 
 
     public constructor(storeId: number, storeName: string, createdAt: number )
@@ -12,18 +12,14 @@ export class StoreHistory
         this.createdAt = createdAt
         this.storeId = storeId
         this.storeName = storeName
-        this.sales = new Map<number, Map<number, number>>()
+        this.sales = []
     }
 
-    public saveSale(buyerId: number, productId: number, quantity: number) {
-        if(this.sales.has(buyerId)){
-            this.sales.get(buyerId).set(productId, quantity)
-        } else {
-            this.sales.set(buyerId, new Map<number, number>().set(productId, quantity))
-        }
+    public saveTransaction(transaction: Transaction) {
+        this.sales.push(transaction)
     }
 
-    public getSale(): Map<number, Map<number, number>> {
+    public getSale(): Transaction[] {
         return this.sales;
     }
 

@@ -2,8 +2,10 @@ import { ShoppingCart } from "../user/ShoppingCart";
 import { User } from "../user/User";
 
 export const TransactionStatus = {
+    TIMED_OUT: -3,
+    FAIL_RESERVE: -2,
+    CANCELED: -1,
     IN_PROGRESS: 0,
-    FAILED_RESERVE: 1,
     ITEMS_RESERVED: 2,
     PAID: 3,
     SUPPLIED: 4
@@ -13,29 +15,47 @@ Object.freeze(TransactionStatus);
 class Transaction {
 
     
-    public transcationId: number;
-    public userId: number;
-    //public date: Date;
-    public total: number;
-    public cardNumber: number;
-    public items: Map<number, Map<number, [number, number]>>; //(storeId => (productId => [quantity, pricePer]))
-    public status: number;
-    public trace: Map<number, number>;
+    private transcationId: number;
+    private userId: number;
+    private storeId: number;
+    private total: number;
+    private cardNumber: number;
+    private items: Map<number, number>; //productId => quantity
+    private status: number;
+    private time: number;
+    private shipmentId: number;
     
     private static nextId = 1;
 
 
 
-    constructor(user: User, cart: ShoppingCart, paymentInfo: PaymentInfo){
+    constructor(userId: number, storeId: number, items: Map<number, number>, total:number ){
         this.transcationId = Transaction.nextId++;
-        this.userId = user.getUserId();
-        this.cardNumber = paymentInfo.getCardNumber();
-        this.items = this.cartToTree(user.shoppingCart);
-        this.total = this.basketTotal(this.items);
+        this.userId = userId;
+        this.storeId = storeId;
+        this.items = items;//this.cartToTree(user.shoppingCart);
+        this.total = total;//this.basketTotal(this.items);
         this.status = TransactionStatus.IN_PROGRESS;
-        this.trace = new Map();
-        this.trace.set(TransactionStatus.IN_PROGRESS, Date.now());
+        this.time = Date.now();
+        this.cardNumber = null;
+        this.shipmentId = -1;
     }
+
+    setShipmentId = (shipmentId: number):void => {
+        this.shipmentId = shipmentId;
+    }
+
+    setStatus = (status: number) =>{
+        this.status = status;
+    }
+
+    getTotal = (): number => this.total;
+
+    getId = () : number => this.transcationId;
+    getShipmentId = () : number => this.shipmentId;
+
+
+
 
     cartToTree = (cart: ShoppingCart):Map<number,Map<number, [number, number]>> =>{//stores => items => [quantity, pricePer]
         return null;

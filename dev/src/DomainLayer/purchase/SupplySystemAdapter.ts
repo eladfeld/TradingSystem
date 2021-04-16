@@ -1,24 +1,22 @@
+import { makeOk, Result } from '../../Result';
 import {ShoppingCart} from '../user/ShoppingCart';
+import ShippingInfo from './ShippingInfo';
 
 class SupplySystemAdapter {
     constructor(){
 
     }
 
-    supply = (userInfo: string, cart: ShoppingCart) : boolean=> {
-        return false;
+    supply = (reservationId: number) : boolean => {
+        return true;
     }
 
-    reserve = (cart: Map<number,Map<number, number>>) : boolean => {
-        return false;
+    reserve = (shippingInfo: ShippingInfo) : number => {
+        return 0;
     }
 
-    cancelReservation = (cart: Map<number,Map<number, number>>) :boolean => {
-        return false;
-    }
-
-    updateReservation = (oldCart:Map<number,Map<number, number>>, newCart:Map<number,Map<number, number>>): boolean =>{
-        return false;
+    cancelReservation = (reservationId: number) :boolean => {
+        return true;
     }
 }
 
