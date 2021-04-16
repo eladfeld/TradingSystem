@@ -1,29 +1,24 @@
+import { StoreProduct } from "./StoreProduct";
 import { Product } from "./Product";
-import { WitheredProduct } from "./WitheredProduct";
 
 export class ProductDB
 {
 
-    private static withered_products: WitheredProduct[]  = [];
+    private static products: Product[]  = [];
 
     public static addProduct(product: Product): void
     {
-        this.withered_products.push(new WitheredProduct(product.getProductId(),
-        product.getName(),
-        product.getPrice(),
-        product.getStoreId(),
-        product.getQuantity()));
+        this.products.push(product);
     }
 
-    public static addWitheredProduct(wproduct: WitheredProduct): void
+    public static addWitheredProduct(wproduct: Product): void
     {
-        this.withered_products.push(wproduct);
+        this.products.push(wproduct);
     }
 
-    public static getStoreByID(productId: number): void
+    public static getProductByName(productName: string): Product
     {
-
-        this.withered_products.find(wproduct => wproduct.getStoreId() == productId);
+        return this.products.find(product => product.getName() == productName);
     }
 
 }
