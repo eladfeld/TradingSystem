@@ -38,7 +38,7 @@ export class Appointment
             return makeFailure("undefined arrgument given");
         }
 
-        if(founder.getUserId() === store.getStoreOwnerId())
+        if(founder.getUserId() === store.getStoreFounderId())
         {
             // -1 meens 0xFFFFFFF -> so all bits in the mask are turn to 1 and all the actions are permited
             let allGrantedPermission: Permission = new Permission(-1);
@@ -46,7 +46,7 @@ export class Appointment
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
             Logger.log(`the subscriber ${founder.getUsername} is now appointed to be a new store founder at ${store.getStoreId}`);
-            return makeOk("appointment made successfully"); 
+            return makeOk("appointment made successfully");
         }
         Logger.error("the candidate is not the store founder");
         return makeFailure("the candidate is not the store founder");
@@ -99,7 +99,7 @@ export class Appointment
     private static appointTitle(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title : JobTitle) : Result<string>
     {
         let store_app : Appointment = appointee.getStoreapp(store.getStoreId())
-                
+
         // no previous appointments
         if (store_app === undefined)
         {

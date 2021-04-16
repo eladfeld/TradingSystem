@@ -1,14 +1,16 @@
-import { Product } from "./Product";
+import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../Logger";
 import { makeFailure, makeOk, Result } from "../../Result";
+import { ProductDB } from "./ProductDB";
+import { Product } from "./Product";
 
 export class Inventory
 {
 
-    private products: Map<number, Product>
+    private products: Map<number, StoreProduct> // map productId to StoreProduct
 
     public constructor(){
-        this.products = new Map<number, Product>();
+        this.products = new Map<number, StoreProduct>();
     }
 
     public addNewProduct(productName: string, storeId: number, price: number, quantity = 0) : Result<string> {
@@ -26,9 +28,14 @@ export class Inventory
             Logger.error("Product already exist in inventory!")
             return makeFailure("Product already exist in inventory!");
         }
-
-        let product = new Product(productName,storeId,price,quantity);
-        this.products.set(product.getProductId(), product);
+        let product = ProductDB.getProductByName(productName)
+        if(product == undefined){
+            let product = new Product(productName)
+        }
+        let productId = ProductDB.getProductByName(productName).getProductId()
+        let storeProduct = new StoreProduct(productId,productName,storeId,price,quantity);
+        this.products.set(storeProduct.getProductId(), storeProduct);
+        Logger.log("Product was added " + `ProductId: ${productId}, ProductName: ${productName}, StoreId: ${storeId}`)
         return makeOk("Product was added");
     }
 
@@ -84,7 +91,7 @@ export class Inventory
         return makeOk('Product sold');
     }
 
-    public returnsoldProduct(productId: number, quantity: number): Result<string> {
+    public returnSoldProduct(productId: number, quantity: number): Result<string> {
         if(!this.products.has(productId)){
             return makeFailure("No product with id" + ` ${productId}`+ " found");
         }

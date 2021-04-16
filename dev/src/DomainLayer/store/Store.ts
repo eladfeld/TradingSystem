@@ -1,7 +1,7 @@
 import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
-import { Product } from "./Product";
+import { StoreProduct } from "./StoreProduct";
 import {ID} from './Common'
 import { Appointment } from "../user/Appointment";
 import { makeFailure, makeOk, Result } from "../../Result";
@@ -23,7 +23,7 @@ export class Store
     private discountPolicy: DiscountPolicy;
     private buyingPolicy: BuyingPolicy;
     private inventory: Inventory;
-    private messages: Map<number, string>;
+    private messages: Map<number, string>; // map userId (sender) to all of his messages
     private storeHistory: StoreHistory;
 
     public constructor(storeFounderId: number,storeName: string, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
@@ -92,7 +92,7 @@ export class Store
     }
 
     public returnsoldProduct(productId: number, quantity: number): Result<string> {
-        return this.inventory.returnsoldProduct(productId, quantity);
+        return this.inventory.returnSoldProduct(productId, quantity);
     }
 
     public closeStore(): Result<string> {
@@ -103,17 +103,20 @@ export class Store
     }
 
     public recieveMessage(userId: number, message: string): Result<string> {
-        if(this.messages.has(userId)){
-            this.messages.set(userId, this.messages.get(userId) + message)
-        } else {
-            this.messages.set(userId, message)
-        }
-        return makeOk("Message recieved")
+        return makeFailure("Not implemented")
+        // if(this.messages.has(userId)){
+        //     this.messages.set(userId, this.messages.get(userId) + message)
+        // } else {
+        //     this.messages.set(userId, message)
+        // }
+        // return makeOk("Message recieved")
     }
 
-    public readMessages(userId: number): Map<number, string> {
+    public readMessages(userId: number): Result<string> {
         // if(userId is authorized)
-        return this.messages
+        // also add message class and keep track of read and answered messages, enable reading only unread messages or
+        // a number of messages
+        return makeFailure("Not implemented")
     }
 
     public ansewrMessage(userId: number, answer: string): Result<string> {

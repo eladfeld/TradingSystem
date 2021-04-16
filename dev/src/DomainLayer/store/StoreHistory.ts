@@ -23,4 +23,8 @@ export class StoreHistory
         }
     }
 
+    public getSale(): Map<number, Map<number, number>> {
+        return this.sales;
+    }
+
 }
