@@ -138,6 +138,11 @@ export class Appointment
         return this.store;
     }
 
+    public getAppointee() : Subscriber
+    {
+        return this.appointee;
+    }
+
     public getPermissions() : Permission
     {
         return this.permission;
