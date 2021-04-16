@@ -1,6 +1,6 @@
 import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../Logger";
-import { makeFailure, makeOk, Result } from "../../Result";
+import { isFailure, makeFailure, makeOk, Result } from "../../Result";
 import { ProductDB } from "./ProductDB";
 import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
@@ -30,19 +30,19 @@ export class Inventory
             return makeFailure("Product already exist in inventory!");
         }
         let product = ProductDB.getProductByName(productName)
-        if(product == undefined){
+        if(product === undefined){
             let product = new Product(productName, category)
         }
         let productId = ProductDB.getProductByName(productName).getProductId()
         let storeProduct = new StoreProduct(productId,productName,storeId,price,quantity);
         this.products.set(storeProduct.getProductId(), storeProduct);
-        Logger.log("Product was added " + `ProductId: ${productId}, ProductName: ${productName}, StoreId: ${storeId}`)
+        Logger.log(`Product was added ProductId: ${productId}, ProductName: ${productName}, StoreId: ${storeId}`)
         return makeOk("Product was added");
     }
 
     public addProductQuantity(productId: number, quantity: number) : Result<string> {
         let product = this.products.get(productId);
-        if(product == null){
+        if(product === undefined){
             Logger.error("Product does not exist in inventory!")
             return makeFailure("Product does not exist in inventory!");
         }
@@ -52,7 +52,7 @@ export class Inventory
 
     public setProductQuantity(productId: number, quantity: number) : Result<string> {
         let product = this.products.get(productId);
-        if(product==null){
+        if(product === undefined){
             Logger.error("Product does not exist in inventory!")
             return makeFailure("Product does not exist in inventory!");
         }
@@ -62,7 +62,7 @@ export class Inventory
 
     public isProductAvailable(productId: number, quantity: number) : Result<string> {
         let product = this.products.get(productId);
-        if(product==null){
+        if(product === undefined){
             Logger.error("Product does not exist in inventory!")
             return makeFailure("Product does not exist in inventory!");
         }
@@ -74,7 +74,7 @@ export class Inventory
 
     public hasProductWithName(productName: string) : Result<string> {
         for(let product of this.products.values()){
-            if(product.getName() == productName){
+            if(product.getName() === productName){
                 return makeOk("Has product with name");
             }
         }
@@ -83,12 +83,12 @@ export class Inventory
 
     public sellProduct(productId: number, quantity: number): Result<string> {
         let result = this.isProductAvailable(productId, quantity);
-        if(result.tag == 'Failure'){
+        if(isFailure(result)){
             return result;
         }
         let product = this.products.get(productId);
         product.setQuantity(product.getQuantity() - quantity);
-        Logger.log("Product sold " + `Product name: ${product.getName}, Quantity sold: ${quantity}`);
+        Logger.log(`Product sold Product name: ${product.getName}, Quantity sold: ${quantity}`);
         return makeOk('Product sold');
     }
 
@@ -98,7 +98,7 @@ export class Inventory
         }
         let product = this.products.get(productId);
         product.addQuantity(quantity);
-        Logger.log("Product returned " + `Product name: ${product.getName}, Quantity sold: ${quantity}`);
+        Logger.log(`Product returned Product name: ${product.getName}, Quantity sold: ${quantity}`);
         return makeOk('Product returned');
     }
 

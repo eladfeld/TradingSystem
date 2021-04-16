@@ -4,11 +4,12 @@ import { Inventory } from "./Inventory";
 import { StoreProduct } from "./StoreProduct";
 import {ID, Rating} from './Common'
 import { Appointment } from "../user/Appointment";
-import { makeFailure, makeOk, Result } from "../../Result";
+import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
+import { BuyingOption } from "./BuyingOption";
 
 
 export class Store
@@ -63,14 +64,14 @@ export class Store
     public addStoreRating(rating : number) : Result<string>
     {
         if(!Object.values(Rating).includes(rating)){
-            Logger.error("Got invalid rating " + `${rating}`)
+            Logger.error(`Got invalid rating ${rating}`)
             return makeFailure("Got invalid rating")
         }
         this.storeRating *= this.numOfRaters
         this.numOfRaters++
         this.storeRating += rating
         this.storeRating /= this.numOfRaters
-        Logger.log("Rating was added " + `new store rating: ${this.storeRating}`)
+        Logger.log(`Rating was added new store rating: ${this.storeRating}`)
         return makeOk("Rating was added ")
     }
 
@@ -92,11 +93,21 @@ export class Store
         return this.inventory.addNewProduct(productName, category, this.storeId, price, quantity);
     }
 
-    public sellProduct(buyerId: number, productId: number, quantity: number): Result<string> {
+    public sellShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
+        return makeFailure("Not implemented")
+
+    }
+
+    public cancelSoldShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
+        return makeFailure("Not implemented")
+
+    }
+
+    public sellProduct(buyerId: number, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
 
         // sell product should be called after policies where verified
         let sellResult =  this.inventory.sellProduct(productId, quantity);
-        if(sellResult.tag == 'Ok'){
+        if(isOk(sellResult)){
             this.storeHistory.saveSale(buyerId, productId, quantity)
         }
         return sellResult
@@ -122,10 +133,6 @@ export class Store
 
     public buyRaffle(): Result<string> {
         return makeFailure("Not implemented")
-    }
-
-    public returnsoldProduct(productId: number, quantity: number): Result<string> {
-        return this.inventory.returnSoldProduct(productId, quantity);
     }
 
     public closeStore(): Result<string> {
@@ -175,4 +182,8 @@ export class Store
 
     public calculatePrice(products : Map<number,number>) : number
     {return 0;}
+
+    private returnSoldProduct(productId: number, quantity: number): Result<string> {
+        return this.inventory.returnSoldProduct(productId, quantity);
+    }
 }
