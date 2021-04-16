@@ -2,10 +2,10 @@ import { makeFailure, makeOk, Result } from "../../Result";
 
 
 export enum buyingOption{
-    INSTANT = 1,
-    OFFER   = 2,
-    BID     = 3,
-    RAFFLE  = 4,
+    INSTANT = 0,
+    OFFER   = 1,
+    BID     = 2,
+    RAFFLE  = 3,
 }
 
 
@@ -15,6 +15,10 @@ export class BuyingOption {
 
     public constructor() {
         this.option = buyingOption.INSTANT;
+    }
+
+    public getBuyingOption(): number{
+        return this.option;
     }
 
     public setBuyingOption(option: buyingOption): Result<string> {

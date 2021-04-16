@@ -3,6 +3,7 @@ import { DiscountOption } from "./DiscountOption";
 export class DiscountPolicy
 {
 
+
     public static default = 'No discount policy';
     private discountPolicy: string;
     private discountOptions: DiscountOption[];
@@ -15,6 +16,10 @@ export class DiscountPolicy
 
     public setDiscountOptions(discountOptions: DiscountOption[]){
         this.discountOptions = discountOptions;
+    }
+
+    applyDiscountPolicy(productMap: Map<number, number>) {
+        throw new Error("Method not implemented.");
     }
 
 }

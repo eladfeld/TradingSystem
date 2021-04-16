@@ -1,7 +1,8 @@
-import { BuyingOption } from "./BuyingOption";
+import { buyingOption, BuyingOption } from "./BuyingOption";
 
 export class BuyingPolicy
 {
+
 
     public static default = 'No buying policy';
     private buyingPolicy: string;
@@ -15,6 +16,10 @@ export class BuyingPolicy
 
     public setBuyingOptions(buyingOptions: BuyingOption[]){
         this.buyingOptions = buyingOptions;
+    }
+
+    public hasBuyingOption(option: buyingOption) {
+        return this.buyingOptions.some( buyingOption => buyingOption.getBuyingOption() === option )
     }
 
 

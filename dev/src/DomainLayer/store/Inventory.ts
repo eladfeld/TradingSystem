@@ -81,24 +81,24 @@ export class Inventory
         return makeFailure("Doesn't have product with name");
     }
 
-    public sellProduct(productId: number, quantity: number): Result<string> {
+    public reserveProduct(productId: number, quantity: number): Result<string> {
         let result = this.isProductAvailable(productId, quantity);
         if(isFailure(result)){
             return result;
         }
         let product = this.products.get(productId);
         product.setQuantity(product.getQuantity() - quantity);
-        Logger.log(`Product sold Product name: ${product.getName}, Quantity sold: ${quantity}`);
-        return makeOk('Product sold');
+        Logger.log(`Product reserved Product name: ${product.getName}, Quantity reserved: ${quantity}`);
+        return makeOk('Product reserved');
     }
 
-    public returnSoldProduct(productId: number, quantity: number): Result<string> {
+    public returnReservedProduct(productId: number, quantity: number): Result<string> {
         if(!this.products.has(productId)){
             return makeFailure("No product with id" + ` ${productId}`+ " found");
         }
         let product = this.products.get(productId);
         product.addQuantity(quantity);
-        Logger.log(`Product returned Product name: ${product.getName}, Quantity sold: ${quantity}`);
+        Logger.log(`Product returned Product name: ${product.getName}, Quantity returned: ${quantity}`);
         return makeOk('Product returned');
     }
 

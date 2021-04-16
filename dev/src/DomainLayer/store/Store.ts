@@ -4,12 +4,14 @@ import { Inventory } from "./Inventory";
 import { StoreProduct } from "./StoreProduct";
 import {ID, Rating} from './Common'
 import { Appointment } from "../user/Appointment";
-import { isOk, makeFailure, makeOk, Result } from "../../Result";
+import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
-import { BuyingOption } from "./BuyingOption";
+import { buyingOption, BuyingOption } from "./BuyingOption";
+import { ShoppingBasket } from "../user/ShoppingBasket";
+import Purchase from "../Purchase";
 
 
 export class Store
@@ -30,8 +32,10 @@ export class Store
     private storeHistory: StoreHistory;
     private storeRating: number
     private numOfRaters: number
+    private bankAccount: number
+    private storeAddress: string
 
-    public constructor(storeFounderId: number,storeName: string, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
+    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
     {
         this.storeId = ID();
         this.storeName = storeName;
@@ -43,6 +47,9 @@ export class Store
         this.storeHistory = new StoreHistory(this.storeId, this.storeName, Date.now())
         this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
+        this.bankAccount = bankAccount;
+        this.storeAddress = storeAddress;
+
         StoreDB.addStore(this);
     }
 
@@ -93,35 +100,55 @@ export class Store
         return this.inventory.addNewProduct(productName, category, this.storeId, price, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
-        return makeFailure("Not implemented")
-
-    }
-
-    public cancelSoldShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
-        return makeFailure("Not implemented")
-
-    }
-
-    public sellProduct(buyerId: number, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
-
-        // sell product should be called after policies where verified
-        let sellResult =  this.inventory.sellProduct(productId, quantity);
-        if(isOk(sellResult)){
-            // TODO: use transaction
-            // this.storeHistory.saveSale(buyerId, productId, quantity)
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<string> {
+        let productList = shoppingBasket.getProducts();
+        let reservedProducts = new Map <number, number> ();
+        for (let [id, quantity] of productList) {
+            let sellResult = this.inventory.reserveProduct(id, quantity);
+            if(isOk(sellResult)){
+                reservedProducts.set(id,quantity);
+            }
+            else{
+                for (let [id, quantity] of reservedProducts) {
+                    this.inventory.returnReservedProduct(id, quantity);
+                }
+                return sellResult;
+            }
         }
-        return sellResult
+        let fixedPrice = this.calculatePrice(productList);
+
+        Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
+        return makeOk("Checkout passed to purchase");
+    }
+    
+
+    public cancelReservedShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
+        return this.inventory.returnReservedProduct();
     }
 
-    private buyInstant(): Result<string> {
-        /**
-         * Flow
-         * check store supports option
-         * check money/price according to discount policy
-         * continue according ti option save offers and bids
-         */
-        return makeFailure("Not implemented")
+    private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
+    
+    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
+        if(buyingOption.getBuyingOption() < this.buyingOptionsMenu.length && buyingOption.getBuyingOption() >= 0){
+            return this.buyingOptionsMenu[buyingOption.getBuyingOption()](productId, quantity, buyerId, userAddr);
+        }
+        return makeFailure("Invalid buying option");
+    }
+
+    private buyInstant(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+        if(!this.buyingPolicy.hasBuyingOption(buyingOption.INSTANT)){
+            return makeFailure("Store does not support instant buying option")
+        }
+        let sellResult = this.inventory.reserveProduct(productId, quantity);
+        if(isFailure(sellResult)){
+            return sellResult;
+        }
+        let productMap = new Map <number, number>();
+        productMap.set(productId, quantity);
+        let fixedPrice = this.discountPolicy.applyDiscountPolicy(productMap);
+
+        Purchase.checkout(this, fixedPrice, buyerId, productMap, userAddress);
+        return makeOk("Checkout passed to purchase");
     }
 
     private buyOffer(): Result<string> {
@@ -185,6 +212,6 @@ export class Store
     {return 0;}
 
     private returnSoldProduct(productId: number, quantity: number): Result<string> {
-        return this.inventory.returnSoldProduct(productId, quantity);
+        return this.inventory.returnReservedProduct(productId, quantity);
     }
 }
