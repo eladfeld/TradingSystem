@@ -6,6 +6,7 @@ import DbDummy from './DbDummy';
 import { Store } from '../store/Store';
 import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
+import { PaymentInfo } from './PaymentInfo';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -93,7 +94,7 @@ class Purchase {
     }
 
     cancelTransaction = (userId:number, store:Store, oldCart:Map<number,number>) => {
-        store.cancelReservedShoppingBasket(oldCart);
+        //store.cancelReservedShoppingBasket(oldCart);
         this.removeTimerAndCart(userId,store.getStoreId());
         this.dbDummy.removeTransactionInProgress(userId, store.getStoreId());
     }

@@ -182,13 +182,13 @@ export class Service
 
     //TODO: auction, offer and raffle kind of buying policies need extra functions @shir @alon to your concerns
     
-    public openStore(userId: number, /*storeInfo: StoreInfo*/): Result<string>
+    public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<string>
     {
         Logger.log(`openStore : userId:${userId} , storeInfo:{storeInfo}`);
         let subscriber: Subscriber = this.logged_subscribers.find(sub => sub.getUserId() === userId);
         if(subscriber !== undefined)
         {
-            let store: Store = new Store(subscriber.getUserId());
+            let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
             return Appointment.appoint_founder(subscriber, store);
         }
         return makeFailure("user not found");

@@ -11,6 +11,8 @@ import { Logger } from "../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
+import Transaction from "../purchase/Transaction";
+import Purchase from "../purchase/Purchase";
 
 
 export class Store

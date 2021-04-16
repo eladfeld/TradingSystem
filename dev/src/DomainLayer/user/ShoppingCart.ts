@@ -14,7 +14,7 @@ export class ShoppingCart
         this.baskets = new Map();
     }
     
-    public buyBasket(storeId : number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo) : Result<string>
+    public buyBasket(userId: number ,storeId : number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo) : Result<string>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
@@ -22,13 +22,13 @@ export class ShoppingCart
             Logger.error("no such shopping basket");
             return makeFailure("no such shopping basket");
         }
-        return basket.buyAll(paymentMeans, supplyInfo);
+        return basket.buyAll(userId, paymentMeans, supplyInfo);
     }
 
-    public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo) :Result<string>
+    public buyCart(userId : number ,paymentMeans : PaymentMeans , supplyInfo : SupplyInfo) :Result<string>
     {
         Array.from(this.baskets.keys()).forEach(storeId => {
-            this.buyBasket(storeId,paymentMeans,supplyInfo);
+            this.buyBasket(userId, storeId,paymentMeans,supplyInfo);
         });
         return makeFailure("TODO: each basket can fail/succeed seperatley what to do?");
     }

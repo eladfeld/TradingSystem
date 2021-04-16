@@ -28,12 +28,12 @@ export class User
     
     public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo) :Result<string>
     {
-        return this.shoppingCart.buyCart(paymentMeans, supplyInfo);
+        return this.shoppingCart.buyCart(this.getUserId() ,paymentMeans, supplyInfo);
     }
     
     public buyBasket(shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
     {
-        return this.shoppingCart.buyBasket(shopId, paymentMeans, supplyInfo);
+        return this.shoppingCart.buyBasket(this.getUserId() ,shopId, paymentMeans, supplyInfo);
     }
 
     public buyProduct(productId :number , quantity: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo, shopId : number , buying_option : buyingOption) : Result<string>

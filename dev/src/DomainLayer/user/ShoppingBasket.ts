@@ -54,9 +54,10 @@ export class ShoppingBasket
         return makeOk("product added to cart");
     }
     
-    public buyAll(paymentMeans: PaymentMeans,supplyInfo: SupplyInfo): Result<string>
+    public buyAll(userId:number, paymentMeans: PaymentMeans,supplyInfo: SupplyInfo): Result<string>
     {
-        return this.store.buyShoppingBasket(this.products, paymentMeans, supplyInfo);
+        // return this.store.sellShoppingBasket(userId,SupplyInfo );
+        return makeFailure("not yet implemented!")
     }
 
     public edit(productId: number, newQuantity: number): Result<string> 
