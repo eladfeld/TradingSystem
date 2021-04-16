@@ -1,4 +1,5 @@
 import { makeOk, Result } from '../../Result';
+import SupplySystem from '../apis/SupplySystem';
 import {ShoppingCart} from '../user/ShoppingCart';
 import ShippingInfo from './ShippingInfo';
 
@@ -8,15 +9,15 @@ class SupplySystemAdapter {
     }
 
     supply = (reservationId: number) : boolean => {
-        return true;
+        return SupplySystem.supply(reservationId);
     }
 
     reserve = (shippingInfo: ShippingInfo) : number => {
-        return 0;
+        return SupplySystem.reserve(shippingInfo.storeAddress, shippingInfo.userAddress);
     }
 
     cancelReservation = (reservationId: number) :boolean => {
-        return true;
+        return SupplySystem.cancelReservation(reservationId);
     }
 }
 

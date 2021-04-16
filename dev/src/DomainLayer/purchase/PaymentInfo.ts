@@ -1,8 +1,10 @@
 class PaymentInfo{
-    private amount: number;
     private cardNumber: number;
     private cvv: number;
-    private expiration: string;
+    private expiration: number;
 
-    getCardNumber = () => this.cardNumber;
+    getCardNumber = ():number => this.cardNumber;
+    getCvv = ():number => this.cvv;
+    getExpiration = ():number => this.expiration;
+
 }
