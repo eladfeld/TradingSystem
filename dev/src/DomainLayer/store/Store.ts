@@ -2,12 +2,13 @@ import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
 import { StoreProduct } from "./StoreProduct";
-import {ID} from './Common'
+import {ID, Rating} from './Common'
 import { Appointment } from "../user/Appointment";
 import { makeFailure, makeOk, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo } from "./StoreInfo";
+import { Logger } from "../Logger";
 
 
 export class Store
@@ -26,6 +27,8 @@ export class Store
     private inventory: Inventory;
     private messages: Map<number, string>; // map userId (sender) to all of his messages
     private storeHistory: StoreHistory;
+    private storeRating: number
+    private numOfRaters: number
 
     public constructor(storeFounderId: number,storeName: string, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
     {
@@ -37,6 +40,8 @@ export class Store
         this.inventory = new Inventory();
         this.messages = new Map<number, string>()
         this.storeHistory = new StoreHistory(this.storeId, this.storeName, Date.now())
+        this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
+        this.numOfRaters = 0
         StoreDB.addStore(this);
     }
 
@@ -55,14 +60,36 @@ export class Store
         this.storeId = id;
     }
 
+    public addStoreRating(rating : number) : Result<string>
+    {
+        if(!Object.values(Rating).includes(rating)){
+            Logger.error("Got invalid rating " + `${rating}`)
+            return makeFailure("Got invalid rating")
+        }
+        this.storeRating *= this.numOfRaters
+        this.numOfRaters++
+        this.storeRating += rating
+        this.storeRating /= this.numOfRaters
+        Logger.log("Rating was added " + `new store rating: ${this.storeRating}`)
+        return makeOk("Rating was added ")
+    }
+
+    public getStoreRating() : number
+    {
+        if(this.numOfRaters > 0){
+            return this.storeRating
+        }
+        return NaN
+    }
+
     public isProductAvailable(productId: number, quantity: number): Result<string> {
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(productName: string, price: number, quantity = 0): Result<string> {
+    public addNewProduct(productName: string, category: string, price: number, quantity = 0): Result<string> {
 
         // we should check who calls this method is authorized
-        return this.inventory.addNewProduct(productName, this.storeId, price, quantity);
+        return this.inventory.addNewProduct(productName, category, this.storeId, price, quantity);
     }
 
     public sellProduct(buyerId: number, productId: number, quantity: number): Result<string> {

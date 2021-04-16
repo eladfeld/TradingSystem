@@ -14,7 +14,7 @@ export class Inventory
         this.products = new Map<number, StoreProduct>();
     }
 
-    public addNewProduct(productName: string, storeId: number, price: number, quantity = 0) : Result<string> {
+    public addNewProduct(productName: string, category: string, storeId: number, price: number, quantity = 0) : Result<string> {
         if (quantity < 0){
             Logger.error("Quantity must be non negative")
             return makeFailure("Quantity must be non negative");
@@ -31,7 +31,7 @@ export class Inventory
         }
         let product = ProductDB.getProductByName(productName)
         if(product == undefined){
-            let product = new Product(productName)
+            let product = new Product(productName, category)
         }
         let productId = ProductDB.getProductByName(productName).getProductId()
         let storeProduct = new StoreProduct(productId,productName,storeId,price,quantity);

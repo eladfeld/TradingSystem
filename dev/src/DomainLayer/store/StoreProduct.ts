@@ -1,5 +1,6 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
+import { Rating } from "./Common";
 
 export class StoreProduct
 {
@@ -9,6 +10,8 @@ export class StoreProduct
     private storeId: number;
     private price: number;
     private quantity: number;
+    private productRating: number
+    private numOfRaters: number
 
     public constructor(productId: number, name: string, price: number, storeId: number, quantity:number)
     {
@@ -17,6 +20,8 @@ export class StoreProduct
         this.price = price;
         this.storeId = storeId;
         this.quantity = quantity;
+        this.productRating = 0 // getting productRating with numOfRaters = 0 will return NaN
+        this.numOfRaters = 0
     }
 
     public getProductId()
@@ -62,4 +67,27 @@ export class StoreProduct
         Logger.log(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`)
         return makeOk(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
+
+    public addProductRating(rating : number) : Result<string>
+    {
+        if(!Object.values(Rating).includes(rating)){
+            Logger.error("Got invalid rating " + `${rating}`)
+            return makeFailure("Got invalid rating")
+        }
+        this.productRating *= this.numOfRaters
+        this.numOfRaters++
+        this.productRating += rating
+        this.productRating /= this.numOfRaters
+        Logger.log("Rating was added " + `new product rating: ${this.productRating}`)
+        return makeOk("Rating was added ")
+    }
+
+    public getProductRating() : number
+    {
+        if(this.numOfRaters > 0){
+            return this.productRating
+        }
+        return NaN
+    }
+
 }
