@@ -61,16 +61,16 @@ export class Inventory
         return makeOk("Quantity was set");
     }
 
-    public isProductAvailable(productId: number, quantity: number) : Result<string> {
+    public isProductAvailable(productId: number, quantity: number) : Result<boolean> {
         let product = this.products.get(productId);
         if(product === undefined){
             Logger.error("Product does not exist in inventory!")
             return makeFailure("Product does not exist in inventory!");
         }
         if(product.getQuantity() >= quantity){
-            return makeOk("Product is available")
+            return makeOk(true)
         }
-        return
+        return makeOk(false)
     }
 
     public hasProductWithName(productName: string) : Result<true> {
@@ -82,15 +82,15 @@ export class Inventory
         return makeFailure("Doesn't have product with name");
     }
 
-    public reserveProduct(productId: number, quantity: number): Result<string> {
+    public reserveProduct(productId: number, quantity: number): Result<boolean> {
         let result = this.isProductAvailable(productId, quantity);
-        if(isFailure(result)){
+        if(isFailure(result) || (isOk(result) && !result.value)){
             return result;
         }
         let product = this.products.get(productId);
         product.setQuantity(product.getQuantity() - quantity);
         Logger.log(`Product reserved Product name: ${product.getName}, Quantity reserved: ${quantity}`);
-        return makeOk('Product reserved');
+        return makeOk(true);
     }
 
     public returnReservedProduct(productId: number, quantity: number): Result<string> {
@@ -118,9 +118,9 @@ export class Inventory
                 storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
 
             }
-        }  
-        return storeProducts; 
-    } 
+        }
+        return storeProducts;
+    }
 
     public getProductInfoByPriceRange(from: number, to: number): StoreProductInfo[]{
         let storeProducts: StoreProductInfo[] = [];
@@ -128,9 +128,9 @@ export class Inventory
             if(storeProduct.getPrice()>= from || storeProduct.getPrice()<= to){
                 storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
             }
-        }  
-        return storeProducts; 
-    } 
+        }
+        return storeProducts;
+    }
 
     public getProductPrice(productId: number): number{
         let product = this.products.get(productId)

@@ -145,7 +145,7 @@ export class Store
         return NaN
     }
 
-    public isProductAvailable(productId: number, quantity: number): Result<string> {
+    public isProductAvailable(productId: number, quantity: number): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -160,7 +160,7 @@ export class Store
         return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<string> {
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -170,7 +170,7 @@ export class Store
         for (let [id, quantity] of productList) {
             let sellResult = this.inventory.reserveProduct(id, quantity);
             let productPrice = this.inventory.getProductPrice(id);
-            if(isOk(sellResult) && productPrice != -1){
+            if(isOk(sellResult) && sellResult.value && productPrice != -1){
                 reservedProducts.set(id,quantity);
                 pricesToQuantity.set(productPrice,quantity);
             }
@@ -184,7 +184,8 @@ export class Store
         let fixedPrice = this.discountPolicy.applyDiscountPolicy(pricesToQuantity);
 
         Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
-        return makeOk("Checkout passed to purchase");
+        Logger.log("Checkout passed to purchase")
+        return makeOk(true);
     }
 
 
@@ -232,15 +233,15 @@ export class Store
         return makeOk("Checkout passed to purchase");
     }
 
-    private buyOffer(): Result<string> {
+    private buyOffer(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyBid(): Result<string> {
+    private buyBid(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyRaffle(): Result<string> {
+    private buyRaffle(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
         return makeFailure("Not implemented")
     }
 
