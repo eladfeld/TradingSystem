@@ -155,7 +155,8 @@ export class Store
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this) && !Authentication.isSystemManager(subscriber.getUserId())
+            && subscriber.getUserId() !== this.storeFounderId){
             return makeFailure("User not permitted")
         }
         for(let category of categories){
@@ -356,7 +357,8 @@ export class Store
 
     public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Result<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this))
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || Authentication.isSystemManager(appointer.getUserId())
+            || appointer.getUserId() === this.storeFounderId)
         {
             Appointment.appoint_owner(appointer, this, appointee);
         }
@@ -366,7 +368,8 @@ export class Store
 
     public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Result<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this))
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || Authentication.isSystemManager(appointer.getUserId())
+            || appointer.getUserId() === this.storeFounderId)
         {
             return Appointment.appoint_manager(appointer, this, appointee)
         }

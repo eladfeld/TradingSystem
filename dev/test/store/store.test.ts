@@ -8,7 +8,7 @@ import { isOk } from '../../src/Result';
 import { StoreProductInfo } from '../../src/DomainLayer/store/StoreInfo';
 
 
-describe('view store and its products (use case 2.5)' , () => {
+describe('view store products' , () => {
 
     it('view store without products', () => {
         let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
@@ -22,7 +22,7 @@ describe('view store and its products (use case 2.5)' , () => {
         let manager = Login.login('michael', '1234')
         if(isOk(manager)){
             let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
-            let res = store.addNewProduct(manager.value, 'Dri-Fit Shirt', [Category.SHIRT], 100, 20)
+            expect(isOk(store.addNewProduct(manager.value, 'Dri-Fit Shirt', [Category.SHIRT], 100, 20))).to.equal(true)
             store.addNewProduct(manager.value, 'Dri-Fit Pants', [Category.PANTS], 100, 15)
             expect(store.getStoreInfo().getStoreName()).to.equal('nike')
             expect(store.getStoreInfo().getStoreId()).to.equal(store.getStoreId())
@@ -37,7 +37,7 @@ describe('view store and its products (use case 2.5)' , () => {
 
 });
 
-describe('search in store (use case 2.6)' , () => {
+describe('search product in store' , () => {
 
     it('search product by name', () => {
         Service.get_instance()
