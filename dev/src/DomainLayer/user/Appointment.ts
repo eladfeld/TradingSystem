@@ -38,11 +38,7 @@ export class Appointment
             return makeFailure("undefined arrgument given");
         }
 
-<<<<<<< HEAD
-        if(founder.getUserId() === store.getStoreOwnerId())
-=======
         if(founder.getUserId() === store.getStoreFounderId())
->>>>>>> e8e66ecdbd8d774468f5702383c75af652c2f397
         {
             // -1 meens 0xFFFFFFF -> so all bits in the mask are turn to 1 and all the actions are permited
             let allGrantedPermission: Permission = new Permission(-1);
@@ -50,11 +46,8 @@ export class Appointment
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
             Logger.log(`the subscriber ${founder.getUsername} is now appointed to be a new store founder at ${store.getStoreId}`);
-<<<<<<< HEAD
             return makeOk("appointment made successfully"); 
-=======
-            return makeOk("appointment made successfully");
->>>>>>> e8e66ecdbd8d774468f5702383c75af652c2f397
+
         }
         Logger.error("the candidate is not the store founder");
         return makeFailure("the candidate is not the store founder");
@@ -107,11 +100,6 @@ export class Appointment
     private static appointTitle(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title : JobTitle) : Result<string>
     {
         let store_app : Appointment = appointee.getStoreapp(store.getStoreId())
-<<<<<<< HEAD
-                
-=======
-
->>>>>>> e8e66ecdbd8d774468f5702383c75af652c2f397
         // no previous appointments
         if (store_app === undefined)
         {
@@ -160,4 +148,7 @@ export class Appointment
         return this.title;
     }
 
+    public getAppointee(): Subscriber {
+        return null;
+    }
 }

@@ -17,7 +17,9 @@ export class Subscriber extends User
         this.appointments = [];
     }
     
-
+    public isSystemManager(){
+        return true;
+    }
     public setPassword(hashPassword: string){
         this.hashPassword = hashPassword;
     }

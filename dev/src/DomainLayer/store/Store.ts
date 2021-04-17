@@ -13,7 +13,7 @@ import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import Purchase from "../purchase/Purchase";
 import Transaction from "../purchase/Transaction"
-import { Authentication } from "../user/Authentication";
+//import { Authentication } from "../user/Authentication";
 
 
 export class Store
@@ -58,7 +58,7 @@ export class Store
 
         StoreDB.addStore(this);
     }
-
+    public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
     public getStoreId()
     {
@@ -199,7 +199,7 @@ export class Store
     public closeStore(userId: number): Result<string> {
 
         // this is irreversible
-        if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
+        if(this.getTitle(userId) != JobTitle.FOUNDER){
             return makeFailure("Not permitted user")
         }
         this.storeClosed = true

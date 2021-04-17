@@ -14,3 +14,5 @@ class PaymentInfo{
     getExpiration = ():number => this.expiration;
 
 }
+
+export default PaymentInfo;

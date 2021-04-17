@@ -1,5 +1,5 @@
 import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
-import { makeFailure, Result } from '../../Result';
+import { makeFailure, makeOk, Result } from '../../Result';
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
 import { ShoppingCart} from './ShoppingCart'
 
@@ -18,7 +18,9 @@ export class User
         this.shoppingCart = new ShoppingCart();
         this.userId = User.lastId++;
     }
-
+    editCart = (storeId: number , productId: number , newQuantity: number):Result<string> =>{
+        return makeOk(true);
+    }
     private static getLastId() : number
     {
         return 0;

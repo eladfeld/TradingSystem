@@ -1,3 +1,4 @@
+import Transaction from '../purchase/Transaction';
 export class StoreHistory
 {
 
