@@ -43,7 +43,7 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(products)
+        return makeOk(JSON.stringify(products))
     }
 
     public static getPruductInfoByCategory(category: number): Result<string>{
@@ -64,7 +64,7 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(products)
+        return makeOk(JSON.stringify(products))
     }
 
 }

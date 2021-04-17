@@ -292,7 +292,7 @@ export class Store
         if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
             return makeFailure("User not permitted")
         }
-        return makeOk(this.getStoreInfo().toString())
+        return makeOk(JSON.stringify(this.getStoreInfo()))
     }
 
     public getStoreInfo(): StoreInfo {
