@@ -15,4 +15,9 @@ export class StoreDB
         return this.stores.find(store => store.getStoreId() == storeId);
     }
 
+    public static deleteStore(storeId: number): void
+    {
+        this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
+    }
+
 }

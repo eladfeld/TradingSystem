@@ -130,4 +130,12 @@ export class Inventory
         }  
         return storeProducts; 
     } 
+
+    public getProductPrice(productId: number): number{
+        let product = this.products.get(productId)
+        if(product === undefined){
+            return -1;
+        }
+        return product.getPrice()
+    }
 }
