@@ -57,9 +57,9 @@ export class ShoppingBasket
         return makeOk("product added to cart");
     }
 
-    public checkout(userId:number, supplyInfo: SupplyInfo): Result<boolean>
+    public checkout(userId:number, supply_address: string): Result<boolean>
     {
-        return this.store.sellShoppingBasket(userId,supplyInfo,this);
+        return this.store.sellShoppingBasket(userId,supply_address,this);
     }
 
     public edit(productId: number, newQuantity: number): Result<string>

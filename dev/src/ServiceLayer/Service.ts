@@ -176,12 +176,12 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public checkoutBasket(userId: number, shopId: number, supplyInfo: SupplyInfo ): Result<boolean>
+    public checkoutBasket(userId: number, shopId: number, supply_address: string ): Result<boolean>
     {
-        Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.checkoutBasket(shopId, supplyInfo);
+            return user.checkoutBasket(shopId, supply_address);
         return makeFailure("user not found");
     }
 

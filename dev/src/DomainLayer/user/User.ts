@@ -25,9 +25,9 @@ export class User
         return 0;
     }
 
-    public checkoutBasket(shopId: number, supplyInfo: SupplyInfo): Result<boolean>
+    public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supplyInfo);
+        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supply_address);
     }
 
     public checkoutSingleProduct(productId :number , quantity: number, supplyInfo: string, shopId : number , buying_option : buyingOption) : Result<string>
