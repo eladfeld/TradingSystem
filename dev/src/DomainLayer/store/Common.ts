@@ -20,4 +20,5 @@ export enum Category {
   SPORT         = 3,
   ELECTRIC      = 4,
   COMPUTER      = 5,
+  SWEET         = 6,
 }

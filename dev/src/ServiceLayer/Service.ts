@@ -129,7 +129,7 @@ export class Service
         Logger.log(`getStoreInfo : userId:${userId} , storeId:${storeId}`);
         let store: Store = StoreDB.getStoreByID(storeId);
 
-        return store.getStoreInfo(userId);
+        return store.getStoreInfoResult(userId);
     }
 
     public getPruductInfoByName(userId : number, productName: string): Result<string>

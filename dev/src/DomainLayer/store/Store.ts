@@ -288,11 +288,15 @@ export class Store
         return makeFailure("Not implemented")
     }
 
-    public getStoreInfo(userId: number): Result<string> {
+    public getStoreInfoResult(userId: number): Result<string> {
         if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
             return makeFailure("User not permitted")
         }
-        return makeOk(new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo()).toString())
+        return makeOk(this.getStoreInfo().toString())
+    }
+
+    public getStoreInfo(): StoreInfo {
+        return (new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo()))
     }
 
     public addAppointment(appointment : Appointment) : void
