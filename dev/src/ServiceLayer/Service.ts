@@ -133,8 +133,7 @@ export class Service
     public getPruductInfoByName(userId : number, productName: string): Result<string>
     {
         Logger.log(`getPruductInfoByName : userId:${userId}, productName: ${productName}`);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        return store.getStoreInfo(userId);
+        return StoreDB.getPruductInfoByName(productName);
 
     }
 

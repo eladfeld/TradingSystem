@@ -328,7 +328,7 @@ export class Store
         return this.inventory.getProductInfoByCategory(category);
     }
 
-    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
