@@ -5,6 +5,8 @@ import { Product } from '../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { isFailure, Result } from '../../src/Result';
+import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
+
 
 
 //checkout should have 
@@ -51,7 +53,7 @@ describe('purchase tests' , function() {
 
     it('checkout, then complete order' , function(){
         Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-        Purchase.CompleteOrder(user1Id, store1Id, payInfo, store1BankAcct);
+        Purchase.CompleteOrder(user1Id, store1Id, payInfo );
         expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
         expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
         const transactions: Transaction[] = Purchase.getCompletedTransactions(user1Id, store1Id);
@@ -66,7 +68,7 @@ describe('purchase tests' , function() {
         //Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
         expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
         expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
-        const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo, store1BankAcct);
+        const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo);
         expect(isFailure(res)).to.equal(true);
     });
 });
