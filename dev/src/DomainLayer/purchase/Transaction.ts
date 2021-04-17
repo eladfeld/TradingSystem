@@ -53,6 +53,12 @@ class Transaction {
 
     getId = () : number => this.transcationId;
     getShipmentId = () : number => this.shipmentId;
+    getUserId = () : number => this.userId;
+    getStoreId = () : number => this.storeId;
+    getItems = () : Map<number, number> => this.items;
+    getStatus = () : number => this.status;
+
+
 
 
 

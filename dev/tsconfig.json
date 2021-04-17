@@ -7,7 +7,8 @@
     "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true , 
     "noEmit": true,
+    // "types": ["jest", "node"],
   } ,
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*.ts"],
   "exclude": ["node_modules"],
 }

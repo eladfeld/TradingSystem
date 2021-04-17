@@ -7,28 +7,4 @@ import { Service } from "./Service";
 
 let service: Service = Service.get_instance();
 console.log("aa")
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-
-service.test();service.test();
-service.test();
-service.test();
-service.test();
-service.test();
-
 

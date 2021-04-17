@@ -10,6 +10,8 @@ import fs from 'fs';
 import path from 'path'
 import { buyingOption } from "../DomainLayer/store/BuyingOption";
 import { Authentication } from "../DomainLayer/user/Authentication";
+import Purchase from "../DomainLayer/purchase/Purchase";
+import { PaymentInfo } from "../DomainLayer/purchase/PaymentInfo";
 
 export class Service
 {
@@ -17,7 +19,6 @@ export class Service
     private logged_guest_users : User[];
     private logged_subscribers : Subscriber[];
     private logged_system_managers : Subscriber[];
-    private static test_num = 0;
     public static get_instance() : Service
     {
         if (Service.singletone === undefined)
@@ -73,18 +74,12 @@ export class Service
     }
 
     //user enter the system
-    public async enter(): Promise<Result<number>>
+    public enter(): Result<number>
     {
         Logger.log("new user entered the system");
         let user: User = new User();
         this.logged_guest_users.push(user);
         return makeOk(user.getUserId());
-    }
-
-    public async test() 
-    {
-        Service.test_num++;
-        console.log(`in test! ${Service.test_num}`);
     }
 
     public exit(userId: number): void
@@ -185,6 +180,11 @@ export class Service
         if (user !== undefined)
             return user.checkoutSingleProduct(productId  , quantity,  supplyInfo, storeId , buyingOption.INSTANT);
         return makeFailure("user not found");
+    }
+
+    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
+    {
+        return Purchase.CompleteOrder(userId , storeId , paymentInfo);
     }
 
     

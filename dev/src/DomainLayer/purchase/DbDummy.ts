@@ -7,6 +7,7 @@ class DbDummy{
 
     constructor(){
         this.completedTransactions = [];
+        this.transactionsInProgress = [];
         this.usersAtCheckout = new Map();
     }
 
@@ -17,35 +18,19 @@ class DbDummy{
         return this.completedTransactions;
     }
 
-
     storeTransactionInProgress = (transaction: Transaction) =>{
         this.transactionsInProgress.push(transaction);
     }
-    removeTransactionInProgress = (userId: number, storeId: number):Transaction =>{
-        return null;
+    removeTransactionInProgress = (userId: number, storeId: number):void =>{
+        this.transactionsInProgress = this.transactionsInProgress.filter(t => ((t.getUserId() !== userId) || (t.getStoreId() !== storeId)));
     }
     getTransactionInProgress = (userId: number, storeId: number):Transaction =>{
-        return null;
+        return this.transactionsInProgress.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId)))[0];
+    }
+    getTransactionsInProgress = (userId: number, storeId: number):Transaction[] =>{
+        return this.transactionsInProgress.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId)));
     }
 
-
-    storeReservation = (userId:number, cart: Map<number,Map<number, number>>) =>{
-        this.usersAtCheckout.set(userId, cart);
-    }
-
-    deleteReservation = (UserId:number) => {
-        this.usersAtCheckout.delete(UserId);
-    }
-
-    getReservation = (userId: number):Map<number,Map<number, number>> =>{
-        return this.usersAtCheckout.get(userId);
-    }
-
-    updateReservation = (userId: number, cart: Map<number,Map<number, number>>):boolean =>{
-        this.deleteReservation(userId);
-        this.storeReservation(userId, cart);
-        return true;
-    }
 }
 
 export default DbDummy;
