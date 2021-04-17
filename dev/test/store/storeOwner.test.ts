@@ -1,12 +1,9 @@
 import {expect} from 'chai';
 import { Store } from '../../src/DomainLayer/store/Store';
-import { Category, Rating } from "../../src/DomainLayer/store/Common";
-import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
+import { Category } from "../../src/DomainLayer/store/Common";
 import { Login } from '../../src/DomainLayer/user/Login';
 import { Service } from '../../src/ServiceLayer/Service';
 import { isFailure, isOk } from '../../src/Result';
-import { StoreProductInfo } from '../../src/DomainLayer/store/StoreInfo';
-import { Appointment } from '../../src/DomainLayer/user/Appointment';
 
 
 describe('Store owner manage store inventory' , () => {
