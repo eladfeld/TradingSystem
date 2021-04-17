@@ -14,6 +14,8 @@ export enum JobTitle{
 
 export class Appointment
 {
+
+
     private appointer : Subscriber;
     private appointee : Subscriber;
     private store : Store;
@@ -130,6 +132,11 @@ export class Appointment
         appointment.store.getAppointments().forEach(appointment => {
             if(appointment.appointer === appointee) this.removeAppointment(appointment)
         })
+    }
+
+    editPermissions(permissionMask: number): Result<string> {
+        this.permission.setPermissions(permissionMask);
+        return makeOk("permission changed successfully");
     }
 
     public getStore() : Store

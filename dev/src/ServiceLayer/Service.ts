@@ -125,11 +125,20 @@ export class Service
     public getStoreInfo(userId : number ,storeId: number): Result<string>
     {
         Logger.log(`getStoreInfo : userId:${userId} , storeId:${storeId}`);
-        //TODO: forowrd to the stores system and return a json representation of the store
-        return makeFailure("not yet implemented");
+        let store: Store = StoreDB.getStoreByID(storeId);
+
+        return store.getStoreInfo(userId);
     }
 
-    public getPruductInfo(userId : number): Result<string>
+    public getPruductInfoByName(userId : number, productName: string): Result<string>
+    {
+        Logger.log(`getPruductInfoByName : userId:${userId}, productName: ${productName}`);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        return store.getStoreInfo(userId);
+
+    }
+
+    public getPruductInfoByCategory(userId : number, category: number): Result<string>
     {
         Logger.log(`getPruductInfo : userId:${userId}`);
         //TODO: forowrd to the stores system and return a json representation of the store
@@ -218,7 +227,7 @@ export class Service
         {
             return store.setProductQuantity(subscriber, productId, quantity);
         }
-        return makeFailure("not yet implemented");
+        return makeFailure("subscriber or store wasn't found");
     }
 
     public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<string>
@@ -231,7 +240,7 @@ export class Service
         {
             return store.addNewProduct(subscriber, productName, categories, price, quantity);
         }
-        return makeFailure("not yet implemented");
+        return makeFailure("subscriber or store wasn't found");
     }
 
     //this function is used by system managers that wants to see someone's history
@@ -257,21 +266,29 @@ export class Service
         // call function from purchase to get history functionName(storeId)
     }
 
-    //TODO: request from storeDB information on store
-    public getStoresInfo(userId: number, storeId: number): Result<string>
-    {
-        Logger.log(`getStoresInfo : userId:${userId}, storeId:${storeId}`);
-        let manager: Subscriber = this.logged_system_managers.find(user => user.getUserId() === userId);
-        if (manager !== undefined)
-            return makeFailure("not yet implemented!!!");
-        return makeFailure("user don't have system manager permissions");
-    }
-
     public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<string>
     {
+        Logger.log(`deleteManagerFromStore : userId:${userId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
-        return store.deleteManager(subscriber, managerToDelete );
+        if(subscriber !== undefined && store !== undefined)
+        {
+            return store.deleteManager(subscriber, managerToDelete );
+        }
+        return makeFailure("wrong parameter given");
+    }
+
+    public editStaffPermission(userId: number, managerToEditId: number, storeId: number, permissionMask: number):Result<string>
+    {
+        Logger.log(`editStaffPermission : userId:${userId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            return store.editStaffPermission(subscriber, managerToEditId, permissionMask);
+        }
+        return makeFailure("wrong parameter given");
+
     }
 
 

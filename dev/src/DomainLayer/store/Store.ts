@@ -10,15 +10,15 @@ import { Logger } from "../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
-import Transaction from "../purchase/Transaction";
 import Purchase from "../purchase/Purchase";
 import { DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
-import { ACTION, Permission } from "../user/Permission";
+import { ACTION } from "../user/Permission";
 
 
 export class Store
 {
+
 
     public getStoreFounderId():number
     {
@@ -288,8 +288,11 @@ export class Store
         return makeFailure("Not implemented")
     }
 
-    public getStoreInfo(): StoreInfo {
-        return new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo())
+    public getStoreInfo(userId: number): Result<string> {
+        if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
+            return makeFailure("User not permitted")
+        }
+        return makeOk(new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo()).toString())
     }
 
     public addAppointment(appointment : Appointment) : void
@@ -365,9 +368,18 @@ export class Store
     {
         if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this))
         {
-            Appointment.appoint_manager(appointer, this, appointee)
+            return Appointment.appoint_manager(appointer, this, appointee)
         }
         return makeFailure("user is not permited to appoint store manager");
+    }
+
+    public editStaffPermission(subscriber: Subscriber, managerToEditId: number, permissionMask: number): Result<string> {
+        let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToEditId);
+        if(appointment !== undefined)
+        {
+            return appointment.editPermissions(permissionMask);
+        }
+        return makeFailure("subscriber can't edit a manager he didn't appoint");
     }
 
 

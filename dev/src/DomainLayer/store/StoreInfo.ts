@@ -28,6 +28,11 @@ export class StoreInfo
     {
         return this.storeId;
     }
+
+    public toString(): string {
+        return `storeName: ${this.storeName} `.concat(this.storeProducts.toString())
+    }
+
 }
 
 export class StoreProductInfo
@@ -81,4 +86,9 @@ export class StoreProductInfo
     {
         return this.numOfRaters;
     }
+
+    public toString(): string {
+        return `product name: ${this.productName}\tprice: ${this.price}\tproduct rating:\t${this.productRating}\tnumber of raters: ${this.numOfRaters}`
+    }
+
 }
