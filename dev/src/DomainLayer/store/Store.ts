@@ -1,7 +1,7 @@
 import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
-import {ID, Rating} from './Common'
+import {Category, ID, Rating} from './Common'
 import { Appointment, JobTitle } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
@@ -13,6 +13,7 @@ import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
 import Transaction from "../purchase/Transaction";
 import Purchase from "../purchase/Purchase";
+import { DiscountOption } from "./DiscountOption";
 
 
 export class Store
@@ -38,13 +39,21 @@ export class Store
     private storeClosed: boolean
     private appointments: Appointment[]
 
-    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
+    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = null, buyingPolicy: BuyingPolicy = null)
     {
         this.storeId = ID();
         this.storeName = storeName;
         this.storeFounderId = storeFounderId;
-        this.discountPolicy = new DiscountPolicy(discountPolicy);
-        this.buyingPolicy = new BuyingPolicy(buyingPolicy);
+        if (discountPolicy === null){
+            this.discountPolicy = new DiscountPolicy();
+        } else {
+            this.discountPolicy = discountPolicy
+        }
+        if (buyingPolicy === null){
+            this.buyingPolicy = new BuyingPolicy();
+        } else {
+            this.buyingPolicy = buyingPolicy
+        }
         this.inventory = new Inventory();
         this.messages = new Map<number, string>()
         this.storeHistory = new StoreHistory(this.storeId, this.storeName, Date.now())
@@ -67,6 +76,46 @@ export class Store
     public getStoreName()
     {
         return this.storeName;
+    }
+
+    public getBuyingPolicy()
+    {
+        return this.buyingPolicy;
+    }
+
+    public setBuyingPolicy(buyingPolicy: BuyingPolicy)
+    {
+        this.buyingPolicy = buyingPolicy;
+    }
+
+    public addBuyingOption(buyingOption: BuyingOption)
+    {
+        this.buyingPolicy.addBuyingOption(buyingOption);
+    }
+
+    public deleteBuyingOption(buyingOption: buyingOption)
+    {
+        this.buyingPolicy.deleteBuyingOption(buyingOption);
+    }
+
+    public getDiscountPolicy()
+    {
+        return this.discountPolicy;
+    }
+
+    public setDiscountPolicy(discountPolicy: DiscountPolicy)
+    {
+        this.discountPolicy = discountPolicy;
+    }
+
+    public addDiscount(discount: DiscountOption)
+    {
+        this.discountPolicy.addDiscount(discount);
+    }
+
+    public deleteDiscount(discountId: number)
+    {
+        this.discountPolicy.deleteDiscount(discountId);
     }
 
     public setStoreId(id : number) : void
@@ -103,12 +152,12 @@ export class Store
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(productName: string, category: string, price: number, quantity = 0): Result<string> {
+    public addNewProduct(productName: string, categories: Category[], price: number, quantity = 0): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
         // we should check who calls this method is authorized
-        return this.inventory.addNewProduct(productName, category, this.storeId, price, quantity);
+        return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity);
     }
 
     public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<string> {
@@ -199,7 +248,7 @@ export class Store
 
         // this is irreversible
         if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
-            return makeFailure("Not permitted user")
+            return makeFailure("User not permitted")
         }
         this.storeClosed = true
         StoreDB.deleteStore(this.storeId)

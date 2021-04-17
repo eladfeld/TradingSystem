@@ -1,9 +1,10 @@
 import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../Logger";
-import { isFailure, makeFailure, makeOk, Result } from "../../Result";
+import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { ProductDB } from "./ProductDB";
 import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
+import { Category } from "./Common";
 
 export class Inventory
 {
@@ -14,7 +15,7 @@ export class Inventory
         this.products = new Map<number, StoreProduct>();
     }
 
-    public addNewProduct(productName: string, category: string, storeId: number, price: number, quantity = 0) : Result<string> {
+    public addNewProduct(productName: string, categories: Category[], storeId: number, price: number, quantity = 0) : Result<string> {
         if (quantity < 0){
             Logger.error("Quantity must be non negative")
             return makeFailure("Quantity must be non negative");
@@ -25,16 +26,16 @@ export class Inventory
             return makeFailure("Price must be non negative");
         }
 
-        if(this.hasProductWithName(productName).tag == "Failure"){
+        if(isOk(this.hasProductWithName(productName))){
             Logger.error("Product already exist in inventory!")
-            return makeFailure("Product already exist in inventory!");
+            return makeFailure(`Product already exist in inventory! productName: ${productName}`);
         }
         let product = ProductDB.getProductByName(productName)
         if(product === undefined){
-            let product = new Product(productName, category)
+            let product = new Product(productName, categories)
         }
         let productId = ProductDB.getProductByName(productName).getProductId()
-        let storeProduct = new StoreProduct(productId,productName,storeId,price,quantity);
+        let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
         this.products.set(storeProduct.getProductId(), storeProduct);
         Logger.log(`Product was added ProductId: ${productId}, ProductName: ${productName}, StoreId: ${storeId}`)
         return makeOk("Product was added");
@@ -72,10 +73,10 @@ export class Inventory
         return
     }
 
-    public hasProductWithName(productName: string) : Result<string> {
+    public hasProductWithName(productName: string) : Result<true> {
         for(let product of this.products.values()){
             if(product.getName() === productName){
-                return makeOk("Has product with name");
+                return makeOk(true);
             }
         }
         return makeFailure("Doesn't have product with name");
