@@ -1,4 +1,4 @@
-class PaymentInfo{
+export class PaymentInfo{
     private cardNumber: number;
     private cvv: number;
     private expiration: number;

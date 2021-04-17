@@ -1,23 +1,24 @@
 import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
-import { StoreProduct } from "./StoreProduct";
-import {ID, Rating} from './Common'
+import {Category, ID, Rating} from './Common'
 import { Appointment, JobTitle } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
-import { StoreInfo } from "./StoreInfo";
+import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
+import { Authentication } from "../user/Authentication";
 import Purchase from "../purchase/Purchase";
-import Transaction from "../purchase/Transaction"
-//import { Authentication } from "../user/Authentication";
+import { DiscountOption } from "./DiscountOption";
+import { Subscriber } from "../user/Subscriber";
+import { ACTION } from "../user/Permission";
 
 
 export class Store
 {
+
 
     public getStoreFounderId():number
     {
@@ -31,7 +32,6 @@ export class Store
     private buyingPolicy: BuyingPolicy;
     private inventory: Inventory;
     private messages: Map<number, string>; // map userId (sender) to all of his messages
-    private storeHistory: StoreHistory;
     private storeRating: number
     private numOfRaters: number
     private bankAccount: number
@@ -39,16 +39,23 @@ export class Store
     private storeClosed: boolean
     private appointments: Appointment[]
 
-    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy = DiscountPolicy.default, buyingPolicy = BuyingPolicy.default)
+    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = null, buyingPolicy: BuyingPolicy = null)
     {
         this.storeId = ID();
         this.storeName = storeName;
         this.storeFounderId = storeFounderId;
-        this.discountPolicy = new DiscountPolicy(discountPolicy);
-        this.buyingPolicy = new BuyingPolicy(buyingPolicy);
+        if (discountPolicy === null){
+            this.discountPolicy = new DiscountPolicy();
+        } else {
+            this.discountPolicy = discountPolicy
+        }
+        if (buyingPolicy === null){
+            this.buyingPolicy = new BuyingPolicy();
+        } else {
+            this.buyingPolicy = buyingPolicy
+        }
         this.inventory = new Inventory();
         this.messages = new Map<number, string>()
-        this.storeHistory = new StoreHistory(this.storeId, this.storeName, Date.now())
         this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
         this.bankAccount = bankAccount;
@@ -68,6 +75,46 @@ export class Store
     public getStoreName()
     {
         return this.storeName;
+    }
+
+    public getBuyingPolicy()
+    {
+        return this.buyingPolicy;
+    }
+
+    public setBuyingPolicy(buyingPolicy: BuyingPolicy)
+    {
+        this.buyingPolicy = buyingPolicy;
+    }
+
+    public addBuyingOption(buyingOption: BuyingOption)
+    {
+        this.buyingPolicy.addBuyingOption(buyingOption);
+    }
+
+    public deleteBuyingOption(buyingOption: buyingOption)
+    {
+        this.buyingPolicy.deleteBuyingOption(buyingOption);
+    }
+
+    public getDiscountPolicy()
+    {
+        return this.discountPolicy;
+    }
+
+    public setDiscountPolicy(discountPolicy: DiscountPolicy)
+    {
+        this.discountPolicy = discountPolicy;
+    }
+
+    public addDiscount(discount: DiscountOption)
+    {
+        this.discountPolicy.addDiscount(discount);
+    }
+
+    public deleteDiscount(discountId: number)
+    {
+        this.discountPolicy.deleteDiscount(discountId);
     }
 
     public setStoreId(id : number) : void
@@ -97,22 +144,42 @@ export class Store
         return NaN
     }
 
-    public isProductAvailable(productId: number, quantity: number): Result<string> {
+    public isProductAvailable(productId: number, quantity: number): boolean {
         if(this.storeClosed){
-            return makeFailure("Store is closed")
+            return false
         }
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(productName: string, category: string, price: number, quantity = 0): Result<string> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        // we should check who calls this method is authorized
-        return this.inventory.addNewProduct(productName, category, this.storeId, price, quantity);
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
+            return makeFailure("User not permitted")
+        }
+        for(let category of categories){
+            if(!Object.values(Category).includes(category)){
+                Logger.log(`Got invalid category number: ${category}`)
+                return makeFailure("Got invalid category")
+            }
+        }
+
+        return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<string> {
+    public setProductQuantity(subscriber: Subscriber, productId: number, quantity: number): Result<string> {
+        if(this.storeClosed){
+            return makeFailure("Store is closed")
+        }
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
+            return makeFailure("User not permitted")
+        }
+
+        return this.inventory.setProductQuantity(productId, quantity);
+    }
+
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -122,7 +189,7 @@ export class Store
         for (let [id, quantity] of productList) {
             let sellResult = this.inventory.reserveProduct(id, quantity);
             let productPrice = this.inventory.getProductPrice(id);
-            if(isOk(sellResult) && productPrice != -1){
+            if(isOk(sellResult) && sellResult.value && productPrice != -1){
                 reservedProducts.set(id,quantity);
                 pricesToQuantity.set(productPrice,quantity);
             }
@@ -136,30 +203,23 @@ export class Store
         let fixedPrice = this.discountPolicy.applyDiscountPolicy(pricesToQuantity);
 
         Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
-        return makeOk("Checkout passed to purchase");
+        Logger.log("Checkout passed to purchase")
+        return makeOk(true);
     }
 
 
-    public cancelReservedShoppingBasket(basket: Map<number, number>): Result<string> {
+    public cancelReservedShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
         return makeFailure("Not implemented");
-    }
-
-    public completedTransaction(transaction: Transaction) {
-        this.storeHistory.saveTransaction(transaction);
-    }
-
-    public getStoreHistory(): StoreHistory {
-        return this.storeHistory;
     }
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
 
-    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
+    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: buyingOption): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        if(buyingOption.getBuyingOption() < this.buyingOptionsMenu.length && buyingOption.getBuyingOption() >= 0){
-            return this.buyingOptionsMenu[buyingOption.getBuyingOption()](productId, quantity, buyerId, userAddr);
+        if(buyingOption < this.buyingOptionsMenu.length && buyingOption >= 0){
+            return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
         }
         return makeFailure("Invalid buying option");
     }
@@ -184,23 +244,23 @@ export class Store
         return makeOk("Checkout passed to purchase");
     }
 
-    private buyOffer(): Result<string> {
+    private buyOffer(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyBid(): Result<string> {
+    private buyBid(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyRaffle(): Result<string> {
+    private buyRaffle(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
         return makeFailure("Not implemented")
     }
 
     public closeStore(userId: number): Result<string> {
 
         // this is irreversible
-        if(this.getTitle(userId) != JobTitle.FOUNDER){
-            return makeFailure("Not permitted user")
+        if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
+            return makeFailure("User not permitted")
         }
         this.storeClosed = true
         StoreDB.deleteStore(this.storeId)
@@ -228,8 +288,11 @@ export class Store
         return makeFailure("Not implemented")
     }
 
-    public getStoreInfo(): StoreInfo {
-        return new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo())
+    public getStoreInfo(userId: number): Result<string> {
+        if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
+            return makeFailure("User not permitted")
+        }
+        return makeOk(new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo()).toString())
     }
 
     public addAppointment(appointment : Appointment) : void
@@ -257,6 +320,65 @@ export class Store
         return undefined;
     }
 
-    public openForImmediateBuy(productId : number) : boolean
-    {return true;}
+    public searchByName(productName:string): StoreProductInfo[]{
+        return this.inventory.getProductInfoByName(productName);
+    }
+
+    public searchByCategory(category: Category): StoreProductInfo[]{
+        return this.inventory.getProductInfoByCategory(category);
+    }
+
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
+        let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
+        if(appointment !== undefined)
+        {
+            return makeOk(Appointment.removeAppointment(appointment));
+        }
+        else
+        {
+            return makeFailure("subscriber can't delete a manager he didn't appoint");
+        }
+    }
+
+    public permittedToViewHistory(subscriber: Subscriber): boolean {
+        return subscriber.checkIfPerrmited(ACTION.VIEW_STORE_HISTORY, this)
+    }
+
+    public findAppointedBy(appointer: number, appointee: number): Appointment {
+        return this.appointments.find(appointment =>
+            appointment.getAppointee().getUserId() === appointee &&
+            appointment.getAppointer().getUserId() === appointer)
+    }
+
+    public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Result<string>
+    {
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this))
+        {
+            Appointment.appoint_owner(appointer, this, appointee);
+        }
+        return makeFailure("user is not permited to appoint store owner");
+
+    }
+
+    public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Result<string>
+    {
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this))
+        {
+            return Appointment.appoint_manager(appointer, this, appointee)
+        }
+        return makeFailure("user is not permited to appoint store manager");
+    }
+
+    public editStaffPermission(subscriber: Subscriber, managerToEditId: number, permissionMask: number): Result<string> {
+
+        let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToEditId);
+        if(appointment !== undefined)
+        {
+            return appointment.editPermissions(permissionMask);
+        }
+        return makeFailure("subscriber can't edit a manager he didn't appoint");
+    }
+
+
+
 }

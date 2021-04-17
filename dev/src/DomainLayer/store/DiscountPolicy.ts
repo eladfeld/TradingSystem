@@ -1,4 +1,4 @@
-import { DiscountOption } from "./DiscountOption";
+import { discountOption, DiscountOption } from "./DiscountOption";
 
 export class DiscountPolicy
 {
@@ -14,8 +14,18 @@ export class DiscountPolicy
         this.discounts = [];
     }
 
-    public addDiscountOption(discountOptions: DiscountOption){
-        this.discounts.push(discountOptions);
+    public getDiscountPolicy(){
+        return this.discountPolicy
+    }
+
+    public addDiscount(discount: DiscountOption)
+    {
+        this.discounts.push(discount)
+    }
+
+    public deleteDiscount(discountId: number)
+    {
+        this.discounts = this.discounts.filter(discount => discount.getId() !== discountId);
     }
 
     public applyDiscountPolicy(productMap: Map<number, number>) : number{
@@ -34,7 +44,7 @@ export class DiscountPolicy
             for(let discount of activeDiscountPercents){
                 discountPrice *= ((100 - discount)/100)
             }
-            totalPrice += discountPrice
+            totalPrice += discountPrice*quantity
         }
         return totalPrice
     }

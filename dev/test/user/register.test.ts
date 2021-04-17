@@ -1,17 +1,20 @@
 import {expect} from 'chai';
 import { Register } from '../../src/DomainLayer/user/Register'
-import { SubscriberData } from '../../src/DomainLayer/user/Authentication';
+import { Authentication } from '../../src/DomainLayer/user/Authentication';
+import { isOk } from '../../src/Result';
 
 describe('register tests' , function() {
-    SubscriberData.clean();
+    
     
     it('good register', function(){
-        expect(Register.register("avi","123456")).to.equal(true);
+        Authentication.clean();
+        expect(isOk(Register.register("avi","123456"))).to.equal(true);
     });
 
     it('register with used user name', function(){
+        Authentication.clean();
         Register.register("avi","123456");
-        expect(Register.register("avi","11123")).to.equal(false);
+        expect(isOk(Register.register("avi","11123"))).to.equal(false);
     });
 
     

@@ -28,6 +28,11 @@ export class StoreInfo
     {
         return this.storeId;
     }
+
+    public toString(): string {
+        return `storeName: ${this.storeName} `.concat(this.storeProducts.toString())
+    }
+
 }
 
 export class StoreProductInfo
@@ -36,12 +41,20 @@ export class StoreProductInfo
     private productName: string;
     private productId: number;
     private price: number;
+    private storeId: number;
+    private productRating: number
+    private numOfRaters: number
 
-    public constructor(productName: string, productId: number, price: number)
+
+    public constructor(productName: string, productId: number, price: number, storeId:number, productRating: number, numOfRaters: number)
     {
         this.productName = productName;
         this.productId = productId;
         this.price = price;
+        this.storeId = storeId;
+        this.productRating = productRating;
+        this.numOfRaters = numOfRaters;
+
     }
 
     public getProductId()
@@ -58,4 +71,24 @@ export class StoreProductInfo
     {
         return this.price;
     }
+
+    public getStoreId()
+    {
+        return this.storeId;
+    }
+
+    public getProductRating()
+    {
+        return this.productRating;
+    }
+
+    public getNumOfRaters()
+    {
+        return this.numOfRaters;
+    }
+
+    public toString(): string {
+        return `product name: ${this.productName}\tprice: ${this.price}\tproduct rating:\t${this.productRating}\tnumber of raters: ${this.numOfRaters}`
+    }
+
 }

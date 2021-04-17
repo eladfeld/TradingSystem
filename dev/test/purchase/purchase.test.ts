@@ -1,11 +1,11 @@
 import {expect} from 'chai';
+import { PaymentInfo } from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../src/DomainLayer/purchase/Transaction';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { isFailure, Result } from '../../src/Result';
-import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 
 
 
@@ -22,8 +22,8 @@ const basket1b: Map<number, number> = new Map([[4000,4]]);
 const [total1a, total1b]: [number, number] = [30, 40];
 store1.addNewProduct("s3000", "wtvr",1,10);
 const prod: Product = ProductDB.getProductByName("s3000");
-const productId: number = prod.getProductId();
-const payInfo: PaymentInfo = new PaymentInfo(1234,567,1012022);
+//const productId: number = prod.getProductId();
+const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);
 
 
 

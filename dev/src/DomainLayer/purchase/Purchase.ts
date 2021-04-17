@@ -108,7 +108,7 @@ class Purchase {
     }
 
     cancelTransaction = (userId:number, store:Store, oldCart:Map<number,number>) => {
-        store.cancelReservedShoppingBasket(oldCart);
+        //store.cancelReservedShoppingBasket(oldCart);
         this.removeTimerAndCart(userId,store.getStoreId());
         this.dbDummy.removeTransactionInProgress(userId, store.getStoreId());
     }

@@ -2,9 +2,24 @@ import { createHash } from 'crypto';
 import { Logger } from '../Logger';
 import { Subscriber } from './Subscriber'; 
 
-export class SubscriberData
+export class Authentication
 {
     private static subscribers: Subscriber[]  = [];
+    private static system_managers : Subscriber[] = [];
+    
+    public static addSystemManager(sys_manager : Subscriber):void
+    {
+        this.subscribers.push(sys_manager);
+        this.system_managers.push(sys_manager);
+    }
+
+    public static isSystemManager(userId : number) : boolean
+    {
+        let system_manager : Subscriber = this.system_managers.find( user => user.getUserId() === userId);
+        if (system_manager !== undefined )
+            return true;
+        return false;
+    }
 
     public static addSubscriber(subscriber: Subscriber , password:string): void
     {

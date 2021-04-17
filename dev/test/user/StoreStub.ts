@@ -1,16 +1,17 @@
 import { Store } from "../../src/DomainLayer/store/Store";
+import { makeFailure, makeOk, Result } from "../../src/Result";
 
 export class StoreStub extends Store
 {
-    constructor (storeOwner : number)
+    constructor (storeOwner : number  , storeName: string , bankacountNumber : number , address : string)
     {
-        super(storeOwner,"visible","visible");
+        super(storeOwner , storeName , bankacountNumber ,address );
     }
-    public isProductAvailable(productId: number, quantity: number): boolean 
+    public isProductAvailable(productId: number, quantity: number): Result<string> 
     {
         if (productId > 0)
-            return true;
+            return makeOk("");
         else 
-            return false;
+            return makeFailure("");
     }
 }

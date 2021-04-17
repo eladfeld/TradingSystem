@@ -1,58 +1,64 @@
-import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
-import { makeFailure, makeOk, Result } from '../../Result';
+import { isOk, makeFailure, makeOk, Result } from '../../Result';
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
+import { Store } from '../store/Store';
+import { StoreDB } from '../store/StoreDB';
 import { ShoppingCart} from './ShoppingCart'
 
-export type PaymentMeans = undefined; 
-export type SupplyInfo = undefined; 
+export type PaymentMeans = undefined;
+export type SupplyInfo = undefined;
 
 
 export class User
 {
-    private shoppingCart: ShoppingCart;
-    private userId: number;
-    private static lastId : number = User.getLastId();
+    protected shoppingCart: ShoppingCart;
+    protected userId: number;
+    protected static lastId : number = User.getLastId();
 
     public constructor()
     {
         this.shoppingCart = new ShoppingCart();
         this.userId = User.lastId++;
     }
-    editCart = (storeId: number , productId: number , newQuantity: number):Result<string> =>{
-        return makeOk(true);
-    }
+
     private static getLastId() : number
     {
         return 0;
     }
-    public buyBasket(shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
+
+    public checkoutBasket(shopId: number, supplyInfo: SupplyInfo): Result<boolean>
     {
-        return this.shoppingCart.buyBasket(shopId, paymentMeans, supplyInfo);
+        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supplyInfo);
     }
 
-    public buyProduct(productId :number , shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutSingleProduct(productId :number , quantity: number, supplyInfo: string, shopId : number , buying_option : buyingOption) : Result<string>
     {
-        //TODO: but a single product 
-        return makeFailure("not yet implemented");
+        let store:Store =  StoreDB.getStoreByID(shopId);
+        return store.sellProduct(this.getUserId() , supplyInfo,productId, quantity, buying_option);
     }
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
     {
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-    public GetShoppingCart(): number[]
+    public GetShoppingCart(): Result<string>
     {
-        return this.shoppingCart.getShoppingCart();
+        return makeOk(JSON.stringify(this.shoppingCart.getShoppingCart()));
+
     }
 
-    public getShoppingBasket(storeId: number): Map<number, number>
+    public getShoppingBasket(storeId: number): {}
     {
-        return this.shoppingCart.getShoppingBasket(storeId);
+        return this.shoppingCart.getBasketById(storeId);
     }
 
     public getUserId(): number
     {
         return this.userId;
+    }
+
+    public editCart(storeId: number, productId: number, quantity: number): Result<string>
+    {
+        return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
 
 

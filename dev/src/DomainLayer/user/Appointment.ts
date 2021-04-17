@@ -14,6 +14,8 @@ export enum JobTitle{
 
 export class Appointment
 {
+
+
     private appointer : Subscriber;
     private appointee : Subscriber;
     private store : Store;
@@ -46,16 +48,15 @@ export class Appointment
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
             Logger.log(`the subscriber ${founder.getUsername} is now appointed to be a new store founder at ${store.getStoreId}`);
-            return makeOk("appointment made successfully"); 
-
+            return makeOk("appointment made successfully");
         }
         Logger.error("the candidate is not the store founder");
         return makeFailure("the candidate is not the store founder");
     }
 
-    public static appoint_owner(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission) : Result<string>
+    public static appoint_owner(appointer: Subscriber,store: Store, appointee: Subscriber) : Result<string>
     {
-        if(appointer === undefined || store === undefined || appointee === undefined || permission === undefined)
+        if(appointer === undefined || store === undefined || appointee === undefined)
         {
             Logger.error("undefined arrgument given");
             return makeFailure("undefined arrgument given");
@@ -65,17 +66,18 @@ export class Appointment
         if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, store))
         {
             let title: JobTitle = appointee.getTitle(store.getStoreId());
+            let basic_owner_permissions : number = ACTION.APPOINT_MANAGER | ACTION.APPOINT_OWNER | ACTION.INVENTORY_EDITTION | ACTION.VIEW_STORE_HISTORY;
             if (title != JobTitle.OWNER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
-                return this.appointTitle(appointer,store,appointee,permission,JobTitle.OWNER);
+                return this.appointTitle(appointer,store,appointee,new Permission(basic_owner_permissions),JobTitle.OWNER);
             }
         }
         return makeFailure("unauthorized try to appoint owner");
     }
 
-    public static appoint_manager(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission) : Result<string>
+    public static appoint_manager(appointer: Subscriber,store: Store, appointee: Subscriber) : Result<string>
     {
-        if(appointer === undefined || store === undefined || appointee === undefined || permission === undefined)
+        if(appointer === undefined || store === undefined || appointee === undefined)
         {
             Logger.error("appoint_manager: undefined arrgument given");
             return makeFailure("undefined arrgument given");
@@ -85,9 +87,10 @@ export class Appointment
         if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, store))
         {
             let title: JobTitle = appointee.getTitle(store.getStoreId());
+            let basic_manager_permissions : number = ACTION.VIEW_STORE_HISTORY;
             if (title != JobTitle.OWNER && title != JobTitle.MANAGER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
-                return this.appointTitle(appointer,store,appointee,permission,JobTitle.MANAGER);
+                return this.appointTitle(appointer,store,appointee,new Permission(basic_manager_permissions),JobTitle.MANAGER);
             }
             else
             {
@@ -121,7 +124,7 @@ export class Appointment
         return makeOk("appointment made successfully");
     }
 
-    private static removeAppointment(appointment: Appointment)
+    public static removeAppointment(appointment: Appointment)
     {
         appointment.appointee.deleteAppointment(appointment);
         appointment.store.deleteAppointment(appointment);
@@ -133,9 +136,24 @@ export class Appointment
         })
     }
 
+    editPermissions(permissionMask: number): Result<string> {
+        this.permission.setPermissions(permissionMask);
+        return makeOk("permission changed successfully");
+    }
+
     public getStore() : Store
     {
         return this.store;
+    }
+
+    public getAppointee() : Subscriber
+    {
+        return this.appointee;
+    }
+
+    public getAppointer() : Subscriber
+    {
+        return this.appointer;
     }
 
     public getPermissions() : Permission
@@ -148,7 +166,4 @@ export class Appointment
         return this.title;
     }
 
-    public getAppointee(): Subscriber {
-        return null;
-    }
 }

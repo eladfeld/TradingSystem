@@ -4,7 +4,7 @@
   "description": "Workshop for software engineering",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test/**/*.test.ts",
+    "test": "mocha --require ts-node/register test/store/**/*.test.ts",
     "coverage": "nyc npm run test"
   },
   "keywords": [],
@@ -15,6 +15,7 @@
     "@types/node": "^13.9.3",
     "chai": "^4.2.0",
     "crypto-js": "^4.0.0",
+    "line-reader": "^0.4.0",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
     "typescript": "^3.8.3"

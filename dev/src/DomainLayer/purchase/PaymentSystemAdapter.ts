@@ -1,5 +1,6 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import PaymentSystem from "../apis/PaymentSystem";
+import { PaymentInfo } from "./PaymentInfo";
 
 class PaymentSystemAdapter {
 

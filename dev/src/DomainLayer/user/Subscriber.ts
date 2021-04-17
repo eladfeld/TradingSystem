@@ -1,25 +1,31 @@
+import { isOk, Result } from "../../Result";
+import { buyingOption } from "../store/BuyingOption";
 import { Store } from "../store/Store";
 import { Appointment, JobTitle } from "./Appointment";
+import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
-import { User } from "./User";
-
+import {  User } from "./User";
 
 
 export class Subscriber extends User
 {
+
     private username: string;
     private hashPassword: string;
     private appointments: Appointment[];
-    
-    public constructor(username: string){
+
+    public constructor(username: string ){
         super();
         this.username = username;
         this.appointments = [];
     }
-    
-    public isSystemManager(){
-        return true;
+
+    static buildSubscriber(username: string, hashpassword: string): Subscriber {
+        let subscriber: Subscriber = new Subscriber(username);
+        subscriber.hashPassword = hashpassword;
+        return subscriber;
     }
+    
     public setPassword(hashPassword: string){
         this.hashPassword = hashPassword;
     }
@@ -58,7 +64,7 @@ export class Subscriber extends User
     {
         let store_app : Appointment = this.getStoreapp(store.getStoreId());
         if (store_app != undefined)
-            if (store_app.getPermissions().check_action(action))
+            if (store_app.getPermissions().checkIfPermited(action))
                 return true;
         return false;
     }
@@ -75,6 +81,14 @@ export class Subscriber extends User
     {
         this.appointments = this.appointments.filter(app => app !== store_app);
     }
+
+    public isSystemManager(): boolean
+    {
+        return Authentication.isSystemManager(this.userId);
+    }
+
+  
+
 
 
     //-----------------------------functions for tests---------------------------------------------

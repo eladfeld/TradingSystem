@@ -1,20 +1,21 @@
-import { makeFailure, makeOk, Result } from "../../Result";
+import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
-import { Purchase } from "../Purchase";
+import { buyingOption } from "../store/BuyingOption";
+import { Product } from "../store/Product";
+import { ProductDB } from "../store/ProductDB";
 import { Store } from "../store/Store";
 import { PaymentMeans, SupplyInfo } from "./User";
 
 export class ShoppingBasket
 {
-    
+
     private store : Store ;
     private products: Map<number,number>;    //key: productId, value: quantity
 
-    public constructor(storeid:number)
+    public constructor(store:Store)
     {
         this.products = new Map();
-        //TODO: access store database and get the store that have this id
-    
+        this.store = store;
     }
 
     getStoreId(): number
@@ -27,17 +28,21 @@ export class ShoppingBasket
         return this.products;
     }
 
-    public addProduct(productId: number, quantity: number): Result<string> 
+    public addProduct(productId: number, quantity: number): Result<string>
     {
         if (quantity < 0)
-        {            
+        {
             Logger.error("quantity can't be negative number");
             return makeFailure("quantity can't be negative number");
         }
-        if (!this.store.openForImmediateAuction(productId))
+        if(quantity === 0)
         {
-            Logger.error("product not for immediate auction");
-            return makeFailure("product not for immediate auction");
+            return makeFailure("quantity can't be set to zero");
+        }
+        if (!this.store.getBuyingPolicy().hasBuyingOption(buyingOption.INSTANT))
+        {
+            Logger.error("product not for immediate buy");
+            return makeFailure("product not for immediate buy");
         }
         if(!this.store.isProductAvailable(productId, quantity))
         {
@@ -48,32 +53,42 @@ export class ShoppingBasket
         let prevQuantity : number = 0;
         if (this.products.get(productId) != undefined)
             prevQuantity = this.products.get(productId);
-        this.products.set(productId, prevQuantity+quantity);
+        this.products.set(productId,prevQuantity+quantity);
         return makeOk("product added to cart");
     }
-    
-    public buyAll(paymentMeans: PaymentMeans,supplyInfo: SupplyInfo): Result<string>
+
+    public checkout(userId:number, supplyInfo: SupplyInfo): Result<boolean>
     {
-        //TODO: sync with purchase about checkout!
-        let price: number = this.store.calculatePrice(this.products);
-        return Purchase.checkout(price, this.store, paymentMeans, supplyInfo);
+        return this.store.sellShoppingBasket(userId,supplyInfo,this);
     }
 
-    public edit(productId: number, newQuantity: number): Result<string> 
+    public edit(productId: number, newQuantity: number): Result<string>
     {
         if (newQuantity < 0)
             return makeFailure("negative quantity");
         if (!this.store.isProductAvailable(productId,newQuantity))
             return makeFailure("quantity not available");
 
-        this.products.set(productId,newQuantity)
+        this.products.set(productId,newQuantity);
         if (newQuantity === 0)
             this.products.delete(productId);
         return makeOk("added to cart");
     }
 
+    getShoppingBasket() : {}
+    {
+        var basket : any = {}
+        basket['store'] = this.store.getStoreName();
+        basket['products']=[]
+        this.products.forEach(function(quantity,productId,map){
+            let product: Product = ProductDB.getProductById(productId);
+            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity})
+        })
+        return basket;
+    }
+
     //------------------------------------functions for tests-------------------------------------
-    
+
     public clear() : void
     {
         this.products = new Map();

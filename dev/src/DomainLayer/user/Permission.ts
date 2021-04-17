@@ -2,11 +2,14 @@
 export enum ACTION{
     APPOINT_MANAGER = 1 ,
     APPOINT_OWNER = 2,
+    INVENTORY_EDITTION = 4,
+    MANAGER_DELETION = 8,
+    VIEW_STORE_HISTORY = 16,
 }
 
 export class Permission
 {
-    private permissions_mask : number ; 
+    private permissions_mask : number ;
 
     constructor(permissions_mask : number)
     {
@@ -14,7 +17,7 @@ export class Permission
     }
 
     //returns true if this action is permitted
-    public check_action(action : ACTION) : boolean
+    public checkIfPermited(action : ACTION) : boolean
     {
         if ( (this.permissions_mask & action) != 0)
             return true;
