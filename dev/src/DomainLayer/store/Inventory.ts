@@ -131,6 +131,12 @@ export class Inventory
         return storeProducts;
     }
 
+    public getProductInfoByFilter(filter: (x: StoreProduct) => boolean): StoreProductInfo[]{
+        return Array.from(this.products.values()).filter(filter).map(storeProduct => {
+            return new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters())
+        })
+    }
+
     public getProductPrice(productId: number): number{
         let product = this.products.get(productId)
         if(product === undefined){

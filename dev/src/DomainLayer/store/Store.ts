@@ -195,9 +195,7 @@ export class Store
                 pricesToQuantity.set(productPrice,quantity);
             }
             else{
-                for (let [id, quantity] of reservedProducts) {
-                    this.inventory.returnReservedProduct(id, quantity);
-                }
+                this.cancelReservedShoppingBasket(reservedProducts)
                 return sellResult;
             }
         }
@@ -209,8 +207,10 @@ export class Store
     }
 
 
-    public cancelReservedShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
-        return makeFailure("Not implemented");
+    public cancelReservedShoppingBasket(reservedProducts: Map <number, number>) {
+        for (let [id, quantity] of reservedProducts) {
+            this.inventory.returnReservedProduct(id, quantity);
+        }
     }
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
@@ -331,6 +331,18 @@ export class Store
 
     public searchByCategory(category: Category): StoreProductInfo[]{
         return this.inventory.getProductInfoByCategory(category);
+    }
+
+    public searchBelowPrice(price: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getPrice() > price);
+    }
+
+    public searchAbovePrice(price: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getPrice() < price);
+    }
+
+    public searchAboveRating(rating: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getProductRating() < rating);
     }
 
     public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
