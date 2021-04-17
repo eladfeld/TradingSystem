@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
@@ -12,8 +11,8 @@ describe('view shopping cart' , function() {
     it("view shopping cart", function(){
         let subscriber: Subscriber = new Subscriber("micha");
         let store = new StoreStub(subscriber.getUserId(),"Aluf hasport" , 123456, "Tel Aviv");
-        let product1: Product = new Product("glida", [Category.SWEET]);
-        let product2: Product = new Product("glida2", [Category.SWEET]);
+        let product1: Product = new Product("glida", "sweets");
+        let product2: Product = new Product("glida2", "sweets");
         subscriber.addProductToShoppingCart(store.getStoreId(),product1.getProductId() , 5);
         subscriber.addProductToShoppingCart(store.getStoreId(),product2.getProductId() , 5);
         console.log(subscriber.GetShoppingCart());

@@ -1,4 +1,4 @@
-import { Category, ID } from "./Common";
+import { ID } from "./Common";
 import { ProductDB } from "./ProductDB";
 
 export class Product
@@ -6,13 +6,13 @@ export class Product
 
     private productId: number;
     private name: string;
-    private categories: Category[];
+    private category: string;
 
-    public constructor(name: string, categories: Category[])
+    public constructor(name: string, category: string)
     {
         this.productId = ID();
         this.name = name;
-        this.categories = categories;
+        this.category = category;
         ProductDB.addProduct(this)
     }
 
@@ -26,9 +26,9 @@ export class Product
         return this.name;
     }
 
-    public getCategories()
+    public getCategory()
     {
-        return this.categories;
+        return this.category;
     }
 
 }

@@ -10,7 +10,6 @@ import fs from 'fs';
 import path from 'path'
 import { buyingOption } from "../DomainLayer/store/BuyingOption";
 import { Authentication } from "../DomainLayer/user/Authentication";
-import { StoreDB } from "../DomainLayer/store/StoreDB";
 import Purchase from "../DomainLayer/purchase/Purchase";
 import { PaymentInfo } from "../DomainLayer/purchase/PaymentInfo";
 
@@ -38,7 +37,7 @@ export class Service
         }
         return Service.singletone;
     }
-
+    
     private constructor()
     {
         this.logged_guest_users = [];
@@ -50,12 +49,12 @@ export class Service
     {
         return true;
     }
-
+    
     private initPaymentSystem() : boolean
     {
         return true;
     }
-
+    
     private initSystemManagers() : boolean
     {
         const data = fs.readFileSync(path.resolve('src/systemManagers.json') ,  {encoding:'utf8', flag:'r'});
@@ -127,23 +126,15 @@ export class Service
     public getStoreInfo(userId : number ,storeId: number): Result<string>
     {
         Logger.log(`getStoreInfo : userId:${userId} , storeId:${storeId}`);
-        let store: Store = StoreDB.getStoreByID(storeId);
-
-        return store.getStoreInfoResult(userId);
+        //TODO: forowrd to the stores system and return a json representation of the store
+        return makeFailure("not yet implemented");
     }
 
-    public getPruductInfoByName(userId : number, productName: string): Result<string>
-    {
-        Logger.log(`getPruductInfoByName : userId:${userId}, productName: ${productName}`);
-        return StoreDB.getPruductInfoByName(productName);
-
-    }
-
-    public getPruductInfoByCategory(userId : number, category: number): Result<string>
-    {
+    public getPruductInfo(userId : number): Result<string>
+    {   
         Logger.log(`getPruductInfo : userId:${userId}`);
-        return StoreDB.getPruductInfoByCategory(category);
-
+        //TODO: forowrd to the stores system and return a json representation of the store
+        return makeFailure("not yet implemented");
     }
 
     public addProductTocart(userId: number, storeId: number, productId: number, quantity: number): Result<string>
@@ -173,7 +164,7 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public checkoutBasket(userId: number, shopId: number, supplyInfo: SupplyInfo ): Result<boolean>
+    public checkoutBasket(userId: number, shopId: number, supplyInfo: SupplyInfo ): Result<string>
     {
         Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supplyInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
@@ -196,7 +187,7 @@ export class Service
         return Purchase.CompleteOrder(userId , storeId , paymentInfo);
     }
 
-
+    
     public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<string>
     {
         Logger.log(`openStore : userId:${userId} , storeInfo:{storeInfo}`);
@@ -219,31 +210,14 @@ export class Service
         {
             /*return subscriber.getPurchaseHistory();  */
         }
-        return makeFailure("user not found");
+        return makeFailure("user not found"); 
     }
 
-    public editStoreInventory(userId: number, storeId: number, productId: number, quantity: number): Result<string>
+    public editStoreInventory(userId: number, storeId: number, productId: number/* more params*/): Result<string>
     {
-        Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}, quantity:${quantity}`);
-        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            return store.setProductQuantity(subscriber, productId, quantity);
-        }
-        return makeFailure("subscriber or store wasn't found");
-    }
-
-    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<string>
-    {
-        Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
-        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            return store.addNewProduct(subscriber, productName, categories, price, quantity);
-        }
-        return makeFailure("subscriber or store wasn't found");
+        //TODO: foroword to store module
+        Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}`);
+        return makeFailure("not yet implemented");
     }
 
     //this function is used by system managers that wants to see someone's history
@@ -256,47 +230,21 @@ export class Service
         return makeFailure("user don't have system manager permissions");
     }
 
-    //this function is used by subscribers that wants to see stores's history
-    public getStorePurchaseHistory(userId: number, storeId: number): Result<string>
+    //TODO: request from storeDB information on store
+    public getStoresInfo(userId: number, storeId: number): Result<string>
     {
-        Logger.log(`getStorePurchaseHistory : userId:${userId} ,storeId: ${storeId}`);
-        let subscriber: Subscriber = this.logged_subscribers.find(user => user.getUserId() === userId);
-        if (subscriber !== undefined)
-            return makeFailure("User not logged in")
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(store.permittedToViewHistory(subscriber))
-            return makeFailure("user don't have system manager permissions");
-        // call function from purchase to get history functionName(storeId)
+        Logger.log(`getStoresInfo : userId:${userId}, storeId:${storeId}`);
+        let manager: Subscriber = this.logged_system_managers.find(user => user.getUserId() === userId);
+        if (manager !== undefined)
+            return makeFailure("not yet implemented!!!");
+        return makeFailure("user don't have system manager permissions");
     }
 
-    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<void>
-    {
-        Logger.log(`deleteManagerFromStore : userId:${userId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
-        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            return store.deleteManager(subscriber, managerToDelete );
-        }
-        return makeFailure("wrong parameter given");
-    }
 
-    public editStaffPermission(userId: number, managerToEditId: number, storeId: number, permissionMask: number):Result<string>
-    {
-        Logger.log(`editStaffPermission : userId:${userId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
-        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            return store.editStaffPermission(subscriber, managerToEditId, permissionMask);
-        }
-        return makeFailure("wrong parameter given");
-
-    }
 
 
     //------------------------------------------functions for tests-------------------------
-    public getLoggedUsers() : User[]
+    public getLoggedUsers() : User[] 
     {
         return this.logged_guest_users;
     }

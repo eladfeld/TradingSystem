@@ -1,5 +1,4 @@
 import { makeFailure, makeOk, Result } from "../../Result";
-import { ID } from "./Common";
 
 export enum discountOption {
     VISIBLE     = 1,
@@ -13,10 +12,8 @@ export class DiscountOption {
     private dateFrom: Date
     private dateUntil: Date
     private percent: number
-    private id: number
 
     public constructor(percent: number, dateFrom: Date, dateUntil: Date, option = discountOption.VISIBLE) {
-        this.id - ID()
         this.option = discountOption.VISIBLE;
         this.dateFrom = dateFrom;
         this.dateUntil = dateUntil;
@@ -37,10 +34,6 @@ export class DiscountOption {
 
     public getPercent() {
         return this.percent
-    }
-
-    public getId() {
-        return this.id
     }
 
 };

@@ -1,6 +1,5 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
-import { buyingOption } from "../store/BuyingOption";
 import { Product } from "../store/Product";
 import { ProductDB } from "../store/ProductDB";
 import { Store } from "../store/Store";
@@ -8,14 +7,14 @@ import { PaymentMeans, SupplyInfo } from "./User";
 
 export class ShoppingBasket
 {
-
+    
     private store : Store ;
     private products: Map<number,number>;    //key: productId, value: quantity
 
     public constructor(store:Store)
     {
         this.products = new Map();
-        this.store = store;
+        this.store = store;    
     }
 
     getStoreId(): number
@@ -28,10 +27,10 @@ export class ShoppingBasket
         return this.products;
     }
 
-    public addProduct(productId: number, quantity: number): Result<string>
+    public addProduct(productId: number, quantity: number): Result<string> 
     {
         if (quantity < 0)
-        {
+        {            
             Logger.error("quantity can't be negative number");
             return makeFailure("quantity can't be negative number");
         }
@@ -39,12 +38,12 @@ export class ShoppingBasket
         {
             return makeFailure("quantity can't be set to zero");
         }
-        if (!this.store.getBuyingPolicy().hasBuyingOption(buyingOption.INSTANT))
+        if (!this.store.openForImmediateBuy(productId))
         {
             Logger.error("product not for immediate buy");
             return makeFailure("product not for immediate buy");
         }
-        if(!this.store.isProductAvailable(productId, quantity))
+        if(!isOk(this.store.isProductAvailable(productId, quantity)))
         {
             Logger.log("product is not available in this quantity");
             return makeFailure("product is not available in this quantity");
@@ -56,13 +55,13 @@ export class ShoppingBasket
         this.products.set(productId,prevQuantity+quantity);
         return makeOk("product added to cart");
     }
-
-    public checkout(userId:number, supplyInfo: SupplyInfo): Result<boolean>
+    
+    public checkout(userId:number, supplyInfo: SupplyInfo): Result<string>
     {
         return this.store.sellShoppingBasket(userId,supplyInfo,this);
     }
 
-    public edit(productId: number, newQuantity: number): Result<string>
+    public edit(productId: number, newQuantity: number): Result<string> 
     {
         if (newQuantity < 0)
             return makeFailure("negative quantity");
@@ -82,13 +81,13 @@ export class ShoppingBasket
         basket['products']=[]
         this.products.forEach(function(quantity,productId,map){
             let product: Product = ProductDB.getProductById(productId);
-            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity})
+            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity , 'category':product.getCategory() })
         })
-        return basket;
+        return basket;  
     }
 
     //------------------------------------functions for tests-------------------------------------
-
+    
     public clear() : void
     {
         this.products = new Map();

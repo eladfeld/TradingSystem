@@ -22,17 +22,5 @@ export class BuyingPolicy
         return this.buyingOptions.some( buyingOption => buyingOption.getBuyingOption() === option )
     }
 
-    public addBuyingOption(buyingOption: BuyingOption)
-    {
-        // This overiddes the current if exists
-        this.deleteBuyingOption(buyingOption.getBuyingOption())
-        this.buyingOptions.push(buyingOption)
-    }
-
-    public deleteBuyingOption( buyingOption: buyingOption)
-    {
-        this.buyingOptions = this.buyingOptions.filter(option => option.getBuyingOption() !== buyingOption);
-    }
-
 
 }

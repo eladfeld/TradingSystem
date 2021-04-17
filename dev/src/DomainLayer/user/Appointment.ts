@@ -14,8 +14,6 @@ export enum JobTitle{
 
 export class Appointment
 {
-
-
     private appointer : Subscriber;
     private appointee : Subscriber;
     private store : Store;
@@ -66,7 +64,7 @@ export class Appointment
         if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, store))
         {
             let title: JobTitle = appointee.getTitle(store.getStoreId());
-            let basic_owner_permissions : number = ACTION.APPOINT_MANAGER | ACTION.APPOINT_OWNER | ACTION.INVENTORY_EDITTION | ACTION.VIEW_STORE_HISTORY;
+            let basic_owner_permissions : number = ACTION.APPOINT_MANAGER | ACTION.APPOINT_OWNER | ACTION.INVENTORY_EDITTION | ACTION.VIEW_STORE;
             if (title != JobTitle.OWNER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
                 return this.appointTitle(appointer,store,appointee,new Permission(basic_owner_permissions),JobTitle.OWNER);
@@ -87,7 +85,7 @@ export class Appointment
         if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, store))
         {
             let title: JobTitle = appointee.getTitle(store.getStoreId());
-            let basic_manager_permissions : number = ACTION.VIEW_STORE_HISTORY;
+            let basic_manager_permissions : number = ACTION.VIEW_STORE;
             if (title != JobTitle.OWNER && title != JobTitle.MANAGER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
                 return this.appointTitle(appointer,store,appointee,new Permission(basic_manager_permissions),JobTitle.MANAGER);
@@ -102,7 +100,7 @@ export class Appointment
 
     private static appointTitle(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title : JobTitle) : Result<string>
     {
-        let store_app : Appointment = appointee.getStoreapp(store.getStoreId())
+        let store_app : Appointment = appointee.getStoreapp(store.getStoreId()) 
         // no previous appointments
         if (store_app === undefined)
         {
@@ -124,7 +122,7 @@ export class Appointment
         return makeOk("appointment made successfully");
     }
 
-    public static removeAppointment(appointment: Appointment)
+    private static removeAppointment(appointment: Appointment)
     {
         appointment.appointee.deleteAppointment(appointment);
         appointment.store.deleteAppointment(appointment);
@@ -136,11 +134,6 @@ export class Appointment
         })
     }
 
-    editPermissions(permissionMask: number): Result<string> {
-        this.permission.setPermissions(permissionMask);
-        return makeOk("permission changed successfully");
-    }
-
     public getStore() : Store
     {
         return this.store;
@@ -149,11 +142,6 @@ export class Appointment
     public getAppointee() : Subscriber
     {
         return this.appointee;
-    }
-
-    public getAppointer() : Subscriber
-    {
-        return this.appointer;
     }
 
     public getPermissions() : Permission

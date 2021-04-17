@@ -1,6 +1,6 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
-import { Category, Rating } from "./Common";
+import { Rating } from "./Common";
 
 export class StoreProduct
 {
@@ -12,9 +12,8 @@ export class StoreProduct
     private quantity: number;
     private productRating: number
     private numOfRaters: number
-    private categories: Category[];
 
-    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: Category[])
+    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number)
     {
         this.productId = productId;
         this.name = name;
@@ -23,7 +22,6 @@ export class StoreProduct
         this.quantity = quantity;
         this.productRating = 0 // getting productRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
-        this.categories = categories
     }
 
     public getProductId()
@@ -48,11 +46,6 @@ export class StoreProduct
     public getQuantity()
     {
         return this.quantity;
-    }
-
-    public getCategories()
-    {
-        return this.categories;
     }
 
     public setQuantity(quantity: number): Result<string> {
@@ -93,14 +86,6 @@ export class StoreProduct
     {
         if(this.numOfRaters > 0){
             return this.productRating
-        }
-        return NaN
-    }
-
-    public getNumOfRaters() : number
-    {
-        if(this.numOfRaters > 0){
-            return this.numOfRaters
         }
         return NaN
     }

@@ -7,11 +7,11 @@ export class StoreStub extends Store
     {
         super(storeOwner , storeName , bankacountNumber ,address );
     }
-    public isProductAvailable(productId: number, quantity: number): boolean
+    public isProductAvailable(productId: number, quantity: number): Result<string> 
     {
         if (productId > 0)
-            return true;
-        else
-            return false;
+            return makeOk("");
+        else 
+            return makeFailure("");
     }
 }

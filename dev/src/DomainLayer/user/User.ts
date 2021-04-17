@@ -4,8 +4,8 @@ import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
 import { ShoppingCart} from './ShoppingCart'
 
-export type PaymentMeans = undefined;
-export type SupplyInfo = undefined;
+export type PaymentMeans = undefined; 
+export type SupplyInfo = undefined; 
 
 
 export class User
@@ -24,8 +24,8 @@ export class User
     {
         return 0;
     }
-
-    public checkoutBasket(shopId: number, supplyInfo: SupplyInfo): Result<boolean>
+    
+    public checkoutBasket(shopId: number, supplyInfo: SupplyInfo): Result<string>
     {
         return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supplyInfo);
     }
@@ -34,7 +34,7 @@ export class User
     {
         let store:Store =  StoreDB.getStoreByID(shopId);
         return store.sellProduct(this.getUserId() , supplyInfo,productId, quantity, buying_option);
-    }
+    }   
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
     {
         return this.shoppingCart.addProduct(storeId, productId, quntity);
@@ -43,7 +43,7 @@ export class User
     public GetShoppingCart(): Result<string>
     {
         return makeOk(JSON.stringify(this.shoppingCart.getShoppingCart()));
-
+        
     }
 
     public getShoppingBasket(storeId: number): {}

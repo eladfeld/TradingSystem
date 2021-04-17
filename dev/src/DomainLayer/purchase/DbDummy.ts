@@ -19,12 +19,14 @@ class DbDummy{
     }
 
     storeTransactionInProgress = (transaction: Transaction) =>{
+        console.log(`storing trans in prog with userId: ${transaction.getUserId()} and storeId: ${transaction.getStoreId()}`)
         this.transactionsInProgress.push(transaction);
     }
     removeTransactionInProgress = (userId: number, storeId: number):void =>{
         this.transactionsInProgress = this.transactionsInProgress.filter(t => ((t.getUserId() !== userId) || (t.getStoreId() !== storeId)));
     }
     getTransactionInProgress = (userId: number, storeId: number):Transaction =>{
+        console.log(`looking for trans in prog with userId: ${userId} and storeId: ${storeId}`)
         return this.transactionsInProgress.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId)))[0];
     }
     getTransactionsInProgress = (userId: number, storeId: number):Transaction[] =>{

@@ -13,8 +13,8 @@ export class ShoppingCart
     {
         this.baskets = new Map();
     }
-
-    public checkoutBasket(userId: number ,storeId : number, supplyInfo: SupplyInfo) : Result<boolean>
+    
+    public checkoutBasket(userId: number ,storeId : number, supplyInfo: SupplyInfo) : Result<string>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
@@ -28,15 +28,15 @@ export class ShoppingCart
     public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
-        if(basket === undefined)
+        if(basket === undefined) 
         {
             let store : Store = StoreDB.getStoreByID(storeId);
             if (store !== undefined)
             {
-                basket = new ShoppingBasket(store);
+                basket = new ShoppingBasket(store);   
                 this.baskets.set(storeId, basket);
             }
-            else
+            else 
             {
                 Logger.error(`shop with id ${storeId} does not exist`);
                 return makeFailure(`shop with id ${storeId} does not exist`);

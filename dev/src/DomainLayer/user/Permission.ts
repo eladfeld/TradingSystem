@@ -3,13 +3,12 @@ export enum ACTION{
     APPOINT_MANAGER = 1 ,
     APPOINT_OWNER = 2,
     INVENTORY_EDITTION = 4,
-    MANAGER_DELETION = 8,
-    VIEW_STORE_HISTORY = 16,
+    VIEW_STORE = 16,
 }
 
 export class Permission
 {
-    private permissions_mask : number ;
+    private permissions_mask : number ; 
 
     constructor(permissions_mask : number)
     {
