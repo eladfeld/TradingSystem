@@ -193,7 +193,7 @@ export class Store
         return makeFailure("Not implemented");
     }
 
-    public completedTransaction(transaction: Transaction) {
+    public saveCompletedTransaction(transaction: Transaction) {
         this.storeHistory.saveTransaction(transaction);
     }
 

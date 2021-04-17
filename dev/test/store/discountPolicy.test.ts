@@ -1,6 +1,4 @@
 import {expect} from 'chai';
-import { BuyingOption, buyingOption } from '../../src/DomainLayer/store/BuyingOption';
-import { BuyingPolicy } from '../../src/DomainLayer/store/BuyingPolicy';
 import { DiscountOption } from '../../src/DomainLayer/store/DiscountOption';
 import { DiscountPolicy } from '../../src/DomainLayer/store/DiscountPolicy';
 import { Store } from '../../src/DomainLayer/store/Store';
