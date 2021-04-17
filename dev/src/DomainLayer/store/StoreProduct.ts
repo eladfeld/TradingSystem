@@ -97,4 +97,12 @@ export class StoreProduct
         return NaN
     }
 
+    public getNumOfRaters() : number
+    {
+        if(this.numOfRaters > 0){
+            return this.numOfRaters
+        }
+        return NaN
+    }
+
 }

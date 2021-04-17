@@ -6,7 +6,7 @@ import { Appointment, JobTitle } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
-import { StoreInfo } from "./StoreInfo";
+import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
@@ -307,4 +307,20 @@ export class Store
 
     public openForImmediateBuy(productId : number) : boolean
     {return true;}
+
+    public calculatePrice(products : Map<number,number>) : number
+    {return 0;}
+
+    private returnSoldProduct(productId: number, quantity: number): Result<string> {
+        return this.inventory.returnReservedProduct(productId, quantity);
+    }
+
+    public searchByName(productName:string): StoreProductInfo[]{
+        return this.inventory.getProductInfoByName(productName);
+    }
+
+    public searchByPriceRange(from: number, to: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByPriceRange(from, to);
+    }
+
 }
