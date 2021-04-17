@@ -17,7 +17,7 @@ export const stringUtil = {
 };
 Object.freeze(stringUtil);
 
-const PAYMENT_TIMEOUT_MILLISEC: number = 300000;
+export const PAYMENT_TIMEOUT_MILLISEC: number = 5000;//300000;
 
 class Purchase {
 
@@ -108,7 +108,7 @@ class Purchase {
     }
 
     cancelTransaction = (userId:number, store:Store, oldCart:Map<number,number>) => {
-        //store.cancelReservedShoppingBasket(oldCart);
+        store.cancelReservedShoppingBasket(oldCart);
         this.removeTimerAndCart(userId,store.getStoreId());
         this.dbDummy.removeTransactionInProgress(userId, store.getStoreId());
     }
@@ -165,6 +165,7 @@ class Purchase {
     getCompletedTransactionsForStore = (storeId: number): Transaction[] =>{
         return this.dbDummy.getCompletedTransactions().filter(t => t.getStoreId()==storeId);
     }
+    getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
 }
 const INSTANCE :Purchase = new Purchase();
 export default INSTANCE;
