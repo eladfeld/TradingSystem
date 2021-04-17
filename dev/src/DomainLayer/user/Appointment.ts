@@ -46,12 +46,7 @@ export class Appointment
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
             Logger.log(`the subscriber ${founder.getUsername} is now appointed to be a new store founder at ${store.getStoreId}`);
-<<<<<<< HEAD
             return makeOk("appointment made successfully");
-=======
-            return makeOk("appointment made successfully"); 
-
->>>>>>> d578fd2c25a62338ebf0c339f75238cba7beff1a
         }
         Logger.error("the candidate is not the store founder");
         return makeFailure("the candidate is not the store founder");
@@ -105,11 +100,7 @@ export class Appointment
 
     private static appointTitle(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title : JobTitle) : Result<string>
     {
-<<<<<<< HEAD
         let store_app : Appointment = appointee.getStoreapp(store.getStoreId()) 
-=======
-        let store_app : Appointment = appointee.getStoreapp(store.getStoreId())
->>>>>>> d578fd2c25a62338ebf0c339f75238cba7beff1a
         // no previous appointments
         if (store_app === undefined)
         {
@@ -163,7 +154,4 @@ export class Appointment
         return this.title;
     }
 
-    public getAppointee(): Subscriber {
-        return null;
-    }
 }

@@ -99,7 +99,7 @@ export class Service
         return makeOk(user.getUserId());
     }
 
-    public register(username: string, password: string): boolean
+    public register(username: string, password: string): Result<string>
     {
         Logger.log(`register : username:${username} , password:${password}`);
         return Register.register(username, password);
@@ -108,7 +108,7 @@ export class Service
     public login(userId: number, username: string, password: string): Result<number>
     {
         Logger.log(`login : userId:${userId} , username:${username} , password:${password}`);
-        let res: Result<Subscriber> =  makeOk(Login.login(username, password));
+        let res: Result<Subscriber> =  Login.login(username, password);
         if (isFailure(res))
         {
             return makeFailure(res.message);
@@ -146,16 +146,16 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public getCartInfo(userId: number): Result<number[]>
+    public getCartInfo(userId: number): Result<string>
     {
         Logger.log(`getCartInfo : userId:${userId}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return makeOk(user.GetShoppingCart());
+            return user.GetShoppingCart();
         return makeFailure("user not found");
     }
 
-    public editCart(userId: number , storeId : number , productId : number , newQuantity : number): Result<boolean>
+    public editCart(userId: number , storeId : number , productId : number , newQuantity : number): Result<string>
     {
         Logger.log(`editCart : userId:${userId} , storeId:${storeId} , productId:${productId} , newQuantity:${newQuantity}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);

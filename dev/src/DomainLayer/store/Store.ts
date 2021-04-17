@@ -10,15 +10,9 @@ import { StoreInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
-<<<<<<< HEAD
 import { Authentication } from "../user/Authentication";
 import Transaction from "../purchase/Transaction";
 import Purchase from "../purchase/Purchase";
-=======
-import Purchase from "../purchase/Purchase";
-import Transaction from "../purchase/Transaction"
-//import { Authentication } from "../user/Authentication";
->>>>>>> d578fd2c25a62338ebf0c339f75238cba7beff1a
 
 
 export class Store

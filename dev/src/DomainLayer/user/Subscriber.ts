@@ -26,9 +26,6 @@ export class Subscriber extends User
         return subscriber;
     }
     
-    public isSystemManager(){
-        return true;
-    }
     public setPassword(hashPassword: string){
         this.hashPassword = hashPassword;
     }
