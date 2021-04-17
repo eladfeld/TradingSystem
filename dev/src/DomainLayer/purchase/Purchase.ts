@@ -14,7 +14,9 @@ export const stringUtil = {
     FAIL_PAYMENT_REJECTED_PREFIX: "Your payment could be processed.",
     FAIL_FINALIZE_SHIPMENT: "We could not ship your items, you have been refunded, please try again later"
 };
-Object.freeze(TransactionStatus);
+Object.freeze(stringUtil);
+
+const PAYMENT_TIMEOUT_MILLISEC: number = 300000;
 
 class Purchase {
 
@@ -22,6 +24,7 @@ class Purchase {
     private paymentSystem: PaymentSystemAdapter;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, Map<number,number>]>>;
     private dbDummy: DbDummy;
+
 
     constructor(){
         this.paymentSystem = new PaymentSystemAdapter();
@@ -44,18 +47,19 @@ class Purchase {
 
         const shipmentId:number = this.supplySystem.reserve(shippingInfo);        
         if(shipmentId < 0 ){
+            //could not reserve shipping
             transaction.setStatus(TransactionStatus.FAIL_RESERVE);
             this.dbDummy.storeTransactionInProgress(transaction);
             return makeFailure(stringUtil.FAIL_RESERVE_MSG);
         }
-        //reserve items and allow payment within 5 minutes
+        //allow payment within 5 minutes
         transaction.setStatus(TransactionStatus.ITEMS_RESERVED);
         transaction.setShipmentId(shipmentId);
         this.dbDummy.storeTransactionInProgress(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.cancelTransaction(userId,store, oldCart);
             this.supplySystem.cancelReservation(shipmentId);
-        }, 300000);
+        }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCart(userId, storeId, timerId, products);
         return makeOk(true);
     }
@@ -127,7 +131,23 @@ class Purchase {
         return [undefined, undefined];
     } 
 
+    hasCheckoutInProgress = (userId: number, storeId: number): boolean =>{
+        const [timerId, cart] = this.getTimerAndCart(userId, storeId);
+        return ((timerId !== undefined) && (cart !== undefined));
+    }
 
+    numTransactionsInProgress = (userId: number, storeId: number): number => {
+        const transactions: Transaction[] = this.dbDummy.getTransactionsInProgress(userId,storeId);
+        return transactions.length;
+    }
+
+    getTransactionInProgress = (userId: number, storeId: number): Transaction =>{
+        return this.dbDummy.getTransactionInProgress(userId, storeId);
+    }
+
+    getCompletedTransactions = (userId: number, storeId: number): Transaction[] => {
+        return this.dbDummy.getCompletedTransactions().filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)));
+    }
 }
 const INSTANCE :Purchase = new Purchase();
 export default INSTANCE;
