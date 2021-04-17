@@ -7,6 +7,7 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { PaymentMeans, SupplyInfo, User } from "../DomainLayer/user/User";
 import { isFailure, makeFailure, makeOk, Result } from "../Result";
 import fs from 'fs';
+import path from 'path'
 import { buyingOption } from "../DomainLayer/store/BuyingOption";
 import { Authentication } from "../DomainLayer/user/Authentication";
 
@@ -16,7 +17,7 @@ export class Service
     private logged_guest_users : User[];
     private logged_subscribers : Subscriber[];
     private logged_system_managers : Subscriber[];
-
+    private static test_num = 0;
     public static get_instance() : Service
     {
         if (Service.singletone === undefined)
@@ -55,7 +56,7 @@ export class Service
     
     private initSystemManagers() : boolean
     {
-        const data = fs.readFileSync('C:\\Users\\elad\\Desktop\\TradingSystem\\dev\\src\\systemManagers.json' ,  {encoding:'utf8', flag:'r'});
+        const data = fs.readFileSync(path.resolve('src/systemManagers.json') ,  {encoding:'utf8', flag:'r'});
         let arr: any[] = JSON.parse(data);
         if (arr.length === 0)
         {
@@ -72,12 +73,18 @@ export class Service
     }
 
     //user enter the system
-    public enter(): Result<number>
+    public async enter(): Promise<Result<number>>
     {
         Logger.log("new user entered the system");
         let user: User = new User();
         this.logged_guest_users.push(user);
         return makeOk(user.getUserId());
+    }
+
+    public async test() 
+    {
+        Service.test_num++;
+        console.log(`in test! ${Service.test_num}`);
     }
 
     public exit(userId: number): void
@@ -162,25 +169,24 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public buyBasket(userId: number, shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo ): Result<string>
+    public checkoutBasket(userId: number, shopId: number, supplyInfo: SupplyInfo ): Result<string>
     {
-        Logger.log(`buyBasket : userId:${userId} , shopId:${shopId} , paymentMeans:${paymentMeans} , supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supplyInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.buyBasket(shopId, paymentMeans, supplyInfo);
+            return user.checkoutBasket(shopId, supplyInfo);
         return makeFailure("user not found");
     }
 
-    public buyProduct(userId : number, productId: number, quantity : number , storeId : number ,paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
+    public checkoutSingleProduct(userId : number, productId: number, quantity : number , storeId : number , supplyInfo: SupplyInfo): Result<string>
     {
-        Logger.log(`buyProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  ,paymentMeans : ${paymentMeans}, supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutSingleProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supplyInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.buyProduct(productId  , quantity, paymentMeans, supplyInfo, storeId , buyingOption.INSTANT);
+            return user.checkoutSingleProduct(productId  , quantity,  supplyInfo, storeId , buyingOption.INSTANT);
         return makeFailure("user not found");
     }
 
-    //TODO: auction, offer and raffle kind of buying policies need extra functions @shir @alon to your concerns
     
     public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<string>
     {

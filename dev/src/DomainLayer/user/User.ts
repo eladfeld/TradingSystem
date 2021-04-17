@@ -24,24 +24,16 @@ export class User
     {
         return 0;
     }
-
     
-    public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo) :Result<string>
+    public checkoutBasket(shopId: number, supplyInfo: SupplyInfo): Result<string>
     {
-        return this.shoppingCart.buyCart(this.getUserId() ,paymentMeans, supplyInfo);
-    }
-    
-    public buyBasket(shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
-    {
-        return this.shoppingCart.buyBasket(this.getUserId() ,shopId, paymentMeans, supplyInfo);
+        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supplyInfo);
     }
 
-    public buyProduct(productId :number , quantity: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo, shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutSingleProduct(productId :number , quantity: number, supplyInfo: string, shopId : number , buying_option : buyingOption) : Result<string>
     {
-        //TODO: but a single product 
         let store:Store =  StoreDB.getStoreByID(shopId);
-        //return store.buyProduct(productId, quantity, paymentMeans, supplyInfo);
-        return makeFailure("not yet implemented");
+        return store.sellProduct(this.getUserId() , supplyInfo,productId, quantity, buying_option);
     }   
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
     {
@@ -50,12 +42,13 @@ export class User
 
     public GetShoppingCart(): Result<string>
     {
-        return makeOk(JSON.stringify(this.shoppingCart));
+        return makeOk(JSON.stringify(this.shoppingCart.getShoppingCart()));
+        
     }
 
     public getShoppingBasket(storeId: number): {}
     {
-        return this.shoppingCart.getShoppingBasket(storeId);
+        return this.shoppingCart.getBasketById(storeId);
     }
 
     public getUserId(): number

@@ -153,12 +153,12 @@ export class Store
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
 
-    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
+    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: buyingOption): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        if(buyingOption.getBuyingOption() < this.buyingOptionsMenu.length && buyingOption.getBuyingOption() >= 0){
-            return this.buyingOptionsMenu[buyingOption.getBuyingOption()](productId, quantity, buyerId, userAddr);
+        if(buyingOption < this.buyingOptionsMenu.length && buyingOption >= 0){
+            return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
         }
         return makeFailure("Invalid buying option");
     }

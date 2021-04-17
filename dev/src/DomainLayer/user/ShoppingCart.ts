@@ -14,7 +14,7 @@ export class ShoppingCart
         this.baskets = new Map();
     }
     
-    public buyBasket(userId: number ,storeId : number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo) : Result<string>
+    public checkoutBasket(userId: number ,storeId : number, supplyInfo: SupplyInfo) : Result<string>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
@@ -22,15 +22,7 @@ export class ShoppingCart
             Logger.error("no such shopping basket");
             return makeFailure("no such shopping basket");
         }
-        return basket.buyAll(userId, paymentMeans, supplyInfo);
-    }
-
-    public buyCart(userId : number ,paymentMeans : PaymentMeans , supplyInfo : SupplyInfo) :Result<string>
-    {
-        Array.from(this.baskets.keys()).forEach(storeId => {
-            this.buyBasket(userId, storeId,paymentMeans,supplyInfo);
-        });
-        return makeFailure("TODO: each basket can fail/succeed seperatley what to do?");
+        return basket.checkout(userId, supplyInfo);
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
@@ -44,9 +36,10 @@ export class ShoppingCart
                 basket = new ShoppingBasket(store);   
                 this.baskets.set(storeId, basket);
             }
-            else {
+            else 
+            {
                 Logger.error(`shop with id ${storeId} does not exist`);
-                makeFailure(`shop with id ${storeId} does not exist`);
+                return makeFailure(`shop with id ${storeId} does not exist`);
             }
         }
         return basket.addProduct(productId, quantity);
@@ -60,9 +53,28 @@ export class ShoppingCart
         return basket.edit(productId,newQuantity);
     }
 
-    getShoppingBasket(storeId: number): {}
+    getBasketById(storeId: number): {}
     {
         return this.baskets.get(storeId).getProducts();
+    }
+
+    getBaskets()
+    {
+        return this.baskets;
+    }
+
+    getShoppingCart() : {}
+    {
+        var mycart : any = {};
+        mycart['baskets'] = [];
+        Array.from(this.baskets.values()).forEach(basket => mycart['baskets'].push(basket.getShoppingBasket()))
+        // for (var basket in this.baskets)
+        // {
+        //     let basket2 = ShoppingBasket(basket);
+        //     mycart['baskets'].push(basket.getShoppingBasket())
+        // }
+        // this.baskets.forEach( (basket,storeId,map) => mycart['baskets'].push(basket.getShoppingBasket()));
+        return mycart;
     }
 
 }

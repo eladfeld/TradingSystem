@@ -16,7 +16,7 @@ export class Permission
     }
 
     //returns true if this action is permitted
-    public check_action(action : ACTION) : boolean
+    public checkIfPermited(action : ACTION) : boolean
     {
         if ( (this.permissions_mask & action) != 0)
             return true;

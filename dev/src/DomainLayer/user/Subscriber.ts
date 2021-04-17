@@ -67,7 +67,7 @@ export class Subscriber extends User
     {
         let store_app : Appointment = this.getStoreapp(store.getStoreId());
         if (store_app != undefined)
-            if (store_app.getPermissions().check_action(action))
+            if (store_app.getPermissions().checkIfPermited(action))
                 return true;
         return false;
     }
@@ -91,9 +91,9 @@ export class Subscriber extends User
     }
 
     
-    public buyProduct(productId :number , quantity: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo, shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutSingleProduct(productId :number , quantity: number,  supplyInfo: string, shopId : number , buying_option : buyingOption) : Result<string>
     {
-        let res: Result<HistoryItem> = super.buyProduct(productId, quantity, paymentMeans, supplyInfo, shopId, buying_option);
+        let res: Result<HistoryItem> = super.checkoutSingleProduct(productId, quantity, supplyInfo, shopId, buying_option);
         if(isOk(res))
         {
             this.addToHistory(res.value);
@@ -101,16 +101,6 @@ export class Subscriber extends User
         return res;
     }
     
-    public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo): Result<string>
-    {
-        let res: Result<string> = super.buyCart(paymentMeans, supplyInfo);
-        if(isOk(res))
-        {
-            this.addToHistory(res.value);
-        }
-        return res;
-    }
-
 
     private addToHistory(item: HistoryItem): void
     {

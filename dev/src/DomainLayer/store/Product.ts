@@ -26,4 +26,9 @@ export class Product
         return this.name;
     }
 
+    public getCategory()
+    {
+        return this.category;
+    }
+
 }
