@@ -20,4 +20,9 @@ export class StoreDB
         this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
     }
 
+    public static getStoreByName(storeName: string): Store
+    {
+        return this.stores.find(store => store.getStoreName() == storeName);
+    }
+
 }
