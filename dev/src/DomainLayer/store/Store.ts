@@ -151,11 +151,12 @@ export class Store
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<string> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<number> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this) && !Authentication.isSystemManager(subscriber.getUserId())
+            && subscriber.getUserId() !== this.storeFounderId){
             return makeFailure("User not permitted")
         }
         for(let category of categories){
@@ -194,9 +195,7 @@ export class Store
                 pricesToQuantity.set(productPrice,quantity);
             }
             else{
-                for (let [id, quantity] of reservedProducts) {
-                    this.inventory.returnReservedProduct(id, quantity);
-                }
+                this.cancelReservedShoppingBasket(reservedProducts)
                 return sellResult;
             }
         }
@@ -208,8 +207,10 @@ export class Store
     }
 
 
-    public cancelReservedShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
-        return makeFailure("Not implemented");
+    public cancelReservedShoppingBasket(reservedProducts: Map <number, number>) {
+        for (let [id, quantity] of reservedProducts) {
+            this.inventory.returnReservedProduct(id, quantity);
+        }
     }
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
@@ -316,9 +317,9 @@ export class Store
 
     public getTitle(userId : number) : JobTitle
     {
-        let app: Appointment = this.appointments.find( appointment => {
+        let app: Appointment = this.appointments.find( appointment =>
             appointment.getAppointee().getUserId() === userId && appointment.getStore().storeId === this.storeId
-        });
+        );
         if (app != undefined)
             return app.getTitle();
         return undefined;
@@ -332,11 +333,23 @@ export class Store
         return this.inventory.getProductInfoByCategory(category);
     }
 
-    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
+    public searchBelowPrice(price: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getPrice() > price);
+    }
+
+    public searchAbovePrice(price: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getPrice() < price);
+    }
+
+    public searchAboveRating(rating: number): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getProductRating() < rating);
+    }
+
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
-            return makeOk(Appointment.removeAppointment(appointment));
+            return Appointment.removeAppointment(appointment);
         }
         else
         {
@@ -356,9 +369,10 @@ export class Store
 
     public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Result<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this))
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || Authentication.isSystemManager(appointer.getUserId())
+            || appointer.getUserId() === this.storeFounderId)
         {
-            Appointment.appoint_owner(appointer, this, appointee);
+            return Appointment.appoint_owner(appointer, this, appointee);
         }
         return makeFailure("user is not permited to appoint store owner");
 
@@ -366,7 +380,8 @@ export class Store
 
     public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Result<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this))
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || Authentication.isSystemManager(appointer.getUserId())
+            || appointer.getUserId() === this.storeFounderId)
         {
             return Appointment.appoint_manager(appointer, this, appointee)
         }
@@ -383,6 +398,19 @@ export class Store
         return makeFailure("subscriber can't edit a manager he didn't appoint");
     }
 
-
+    public getStoreStaff(subscriber: Subscriber): Result<string> {
+        if(!subscriber.checkIfPerrmited(ACTION.VIEW_STORE_STAFF, this)){
+            return makeFailure('subscriber cant view store staff')
+        }
+        var staff : any = {}
+        staff['subscribers']=[]
+        this.appointments.forEach((appointment) => {
+            let subscriber = appointment.getAppointee()
+            staff['subscribers'].push({ 'id':subscriber.getUserId() ,
+                                        'title':subscriber.getTitle(this.storeId),
+                                        })
+        })
+        return makeOk(JSON.stringify(staff))
+    }
 
 }

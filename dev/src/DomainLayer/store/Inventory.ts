@@ -15,7 +15,7 @@ export class Inventory
         this.products = new Map<number, StoreProduct>();
     }
 
-    public addNewProduct(productName: string, categories: Category[], storeId: number, price: number, quantity = 0) : Result<string> {
+    public addNewProduct(productName: string, categories: Category[], storeId: number, price: number, quantity = 0) : Result<number> {
         if (quantity < 0){
             Logger.error("Quantity must be non negative")
             return makeFailure("Quantity must be non negative");
@@ -38,7 +38,7 @@ export class Inventory
         let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
         this.products.set(storeProduct.getProductId(), storeProduct);
         Logger.log(`Product was added ProductId: ${productId}, ProductName: ${productName}, StoreId: ${storeId}`)
-        return makeOk("Product was added");
+        return makeOk(productId);
     }
 
     public addProductQuantity(productId: number, quantity: number) : Result<string> {
@@ -129,6 +129,12 @@ export class Inventory
             }
         }
         return storeProducts;
+    }
+
+    public getProductInfoByFilter(filter: (x: StoreProduct) => boolean): StoreProductInfo[]{
+        return Array.from(this.products.values()).filter(filter).map(storeProduct => {
+            return new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters())
+        })
     }
 
     public getProductPrice(productId: number): number{

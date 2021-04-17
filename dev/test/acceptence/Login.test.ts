@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
 import {Service} from '../../src/ServiceLayer/Service'
 
-describe('login system test' , function() {
+describe('login system test (use case 2.4)' , function() {
 
     it('user login' , function() {
         let service: Service = Service.get_instance();

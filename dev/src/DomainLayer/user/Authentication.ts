@@ -30,6 +30,7 @@ export class Authentication
     public static clean(): void
     {
         this.subscribers = [];
+        this.system_managers.forEach(manager => this.subscribers.push(manager));
     }
 
     public static checkedUsedUserName(username: string): boolean
@@ -37,9 +38,14 @@ export class Authentication
         return this.subscribers.some( user => user.getUsername() === username )
     }
 
-    public static getSubscriber(username: string): Subscriber
+    public static getSubscriberByName(username: string): Subscriber
     {
         return this.subscribers.find(user => user.getUsername() === username);
+    }
+
+    public static getSubscriberById(userId: number): Subscriber
+    {
+        return this.subscribers.find(user => user.getUserId() === userId);
     }
 
     public static checkPassword(username: string, password: string) :boolean

@@ -5,6 +5,7 @@ export enum ACTION{
     INVENTORY_EDITTION = 4,
     MANAGER_DELETION = 8,
     VIEW_STORE_HISTORY = 16,
+    VIEW_STORE_STAFF = 32,
 }
 
 export class Permission

@@ -11,7 +11,7 @@ export class Login
     {
         if(Authentication.checkPassword(username, password))
         {
-            return makeOk(Authentication.getSubscriber(username));
+            return makeOk(Authentication.getSubscriberByName(username));
         }
         else
         {
