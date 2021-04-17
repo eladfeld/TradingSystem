@@ -82,7 +82,7 @@ export class ShoppingBasket
         basket['products']=[]
         this.products.forEach(function(quantity,productId,map){
             let product: Product = ProductDB.getProductById(productId);
-            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity , 'category':product.getCategory() })
+            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity})
         })
         return basket;
     }
