@@ -139,7 +139,7 @@ export class Store
     }
 
 
-    public cancelReservedShoppingBasket(buyerId: number, productId: number, quantity: number): Result<string> {
+    public cancelReservedShoppingBasket(products: Map<number, number>): Result<string> {
         return makeFailure("Not implemented");
     }
 

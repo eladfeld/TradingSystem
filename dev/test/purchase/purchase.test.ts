@@ -11,14 +11,19 @@ import { isFailure, Result } from '../../src/Result';
 
 //checkout should have 
 
-const store1Id: number = 1;
 const store1BankAcct = 11223344;
-const store1: Store = new Store(0,'store1',store1Id,"1 sunny ave", 'none', 'none');
+const store1: Store = new Store(0,'store1', 12345678,"1 sunny ave");
+const store1Id: number = store1.getStoreId();
 //const store2: Store = new Store(0,'store2',2,"2 sunny ave", 'none', 'none');
 const user1Id: number = 100;
 const user1Adrs: string = "8 Mile Road, Detroit";
-const basket1a: Map<number, number> = new Map([[3000,3]]);
-const basket1b: Map<number, number> = new Map([[4000,4]]);
+const prod1Id: number=3000;
+const prod2Id: number=4000;
+const prod1Quantity: number=3;
+const prod2Quantity: number=4;
+
+const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
+const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];
 store1.addNewProduct("s3000", "wtvr",1,10);
 const prod: Product = ProductDB.getProductByName("s3000");
@@ -32,46 +37,51 @@ describe('purchase tests' , function() {
     it('checkout, without completing order' , function(){
         Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
         expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(1);
-        //expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
+        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
         const transaction: Transaction = Purchase.getTransactionInProgress(user1Id, store1Id);
-        //expect(transaction.getTotal()).to.equal(total1b);
-        //expect(transaction.getItems().get(3000)).to.equal(3);
+        expect(transaction.getTotal()).to.equal(total1a);
+        expect(transaction.getItems().get(3000)).to.equal(3);
     });
 
     it('checkout twice, should override first' , function(){
         Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
         Purchase.checkout(store1, total1b, user1Id, basket1b, user1Adrs);
         expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(1);
-        //expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
+        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
         const transaction: Transaction = Purchase.getTransactionInProgress(user1Id, store1Id);
-        //expect(transaction.getTotal()).to.equal(total1b);
-        //expect(transaction.getItems().get(3000)).to.equal(3);
-        //expect(transaction.getItems().get(4000)).to.equal(undefined);
-        //expect(transaction.getStatus()).to.equal(TransactionStatus.ITEMS_RESERVED);
+        expect(transaction.getTotal()).to.equal(total1b);
+        expect(transaction.getItems().get(prod1Id)).to.equal(undefined);
+        expect(transaction.getItems().get(prod2Id)).to.equal(prod2Quantity);
+        expect(transaction.getStatus()).to.equal(TransactionStatus.ITEMS_RESERVED);
     });
 
 
-    // it('checkout, then complete order' , function(){
-    //     const res: Result<boolean> = Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-    //     console.log(`[PURCHASE TEST 1]: ${isFailure(res)? console.log(res.message): 'checkout successful'}` );
-    //     const res2: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo );
-    //     console.log(`[PURCHASE TEST 1]: ${isFailure(res2)? res2.message : 'order completed!'}`)
-    //     isFailure(res2)? console.log(res2.message):null;
-    //     expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
-    //     //expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
-    //     const transactions: Transaction[] = Purchase.getCompletedTransactions(user1Id, store1Id);
-    //     //expect(transactions.length).to.equal(1);
-    //     const transaction: Transaction = transactions[0];
-    //     //expect(transaction.getItems().get(3000)).to.equal(3);
-    //     //expect(transaction.getItems().get(4000)).to.equal(undefined);
-    //     //expect(transaction.getStatus()).to.equal(TransactionStatus.SUPPLIED);
-    // });
+    it('checkout, then complete order within time' , function(){
+        const res: Result<boolean> = Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
+        const res2: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo );
+        expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
+        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
+        const transactions: Transaction[] = Purchase.getCompletedTransactions(user1Id, store1Id);
+        expect(transactions.length).to.equal(1);
+        const transaction: Transaction = transactions[0];
+        expect(transaction.getItems().get(3000)).to.equal(3);
+        expect(transaction.getItems().get(4000)).to.equal(undefined);
+        expect(transaction.getStatus()).to.equal(TransactionStatus.SUPPLIED);
+    });
 
-    // it('attempt completing order before checkout' , function(){
-    //     //Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-    //     expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
-    //     expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
-    //     const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo);
-    //     expect(isFailure(res)).to.equal(true);
-    // });
+    it('attempt completing order before checkout' , function(){
+        expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
+        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
+        const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo);
+        expect(isFailure(res)).to.equal(true);
+    });
+
+
+    it('attempt completing order after payment time passed' , function(){
+        Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
+        setTimeout(() =>{
+            const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo);
+            expect(isFailure(res)).to.equal(true);
+        }, Purchase.getPaymentTimeoutInMillis()+1000);
+    });
 });
