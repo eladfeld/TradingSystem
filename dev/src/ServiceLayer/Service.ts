@@ -294,6 +294,12 @@ export class Service
 
     }
 
+    public getStoreStaff(userId: number, storeId: number): Result<string> {
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        return store.getStoreStaff(subscriber)
+    }
+
 
     //------------------------------------------functions for tests-------------------------
     public getLoggedUsers() : User[]

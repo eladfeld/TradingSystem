@@ -398,6 +398,19 @@ export class Store
         return makeFailure("subscriber can't edit a manager he didn't appoint");
     }
 
-
+    public getStoreStaff(subscriber: Subscriber): Result<string> {
+        if(!subscriber.checkIfPerrmited(ACTION.VIEW_STORE_STAFF, this)){
+            return makeFailure('subscriber cant view store staff')
+        }
+        var staff : any = {}
+        staff['subscribers']=[]
+        this.appointments.forEach((appointment) => {
+            let subscriber = appointment.getAppointee()
+            staff['subscribers'].push({ 'id':subscriber.getUserId() ,
+                                        'title':subscriber.getTitle(this.storeId),
+                                        })
+        })
+        return makeOk(JSON.stringify(staff))
+    }
 
 }
