@@ -2,25 +2,28 @@ import {expect} from 'chai';
 import { PaymentInfo } from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../src/DomainLayer/purchase/Transaction';
+import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../src/DomainLayer/store/Store';
+import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, Result } from '../../src/Result';
 
 
 
-//checkout should have 
+//checkout should have
 
 const store1Id: number = 1;
 const store1BankAcct = 11223344;
-const store1: Store = new Store(0,'store1',store1Id,"1 sunny ave", 'none', 'none');
+const store1: Store = new Store(0,'store1',store1Id,"1 sunny ave");
 //const store2: Store = new Store(0,'store2',2,"2 sunny ave", 'none', 'none');
 const user1Id: number = 100;
 const user1Adrs: string = "8 Mile Road, Detroit";
 const basket1a: Map<number, number> = new Map([[3000,3]]);
 const basket1b: Map<number, number> = new Map([[4000,4]]);
 const [total1a, total1b]: [number, number] = [30, 40];
-store1.addNewProduct("s3000", "wtvr",1,10);
+let subscriber = new Subscriber('Tzuri')
+store1.addNewProduct(subscriber, "s3000", [Category.COMPUTER],1,10);
 const prod: Product = ProductDB.getProductByName("s3000");
 //const productId: number = prod.getProductId();
 const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);
