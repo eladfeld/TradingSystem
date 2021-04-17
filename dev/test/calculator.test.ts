@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {Calculator} from '../src/DomainLayer/Calculator'
+import {Calculator} from '../src/DomainLayer/purchase/Calculator'
 
 describe('add' , function() {
     var calculator = new Calculator();
