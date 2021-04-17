@@ -151,7 +151,7 @@ export class Store
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<string> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<number> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }

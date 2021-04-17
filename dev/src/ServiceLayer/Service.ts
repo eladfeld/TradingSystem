@@ -234,7 +234,7 @@ export class Service
         return makeFailure("subscriber or store wasn't found");
     }
 
-    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<string>
+    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<number>
     {
         Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
