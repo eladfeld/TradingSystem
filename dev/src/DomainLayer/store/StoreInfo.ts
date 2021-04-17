@@ -36,12 +36,20 @@ export class StoreProductInfo
     private productName: string;
     private productId: number;
     private price: number;
+    private storeId: number;
+    private productRating: number
+    private numOfRaters: number
 
-    public constructor(productName: string, productId: number, price: number)
+
+    public constructor(productName: string, productId: number, price: number, storeId:number, productRating: number, numOfRaters: number)
     {
         this.productName = productName;
         this.productId = productId;
         this.price = price;
+        this.storeId = storeId;
+        this.productRating = productRating;
+        this.numOfRaters = numOfRaters;
+
     }
 
     public getProductId()
@@ -57,5 +65,20 @@ export class StoreProductInfo
     public getPrice()
     {
         return this.price;
+    }
+
+    public getStoreId()
+    {
+        return this.storeId;
+    }
+
+    public getProductRating()
+    {
+        return this.productRating;
+    }
+
+    public getNumOfRaters()
+    {
+        return this.numOfRaters;
     }
 }

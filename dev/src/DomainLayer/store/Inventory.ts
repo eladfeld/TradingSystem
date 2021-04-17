@@ -105,8 +105,29 @@ export class Inventory
     public getProductsInfo(): StoreProductInfo[] {
         let storeProducts: StoreProductInfo[] = []
         for(let storeProduct of this.products.values()){
-            storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice()))
+            storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()))
         }
         return storeProducts
     }
+
+    public getProductInfoByName(productName:string): StoreProductInfo[]{
+        let storeProducts: StoreProductInfo[] = [];
+        for(let storeProduct of this.products.values()){
+            if(storeProduct.getName().includes(productName)){
+                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
+
+            }
+        }  
+        return storeProducts; 
+    } 
+
+    public getProductInfoByPriceRange(from: number, to: number): StoreProductInfo[]{
+        let storeProducts: StoreProductInfo[] = [];
+        for(let storeProduct of this.products.values()){
+            if(storeProduct.getPrice()>= from || storeProduct.getPrice()<= to){
+                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
+            }
+        }  
+        return storeProducts; 
+    } 
 }
