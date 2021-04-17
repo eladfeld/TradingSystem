@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import Transaction from "../purchase/Transaction"
 
+=======
+import Transaction from '../purchase/Transaction';
+>>>>>>> d578fd2c25a62338ebf0c339f75238cba7beff1a
 export class StoreHistory
 {
 

@@ -6,7 +6,7 @@ import DbDummy from './DbDummy';
 import { Store } from '../store/Store';
 import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
-import { PaymentInfo } from './PaymentInfo';
+import PaymentInfo from './PaymentInfo';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -24,6 +24,7 @@ class Purchase {
     private supplySystem: SupplySystemAdapter;
     private paymentSystem: PaymentSystemAdapter;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, Map<number,number>]>>;
+    private storeBankAccounts: Map<number, number>;
     private dbDummy: DbDummy;
 
 
@@ -31,9 +32,13 @@ class Purchase {
         this.paymentSystem = new PaymentSystemAdapter();
         this.supplySystem = new SupplySystemAdapter();
         this.cartCheckoutTimers = new Map();
+        this.storeBankAccounts = new Map();
         this.dbDummy = new DbDummy();
     }
 
+    //first of 2 steps to placing an order. This function reserves a shipment for the order and sets a timer
+    //that allows for payment of the order within 5 minutes. If the reservation fails or payment
+    //not received in time, then the shipment reservation is cancelled and items returned to inventory of @store
     checkout = (store: Store, total: number, userId: number, products: Map<number, number>, shipAdrs: string):Result<boolean>=>{
         const storeId: number = store.getStoreId();
         const transaction: Transaction = new Transaction(userId, storeId, products, total);
@@ -62,11 +67,14 @@ class Purchase {
             this.supplySystem.cancelReservation(shipmentId);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCart(userId, storeId, timerId, products);
+        this.storeBankAccounts.set(storeId, store.getBankAccount());
         return makeOk(true);
     }
 
-
+    //second and final step to placing an order. transfers funds from @paymentInfo to @storeId's bank account
+    //and and finalizes the shipment order
     CompleteOrder = (userId: number, storeId: number, paymentInfo: PaymentInfo) : Result<boolean> => {
+        const storeAccount: number = this.storeBankAccounts.get(storeId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId); 
         if(!transaction){
             return makeFailure(stringUtil.FAIL_NO_TRANSACTION_IN_PROG);//nothing reserved
@@ -76,7 +84,9 @@ class Purchase {
         if(timerId === undefined){
             return makeFailure(stringUtil.FAIL_PAYMENT_TIMEOUT);//times up!!
         }
-        const paymentRes: Result<number> = undefined //this.paymentSystem.transfer(paymentInfo, storeAccount, transaction.getTotal());       
+
+        transaction.setCardNumber(paymentInfo.getCardNumber());
+        const paymentRes: Result<number> = this.paymentSystem.transfer(paymentInfo, storeAccount, transaction.getTotal());       
         if(isFailure(paymentRes)){
             return makeFailure(stringUtil.FAIL_PAYMENT_REJECTED_PREFIX+'\n'+paymentRes.message);
         }
@@ -148,6 +158,12 @@ class Purchase {
 
     getCompletedTransactions = (userId: number, storeId: number): Transaction[] => {
         return this.dbDummy.getCompletedTransactions().filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)));
+    }
+    getCompletedTransactionsForUser = (userId: number): Transaction[] => {
+        return this.dbDummy.getCompletedTransactions().filter(t => t.getUserId()==userId);
+    }
+    getCompletedTransactionsForStore = (storeId: number): Transaction[] =>{
+        return this.dbDummy.getCompletedTransactions().filter(t => t.getStoreId()==storeId);
     }
 }
 const INSTANCE :Purchase = new Purchase();

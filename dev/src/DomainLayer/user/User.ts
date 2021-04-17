@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
+=======
+import { updateEnumMember, updateNamespaceExportDeclaration } from 'typescript';
+import { makeFailure, makeOk, Result } from '../../Result';
+>>>>>>> d578fd2c25a62338ebf0c339f75238cba7beff1a
 import { buyingOption, BuyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
@@ -19,7 +24,9 @@ export class User
         this.shoppingCart = new ShoppingCart();
         this.userId = User.lastId++;
     }
-
+    editCart = (storeId: number , productId: number , newQuantity: number):Result<string> =>{
+        return makeOk(true);
+    }
     private static getLastId() : number
     {
         return 0;
