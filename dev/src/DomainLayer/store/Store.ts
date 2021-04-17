@@ -4,7 +4,6 @@ import { Inventory } from "./Inventory";
 import {Category, ID, Rating} from './Common'
 import { Appointment, JobTitle } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { StoreHistory } from "./StoreHistory";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
@@ -14,6 +13,8 @@ import { Authentication } from "../user/Authentication";
 import Transaction from "../purchase/Transaction";
 import Purchase from "../purchase/Purchase";
 import { DiscountOption } from "./DiscountOption";
+import { Subscriber } from "../user/Subscriber";
+import { ACTION, Permission } from "../user/Permission";
 
 
 export class Store
@@ -31,7 +32,6 @@ export class Store
     private buyingPolicy: BuyingPolicy;
     private inventory: Inventory;
     private messages: Map<number, string>; // map userId (sender) to all of his messages
-    private storeHistory: StoreHistory;
     private storeRating: number
     private numOfRaters: number
     private bankAccount: number
@@ -56,7 +56,6 @@ export class Store
         }
         this.inventory = new Inventory();
         this.messages = new Map<number, string>()
-        this.storeHistory = new StoreHistory(this.storeId, this.storeName, Date.now())
         this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
         this.bankAccount = bankAccount;
@@ -145,19 +144,39 @@ export class Store
         return NaN
     }
 
-    public isProductAvailable(productId: number, quantity: number): Result<boolean> {
+    public isProductAvailable(productId: number, quantity: number): boolean {
         if(this.storeClosed){
-            return makeFailure("Store is closed")
+            return false
         }
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(productName: string, categories: Category[], price: number, quantity = 0): Result<string> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        // we should check who calls this method is authorized
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
+            return makeFailure("User not permitted")
+        }
+        for(let category of categories){
+            if(!Object.values(Category).includes(category)){
+                Logger.log(`Got invalid category number: ${category}`)
+                return makeFailure("Got invalid category")
+            }
+        }
+
         return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity);
+    }
+
+    public setProductQuantity(subscriber: Subscriber, productId: number, quantity: number): Result<string> {
+        if(this.storeClosed){
+            return makeFailure("Store is closed")
+        }
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
+            return makeFailure("User not permitted")
+        }
+
+        return this.inventory.setProductQuantity(productId, quantity);
     }
 
     public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<boolean> {
@@ -193,22 +212,14 @@ export class Store
         return makeFailure("Not implemented");
     }
 
-    public saveCompletedTransaction(transaction: Transaction) {
-        this.storeHistory.saveTransaction(transaction);
-    }
-
-    public getStoreHistory(): StoreHistory {
-        return this.storeHistory;
-    }
-
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
 
-    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: BuyingOption): Result<string> {
+    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: buyingOption): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
-        if(buyingOption.getBuyingOption() < this.buyingOptionsMenu.length && buyingOption.getBuyingOption() >= 0){
-            return this.buyingOptionsMenu[buyingOption.getBuyingOption()](productId, quantity, buyerId, userAddr);
+        if(buyingOption < this.buyingOptionsMenu.length && buyingOption >= 0){
+            return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
         }
         return makeFailure("Invalid buying option");
     }
@@ -306,16 +317,6 @@ export class Store
         return undefined;
     }
 
-    public openForImmediateBuy(productId : number) : boolean
-    {return true;}
-
-    public calculatePrice(products : Map<number,number>) : number
-    {return 0;}
-
-    private returnSoldProduct(productId: number, quantity: number): Result<string> {
-        return this.inventory.returnReservedProduct(productId, quantity);
-    }
-
     public searchByName(productName:string): StoreProductInfo[]{
         return this.inventory.getProductInfoByName(productName);
     }
@@ -323,6 +324,52 @@ export class Store
     public searchByCategory(category: Category): StoreProductInfo[]{
         return this.inventory.getProductInfoByCategory(category);
     }
+
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
+        if(subscriber.checkIfPerrmited(ACTION.MANAGER_DELETION, this))
+        {
+            let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
+            if(appointment !== undefined)
+            {
+                Appointment.removeAppointment(appointment);
+            }
+            else
+            {
+                return makeFailure("subscriber can't delete a manager he didn't appoint");
+            }
+        }
+        return makeFailure("user is not permited to delete in this store");
+    }
+
+    public permittedToViewHistory(subscriber: Subscriber): boolean {
+        return subscriber.checkIfPerrmited(ACTION.VIEW_STORE_HISTORY, this)
+    }
+
+    public findAppointedBy(appointer: number, appointee: number): Appointment {
+        return this.appointments.find(appointment =>
+            appointment.getAppointee().getUserId() === appointee &&
+            appointment.getAppointer().getUserId() === appointer)
+    }
+
+    public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Result<string>
+    {
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this))
+        {
+            Appointment.appoint_owner(appointer, this, appointee);
+        }
+        return makeFailure("user is not permited to appoint store owner");
+
+    }
+
+    public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Result<string>
+    {
+        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this))
+        {
+            Appointment.appoint_manager(appointer, this, appointee)
+        }
+        return makeFailure("user is not permited to appoint store manager");
+    }
+
 
 
 }

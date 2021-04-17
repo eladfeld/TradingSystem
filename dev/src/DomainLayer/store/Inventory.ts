@@ -61,16 +61,16 @@ export class Inventory
         return makeOk("Quantity was set");
     }
 
-    public isProductAvailable(productId: number, quantity: number) : Result<boolean> {
+    public isProductAvailable(productId: number, quantity: number) : boolean {
         let product = this.products.get(productId);
         if(product === undefined){
             Logger.error("Product does not exist in inventory!")
-            return makeFailure("Product does not exist in inventory!");
+            return false;
         }
         if(product.getQuantity() >= quantity){
-            return makeOk(true)
+            return true
         }
-        return makeOk(false)
+        return false
     }
 
     public hasProductWithName(productName: string) : Result<true> {
@@ -83,9 +83,8 @@ export class Inventory
     }
 
     public reserveProduct(productId: number, quantity: number): Result<boolean> {
-        let result = this.isProductAvailable(productId, quantity);
-        if(isFailure(result) || (isOk(result) && !result.value)){
-            return result;
+        if(!this.isProductAvailable(productId, quantity)){
+            return makeFailure("Product unavailable");
         }
         let product = this.products.get(productId);
         product.setQuantity(product.getQuantity() - quantity);
@@ -121,7 +120,7 @@ export class Inventory
         }
         return storeProducts;
     }
- 
+
     public getProductInfoByCategory(category: Category): StoreProductInfo[]{
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){

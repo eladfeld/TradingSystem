@@ -98,7 +98,7 @@ export class Appointment
 
     private static appointTitle(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission, title : JobTitle) : Result<string>
     {
-        let store_app : Appointment = appointee.getStoreapp(store.getStoreId()) 
+        let store_app : Appointment = appointee.getStoreapp(store.getStoreId())
         // no previous appointments
         if (store_app === undefined)
         {
@@ -120,7 +120,7 @@ export class Appointment
         return makeOk("appointment made successfully");
     }
 
-    private static removeAppointment(appointment: Appointment)
+    public static removeAppointment(appointment: Appointment)
     {
         appointment.appointee.deleteAppointment(appointment);
         appointment.store.deleteAppointment(appointment);
@@ -140,6 +140,11 @@ export class Appointment
     public getAppointee() : Subscriber
     {
         return this.appointee;
+    }
+
+    public getAppointer() : Subscriber
+    {
+        return this.appointer;
     }
 
     public getPermissions() : Permission

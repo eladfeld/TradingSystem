@@ -9,6 +9,7 @@ import { isFailure, makeFailure, makeOk, Result } from "../Result";
 import fs from 'fs';
 import { buyingOption } from "../DomainLayer/store/BuyingOption";
 import { Authentication } from "../DomainLayer/user/Authentication";
+import { StoreDB } from "../DomainLayer/store/StoreDB";
 
 export class Service
 {
@@ -35,7 +36,7 @@ export class Service
         }
         return Service.singletone;
     }
-    
+
     private constructor()
     {
         this.logged_guest_users = [];
@@ -47,12 +48,12 @@ export class Service
     {
         return true;
     }
-    
+
     private initPaymentSystem() : boolean
     {
         return true;
     }
-    
+
     private initSystemManagers() : boolean
     {
         const data = fs.readFileSync('C:\\Users\\elad\\Desktop\\TradingSystem\\dev\\src\\systemManagers.json' ,  {encoding:'utf8', flag:'r'});
@@ -129,7 +130,7 @@ export class Service
     }
 
     public getPruductInfo(userId : number): Result<string>
-    {   
+    {
         Logger.log(`getPruductInfo : userId:${userId}`);
         //TODO: forowrd to the stores system and return a json representation of the store
         return makeFailure("not yet implemented");
@@ -181,7 +182,7 @@ export class Service
     }
 
     //TODO: auction, offer and raffle kind of buying policies need extra functions @shir @alon to your concerns
-    
+
     public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<string>
     {
         Logger.log(`openStore : userId:${userId} , storeInfo:{storeInfo}`);
@@ -204,13 +205,32 @@ export class Service
         {
             /*return subscriber.getPurchaseHistory();  */
         }
-        return makeFailure("user not found"); 
+        return makeFailure("user not found");
     }
 
-    public editStoreInventory(userId: number, storeId: number, productId: number/* more params*/): Result<string>
+    public editStoreInventory(userId: number, storeId: number, productId: number, quantity: number): Result<string>
     {
         //TODO: foroword to store module
-        Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}`);
+        Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}, quantity:${quantity}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            return store.setProductQuantity(subscriber, productId, quantity);
+        }
+        return makeFailure("not yet implemented");
+    }
+
+    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<string>
+    {
+        //TODO: foroword to store module
+        Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            return store.addNewProduct(subscriber, productName, categories, price, quantity);
+        }
         return makeFailure("not yet implemented");
     }
 
@@ -224,6 +244,19 @@ export class Service
         return makeFailure("user don't have system manager permissions");
     }
 
+    //this function is used by subscribers that wants to see stores's history
+    public getStorePurchaseHistory(userId: number, storeId: number): Result<string>
+    {
+        Logger.log(`getStorePurchaseHistory : userId:${userId} ,storeId: ${storeId}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(user => user.getUserId() === userId);
+        if (subscriber !== undefined)
+            return makeFailure("User not logged in")
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(store.permittedToViewHistory(subscriber))
+            return makeFailure("user don't have system manager permissions");
+        // call function from purchase to get history functionName(storeId)
+    }
+
     //TODO: request from storeDB information on store
     public getStoresInfo(userId: number, storeId: number): Result<string>
     {
@@ -234,11 +267,16 @@ export class Service
         return makeFailure("user don't have system manager permissions");
     }
 
-
+    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<string>
+    {
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        return store.deleteManager(subscriber, managerToDelete );
+    }
 
 
     //------------------------------------------functions for tests-------------------------
-    public getLoggedUsers() : User[] 
+    public getLoggedUsers() : User[]
     {
         return this.logged_guest_users;
     }
