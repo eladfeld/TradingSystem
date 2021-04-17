@@ -54,9 +54,9 @@ export class Appointment
         return makeFailure("the candidate is not the store founder");
     }
 
-    public static appoint_owner(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission) : Result<string>
+    public static appoint_owner(appointer: Subscriber,store: Store, appointee: Subscriber) : Result<string>
     {
-        if(appointer === undefined || store === undefined || appointee === undefined || permission === undefined)
+        if(appointer === undefined || store === undefined || appointee === undefined)
         {
             Logger.error("undefined arrgument given");
             return makeFailure("undefined arrgument given");
@@ -66,17 +66,18 @@ export class Appointment
         if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, store))
         {
             let title: JobTitle = appointee.getTitle(store.getStoreId());
+            let basic_owner_permissions : number = ACTION.APPOINT_MANAGER | ACTION.APPOINT_OWNER | ACTION.INVENTORY_EDITTION | ACTION.VIEW_STORE_HISTORY;
             if (title != JobTitle.OWNER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
-                return this.appointTitle(appointer,store,appointee,permission,JobTitle.OWNER);
+                return this.appointTitle(appointer,store,appointee,new Permission(basic_owner_permissions),JobTitle.OWNER);
             }
         }
         return makeFailure("unauthorized try to appoint owner");
     }
 
-    public static appoint_manager(appointer: Subscriber,store: Store, appointee: Subscriber, permission: Permission) : Result<string>
+    public static appoint_manager(appointer: Subscriber,store: Store, appointee: Subscriber) : Result<string>
     {
-        if(appointer === undefined || store === undefined || appointee === undefined || permission === undefined)
+        if(appointer === undefined || store === undefined || appointee === undefined)
         {
             Logger.error("appoint_manager: undefined arrgument given");
             return makeFailure("undefined arrgument given");
@@ -86,9 +87,10 @@ export class Appointment
         if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, store))
         {
             let title: JobTitle = appointee.getTitle(store.getStoreId());
+            let basic_manager_permissions : number = ACTION.VIEW_STORE_HISTORY;
             if (title != JobTitle.OWNER && title != JobTitle.MANAGER && title != JobTitle.FOUNDER) //this 'if' deals with cyclic appointments
             {
-                return this.appointTitle(appointer,store,appointee,permission,JobTitle.MANAGER);
+                return this.appointTitle(appointer,store,appointee,new Permission(basic_manager_permissions),JobTitle.MANAGER);
             }
             else
             {

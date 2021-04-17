@@ -21,4 +21,9 @@ export class ProductDB
         return this.products.find(product => product.getName() == productName);
     }
 
+    public static getProductById(productId: number): Product
+    {
+        return this.products.find(product => product.getProductId() === productId);
+    }
+
 }

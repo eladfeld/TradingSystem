@@ -49,22 +49,18 @@ class Transaction {
         this.status = status;
     }
 
+    setCardNumber = (cardNumber: number) => {
+        this.cardNumber = cardNumber;
+    }
+
     getTotal = (): number => this.total;
 
     getId = () : number => this.transcationId;
     getShipmentId = () : number => this.shipmentId;
-
-
-
-
-    cartToTree = (cart: ShoppingCart):Map<number,Map<number, [number, number]>> =>{//stores => items => [quantity, pricePer]
-        return null;
-    }
-
-    basketTotal = (items: Map<number, Map<number, [number, number]>>): number =>{
-        return -1;
-    }
-
+    getUserId = () : number => this.userId;
+    getStoreId = () : number => this.storeId;
+    getItems = () : Map<number, number> => this.items;
+    getStatus = () : number => this.status;
 }
 
 export default Transaction;

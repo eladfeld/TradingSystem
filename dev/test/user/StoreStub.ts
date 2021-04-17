@@ -3,9 +3,9 @@ import { makeFailure, makeOk, Result } from "../../src/Result";
 
 export class StoreStub extends Store
 {
-    constructor (storeOwner : number)
+    constructor (storeOwner : number  , storeName: string , bankacountNumber : number , address : string)
     {
-        super(storeOwner , "Aluf hasport" , 123456 , "Tel aviv" );
+        super(storeOwner , storeName , bankacountNumber ,address );
     }
     public isProductAvailable(productId: number, quantity: number): Result<string> 
     {

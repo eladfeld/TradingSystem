@@ -7,9 +7,12 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { PaymentMeans, SupplyInfo, User } from "../DomainLayer/user/User";
 import { isFailure, makeFailure, makeOk, Result } from "../Result";
 import fs from 'fs';
+import path from 'path'
 import { buyingOption } from "../DomainLayer/store/BuyingOption";
 import { Authentication } from "../DomainLayer/user/Authentication";
 import { StoreDB } from "../DomainLayer/store/StoreDB";
+import Purchase from "../DomainLayer/purchase/Purchase";
+import { PaymentInfo } from "../DomainLayer/purchase/PaymentInfo";
 
 export class Service
 {
@@ -17,7 +20,6 @@ export class Service
     private logged_guest_users : User[];
     private logged_subscribers : Subscriber[];
     private logged_system_managers : Subscriber[];
-
     public static get_instance() : Service
     {
         if (Service.singletone === undefined)
@@ -56,7 +58,7 @@ export class Service
 
     private initSystemManagers() : boolean
     {
-        const data = fs.readFileSync('C:\\Users\\elad\\Desktop\\TradingSystem\\dev\\src\\systemManagers.json' ,  {encoding:'utf8', flag:'r'});
+        const data = fs.readFileSync(path.resolve('src/systemManagers.json') ,  {encoding:'utf8', flag:'r'});
         let arr: any[] = JSON.parse(data);
         if (arr.length === 0)
         {
@@ -171,25 +173,29 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public buyBasket(userId: number, shopId: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo ): Result<string>
+    public checkoutBasket(userId: number, shopId: number, supplyInfo: SupplyInfo ): Result<boolean>
     {
-        Logger.log(`buyBasket : userId:${userId} , shopId:${shopId} , paymentMeans:${paymentMeans} , supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supplyInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.buyBasket(shopId, paymentMeans, supplyInfo);
+            return user.checkoutBasket(shopId, supplyInfo);
         return makeFailure("user not found");
     }
 
-    public buyProduct(userId : number, productId: number, quantity : number , storeId : number ,paymentMeans: PaymentMeans, supplyInfo: SupplyInfo): Result<string>
+    public checkoutSingleProduct(userId : number, productId: number, quantity : number , storeId : number , supplyInfo: SupplyInfo): Result<string>
     {
-        Logger.log(`buyProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  ,paymentMeans : ${paymentMeans}, supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutSingleProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supplyInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.buyProduct(productId  , quantity, paymentMeans, supplyInfo, storeId , buyingOption.INSTANT);
+            return user.checkoutSingleProduct(productId  , quantity,  supplyInfo, storeId , buyingOption.INSTANT);
         return makeFailure("user not found");
     }
 
-    //TODO: auction, offer and raffle kind of buying policies need extra functions @shir @alon to your concerns
+    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
+    {
+        return Purchase.CompleteOrder(userId , storeId , paymentInfo);
+    }
+
 
     public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<string>
     {

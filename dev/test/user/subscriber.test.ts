@@ -8,7 +8,7 @@ import { StoreStub } from './StoreStub';
 describe('subscriber tests' , function() {
     it('add appointment test', function(){
         //this test has no logic just to check that add appointment works
-        let store : Store = new StoreStub(123);
+        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         let subscriber1 : Subscriber = new Subscriber("micha");
         let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(0),JobTitle.OWNER);
         subscriber1.addAppointment(appointment1);
@@ -18,7 +18,7 @@ describe('subscriber tests' , function() {
     
     it('delete appointment test', function(){
         //this test has no logic just to check that delete appointment works
-        let store : Store = new StoreStub(123);
+        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         let subscriber1 : Subscriber = new Subscriber("micha");
         let subscriber2 : Subscriber = new Subscriber("elad");
         let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber2,new Permission(0),JobTitle.OWNER);
@@ -30,7 +30,7 @@ describe('subscriber tests' , function() {
     })
 
     it('get title test', function(){
-        let store : Store = new StoreStub(123);
+        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha");
         let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(0),JobTitle.OWNER);
@@ -39,7 +39,7 @@ describe('subscriber tests' , function() {
     })
 
     it('check if permitted positive test', function(){
-        let store : Store = new StoreStub(123);
+        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha");
         let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER),JobTitle.OWNER);
@@ -48,7 +48,7 @@ describe('subscriber tests' , function() {
     })
 
     it('check if permitted negative test', function(){
-        let store : Store = new StoreStub(123);
+        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha");
         let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER),JobTitle.OWNER);

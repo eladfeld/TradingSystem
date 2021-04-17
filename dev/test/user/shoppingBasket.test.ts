@@ -6,7 +6,7 @@ import { StoreStub } from './StoreStub';
 
 describe('shopping Basket tests' , function() {
     
-    let stabStore : Store = new StoreStub(123);
+    let stabStore : Store = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
     let shoppingBasket : ShoppingBasket = new ShoppingBasket(stabStore);
     shoppingBasket.setStore(stabStore);
 
@@ -14,7 +14,7 @@ describe('shopping Basket tests' , function() {
         it('add item to cart' , function(){
             shoppingBasket.clear();
             shoppingBasket.addProduct(1,5);
-            expect((shoppingBasket.getProducts())[1]).to.equal(5);
+            expect((shoppingBasket.getProducts()).get(1)).to.equal(5);
         })
         it('add non existent item to cart' , function(){
             shoppingBasket.clear();
@@ -24,14 +24,14 @@ describe('shopping Basket tests' , function() {
         it('add non exsistent item to cart', function(){
             shoppingBasket.clear();
             shoppingBasket.addProduct(-1,18)
-            expect((shoppingBasket.getProducts())[-1]).to.equal(undefined)
+            expect((shoppingBasket.getProducts()).get(-1)).to.equal(undefined)
         })
 
         it('add item item to cart twice' , function(){
             shoppingBasket.clear();
             shoppingBasket.addProduct(1,3);
             shoppingBasket.addProduct(1,5);
-            expect((shoppingBasket.getProducts())[1]).to.equal(8);
+            expect((shoppingBasket.getProducts()).get(1)).to.equal(8);
         })
 
         it('add negative quantity to cart' , function(){
@@ -48,14 +48,14 @@ describe('shopping Basket tests' , function() {
             shoppingBasket.clear();
             shoppingBasket.addProduct(1,3);
             shoppingBasket.edit(1,2);
-            expect((shoppingBasket.getProducts())[1]).to.equal(2);
+            expect((shoppingBasket.getProducts()).get(1)).to.equal(2);
         });
 
         it('increase quantity of item' , function(){
             shoppingBasket.clear();
             shoppingBasket.addProduct(1,3);
             shoppingBasket.edit(1,5);
-            expect((shoppingBasket.getProducts())[1]).to.equal(5);
+            expect((shoppingBasket.getProducts()).get(1)).to.equal(5);
         });
 
         it('edit to negative quantity' , function(){
@@ -68,7 +68,7 @@ describe('shopping Basket tests' , function() {
             shoppingBasket.clear();
             shoppingBasket.addProduct(1,3);
             shoppingBasket.edit(1,0);
-            expect((shoppingBasket.getProducts())[1]).to.equal(undefined);
+            expect((shoppingBasket.getProducts().get(1))).to.equal(undefined);
         });
 
 

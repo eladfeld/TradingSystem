@@ -1,8 +1,10 @@
+import { StoreStub } from "../../test/user/StoreStub";
+import { Product } from "../DomainLayer/store/Product";
+import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { isOk, Result } from "../Result";
 import { Service } from "./Service";
 
-let service : Service = Service.get_instance();
-let res: Result<number> = service.login(0 ,"elad", "1234");
-if(isOk(res))
-    console.log(res.value);
-else console.log(res.message);
+
+let service: Service = Service.get_instance();
+console.log("aa")
+

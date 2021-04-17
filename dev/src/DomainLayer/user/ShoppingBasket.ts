@@ -1,6 +1,8 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../Logger";
 import { buyingOption } from "../store/BuyingOption";
+import { Product } from "../store/Product";
+import { ProductDB } from "../store/ProductDB";
 import { Store } from "../store/Store";
 import { PaymentMeans, SupplyInfo } from "./User";
 
@@ -8,11 +10,11 @@ export class ShoppingBasket
 {
 
     private store : Store ;
-    private products: any;    //key: productId, value: quantity
+    private products: Map<number,number>;    //key: productId, value: quantity
 
     public constructor(store:Store)
     {
-        this.products = {};
+        this.products = new Map();
         this.store = store;
     }
 
@@ -21,7 +23,7 @@ export class ShoppingBasket
         return this.store.getStoreId();
     }
 
-    public getProducts(): any
+    public getProducts(): Map<number,number>
     {
         return this.products;
     }
@@ -49,16 +51,15 @@ export class ShoppingBasket
         }
 
         let prevQuantity : number = 0;
-        if (this.products[productId] != undefined)
-            prevQuantity = this.products[productId];
-        this.products[productId] =prevQuantity+quantity;
+        if (this.products.get(productId) != undefined)
+            prevQuantity = this.products.get(productId);
+        this.products.set(productId,prevQuantity+quantity);
         return makeOk("product added to cart");
     }
 
-    public buyAll(userId:number, paymentMeans: PaymentMeans,supplyInfo: SupplyInfo): Result<string>
+    public checkout(userId:number, supplyInfo: SupplyInfo): Result<boolean>
     {
-        // return this.store.sellShoppingBasket(userId,SupplyInfo );
-        return makeFailure("not yet implemented!")
+        return this.store.sellShoppingBasket(userId,supplyInfo,this);
     }
 
     public edit(productId: number, newQuantity: number): Result<string>
@@ -68,17 +69,29 @@ export class ShoppingBasket
         if (!this.store.isProductAvailable(productId,newQuantity))
             return makeFailure("quantity not available");
 
-        this.products[productId]=newQuantity;
+        this.products.set(productId,newQuantity);
         if (newQuantity === 0)
-            delete this.products[productId];
+            this.products.delete(productId);
         return makeOk("added to cart");
+    }
+
+    getShoppingBasket() : {}
+    {
+        var basket : any = {}
+        basket['store'] = this.store.getStoreName();
+        basket['products']=[]
+        this.products.forEach(function(quantity,productId,map){
+            let product: Product = ProductDB.getProductById(productId);
+            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity , 'category':product.getCategory() })
+        })
+        return basket;
     }
 
     //------------------------------------functions for tests-------------------------------------
 
     public clear() : void
     {
-        this.products = {};
+        this.products = new Map();
     }
     public setStore(store:Store) : void
     {

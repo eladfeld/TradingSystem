@@ -4,6 +4,12 @@ import { PaymentInfo } from "./PaymentInfo";
 
 class PaymentSystemAdapter {
 
+    init = () : Result<number> => {
+        const res: number = PaymentSystem.init();
+        if(res<0)//failed to init
+            return makeFailure(PaymentSystemAdapter.initResToMessage(res));
+        return makeOk(res);
+    }
 
     //returns a transaction number
     transfer = (from: PaymentInfo, to: number, amount: number ):Result<number> => {
@@ -20,6 +26,13 @@ class PaymentSystemAdapter {
         switch(res){
             default:
                 return "Failed to transfer funds."
+        }
+    }
+
+    static initResToMessage = (res: number):string =>{
+        switch(res){
+            default:
+                return "Failed to init system."
         }
     }
 

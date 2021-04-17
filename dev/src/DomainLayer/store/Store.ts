@@ -65,7 +65,7 @@ export class Store
 
         StoreDB.addStore(this);
     }
-
+    public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
     public getStoreId()
     {

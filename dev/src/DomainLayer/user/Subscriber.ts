@@ -4,16 +4,14 @@ import { Store } from "../store/Store";
 import { Appointment, JobTitle } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
-import { PaymentMeans, SupplyInfo, User } from "./User";
+import {  User } from "./User";
 
-export type HistoryItem = string;
 
 export class Subscriber extends User
 {
 
     private username: string;
     private hashPassword: string;
-    private history: HistoryItem[];
     private appointments: Appointment[];
 
     public constructor(username: string ){
@@ -28,7 +26,6 @@ export class Subscriber extends User
         return subscriber;
     }
     
-
     public setPassword(hashPassword: string){
         this.hashPassword = hashPassword;
     }
@@ -67,7 +64,7 @@ export class Subscriber extends User
     {
         let store_app : Appointment = this.getStoreapp(store.getStoreId());
         if (store_app != undefined)
-            if (store_app.getPermissions().check_action(action))
+            if (store_app.getPermissions().checkIfPermited(action))
                 return true;
         return false;
     }
@@ -90,38 +87,7 @@ export class Subscriber extends User
         return Authentication.isSystemManager(this.userId);
     }
 
-    
-    public buyProduct(productId :number , quantity: number, paymentMeans: PaymentMeans, supplyInfo: SupplyInfo, shopId : number , buying_option : buyingOption) : Result<string>
-    {
-        let res: Result<HistoryItem> = super.buyProduct(productId, quantity, paymentMeans, supplyInfo, shopId, buying_option);
-        if(isOk(res))
-        {
-            this.addToHistory(res.value);
-        }
-        return res;
-    }
-    
-    public buyCart(paymentMeans : PaymentMeans , supplyInfo : SupplyInfo): Result<string>
-    {
-        let res: Result<string> = super.buyCart(paymentMeans, supplyInfo);
-        if(isOk(res))
-        {
-            this.addToHistory(res.value);
-        }
-        return res;
-    }
-
-
-    private addToHistory(item: HistoryItem): void
-    {
-        this.history.push(item);
-    }
-
-    public getHistory(): HistoryItem[]
-    {
-        return this.history;
-    }
-
+  
 
 
 
