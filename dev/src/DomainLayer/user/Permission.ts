@@ -4,6 +4,9 @@ export enum ACTION{
     APPOINT_OWNER = 2,
     INVENTORY_EDITTION = 4,
     VIEW_STORE = 16,
+    MANAGER_DELETION = 8,
+    VIEW_STORE_HISTORY = 16,
+    VIEW_STORE_STAFF = 32,
 }
 
 export class Permission

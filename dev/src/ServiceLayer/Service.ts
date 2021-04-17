@@ -215,9 +215,32 @@ export class Service
 
     public editStoreInventory(userId: number, storeId: number, productId: number/* more params*/): Result<string>
     {
+<<<<<<< HEAD
         //TODO: foroword to store module
         Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}`);
         return makeFailure("not yet implemented");
+=======
+        Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}, quantity:${quantity}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            return store.setProductQuantity(subscriber, productId, quantity);
+        }
+        return makeFailure("subscriber or store wasn't found");
+    }
+
+    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<number>
+    {
+        Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            return store.addNewProduct(subscriber, productName, categories, price, quantity);
+        }
+        return makeFailure("subscriber or store wasn't found");
+>>>>>>> 0786409d2d01dcf71dd1e89baaf9026b8171449b
     }
 
     //this function is used by system managers that wants to see someone's history
@@ -241,6 +264,12 @@ export class Service
     }
 
 
+
+    public getStoreStaff(userId: number, storeId: number): Result<string> {
+        let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        return store.getStoreStaff(subscriber)
+    }
 
 
     //------------------------------------------functions for tests-------------------------
