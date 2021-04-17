@@ -124,8 +124,12 @@ export class Appointment
         return makeOk("appointment made successfully");
     }
 
-    public static removeAppointment(appointment: Appointment)
+    public static removeAppointment(appointment: Appointment) : Result<string>
     {
+        if(appointment === undefined)
+        {
+            return makeFailure("bad argument");
+        }
         appointment.appointee.deleteAppointment(appointment);
         appointment.store.deleteAppointment(appointment);
 
@@ -134,6 +138,7 @@ export class Appointment
         appointment.store.getAppointments().forEach(appointment => {
             if(appointment.appointer === appointee) this.removeAppointment(appointment)
         })
+        return makeOk("appointmetn removed");
     }
 
     editPermissions(permissionMask: number): Result<string> {

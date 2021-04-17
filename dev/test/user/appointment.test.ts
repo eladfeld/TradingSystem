@@ -56,6 +56,52 @@ describe('appointment tests' , function() {
         expect(isOk(Appointment.appoint_manager(founder,store,founder))).to.equal(false);
     })
 
+    it('appoint owner', function(){
+        let founder : Subscriber = new Subscriber("micha");
+        let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
+        Appointment.appoint_founder(founder,store);   
+        let owner : Subscriber = new Subscriber("micha");
+        expect(isOk(Appointment.appoint_manager(founder,store,owner))).to.equal(true);
+    })
+
+    it('appoint owner without permissions', function(){
+        let founder : Subscriber = new Subscriber("micha");
+        let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
+        Appointment.appoint_founder(founder,store);  
+        let owner : Subscriber = new Subscriber("elad");
+        Appointment.appoint_manager(founder,store,owner); // no permissions
+        let subscriber : Subscriber = new Subscriber("zuri");
+        expect(isOk(Appointment.appoint_owner(owner,store,subscriber))).to.equal(false);
+    })
+
+    
+    it('appoint manager to owner', function(){
+        let founder : Subscriber = new Subscriber("micha");
+        let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
+        Appointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad");
+        Appointment.appoint_manager(founder,store,manager); // no permissions
+        expect(isOk(Appointment.appoint_owner(founder,store,manager))).to.equal(true);
+    })
+
+    it('remove appontment good', function() {
+        let founder : Subscriber = new Subscriber("micha");
+        let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
+        Appointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad");
+        Appointment.appoint_manager(founder,store,manager);
+        Appointment.removeAppointment(store.findAppointedBy(founder.getUserId(), manager.getUserId()));
+        expect(manager.getAppointments().length).to.equal(0);
+    })
+
+    it('remove appontment bad', function(){
+        let founder : Subscriber = new Subscriber("micha");
+        let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
+        Appointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad");
+        Appointment.appoint_manager(founder,store,manager);
+        expect(isOk(Appointment.removeAppointment(store.findAppointedBy(manager.getUserId(), founder.getUserId())))).to.equal(false);
+    })
 
 
 
