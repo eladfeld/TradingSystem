@@ -328,20 +328,16 @@ export class Store
         return this.inventory.getProductInfoByCategory(category);
     }
 
-    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
-        if(subscriber.checkIfPerrmited(ACTION.MANAGER_DELETION, this))
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
+        let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
+        if(appointment !== undefined)
         {
-            let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
-            if(appointment !== undefined)
-            {
-                Appointment.removeAppointment(appointment);
-            }
-            else
-            {
-                return makeFailure("subscriber can't delete a manager he didn't appoint");
-            }
+            return Appointment.removeAppointment(appointment);
         }
-        return makeFailure("user is not permited to delete in this store");
+        else
+        {
+            return makeFailure("subscriber can't delete a manager he didn't appoint");
+        }
     }
 
     public permittedToViewHistory(subscriber: Subscriber): boolean {
@@ -374,6 +370,7 @@ export class Store
     }
 
     public editStaffPermission(subscriber: Subscriber, managerToEditId: number, permissionMask: number): Result<string> {
+
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToEditId);
         if(appointment !== undefined)
         {

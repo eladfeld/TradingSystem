@@ -25,4 +25,8 @@ export class StoreDB
         return this.stores.find(store => store.getStoreName() == storeName);
     }
 
+    public static getPruductInfoByName(productName: string): Result<string>{
+
+    }
+
 }
