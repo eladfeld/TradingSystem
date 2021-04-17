@@ -121,11 +121,11 @@ export class Inventory
         }
         return storeProducts;
     }
-
-    public getProductInfoByPriceRange(from: number, to: number): StoreProductInfo[]{
+ 
+    public getProductInfoByCategory(category: Category): StoreProductInfo[]{
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
-            if(storeProduct.getPrice()>= from || storeProduct.getPrice()<= to){
+            if(storeProduct.getCategories().find(productCategory=>category===productCategory)!= undefined){
                 storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
             }
         }

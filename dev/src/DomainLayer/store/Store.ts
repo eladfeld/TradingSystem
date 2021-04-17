@@ -320,8 +320,9 @@ export class Store
         return this.inventory.getProductInfoByName(productName);
     }
 
-    public searchByPriceRange(from: number, to: number): StoreProductInfo[]{
-        return this.inventory.getProductInfoByPriceRange(from, to);
+    public searchByCategory(category: Category): StoreProductInfo[]{
+        return this.inventory.getProductInfoByCategory(category);
     }
+
 
 }
