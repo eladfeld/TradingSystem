@@ -328,11 +328,11 @@ export class Store
         return this.inventory.getProductInfoByCategory(category);
     }
 
-    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
-            return Appointment.removeAppointment(appointment);
+            return makeOk(Appointment.removeAppointment(appointment));
         }
         else
         {

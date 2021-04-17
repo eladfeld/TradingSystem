@@ -142,8 +142,8 @@ export class Service
     public getPruductInfoByCategory(userId : number, category: number): Result<string>
     {
         Logger.log(`getPruductInfo : userId:${userId}`);
-        //TODO: forowrd to the stores system and return a json representation of the store
-        return makeFailure("not yet implemented");
+        return StoreDB.getPruductInfoByCategory(category);
+
     }
 
     public addProductTocart(userId: number, storeId: number, productId: number, quantity: number): Result<string>
@@ -224,7 +224,6 @@ export class Service
 
     public editStoreInventory(userId: number, storeId: number, productId: number, quantity: number): Result<string>
     {
-        //TODO: foroword to store module
         Logger.log(`editStoreInventory : userId:${userId} , storeId:${storeId}, productId:${productId}, quantity:${quantity}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
@@ -237,7 +236,6 @@ export class Service
 
     public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<string>
     {
-        //TODO: foroword to store module
         Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
@@ -271,7 +269,7 @@ export class Service
         // call function from purchase to get history functionName(storeId)
     }
 
-    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<string>
+    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<void>
     {
         Logger.log(`deleteManagerFromStore : userId:${userId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
