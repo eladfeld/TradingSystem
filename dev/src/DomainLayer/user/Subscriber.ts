@@ -88,18 +88,6 @@ export class Subscriber extends User
         return Authentication.isSystemManager(this.userId);
     }
 
-    
-    public checkoutSingleProduct(productId :number , quantity: number,  supplyInfo: string, shopId : number , buying_option : buyingOption) : Result<string>
-    {
-        let res: Result<HistoryItem> = super.checkoutSingleProduct(productId, quantity, supplyInfo, shopId, buying_option);
-        if(isOk(res))
-        {
-            this.addToHistory(res.value);
-        }
-        return res;
-    }
-    
-
   
 
 

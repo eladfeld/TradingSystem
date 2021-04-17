@@ -76,7 +76,7 @@ class Purchase {
         if(timerId === undefined){
             return makeFailure(stringUtil.FAIL_PAYMENT_TIMEOUT);//times up!!
         }
-        const paymentRes: Result<number> = this.paymentSystem.transfer(paymentInfo, storeAccount, transaction.getTotal());       
+        const paymentRes: Result<number> = undefined //this.paymentSystem.transfer(paymentInfo, storeAccount, transaction.getTotal());       
         if(isFailure(paymentRes)){
             return makeFailure(stringUtil.FAIL_PAYMENT_REJECTED_PREFIX+'\n'+paymentRes.message);
         }

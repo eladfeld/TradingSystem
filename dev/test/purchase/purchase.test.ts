@@ -22,8 +22,8 @@ const basket1b: Map<number, number> = new Map([[4000,4]]);
 const [total1a, total1b]: [number, number] = [30, 40];
 store1.addNewProduct("s3000", "wtvr",1,10);
 const prod: Product = ProductDB.getProductByName("s3000");
-const productId: number = prod.getProductId();
-const payInfo: PaymentInfo = new PaymentInfo();
+//const productId: number = prod.getProductId();
+const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);
 
 
 
