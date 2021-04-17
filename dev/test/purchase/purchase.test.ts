@@ -32,46 +32,46 @@ const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);
 
 describe('purchase tests' , function() {
 
-    it('checkout, without completing order' , function(){
-        Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-        expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(1);
-        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
-        const transaction: Transaction = Purchase.getTransactionInProgress(user1Id, store1Id);
-        expect(transaction.getTotal()).to.equal(total1b);
-        expect(transaction.getItems().get(3000)).to.equal(3);
-    });
+    // it('checkout, without completing order' , function(){
+    //     Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
+    //     expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(1);
+    //     expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
+    //     const transaction: Transaction = Purchase.getTransactionInProgress(user1Id, store1Id);
+    //     expect(transaction.getTotal()).to.equal(total1b);
+    //     expect(transaction.getItems().get(3000)).to.equal(3);
+    // });
 
-    it('checkout twice, should override first' , function(){
-        Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-        Purchase.checkout(store1, total1b, user1Id, basket1b, user1Adrs);
-        expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(1);
-        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
-        const transaction: Transaction = Purchase.getTransactionInProgress(user1Id, store1Id);
-        expect(transaction.getTotal()).to.equal(total1b);
-        expect(transaction.getItems().get(3000)).to.equal(3);
-        expect(transaction.getItems().get(4000)).to.equal(undefined);
-        expect(transaction.getStatus()).to.equal(TransactionStatus.ITEMS_RESERVED);
-    });
+    // it('checkout twice, should override first' , function(){
+    //     Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
+    //     Purchase.checkout(store1, total1b, user1Id, basket1b, user1Adrs);
+    //     expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(1);
+    //     expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(true);
+    //     const transaction: Transaction = Purchase.getTransactionInProgress(user1Id, store1Id);
+    //     expect(transaction.getTotal()).to.equal(total1b);
+    //     expect(transaction.getItems().get(3000)).to.equal(3);
+    //     expect(transaction.getItems().get(4000)).to.equal(undefined);
+    //     expect(transaction.getStatus()).to.equal(TransactionStatus.ITEMS_RESERVED);
+    // });
 
 
-    it('checkout, then complete order' , function(){
-        Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-        Purchase.CompleteOrder(user1Id, store1Id, payInfo );
-        expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
-        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
-        const transactions: Transaction[] = Purchase.getCompletedTransactions(user1Id, store1Id);
-        expect(transactions.length).to.equal(1);
-        const transaction: Transaction = transactions[0];
-        expect(transaction.getItems().get(3000)).to.equal(3);
-        expect(transaction.getItems().get(4000)).to.equal(undefined);
-        expect(transaction.getStatus()).to.equal(TransactionStatus.SUPPLIED);
-    });
+    // it('checkout, then complete order' , function(){
+    //     Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
+    //     Purchase.CompleteOrder(user1Id, store1Id, payInfo );
+    //     expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
+    //     expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
+    //     const transactions: Transaction[] = Purchase.getCompletedTransactions(user1Id, store1Id);
+    //     expect(transactions.length).to.equal(1);
+    //     const transaction: Transaction = transactions[0];
+    //     expect(transaction.getItems().get(3000)).to.equal(3);
+    //     expect(transaction.getItems().get(4000)).to.equal(undefined);
+    //     expect(transaction.getStatus()).to.equal(TransactionStatus.SUPPLIED);
+    // });
 
-    it('attempt completing order before checkout' , function(){
-        //Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-        expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
-        expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
-        const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo);
-        expect(isFailure(res)).to.equal(true);
-    });
+    // it('attempt completing order before checkout' , function(){
+    //     //Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
+    //     expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
+    //     expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
+    //     const res: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, payInfo);
+    //     expect(isFailure(res)).to.equal(true);
+    // });
 });

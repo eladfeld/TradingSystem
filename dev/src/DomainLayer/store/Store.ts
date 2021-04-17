@@ -151,7 +151,7 @@ export class Store
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<string> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<number> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -316,9 +316,9 @@ export class Store
 
     public getTitle(userId : number) : JobTitle
     {
-        let app: Appointment = this.appointments.find( appointment => {
+        let app: Appointment = this.appointments.find( appointment => 
             appointment.getAppointee().getUserId() === userId && appointment.getStore().storeId === this.storeId
-        });
+        );
         if (app != undefined)
             return app.getTitle();
         return undefined;
@@ -332,11 +332,11 @@ export class Store
         return this.inventory.getProductInfoByCategory(category);
     }
 
-    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<void> {
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
-            return makeOk(Appointment.removeAppointment(appointment));
+            return Appointment.removeAppointment(appointment);
         }
         else
         {
@@ -358,7 +358,7 @@ export class Store
     {
         if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this))
         {
-            Appointment.appoint_owner(appointer, this, appointee);
+            return Appointment.appoint_owner(appointer, this, appointee);
         }
         return makeFailure("user is not permited to appoint store owner");
 

@@ -43,7 +43,6 @@ export class User
     public GetShoppingCart(): Result<string>
     {
         return makeOk(JSON.stringify(this.shoppingCart.getShoppingCart()));
-
     }
 
     public getShoppingBasket(storeId: number): {}
@@ -64,5 +63,3 @@ export class User
 
 }
 
-
-//TODO: override buyBasket in subscriber and add to user history there!

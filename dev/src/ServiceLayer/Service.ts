@@ -56,7 +56,7 @@ export class Service
         return true;
     }
 
-    private initSystemManagers() : boolean
+    public initSystemManagers() : boolean
     {
         const data = fs.readFileSync(path.resolve('src/systemManagers.json') ,  {encoding:'utf8', flag:'r'});
         let arr: any[] = JSON.parse(data);
@@ -106,9 +106,13 @@ export class Service
         return Register.register(username, password);
     }
 
-    public login(userId: number, username: string, password: string): Result<number>
+    public login(userId: number, username: string, password: string): Result<Subscriber>
     {
         Logger.log(`login : userId:${userId} , username:${username} , password:${password}`);
+        if(this.logged_guest_users.find(user => user.getUserId() === userId) === undefined)
+        {
+            return makeFailure("user didn't enter the system");
+        }
         let res: Result<Subscriber> =  Login.login(username, password);
         if (isFailure(res))
         {
@@ -121,14 +125,13 @@ export class Service
         {
             this.logged_system_managers.push(subscriber);
         }
-        return makeOk(subscriber.getUserId());
+        return makeOk(subscriber);
     }
 
     public getStoreInfo(userId : number ,storeId: number): Result<string>
     {
         Logger.log(`getStoreInfo : userId:${userId} , storeId:${storeId}`);
         let store: Store = StoreDB.getStoreByID(storeId);
-
         return store.getStoreInfoResult(userId);
     }
 
@@ -197,14 +200,15 @@ export class Service
     }
 
 
-    public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<string>
+    public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<Store>
     {
         Logger.log(`openStore : userId:${userId} , storeInfo:{storeInfo}`);
         let subscriber: Subscriber = this.logged_subscribers.find(sub => sub.getUserId() === userId);
         if(subscriber !== undefined)
         {
             let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
-            return Appointment.appoint_founder(subscriber, store);
+            Appointment.appoint_founder(subscriber, store);
+            return makeOk(store);
         }
         return makeFailure("user not found");
     }
@@ -234,7 +238,7 @@ export class Service
         return makeFailure("subscriber or store wasn't found");
     }
 
-    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<string>
+    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<number>
     {
         Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
@@ -269,7 +273,7 @@ export class Service
         // call function from purchase to get history functionName(storeId)
     }
 
-    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<void>
+    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<string>
     {
         Logger.log(`deleteManagerFromStore : userId:${userId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
@@ -291,19 +295,44 @@ export class Service
             return store.editStaffPermission(subscriber, managerToEditId, permissionMask);
         }
         return makeFailure("wrong parameter given");
+    }
 
+    public appointStoreOwner(userId: number, storeId: number, newOwnerId: number): Result<string>
+    {
+        let appointer: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        return store.appointStoreOwner(appointer, Authentication.getSubscriberById(newOwnerId))
+    }
+
+    public appointStoreManager(userId: number, storeId: number, newManagerId: number): Result<string>
+    {
+        let appointer: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        return store.appointStoreManager(appointer, Authentication.getSubscriberById(newManagerId))
     }
 
 
     //------------------------------------------functions for tests-------------------------
-    public getLoggedUsers() : User[]
+    public get_logged_guest_users() : User[]
     {
         return this.logged_guest_users;
+    }
+
+    public get_logged_subscribers() : User[]
+    {
+        return this.logged_subscribers;
+    }
+
+    public get_logged_system_managers() : User[]
+    {
+        return this.logged_system_managers;
     }
 
     public clear() : void
     {
         this.logged_guest_users = [];
+        this.logged_subscribers = [];
+        this.logged_system_managers = [];
     }
 
 }

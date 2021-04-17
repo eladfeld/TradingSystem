@@ -3,7 +3,7 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import {Service} from '../../src/ServiceLayer/Service'
 
-describe('register test' , function() {
+describe('register test(use case 2.3)' , function() {
 
     it('guest user register' , function() {
         Authentication.clean();
