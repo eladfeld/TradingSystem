@@ -8,6 +8,7 @@ import { Store } from '../../src/DomainLayer/store/Store';
 import { isFailure, Result } from '../../src/Result';
 
 
+
 //checkout should have 
 
 const store1Id: number = 1;
@@ -52,7 +53,7 @@ describe('purchase tests' , function() {
 
     it('checkout, then complete order' , function(){
         Purchase.checkout(store1, total1a, user1Id, basket1a, user1Adrs);
-        Purchase.CompleteOrder(user1Id, store1Id, payInfo);
+        Purchase.CompleteOrder(user1Id, store1Id, payInfo );
         expect(Purchase.numTransactionsInProgress(user1Id,store1Id)).to.equal(0);
         expect(Purchase.hasCheckoutInProgress(user1Id,store1Id)).to.equal(false);
         const transactions: Transaction[] = Purchase.getCompletedTransactions(user1Id, store1Id);
