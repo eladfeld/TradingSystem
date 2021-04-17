@@ -4,16 +4,14 @@ import { Store } from "../store/Store";
 import { Appointment, JobTitle } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
-import { PaymentMeans, SupplyInfo, User } from "./User";
+import {  User } from "./User";
 
-export type HistoryItem = string;
 
 export class Subscriber extends User
 {
 
     private username: string;
     private hashPassword: string;
-    private history: HistoryItem[];
     private appointments: Appointment[];
 
     public constructor(username: string ){
@@ -102,16 +100,7 @@ export class Subscriber extends User
     }
     
 
-    private addToHistory(item: HistoryItem): void
-    {
-        this.history.push(item);
-    }
-
-    public getHistory(): HistoryItem[]
-    {
-        return this.history;
-    }
-
+  
 
 
 
