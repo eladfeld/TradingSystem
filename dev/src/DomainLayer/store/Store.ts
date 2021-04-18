@@ -208,8 +208,10 @@ export class Store
 
 
     public cancelReservedShoppingBasket(reservedProducts: Map <number, number>) {
-        for (let [id, quantity] of reservedProducts) {
-            this.inventory.returnReservedProduct(id, quantity);
+        if(reservedProducts !== undefined){
+            for (let [id, quantity] of reservedProducts.entries()) {
+                this.inventory.returnReservedProduct(id, quantity);
+            }
         }
     }
 
