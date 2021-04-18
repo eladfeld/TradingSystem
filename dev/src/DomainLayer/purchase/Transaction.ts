@@ -27,27 +27,7 @@ class Transaction {
     
     private static nextId = 1;
 
-    basketToObject = () => {
-        var obj = {};
-        for(const [key, value] of this.items){
-            obj[key] = value;
-        }
-        return obj
-    }
-    asData = () => {
-        const itemsObj = Object.fromEntries()
-        return{
-            transcationId: this.transcationId,
-            userId: this.userId,
-            storeId: this.storeId,
-            total: this.total,
-            cardNumber: this.cardNumber,
-            status: this.status,
-            time: this.time,
-            shipmentId: this.shipmentId,
-            items: Object.fromEntries
-        };
-    }
+
 
     constructor(userId: number, storeId: number, items: Map<number, number>, total:number ){
         this.transcationId = Transaction.nextId++;

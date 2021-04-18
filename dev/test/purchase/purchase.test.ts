@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import { PaymentInfo } from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../src/DomainLayer/purchase/Transaction';
+import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../src/DomainLayer/store/Store';
@@ -11,7 +12,7 @@ import { isFailure, Result } from '../../src/Result';
 
 
 
-//checkout should have 
+//checkout should have
 
 const store1BankAcct = 11223344;
 let subsriber = new Subscriber('something')
