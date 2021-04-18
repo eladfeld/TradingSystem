@@ -15,7 +15,6 @@ export class Login
         }
         else
         {
-            Logger.log(`user ${username} couldn't log in with the given password!`);
             return makeFailure(`user ${username} couldn't log in with the given password!`);
         }
     }

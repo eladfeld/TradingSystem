@@ -61,6 +61,28 @@ class Transaction {
     getStoreId = () : number => this.storeId;
     getItems = () : Map<number, number> => this.items;
     getStatus = () : number => this.status;
+
+    toJSON = () => {
+        var obj : any = {};
+        obj['transcationId'] = this.transcationId;
+        obj['userId'] = this.userId;
+        obj['storeId'] = this.storeId;
+        obj['total'] = this.total;
+        obj['cardNumber'] = this.cardNumber;
+        obj['status'] = this.status;
+        obj['time'] = this.time;
+        obj['shipmentId'] = this.shipmentId;
+
+        obj['items']=[];
+        for(const [key, value] of this.items){
+            obj['items'].push({ 
+                'productId':key,
+                'Quantity':value,
+            })
+        }
+        return obj;
+    }
+
 }
 
 export default Transaction;

@@ -48,7 +48,6 @@ export class StoreDB
 
     public static getPruductInfoByCategory(category: number): Result<string>{
         if(!Object.values(Category).includes(category)){
-            Logger.log(`Got invalid category number: ${category}`)
             return makeFailure("Got invalid category")
         }
         var products : any = {}
@@ -65,6 +64,12 @@ export class StoreDB
             }
         })
         return makeOk(JSON.stringify(products))
+    }
+    //------------------------------------------functions for tests-------------------------
+
+    public static clear()
+    {
+        this.stores = [];
     }
 
 }

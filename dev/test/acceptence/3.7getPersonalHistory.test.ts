@@ -2,6 +2,7 @@ import {assert, expect} from 'chai';
 import { servicesVersion } from 'typescript';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
+import Transaction from '../../src/DomainLayer/purchase/Transaction';
 import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
@@ -11,9 +12,9 @@ import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import {Service} from '../../src/ServiceLayer/Service'
 
-describe('4.11: view store buying history' , function() {
+describe('3.7: get subscriber history' , function() {
 
-        it('viwe store history' , function() {
+        it('get personal purchase history' , function() {
             Authentication.clean();
             let service = Service.get_instance();
             service.clear();
@@ -36,13 +37,18 @@ describe('4.11: view store buying history' , function() {
                             service.addProductTocart(avi.value.getUserId(), store.value.getStoreId() , apple.value ,7 );
                             service.checkoutBasket(avi.value.getUserId(),store.value.getStoreId(),"king Goerge st 42");
                             service.completeOrder(avi.value.getUserId(), store.value.getStoreId(),new PaymentInfo(1234, 456,2101569));
-                            expect(isOk(service.getStorePurchaseHistory(avi.value.getUserId(), store.value.getStoreId()))).to.equal(true);
+                            let historyRes: Result<any> = service.getSubscriberPurchaseHistory(avi.value.getUserId(), avi.value.getUserId());
+                            if(isOk(historyRes))
+                            {
+                                let history = JSON.parse(historyRes.value);
+                                expect(history.length).to.equal(1);
+                            }
+                            else assert.fail();
                         }
                     }
                     else assert.fail();
                 }
                 else assert.fail();
-
             }
             else assert.fail();
             

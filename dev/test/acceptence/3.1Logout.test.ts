@@ -15,7 +15,6 @@ describe('3.1: Logout' , function() {
         let service : Service = Service.get_instance();
         service.clear();
         let enter_res = service.enter();
-        console.log(enter_res)
         if (isOk(enter_res))
         {
             let login_res = service.login(enter_res.value , "michael" , "1234");

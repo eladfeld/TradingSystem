@@ -46,7 +46,6 @@ export class ShoppingBasket
         }
         if(!this.store.isProductAvailable(productId, quantity))
         {
-            Logger.log("product is not available in this quantity");
             return makeFailure("product is not available in this quantity");
         }
 
