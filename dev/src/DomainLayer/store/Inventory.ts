@@ -105,7 +105,7 @@ export class Inventory
     public getProductsInfo(): StoreProductInfo[] {
         let storeProducts: StoreProductInfo[] = []
         for(let storeProduct of this.products.values()){
-            storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()))
+            storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()))
         }
         return storeProducts
     }
@@ -114,7 +114,7 @@ export class Inventory
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
             if(storeProduct.getName().includes(productName)){
-                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
+                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
 
             }
         }
@@ -125,7 +125,7 @@ export class Inventory
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
             if(storeProduct.getCategories().find(productCategory=>category===productCategory)!= undefined){
-                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
+                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
             }
         }
         return storeProducts;
@@ -133,7 +133,7 @@ export class Inventory
 
     public getProductInfoByFilter(filter: (x: StoreProduct) => boolean): StoreProductInfo[]{
         return Array.from(this.products.values()).filter(filter).map(storeProduct => {
-            return new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getProductRating(), storeProduct.getNumOfRaters())
+            return new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters())
         })
     }
 
