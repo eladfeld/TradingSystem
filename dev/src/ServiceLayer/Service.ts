@@ -13,6 +13,7 @@ import { Authentication } from "../DomainLayer/user/Authentication";
 import { StoreDB } from "../DomainLayer/store/StoreDB";
 import Purchase from "../DomainLayer/purchase/Purchase";
 import { PaymentInfo } from "../DomainLayer/purchase/PaymentInfo";
+import Transaction from "../DomainLayer/purchase/Transaction";
 
 export class Service
 {
@@ -261,16 +262,16 @@ export class Service
     }
 
     //this function is used by subscribers that wants to see stores's history
-    public getStorePurchaseHistory(userId: number, storeId: number): Result<string>
+    public getStorePurchaseHistory(userId: number, storeId: number): Result<Transaction[]>
     {
         Logger.log(`getStorePurchaseHistory : userId:${userId} ,storeId: ${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.find(user => user.getUserId() === userId);
-        if (subscriber !== undefined)
+        if (subscriber === undefined)
             return makeFailure("User not logged in")
         let store: Store = StoreDB.getStoreByID(storeId);
-        if(store.permittedToViewHistory(subscriber))
+        if(!store.permittedToViewHistory(subscriber))
             return makeFailure("user don't have system manager permissions");
-        // call function from purchase to get history functionName(storeId)
+        return makeOk(Purchase.getCompletedTransactionsForStore(storeId));
     }
 
     public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<string>
