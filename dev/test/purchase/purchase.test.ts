@@ -5,6 +5,8 @@ import Transaction, { TransactionStatus } from '../../src/DomainLayer/purchase/T
 import { Product } from '../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../src/DomainLayer/store/Store';
+import { Appointment } from '../../src/DomainLayer/user/Appointment';
+import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, Result } from '../../src/Result';
 
 
@@ -12,7 +14,9 @@ import { isFailure, Result } from '../../src/Result';
 //checkout should have 
 
 const store1BankAcct = 11223344;
-const store1: Store = new Store(0,'store1', 12345678,"1 sunny ave");
+let subsriber = new Subscriber('something')
+const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
+Appointment.appoint_founder(subsriber, store1)
 const store1Id: number = store1.getStoreId();
 //const store2: Store = new Store(0,'store2',2,"2 sunny ave", 'none', 'none');
 const user1Id: number = 100;
@@ -25,7 +29,7 @@ const prod2Quantity: number=4;
 const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
 const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];
-store1.addNewProduct("s3000", "wtvr",1,10);
+store1.addNewProduct(subsriber, "s3000", [Category.ELECTRIC],1,10);
 const prod: Product = ProductDB.getProductByName("s3000");
 //const productId: number = prod.getProductId();
 const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);

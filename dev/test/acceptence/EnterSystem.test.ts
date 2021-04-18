@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
 import {Service} from '../../src/ServiceLayer/Service'
 
-describe('enter system test' , function() {
+describe('enter system test (use case 2.1)' , function() {
 
     it('guest user enter system' , function() {
         let service: Service = Service.get_instance();
@@ -35,7 +35,7 @@ describe('enter system test' , function() {
             if(isOk(res1) && isOk(res2) && isOk(res3))
             {
                 service.exit(res2.value);
-                expect(service.getLoggedUsers().length).to.equal(2);
+                expect(service.get_logged_guest_users().length).to.equal(2);
             }   
         })
 
@@ -44,7 +44,7 @@ describe('enter system test' , function() {
             service.clear();
             service.enter();
             service.exit(5);
-            expect(service.getLoggedUsers().length).to.equal(1);
+            expect(service.get_logged_guest_users().length).to.equal(1);
             
         })
 

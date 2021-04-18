@@ -10,11 +10,11 @@ import { StoreProductInfo } from '../../src/DomainLayer/store/StoreInfo';
 
 describe('view store products' , () => {
 
-    it('view store without products', () => {
-        let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
-        expect(store.getStoreInfo().getStoreName()).to.equal('nike')
-        expect(store.getStoreInfo().getStoreId()).to.equal(store.getStoreId())
-    })
+    // it('view store without products', () => {
+    //     let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
+    //     expect(store.getStoreInfo().getStoreName()).to.equal('nike')
+    //     expect(store.getStoreInfo().getStoreId()).to.equal(store.getStoreId())
+    // })
 
     it('view store with products', () => {
         Service.get_instance()
