@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "strictNullChecks": false,
+    "forceConsistentCasingInFileNames": true , 
+    "noEmit": true,
+    // "types": ["jest", "node"],
+  } ,
+  "include": ["src/**/*", "test/**/*.ts"],
+  "exclude": ["node_modules"],
+}
