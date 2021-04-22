@@ -1,5 +1,5 @@
 import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
@@ -49,7 +49,7 @@ export class Appointment
             founder.addAppointment(new_appointment);
             return makeOk("appointment made successfully");
         }
-        Logger.error("the candidate is not the store founder");
+        Logger.log("the candidate is not the store founder");
         return makeFailure("the candidate is not the store founder");
     }
 
@@ -57,7 +57,7 @@ export class Appointment
     {
         if(appointer === undefined || store === undefined || appointee === undefined)
         {
-            Logger.error("undefined arrgument given");
+            Logger.log("undefined arrgument given");
             return makeFailure("undefined arrgument given");
         }
 
@@ -112,10 +112,10 @@ export class Appointment
         else    //there is old appointment to this user remove old and replace with new appointment (save old permissions)
         {
             let prev_permission : Permission = store_app.getPermissions();
-            let new_permission_mask : number = prev_permission.getPermissions() | permission.getPermissions();
+            prev_permission.addPermissions(permission);
             appointee.deleteAppointment(store_app);
             store.deleteAppointment(store_app);
-            let new_appointment = new Appointment(appointer,store,appointee,new Permission(new_permission_mask), title);
+            let new_appointment = new Appointment(appointer,store,appointee, permission, title);
             store.addAppointment(new_appointment);
             appointee.addAppointment(new_appointment);
         }

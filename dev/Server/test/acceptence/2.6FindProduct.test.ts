@@ -10,13 +10,14 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Login } from '../../src/DomainLayer/user/Login';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('2.6: find product' , function() {
 
         it('find product by name' , function() {
             Authentication.clean();
-            let service = Service.get_instance();
+            let service: Service = Service.get_instance();
             service.clear();
             let guestId1 = service.enter();
             service.register("avi" , "1234");
@@ -47,7 +48,7 @@ describe('2.6: find product' , function() {
 
         it('find product by category' , function() {
             Authentication.clean();
-            let service = Service.get_instance();
+            let service: Service = Service.get_instance();
             service.clear();
             let guestId1 = service.enter();
             service.register("avi" , "1234");

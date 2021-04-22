@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('2.1: enter system test' , function() {
 

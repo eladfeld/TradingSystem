@@ -1,5 +1,5 @@
 import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { Category, Rating } from "./Common";
 
 export class StoreProduct
@@ -57,7 +57,7 @@ export class StoreProduct
 
     public setQuantity(quantity: number): Result<string> {
         if(quantity < 0){
-            Logger.error("Quantity has to be non negative")
+            Logger.log("Quantity has to be non negative")
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
@@ -66,7 +66,7 @@ export class StoreProduct
 
     public addQuantity(amount: number): Result<string> {
         if(amount < 0){
-            Logger.error("Amount has to be non negative")
+            Logger.log("Amount has to be non negative")
             return makeFailure("Amount has to be non negative");
         }
         this.quantity = this.quantity + amount;
@@ -76,7 +76,7 @@ export class StoreProduct
     public addProductRating(rating : number) : Result<string>
     {
         if(!Object.values(Rating).includes(rating)){
-            Logger.error("Got invalid rating " + `${rating}`)
+            Logger.log("Got invalid rating " + `${rating}`)
             return makeFailure("Got invalid rating")
         }
         this.productRating *= this.numOfRaters

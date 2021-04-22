@@ -10,13 +10,14 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Login } from '../../src/DomainLayer/user/Login';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('3.7: get subscriber history' , function() {
 
         it('get personal purchase history' , function() {
             Authentication.clean();
-            let service = Service.get_instance();
+            let service: Service = Service.get_instance();
             service.clear();
             let guestId1 = service.enter();
             service.register("avi" , "1234");

@@ -6,7 +6,7 @@ import { Appointment, JobTitle } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo, StoreProductInfo } from "./StoreInfo";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { buyingOption, BuyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
@@ -125,7 +125,7 @@ export class Store
     public addStoreRating(rating : number) : Result<string>
     {
         if(!Object.values(Rating).includes(rating)){
-            Logger.error(`Got invalid rating ${rating}`)
+            Logger.log(`Got invalid rating ${rating}`)
             return makeFailure("Got invalid rating")
         }
         this.storeRating *= this.numOfRaters

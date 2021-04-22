@@ -1,7 +1,8 @@
 import {expect} from 'chai';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('2.3: register test' , function() {
 

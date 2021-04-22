@@ -3,7 +3,7 @@ import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import { Category } from '../../src/DomainLayer/store/Common';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('6.4: System Manager Get Info' , function() {
 

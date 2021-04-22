@@ -5,7 +5,7 @@ import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('2.8: Shopping Cart view and edit' , function() {
 

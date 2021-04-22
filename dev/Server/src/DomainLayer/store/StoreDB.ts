@@ -1,5 +1,5 @@
 import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { Category } from "./Common";
 import { Store } from "./Store";
 import { StoreProductInfo } from "./StoreInfo";

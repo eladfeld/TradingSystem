@@ -1,5 +1,5 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { buyingOption } from "../store/BuyingOption";
 import { Product } from "../store/Product";
 import { ProductDB } from "../store/ProductDB";
@@ -32,7 +32,7 @@ export class ShoppingBasket
     {
         if (quantity < 0)
         {
-            Logger.error("quantity can't be negative number");
+            Logger.log("quantity can't be negative number");
             return makeFailure("quantity can't be negative number");
         }
         if(quantity === 0)
@@ -41,7 +41,7 @@ export class ShoppingBasket
         }
         if (!this.store.getBuyingPolicy().hasBuyingOption(buyingOption.INSTANT))
         {
-            Logger.error("product not for immediate buy");
+            Logger.log("product not for immediate buy");
             return makeFailure("product not for immediate buy");
         }
         if(!this.store.isProductAvailable(productId, quantity))
