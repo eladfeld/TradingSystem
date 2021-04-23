@@ -25,15 +25,15 @@ export class User
         return 0;
     }
 
-    public checkoutBasket(shopId: number, supplyInfo: SupplyInfo): Result<boolean>
+    public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supplyInfo);
+        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supply_address);
     }
 
-    public checkoutSingleProduct(productId :number , quantity: number, supplyInfo: string, shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Result<string>
     {
         let store:Store =  StoreDB.getStoreByID(shopId);
-        return store.sellProduct(this.getUserId() , supplyInfo,productId, quantity, buying_option);
+        return store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
     }
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
     {

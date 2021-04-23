@@ -46,7 +46,6 @@ export class StoreProductInfo
     private productRating: number
     private numOfRaters: number
 
-
     public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number)
     {
         this.productName = productName;
@@ -84,14 +83,14 @@ export class StoreProductInfo
         return this.productRating;
     }
 
-    public getNumOfRaters()
-    {
-        return this.numOfRaters;
-    }
-
     public getQuantity()
     {
         return this.quantity;
+    }
+
+    public getNumOfRaters()
+    {
+        return this.numOfRaters;
     }
 
     public toString(): string {

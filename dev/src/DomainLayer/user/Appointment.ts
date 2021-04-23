@@ -47,7 +47,6 @@ export class Appointment
             let new_appointment = new Appointment(founder, store, founder, allGrantedPermission, JobTitle.FOUNDER);
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
-            Logger.log(`the subscriber ${founder.getUsername} is now appointed to be a new store founder at ${store.getStoreId}`);
             return makeOk("appointment made successfully");
         }
         Logger.error("the candidate is not the store founder");
@@ -120,7 +119,6 @@ export class Appointment
             store.addAppointment(new_appointment);
             appointee.addAppointment(new_appointment);
         }
-        Logger.log(`the subscriber ${appointee.getUsername} is now appointed to be a new store ${title} at ${store.getStoreId}`);
         return makeOk("appointment made successfully");
     }
 
