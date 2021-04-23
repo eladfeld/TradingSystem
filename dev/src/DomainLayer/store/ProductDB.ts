@@ -26,4 +26,9 @@ export class ProductDB
         return this.products.find(product => product.getProductId() === productId);
     }
 
+    public static clear()
+    {
+        this.products=[]
+    }
+
 }

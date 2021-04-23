@@ -13,6 +13,8 @@ import { Authentication } from "../DomainLayer/user/Authentication";
 import { StoreDB } from "../DomainLayer/store/StoreDB";
 import Purchase from "../DomainLayer/purchase/Purchase";
 import { PaymentInfo } from "../DomainLayer/purchase/PaymentInfo";
+import Transaction from "../DomainLayer/purchase/Transaction";
+import { ProductDB } from "../DomainLayer/store/ProductDB";
 
 export class Service
 {
@@ -85,6 +87,7 @@ export class Service
 
     public exit(userId: number): void
     {
+        Logger.log(`exit : userId:${userId}`);
         this.logged_guest_users = this.logged_guest_users.filter(user => user.getUserId() !== userId);
         this.logged_subscribers = this.logged_subscribers.filter(user => user.getUserId() !== userId);
         this.logged_system_managers = this.logged_system_managers.filter(user => user.getUserId() !== userId);
@@ -144,7 +147,7 @@ export class Service
 
     public getPruductInfoByCategory(userId : number, category: number): Result<string>
     {
-        Logger.log(`getPruductInfo : userId:${userId}`);
+        Logger.log(`getPruductInfoByCategory : userId:${userId} , category:${category}`);
         return StoreDB.getPruductInfoByCategory(category);
 
     }
@@ -176,52 +179,45 @@ export class Service
         return makeFailure("user not found");
     }
 
-    public checkoutBasket(userId: number, shopId: number, supplyInfo: SupplyInfo ): Result<boolean>
+    public checkoutBasket(userId: number, shopId: number, supply_address: string ): Result<boolean>
     {
-        Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutBasket : userId:${userId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.checkoutBasket(shopId, supplyInfo);
+            return user.checkoutBasket(shopId, supply_address);
         return makeFailure("user not found");
     }
 
-    public checkoutSingleProduct(userId : number, productId: number, quantity : number , storeId : number , supplyInfo: SupplyInfo): Result<string>
+    public checkoutSingleProduct(userId : number, productId: number, quantity : number , storeId : number , supply_address: string): Result<string>
     {
-        Logger.log(`checkoutSingleProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supplyInfo}`);
+        Logger.log(`checkoutSingleProduct : userId : ${userId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
         if (user !== undefined)
-            return user.checkoutSingleProduct(productId  , quantity,  supplyInfo, storeId , buyingOption.INSTANT);
+            return user.checkoutSingleProduct(productId  , quantity,  supply_address, storeId , buyingOption.INSTANT);
         return makeFailure("user not found");
     }
 
     public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
     {
-        return Purchase.CompleteOrder(userId , storeId , paymentInfo);
+        Logger.log(`completeOrder: userId : ${userId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
+        let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
+        if(user !== undefined)
+        {
+            return Purchase.CompleteOrder(userId , storeId , paymentInfo);
+        }
+        return makeFailure("user not found");
     }
 
 
     public openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Result<Store>
     {
-        Logger.log(`openStore : userId:${userId} , storeInfo:{storeInfo}`);
+        Logger.log(`openStore : userId:${userId} , bankAccountNumber:${bankAccountNumber} , storeAddress:${storeAddress} `);
         let subscriber: Subscriber = this.logged_subscribers.find(sub => sub.getUserId() === userId);
         if(subscriber !== undefined)
         {
             let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
             Appointment.appoint_founder(subscriber, store);
             return makeOk(store);
-        }
-        return makeFailure("user not found");
-    }
-
-    //this function is used by the user himself
-    //TODO: finish get purchase history in subscriber and remove comments
-    public getPurchaseHistory(userId: number): Result<string>
-    {
-        Logger.log(`openStore : userId:${userId} , storeInfo:{storeInfo}`);
-        let subscriber: Subscriber = this.logged_subscribers.find(sub => sub.getUserId() === userId);
-        if(subscriber !== undefined)
-        {
-            /*return subscriber.getPurchaseHistory();  */
         }
         return makeFailure("user not found");
     }
@@ -240,7 +236,7 @@ export class Service
 
     public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<number>
     {
-        Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName}`);
+        Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName} , categories:${categories} , price:${price} , quantity:${quantity} `);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
         if(subscriber !== undefined && store !== undefined)
@@ -250,27 +246,27 @@ export class Service
         return makeFailure("subscriber or store wasn't found");
     }
 
-    //this function is used by system managers that wants to see someone's history
-    public getSubscriberPurchaseHistory(userId: number, subscriberId: number): Result<string>
+    public getSubscriberPurchaseHistory(requestingUserId: number, subscriberToSeeId: number): Result<any>
     {
-        Logger.log(`getSubscriberPurchaseHistory : userId:${userId} , subscriberId:${subscriberId}`);
-        let manager: Subscriber = this.logged_system_managers.find(user => user.getUserId() === userId);
-        if (manager !== undefined)
-            return this.getPurchaseHistory(subscriberId);
-        return makeFailure("user don't have system manager permissions");
+        Logger.log(`getSubscriberPurchaseHistory : userId:${requestingUserId} , subscriberId:${subscriberToSeeId}`);
+        let subscriber: Subscriber = this.logged_subscribers.find(user => user.getUserId() === requestingUserId);
+        if (subscriber !== undefined)
+            if (requestingUserId === subscriberToSeeId || Authentication.isSystemManager(requestingUserId))
+                return makeOk(Purchase.getCompletedTransactionsForUser(subscriberToSeeId));
+        return makeFailure("user don't have permissions");
     }
 
     //this function is used by subscribers that wants to see stores's history
-    public getStorePurchaseHistory(userId: number, storeId: number): Result<string>
+    public getStorePurchaseHistory(userId: number, storeId: number): Result<Transaction[]>
     {
         Logger.log(`getStorePurchaseHistory : userId:${userId} ,storeId: ${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.find(user => user.getUserId() === userId);
-        if (subscriber !== undefined)
+        if (subscriber === undefined)
             return makeFailure("User not logged in")
         let store: Store = StoreDB.getStoreByID(storeId);
-        if(store.permittedToViewHistory(subscriber))
+        if(!store.permittedToViewHistory(subscriber) && !Authentication.isSystemManager(userId) )
             return makeFailure("user don't have system manager permissions");
-        // call function from purchase to get history functionName(storeId)
+        return makeOk(Purchase.getCompletedTransactionsForStore(storeId));
     }
 
     public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Result<string>
@@ -299,6 +295,7 @@ export class Service
 
     public appointStoreOwner(userId: number, storeId: number, newOwnerId: number): Result<string>
     {
+        Logger.log(`appointStoreOwner : userId:${userId} , storeId:${storeId}, newOwnerId:${newOwnerId}`);
         let appointer: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
         return store.appointStoreOwner(appointer, Authentication.getSubscriberById(newOwnerId))
@@ -306,12 +303,14 @@ export class Service
 
     public appointStoreManager(userId: number, storeId: number, newManagerId: number): Result<string>
     {
+        Logger.log(`appointStoreManager : userId:${userId} , storeId:${storeId}, newManagerId:${newManagerId}`);
         let appointer: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
         return store.appointStoreManager(appointer, Authentication.getSubscriberById(newManagerId))
     }
 
     public getStoreStaff(userId: number, storeId: number): Result<string> {
+        Logger.log(`getStoreStaff : userId:${userId} , storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);
         let store: Store = StoreDB.getStoreByID(storeId);
         return store.getStoreStaff(subscriber)
@@ -339,6 +338,8 @@ export class Service
         this.logged_guest_users = [];
         this.logged_subscribers = [];
         this.logged_system_managers = [];
+        StoreDB.clear();
+        ProductDB.clear();
     }
 
 }

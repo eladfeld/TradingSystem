@@ -61,7 +61,6 @@ export class StoreProduct
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
-        Logger.log(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 
@@ -71,7 +70,6 @@ export class StoreProduct
             return makeFailure("Amount has to be non negative");
         }
         this.quantity = this.quantity + amount;
-        Logger.log(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`)
         return makeOk(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 
@@ -85,7 +83,6 @@ export class StoreProduct
         this.numOfRaters++
         this.productRating += rating
         this.productRating /= this.numOfRaters
-        Logger.log(`Rating was added new product rating: ${this.productRating}`)
         return makeOk("Rating was added ")
     }
 

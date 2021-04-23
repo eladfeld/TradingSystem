@@ -37,7 +37,6 @@ export class Inventory
         let productId = ProductDB.getProductByName(productName).getProductId()
         let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
         this.products.set(storeProduct.getProductId(), storeProduct);
-        Logger.log(`Product was added ProductId: ${productId}, ProductName: ${productName}, StoreId: ${storeId}`)
         return makeOk(productId);
     }
 
@@ -88,7 +87,6 @@ export class Inventory
         }
         let product = this.products.get(productId);
         product.setQuantity(product.getQuantity() - quantity);
-        Logger.log(`Product reserved Product name: ${product.getName}, Quantity reserved: ${quantity}`);
         return makeOk(true);
     }
 
@@ -98,7 +96,6 @@ export class Inventory
         }
         let product = this.products.get(productId);
         product.addQuantity(quantity);
-        Logger.log(`Product returned Product name: ${product.getName}, Quantity returned: ${quantity}`);
         return makeOk('Product returned');
     }
 
