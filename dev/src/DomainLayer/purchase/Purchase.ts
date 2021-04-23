@@ -51,15 +51,19 @@ class Purchase {
         this.terminateTransaction(userId, storeId, storeCallback, TransactionStatus.CANCELLED);
     }
 
-
+    public cancelTransactionInProgress = (userId:number, storeId: number) => {
+        //TODO: handle exception
+        if( !this.hasTransactionInProgress(userId,storeId)) return;
+        const [timer, callback]: [ReturnType<typeof setTimeout>, () => void] = this.getTimerAndCallback(userId, storeId);
+        this.onTransactionCancel(userId, storeId, callback);
+    }
     public hasTransactionInProgress = (userId: number, storeId: number): boolean => {
         return this.getTimerAndCallback(userId, storeId) !== undefined;
     }
 
-    //first of 2 steps to placing an order. This function reserves a shipment for the order and sets a timer
-    //that allows for payment of the order within 5 minutes. If the reservation fails or payment
-    //not received in time, then the shipment reservation is cancelled and items returned to inventory of @store
-    public checkout = (storeId: number, total: number, userId: number, products: Map<number, number>, onFail:()=>void):Result<boolean>=>{
+    //initiates a transaction between the store and the user that will be completed within 5 minutes, otherwise cancelled.
+    public checkout = (storeId: number, total: number, userId: number, 
+        products: Map<number, number>, onFail:()=>void):Result<boolean>=>{
         const transaction: Transaction = new Transaction(userId, storeId, products, total);
         const [oldTimerId, oldOnFail] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId !== undefined){
@@ -77,8 +81,8 @@ class Purchase {
         return makeOk(true);
     }
 
-    //second and final step to placing an order. transfers funds from @paymentInfo to @storeId's bank account
-    //and and finalizes the shipment order
+    //completes an existing transaction in progress. returns failure in the event that
+    //1) no transaction is in progress, 2)Shipping issue 3) payment issue
     public CompleteOrder = (userId: number, storeId: number, shippingInfo: ShippingInfo, paymentInfo: PaymentInfo, storeBankAccount: number) : Result<boolean> => {
         //verify transaction in progress
         const oldTimerIdAndCallback = this.getTimerAndCallback(userId, storeId);

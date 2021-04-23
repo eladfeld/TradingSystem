@@ -1,5 +1,3 @@
-import { makeOk, Result } from "../../Result";
-
 class PaymentSystem {
 
     private static nextPaymentId: number = 1;
