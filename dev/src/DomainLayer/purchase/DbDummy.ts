@@ -11,6 +11,9 @@ class DbDummy{
         this.usersAtCheckout = new Map();
     }
 
+    getAllTransactions = () => {
+        return [...this.transactionsInProgress, ...this.completedTransactions];
+    }
     storeCompletedTransaction = (transaction: Transaction) =>{
         this.completedTransactions.push(transaction);
     }
@@ -29,6 +32,10 @@ class DbDummy{
     }
     getTransactionsInProgress = (userId: number, storeId: number):Transaction[] =>{
         return this.transactionsInProgress.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId)));
+    }
+
+    updateTransaction = (transaction: Transaction) => {
+        return;
     }
 
 }

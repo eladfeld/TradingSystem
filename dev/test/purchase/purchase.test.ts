@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import { PaymentInfo } from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase'
-import Transaction, { TransactionStatus } from '../../src/DomainLayer/purchase/Transaction';
+import Transaction, { TransactionProgress } from '../../src/DomainLayer/purchase/Transaction';
 import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
@@ -57,7 +57,7 @@ describe('purchase tests' , function() {
         expect(transaction.getTotal()).to.equal(total1b);
         expect(transaction.getItems().get(prod1Id)).to.equal(undefined);
         expect(transaction.getItems().get(prod2Id)).to.equal(prod2Quantity);
-        expect(transaction.getStatus()).to.equal(TransactionStatus.ITEMS_RESERVED);
+        expect(transaction.getProgress()).to.equal(TransactionProgress.SUPPLY_APPROVED);
     });
 
 
@@ -71,7 +71,7 @@ describe('purchase tests' , function() {
         const transaction: Transaction = transactions[0];
         expect(transaction.getItems().get(3000)).to.equal(3);
         expect(transaction.getItems().get(4000)).to.equal(undefined);
-        expect(transaction.getStatus()).to.equal(TransactionStatus.SUPPLIED);
+        expect(transaction.getProgress()).to.equal(TransactionProgress.SUPPLIED);
     });
 
     it('attempt completing order before checkout' , function(){
