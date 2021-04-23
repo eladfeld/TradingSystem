@@ -61,6 +61,7 @@ export class Inventory
     }
 
     public isProductAvailable(productId: number, quantity: number) : boolean {
+        //TODO: add synchronization
         let product = this.products.get(productId);
         if(product === undefined){
             Logger.error("Product does not exist in inventory!")
