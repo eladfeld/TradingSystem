@@ -1,71 +1,40 @@
-import {assert, expect} from 'chai';
+import { assert, expect } from 'chai';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
+import { enter_register_login, open_store } from './common';
 
-describe('4.7: remove appointment' , function() {
+describe('4.7: remove appointment', function () {
 
-        it('remove recursive appointment' , function() {
-            Authentication.clean();
-            let service : Service = Service.get_instance();
-            service.clear();
-            let guestId1 = service.enter();
-            let guestId2 = service.enter();
-            let guestId3 = service.enter();
+    var service: Service = Service.get_instance();
+    beforeEach(function () {
+    });
 
-            if (isOk(guestId1) && isOk(guestId2) && isOk(guestId3))
-            {
-                service.register("avi" , "123456");
-                service.register("moshe" , "123456");
-                service.register("hezi" , "123456");
-
-                let moshe = service.login(guestId1.value , "moshe" , "123456");
-                let avi = service.login(guestId2.value , "avi" , "123456");
-                let hezi = service.login(guestId3.value , "hezi" , "123456");
-                if (isOk(avi) && isOk(moshe) && isOk(hezi))
-                {
-                    let store = service.openStore(avi.value.getUserId() , "Mega" , 123456 , "Tel Aviv" );
-                    if(isOk(store))
-                    {
-                        service.appointStoreOwner(avi.value.getUserId() , store.value.getStoreId() , moshe.value.getUserId());
-                        service.appointStoreManager(moshe.value.getUserId(), store.value.getStoreId(), hezi.value.getUserId());
-                        service.deleteManagerFromStore(avi.value.getUserId(), moshe.value.getUserId(), store.value.getStoreId())
-                        expect(store.value.getAppointments().length).to.equal(1);
-                    }
-                    else assert.fail();
-                }
-                else assert.fail();
-            }
-            else assert.fail(); 
-    }) 
-
-    it('try to remove manager without permission' , function() {
-        Authentication.clean();
-        let service : Service = Service.get_instance();
+    afterEach(function () {
         service.clear();
-        let guestId1 = service.enter();
-        let guestId2 = service.enter();
-        if (isOk(guestId1) && isOk(guestId2))
-        {
-            service.register("avi" , "123456");
-            service.register("moshe" , "123456");
-            let moshe = service.login(guestId1.value , "moshe" , "123456");
-            let avi = service.login(guestId2.value , "avi" , "123456");
-            if (isOk(avi) && isOk(moshe))
-            {
-                let store = service.openStore(avi.value.getUserId() , "Mega" , 123456 , "Tel Aviv" );
-                if(isOk(store))
-                {
-                    service.appointStoreManager(avi.value.getUserId() , store.value.getStoreId() , moshe.value.getUserId());
-                    expect(isOk(service.deleteManagerFromStore(moshe.value.getUserId(), avi.value.getUserId(), store.value.getStoreId()))).to.equal(false);
-                    
-                }
-                else assert.fail();
-            }
-            else assert.fail();
-        }
-        else assert.fail(); 
-}) 
+        Authentication.clean();
+    });
+    it('remove recursive appointment', function () {
+        let avi = enter_register_login(service, "avi", "123456789");
+        let moshe = enter_register_login(service, "moshe", "123456789");
+        let hezi = enter_register_login(service, "hezi", "123456789");
+        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+
+
+        service.appointStoreOwner(avi.getUserId(), store.getStoreId(), moshe.getUserId());
+        service.appointStoreManager(moshe.getUserId(), store.getStoreId(), hezi.getUserId());
+        service.deleteManagerFromStore(avi.getUserId(), moshe.getUserId(), store.getStoreId())
+        expect(store.getAppointments().length).to.equal(1);
+    })
+
+    it('try to remove manager without permission', function () {
+        let avi = enter_register_login(service, "avi", "123456789");
+        let moshe = enter_register_login(service, "moshe", "123456789");
+        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+        service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
+        expect(isOk(service.deleteManagerFromStore(moshe.getUserId(), avi.getUserId(), store.getStoreId()))).to.equal(false);
+
+    })
 
 
 
