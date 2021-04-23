@@ -13,9 +13,9 @@ class Transaction {
     private userId: number;//
     private storeId: number;//
     private total: number;//
-    private cardNumber: number;
+    private cardNumber: number;//
     private items: Map<number, number>; //productId => quantity
-    private status: number;
+    private status: number;//
     private time: number;//
     private shipmentId: number;//
     private paymentId: number;//
@@ -69,6 +69,7 @@ class Transaction {
     getStoreId = () : number => this.storeId;
     getItems = () : Map<number, number> => this.items;
     getStatus = () : number => this.status;
+    getTime = () : number => this.time;
 
     toJSON = () => {
         var obj : any = {};
@@ -86,10 +87,10 @@ class Transaction {
             obj['items'].push({ 
                 'productId':key,
                 'Quantity':value,
-            })
+            });
         }
         return obj;
-    }
+    }  
 }
 
 export default Transaction;
