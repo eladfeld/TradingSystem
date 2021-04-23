@@ -39,17 +39,17 @@ export class Store
     private storeClosed: boolean
     private appointments: Appointment[]
 
-    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = null, buyingPolicy: BuyingPolicy = null)
+    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = undefined, buyingPolicy: BuyingPolicy = undefined)
     {
         this.storeId = ID();
         this.storeName = storeName;
         this.storeFounderId = storeFounderId;
-        if (discountPolicy === null){
+        if (discountPolicy === undefined){
             this.discountPolicy = new DiscountPolicy();
         } else {
             this.discountPolicy = discountPolicy
         }
-        if (buyingPolicy === null){
+        if (buyingPolicy === undefined){
             this.buyingPolicy = new BuyingPolicy();
         } else {
             this.buyingPolicy = buyingPolicy
@@ -132,7 +132,6 @@ export class Store
         this.numOfRaters++
         this.storeRating += rating
         this.storeRating /= this.numOfRaters
-        Logger.log(`Rating was added new store rating: ${this.storeRating}`)
         return makeOk("Rating was added ")
     }
 
@@ -161,7 +160,6 @@ export class Store
         }
         for(let category of categories){
             if(!Object.values(Category).includes(category)){
-                Logger.log(`Got invalid category number: ${category}`)
                 return makeFailure("Got invalid category")
             }
         }
@@ -202,7 +200,6 @@ export class Store
         let fixedPrice = this.discountPolicy.applyDiscountPolicy(pricesToQuantity);
 
         Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
-        Logger.log("Checkout passed to purchase")
         return makeOk(true);
     }
 
@@ -222,7 +219,8 @@ export class Store
             return makeFailure("Store is closed")
         }
         if(buyingOption < this.buyingOptionsMenu.length && buyingOption >= 0){
-            return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
+            //return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
+            return this.buyInstant(productId,quantity,buyerId,userAddr);
         }
         return makeFailure("Invalid buying option");
     }

@@ -42,9 +42,9 @@ export class StoreProductInfo
     private productId: number;
     private price: number;
     private storeId: number;
+    private quantity: number;
     private productRating: number
     private numOfRaters: number
-    private quantity: number;
 
     public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number)
     {
