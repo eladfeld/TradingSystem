@@ -7,11 +7,11 @@ import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { Logger } from "../Logger";
-import { buyingOption, BuyingOption } from "./BuyingOption";
+import { buyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
 import Purchase from "../purchase/Purchase";
-import { DiscountOption } from "./DiscountOption";
+import { discountOption, DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
 
@@ -38,6 +38,8 @@ export class Store
     private storeAddress: string
     private storeClosed: boolean
     private appointments: Appointment[]
+    private discounts: DiscountOption[];
+    private buyingOptions: buyingOption[];
 
     public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = undefined, buyingPolicy: BuyingPolicy = undefined)
     {
@@ -62,6 +64,8 @@ export class Store
         this.storeAddress = storeAddress;
         this.storeClosed = false
         this.appointments = []
+        this.discounts = [];
+        this.buyingOptions = [buyingOption.INSTANT];
 
         StoreDB.addStore(this);
     }
@@ -87,16 +91,6 @@ export class Store
         this.buyingPolicy = buyingPolicy;
     }
 
-    public addBuyingOption(buyingOption: BuyingOption)
-    {
-        this.buyingPolicy.addBuyingOption(buyingOption);
-    }
-
-    public deleteBuyingOption(buyingOption: buyingOption)
-    {
-        this.buyingPolicy.deleteBuyingOption(buyingOption);
-    }
-
     public getDiscountPolicy()
     {
         return this.discountPolicy;
@@ -105,16 +99,6 @@ export class Store
     public setDiscountPolicy(discountPolicy: DiscountPolicy)
     {
         this.discountPolicy = discountPolicy;
-    }
-
-    public addDiscount(discount: DiscountOption)
-    {
-        this.discountPolicy.addDiscount(discount);
-    }
-
-    public deleteDiscount(discountId: number)
-    {
-        this.discountPolicy.deleteDiscount(discountId);
     }
 
     public setStoreId(id : number) : void
@@ -197,7 +181,7 @@ export class Store
                 return sellResult;
             }
         }
-        let fixedPrice = this.discountPolicy.applyDiscountPolicy(pricesToQuantity);
+        let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
 
         Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
         return makeOk(true);
@@ -226,7 +210,7 @@ export class Store
     }
 
     private buyInstant(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
-        if(!this.buyingPolicy.hasBuyingOption(buyingOption.INSTANT)){
+        if(!this.hasBuyingOption(buyingOption.INSTANT)){
             return makeFailure("Store does not support instant buying option")
         }
         let sellResult = this.inventory.reserveProduct(productId, quantity);
@@ -239,7 +223,7 @@ export class Store
             return makeFailure("Product was not found")
         }
         productMap.set(productPrice, quantity);
-        let fixedPrice = this.discountPolicy.applyDiscountPolicy(productMap);
+        let fixedPrice = this.applyDiscountPolicy(productMap);
 
         Purchase.checkout(this, fixedPrice, buyerId, productMap, userAddress);
         return makeOk("Checkout passed to purchase");
@@ -411,6 +395,54 @@ export class Store
                                         })
         })
         return makeOk(JSON.stringify(staff))
+    }
+
+
+    public addDiscount(discount: DiscountOption)
+    {
+        this.discounts.push(discount)
+    }
+
+    public deleteDiscount(discountId: number)
+    {
+        this.discounts = this.discounts.filter(discount => discount.getId() !== discountId);
+    }
+
+    public applyDiscountPolicy(productMap: Map<number, number>) : number{
+        let totalPrice = 0
+        let activeDiscountPercents = []
+        let now = new Date();
+        now.setHours(0,0,0,0);
+        for(let discount of this.discounts){
+            if(discount.getDateFrom() <= now && discount.getDateUntil() >= now){
+                //TODO: check for conditional discount predicats
+                activeDiscountPercents.push(discount.getPercent())
+            }
+        }
+        for(let [productPrice, quantity] of productMap){
+            let discountPrice = productPrice
+            for(let discount of activeDiscountPercents){
+                discountPrice *= ((100 - discount)/100)
+            }
+            totalPrice += discountPrice*quantity
+        }
+        return totalPrice
+    }
+
+    public hasBuyingOption(option: buyingOption) {
+        return this.buyingOptions.some( buyingOption => buyingOption === option )
+    }
+
+    public addBuyingOption(buyingOption: buyingOption)
+    {
+        // This overiddes the current if exists
+        this.deleteBuyingOption(buyingOption)
+        this.buyingOptions.push(buyingOption)
+    }
+
+    public deleteBuyingOption( buyingOption: buyingOption)
+    {
+        this.buyingOptions = this.buyingOptions.filter(option => option !== buyingOption);
     }
 
 }
