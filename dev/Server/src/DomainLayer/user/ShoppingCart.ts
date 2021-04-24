@@ -1,5 +1,5 @@
 import { makeFailure, Result } from "../../Result";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { StoreDB } from "../store/StoreDB";
 import { ShoppingBasket } from "./ShoppingBasket";
@@ -19,7 +19,7 @@ export class ShoppingCart
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
         {
-            Logger.error("no such shopping basket");
+            Logger.log("no such shopping basket");
             return makeFailure("no such shopping basket");
         }
         return basket.checkout(userId, supply_address);
@@ -38,7 +38,7 @@ export class ShoppingCart
             }
             else
             {
-                Logger.error(`shop with id ${storeId} does not exist`);
+                Logger.log(`shop with id ${storeId} does not exist`);
                 return makeFailure(`shop with id ${storeId} does not exist`);
             }
         }

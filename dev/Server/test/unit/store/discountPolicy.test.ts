@@ -12,14 +12,12 @@ describe('discount policy tests' , () => {
     })
 
     it('create a store with discount policy and apply discount', () => {
-        let discountPolicy = new DiscountPolicy()
+        let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
         let discount = new DiscountOption(30, new Date(2010, 12, 12, 10, 10, 10), new Date(2030, 12, 12, 10, 10, 10))
-        discountPolicy.addDiscount(discount)
-        let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb', discountPolicy)
-        discountPolicy = store.getDiscountPolicy()
+        store.addDiscount(discount)
         let productMap = new Map<number, number>()
         productMap.set(100, 10)
-        expect(discountPolicy.applyDiscountPolicy(productMap)).to.equal(70*10)
+        expect(store.applyDiscountPolicy(productMap)).to.equal(70*10)
     })
 
 });

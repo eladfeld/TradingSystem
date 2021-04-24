@@ -1,19 +1,24 @@
 import {expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
+import { Service } from '../../src/ServiceLayer/Service';
 
 describe('2.1: enter system test' , function() {
 
-    it('guest user enter system' , function() {
-        let service: Service = Service.get_instance();
+    var service : Service = Service.get_instance();
+    beforeEach(function () {
+    });
+
+    afterEach(function() {
         service.clear();
+    });
+    
+    it('guest user enter system' , function() {
         let res: Result<number> = service.enter()
         expect(isOk(res) ? res.value : res.message).to.greaterThanOrEqual(0);
     })
 
     it('enter 3 users' , function() {
-        let service: Service = Service.get_instance();
-        service.clear();
         let res1: Result<number> = service.enter()
         let res2: Result<number> = service.enter()
         let res3: Result<number> = service.enter()
@@ -24,10 +29,7 @@ describe('2.1: enter system test' , function() {
     })
 
     describe('exit system test' , function() {
-
         it('enter 3 users and exit 1' , function() {
-            let service: Service = Service.get_instance();
-            service.clear();
             let res1: Result<number> = service.enter()
             let res2: Result<number> = service.enter()
             let res3: Result<number> = service.enter()
@@ -40,8 +42,6 @@ describe('2.1: enter system test' , function() {
         })
 
         it('fail exit' , function() {
-            let service: Service = Service.get_instance();
-            service.clear();
             service.enter();
             service.exit(5);
             expect(service.get_logged_guest_users().length).to.equal(1);

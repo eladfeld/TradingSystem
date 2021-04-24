@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { Logger } from '../Logger';
+import { Logger } from '../../Logger';
 import { Subscriber } from './Subscriber'; 
 
 export class Authentication
@@ -26,12 +26,7 @@ export class Authentication
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
         subscriber.setPassword(hashedPass);
         this.subscribers.push(subscriber);
-    }
-    public static clean(): void
-    {
-        this.subscribers = [];
-        this.system_managers.forEach(manager => this.subscribers.push(manager));
-    }
+    }    
 
     public static checkedUsedUserName(username: string): boolean
     {
@@ -52,6 +47,12 @@ export class Authentication
     {
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
         return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === hashedPass )
+    }
+
+    public static clean(): void
+    {
+        this.subscribers = [];
+        this.system_managers.forEach(manager => this.subscribers.push(manager));
     }
 
 }

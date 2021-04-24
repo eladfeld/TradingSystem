@@ -1,5 +1,5 @@
 import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { Authentication } from "./Authentication";
 import { Subscriber } from "./Subscriber";
 

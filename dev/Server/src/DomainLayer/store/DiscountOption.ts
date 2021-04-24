@@ -17,7 +17,6 @@ export class DiscountOption {
 
     public constructor(percent: number, dateFrom: Date, dateUntil: Date, option = discountOption.VISIBLE) {
         this.id - ID()
-        this.option = discountOption.VISIBLE;
         this.dateFrom = dateFrom;
         this.dateUntil = dateUntil;
         this.percent = percent;

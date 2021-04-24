@@ -1,5 +1,5 @@
 import { StoreProduct } from "./StoreProduct";
-import { Logger } from "../Logger";
+import { Logger } from "../../Logger";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { ProductDB } from "./ProductDB";
 import { Product } from "./Product";
@@ -17,17 +17,17 @@ export class Inventory
 
     public addNewProduct(productName: string, categories: Category[], storeId: number, price: number, quantity = 0) : Result<number> {
         if (quantity < 0){
-            Logger.error("Quantity must be non negative")
+            Logger.log("Quantity must be non negative")
             return makeFailure("Quantity must be non negative");
         }
 
         if (price < 0){
-            Logger.error("Price must be non negative")
+            Logger.log("Price must be non negative")
             return makeFailure("Price must be non negative");
         }
 
         if(isOk(this.hasProductWithName(productName))){
-            Logger.error("Product already exist in inventory!")
+            Logger.log("Product already exist in inventory!")
             return makeFailure(`Product already exist in inventory! productName: ${productName}`);
         }
         let product = ProductDB.getProductByName(productName)
@@ -43,7 +43,7 @@ export class Inventory
     public addProductQuantity(productId: number, quantity: number) : Result<string> {
         let product = this.products.get(productId);
         if(product === undefined){
-            Logger.error("Product does not exist in inventory!")
+            Logger.log("Product does not exist in inventory!")
             return makeFailure("Product does not exist in inventory!");
         }
         product.addQuantity(quantity);
@@ -53,7 +53,7 @@ export class Inventory
     public setProductQuantity(productId: number, quantity: number) : Result<string> {
         let product = this.products.get(productId);
         if(product === undefined){
-            Logger.error("Product does not exist in inventory!")
+            Logger.log("Product does not exist in inventory!")
             return makeFailure("Product does not exist in inventory!");
         }
         product.setQuantity(quantity);
@@ -61,9 +61,10 @@ export class Inventory
     }
 
     public isProductAvailable(productId: number, quantity: number) : boolean {
+        //TODO: check synchronization accotding to the internet we don't need to sync in javascript
         let product = this.products.get(productId);
         if(product === undefined){
-            Logger.error("Product does not exist in inventory!")
+            Logger.log("Product does not exist in inventory!")
             return false;
         }
         if(product.getQuantity() >= quantity){

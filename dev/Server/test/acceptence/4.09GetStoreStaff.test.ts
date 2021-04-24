@@ -1,40 +1,34 @@
-import {assert, expect} from 'chai';
+import { assert, expect } from 'chai';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
-import {Service} from '../../src/ServiceLayer/Service'
+import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
+import { Service } from '../../src/ServiceLayer/Service';
+import { enter_register_login, open_store } from './common';
 
-describe('4.9: get store staff' , function() {
+describe('4.9: get store staff', function () {
 
-    it('get staff' , function() {
-        Authentication.clean();
-        let service : Service = Service.get_instance();
+    var service: Service = Service.get_instance();
+    beforeEach(function () {
+    });
+
+    afterEach(function () {
         service.clear();
-        let guestId1 = service.enter();
-        let guestId2 = service.enter();
-        if (isOk(guestId1) && isOk(guestId2))
-        {
-            service.register("avi" , "123456");
-            service.register("moshe" , "123456");
-            let moshe = service.login(guestId1.value , "moshe" , "123456");
-            let avi = service.login(guestId2.value , "avi" , "123456");
-            if (isOk(avi) && isOk(moshe))
-            {
-                let store = service.openStore(avi.value.getUserId() , "Mega" , 123456 , "Tel Aviv" );
-                if(isOk(store))
-                {
-                    service.appointStoreManager(avi.value.getUserId() , store.value.getStoreId() , moshe.value.getUserId());
-                    let staffRes: Result<string> = service.getStoreStaff(avi.value.getUserId(), store.value.getStoreId());
-                    if(isOk(staffRes))
-                    {
-                        var staff = JSON.parse(staffRes.value);
-                        expect(staff['subscribers'].length ).to.equal(2);
-                    }
-                    else assert.fail();
-                }
-                else assert.fail();
-            }
-            else assert.fail();
+        Authentication.clean();
+    });
+
+    it('get staff', function () {
+        let avi = enter_register_login(service, "avi", "123456789");
+        let moshe = enter_register_login(service, "moshe", "123456789");
+        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+
+        service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
+        let staffRes: Result<string> = service.getStoreStaff(avi.getUserId(), store.getStoreId());
+        if (isOk(staffRes)) {
+            var staff = JSON.parse(staffRes.value);
+            expect(staff['subscribers'].length).to.equal(2);
         }
-        else assert.fail(); 
+        else assert.fail();
+
+
     })
-}); 
+});

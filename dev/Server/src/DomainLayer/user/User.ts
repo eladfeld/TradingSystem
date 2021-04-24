@@ -1,5 +1,5 @@
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
-import { buyingOption, BuyingOption } from '../store/BuyingOption';
+import { buyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
 import { ShoppingCart} from './ShoppingCart'

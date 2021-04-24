@@ -10,6 +10,7 @@ export enum ACTION{
 
 export class Permission
 {
+
     private permissions_mask : number ;
 
     constructor(permissions_mask : number)
@@ -33,5 +34,10 @@ export class Permission
     public getPermissions() : number
     {
         return this.permissions_mask;
+    }
+
+    public addPermissions(permission: number) 
+    {
+        this.getPermissions() | permission;
     }
 }
