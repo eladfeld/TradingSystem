@@ -1,7 +1,7 @@
 import { isOk, Result } from "../../Result";
 import { buyingOption } from "../store/BuyingOption";
 import { Store } from "../store/Store";
-import { Appointment, JobTitle } from "./Appointment";
+import { Appointment } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
 import {  User } from "./User";
@@ -64,18 +64,11 @@ export class Subscriber extends User
     {
         let store_app : Appointment = this.getStoreapp(store.getStoreId());
         if (store_app != undefined)
-            if (store_app.getPermissions().checkIfPermited(action))
+            if (store_app.checkIfPermited(action))
                 return true;
         return false;
     }
 
-    public getTitle(storeId : number) : JobTitle
-    {
-        let app: Appointment = this.appointments.find( appointment => appointment.getStore().getStoreId() === storeId);
-        if (app != undefined)
-            return app.getTitle();
-        return undefined;
-    }
 
     public deleteAppointment(store_app: Appointment) 
     {
@@ -85,6 +78,18 @@ export class Subscriber extends User
     public isSystemManager(): boolean
     {
         return Authentication.isSystemManager(this.userId);
+    }
+
+    isManager(storeId: number): boolean
+    {
+        let storeApp: Appointment = this.getStoreapp(storeId);
+        return storeApp.isManager();
+    }
+    
+    isOwner(storeId: number): boolean
+    {
+        let storeApp: Appointment = this.getStoreapp(storeId);
+        return storeApp.isOwner();
     }
 
   

@@ -36,7 +36,8 @@ export class Permission
         return this.permissions_mask;
     }
 
-    public addPermissions(permission: Permission) {
-        this.getPermissions() | permission.getPermissions();
+    public addPermissions(permission: number) 
+    {
+        this.getPermissions() | permission;
     }
 }

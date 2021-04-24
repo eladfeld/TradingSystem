@@ -1,6 +1,7 @@
 import {expect} from 'chai';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Appointment, JobTitle } from '../../../src/DomainLayer/user/Appointment';
+import { Appointment } from '../../../src/DomainLayer/user/Appointment';
+import { ManagerAppointment } from '../../../src/DomainLayer/user/ManagerAppointment';
+import { OwnerAppointment } from '../../../src/DomainLayer/user/OwnerAppointment';
 import { ACTION, Permission } from '../../../src/DomainLayer/user/Permission';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { StoreStub } from './StoreStub';
@@ -10,7 +11,7 @@ describe('subscriber tests' , function() {
         //this test has no logic just to check that add appointment works
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         let subscriber1 : Subscriber = new Subscriber("micha");
-        let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(0),JobTitle.OWNER);
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
         subscriber1.addAppointment(appointment1);
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.getAppointments().length).to.equal(2);
@@ -21,8 +22,8 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         let subscriber1 : Subscriber = new Subscriber("micha");
         let subscriber2 : Subscriber = new Subscriber("elad");
-        let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber2,new Permission(0),JobTitle.OWNER);
-        let appointment2 : Appointment = new Appointment(subscriber2,store,subscriber2,new Permission(0),JobTitle.MANAGER);
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber2,new Permission(0));
+        let appointment2 : Appointment = new ManagerAppointment(subscriber2,store,subscriber2,new Permission(0));
         subscriber1.addAppointment(appointment1);
         subscriber1.addAppointment(appointment2);
         subscriber1.deleteAppointment(appointment1);
@@ -33,16 +34,17 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha");
-        let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(0),JobTitle.OWNER);
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
         subscriber1.addAppointment(appointment1);
-        expect(subscriber1.getTitle(444)).to.equal(JobTitle.OWNER);
+        //expect(subscriber1.isOwner(444)).to.equal(true);
+        expect(subscriber1.isOwner(555)).to.equal(false);
     })
 
     it('check if permitted positive test', function(){
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha");
-        let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER),JobTitle.OWNER);
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.checkIfPerrmited(ACTION.APPOINT_MANAGER,store)).to.equal(true);
     })
@@ -51,7 +53,7 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha");
-        let appointment1 : Appointment = new Appointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER),JobTitle.OWNER);
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.checkIfPerrmited(ACTION.APPOINT_OWNER,store)).to.equal(false);
     })

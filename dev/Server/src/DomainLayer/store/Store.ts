@@ -2,7 +2,7 @@ import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
 import {Category, ID, Rating} from './Common'
-import { Appointment, JobTitle } from "../user/Appointment";
+import { Appointment } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreDB } from "./StoreDB";
 import { StoreInfo, StoreProductInfo } from "./StoreInfo";
@@ -260,11 +260,28 @@ export class Store
     public closeStore(userId: number): Result<string> {
 
         // this is irreversible
-        if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
+        if( this.isOwner(userId) && !Authentication.isSystemManager(userId)){
             return makeFailure("User not permitted")
         }
         this.storeClosed = true
         StoreDB.deleteStore(this.storeId)
+    }
+
+    public getAppointmentById(userId: number): Appointment
+    {
+        return this.appointments.find( appointment => appointment.appointee.getUserId() === userId);
+    }
+
+    public isOwner(userId: number): boolean
+    {
+        let app: Appointment = this.getAppointmentById(userId);
+        return app.isOwner();
+    }
+
+    public isManager(userId: number): boolean
+    {
+        let app: Appointment = this.getAppointmentById(userId);
+        return app.isManager();
     }
 
     public recieveMessage(userId: number, message: string): Result<string> {
@@ -290,7 +307,7 @@ export class Store
     }
 
     public getStoreInfoResult(userId: number): Result<string> {
-        if(this.getTitle(userId) != JobTitle.FOUNDER && !Authentication.isSystemManager(userId)){
+        if(this.isOwner(userId) && !Authentication.isSystemManager(userId)){
             return makeFailure("User not permitted")
         }
         return makeOk(JSON.stringify(this.getStoreInfo()))
@@ -313,16 +330,6 @@ export class Store
     public getAppointments(): Appointment[]
     {
         return this.appointments
-    }
-
-    public getTitle(userId : number) : JobTitle
-    {
-        let app: Appointment = this.appointments.find( appointment =>
-            appointment.getAppointee().getUserId() === userId && appointment.getStore().storeId === this.storeId
-        );
-        if (app != undefined)
-            return app.getTitle();
-        return undefined;
     }
 
     public searchByName(productName:string): StoreProductInfo[]{
@@ -407,7 +414,7 @@ export class Store
         this.appointments.forEach((appointment) => {
             let subscriber = appointment.getAppointee()
             staff['subscribers'].push({ 'id':subscriber.getUserId() ,
-                                        'title':subscriber.getTitle(this.storeId),
+                                        'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
                                         })
         })
         return makeOk(JSON.stringify(staff))

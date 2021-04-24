@@ -10,7 +10,6 @@ export class Service
 {
     private static singletone: Service = undefined;
     private facade: SystemFacade;
-    private userId: number;
     public static get_instance() : Service
     {
         if (Service.singletone === undefined)

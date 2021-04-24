@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import { Store } from '../../../src/DomainLayer/store/Store';
-import { Appointment, JobTitle } from '../../../src/DomainLayer/user/Appointment';
+import { Appointment } from '../../../src/DomainLayer/user/Appointment';
 import { ACTION, Permission } from '../../../src/DomainLayer/user/Permission';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isOk } from '../../../src/Result';
