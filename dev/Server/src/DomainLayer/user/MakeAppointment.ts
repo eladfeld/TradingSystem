@@ -8,7 +8,7 @@ import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
 
 
-export class AppointmentManager
+export class MakeAppointment
 {
     public static appoint_founder(founder: Subscriber, store: Store): Result<string> 
     {
@@ -47,6 +47,7 @@ export class AppointmentManager
                     let new_appointment = new OwnerAppointment(appointer, store, appointee, new Permission(basic_owner_permissions));
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
+                    return makeOk("owner appointed successfully!");
                 }
                 else
                 {
@@ -58,6 +59,7 @@ export class AppointmentManager
                     let new_appointment = new OwnerAppointment(appointer, store, appointee, prev_permission);
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
+                    return makeOk("owner appointed successfully!");
                 }
             }
         }
@@ -81,6 +83,7 @@ export class AppointmentManager
                 let new_appointment = new ManagerAppointment(appointer, store, appointee, new Permission(basic_manager_permissions));
                 store.addAppointment(new_appointment);
                 appointee.addAppointment(new_appointment);
+                return makeOk("manager appointed successfully!");
             }
             else {
                 return makeFailure("user already appointed");

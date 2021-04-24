@@ -1,13 +1,11 @@
-import {Assertion, expect , assert} from 'chai';
+import { expect , assert} from 'chai';
 import { Category } from '../../src/DomainLayer/store/Common';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
-import { Login } from '../../src/DomainLayer/user/Login';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
-import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { enter_login, enter_register_login } from './common';
+import { enter_login, enter_register_login, open_store } from './common';
 
 describe('2.5: store info test' , function() {
 
@@ -27,8 +25,7 @@ describe('2.5: store info test' , function() {
         if (isOk(store1) && isOk(store2)) {
             service.addNewProduct(avi.getUserId(), store1.value.getStoreId(), "Apple", [Category.SHIRT], 26, 10);
             service.addNewProduct(avi.getUserId(), store2.value.getStoreId(), "banana", [Category.SHIRT], 26, 20);
-            console.log()
-            //expect(isOk(service.getStoreInfo(avi.getUserId(), store1.value.getStoreId()))).to.equal(true);
+            expect(isOk(service.getStoreInfo(avi.getUserId(), store1.value.getStoreId()))).to.equal(true);
         }
         else assert.fail();
     })
@@ -49,19 +46,13 @@ describe('2.5: store info test' , function() {
     it('avi opens store , system manager watching it' , function() {
         //----------------avi opens store---------------------------------
         let avi = enter_register_login(service,"avi","123456789");
-        var store1 = service.openStore(avi.getUserId(), "aluf hasport" , 123456 , "Tel Aviv");
-        if (isOk(store1))
-        {
-            service.addNewProduct(avi.getUserId() , store1.value.getStoreId() , "Apple" , [Category.SHIRT] , 26 , 10);
-        }
-        //----------------------------------------------------------------
-
+        var store1 = open_store(service,avi, "aluf hasport" , 123456 , "Tel Aviv");
+        service.addNewProduct(avi.getUserId() , store1.getStoreId() , "Apple" , [Category.SHIRT] , 26 , 10);
+        //---------------------------------------------------------------
 
         //-----------------system manager watches-------------------------
-        let michael = enter_login(service, "michael", "1234")
-        if (isOk(store1))
-            expect(isOk(service.getStoreInfo(michael.getUserId(), store1.value.getStoreId()))).to.equal(true);
-        else assert.fail();
+        let sys_manager = enter_login(service, "michael", "1234")
+        expect(isOk(service.getStoreInfo(sys_manager.getUserId(), store1.getStoreId()))).to.equal(true);
         //---------------------------------------------------------------
     })    
 

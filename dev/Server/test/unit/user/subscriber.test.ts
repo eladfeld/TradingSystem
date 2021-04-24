@@ -36,8 +36,7 @@ describe('subscriber tests' , function() {
         let subscriber1 : Subscriber = new Subscriber("micha");
         let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
         subscriber1.addAppointment(appointment1);
-        //expect(subscriber1.isOwner(444)).to.equal(true);
-        expect(subscriber1.isOwner(555)).to.equal(false);
+        expect(subscriber1.isOwner(444)).to.equal(true);
     })
 
     it('check if permitted positive test', function(){

@@ -1,9 +1,9 @@
 import {expect} from 'chai';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { ShoppingBasket } from '../../../src/DomainLayer/user/ShoppingBasket';
-import { ShoppingCart } from '../../../src/DomainLayer/user/ShoppingCart';
-import { isOk } from '../../../src/Result';
-import { StoreStub } from './StoreStub';
+import { Store } from '../../src/DomainLayer/store/Store';
+import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
+import { ShoppingCart } from '../../src/DomainLayer/user/ShoppingCart';
+import { isOk } from '../../src/Result';
+import { StoreStub } from '../unit/user/StoreStub';
 
 describe('shopping cart tests' , function() {
     it("add product to cart", function(){

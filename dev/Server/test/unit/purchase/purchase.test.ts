@@ -7,7 +7,7 @@ import { Product } from '../../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../../src/DomainLayer/store/Store';
 import { Appointment } from '../../../src/DomainLayer/user/Appointment';
-import { AppointmentManager } from '../../../src/DomainLayer/user/AppointmentManager';
+import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isFailure, Result } from '../../../src/Result';
 
@@ -18,7 +18,7 @@ import { isFailure, Result } from '../../../src/Result';
 const store1BankAcct = 11223344;
 let subsriber = new Subscriber('something')
 const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
-AppointmentManager.appoint_founder(subsriber, store1)
+MakeAppointment.appoint_founder(subsriber, store1)
 const store1Id: number = store1.getStoreId();
 //const store2: Store = new Store(0,'store2',2,"2 sunny ave", 'none', 'none');
 const user1Id: number = 100;

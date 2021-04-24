@@ -14,7 +14,7 @@ import Purchase from "../purchase/Purchase";
 import { DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
-import { AppointmentManager } from "../user/AppointmentManager";
+import { MakeAppointment } from "../user/MakeAppointment";
 
 
 export class Store
@@ -312,7 +312,7 @@ export class Store
     }
 
     public getStoreInfoResult(userId: number): Result<string> {
-        if(this.isOwner(userId) && !Authentication.isSystemManager(userId)){
+        if(!this.isOwner(userId) && !Authentication.isSystemManager(userId)){
             return makeFailure("User not permitted")
         }
         return makeOk(JSON.stringify(this.getStoreInfo()))
@@ -361,7 +361,7 @@ export class Store
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
-            return AppointmentManager.removeAppointment(appointment);
+            return MakeAppointment.removeAppointment(appointment);
         }
         else
         {
@@ -384,7 +384,7 @@ export class Store
         if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || Authentication.isSystemManager(appointer.getUserId())
             || appointer.getUserId() === this.storeFounderId)
         {
-            return AppointmentManager.appoint_owner(appointer, this, appointee);
+            return MakeAppointment.appoint_owner(appointer, this, appointee);
         }
         return makeFailure("user is not permited to appoint store owner");
 
@@ -395,7 +395,7 @@ export class Store
         if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || Authentication.isSystemManager(appointer.getUserId())
             || appointer.getUserId() === this.storeFounderId)
         {
-            return AppointmentManager.appoint_manager(appointer, this, appointee)
+            return MakeAppointment.appoint_manager(appointer, this, appointee)
         }
         return makeFailure("user is not permited to appoint store manager");
     }
