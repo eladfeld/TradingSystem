@@ -83,13 +83,17 @@ export class Subscriber extends User
     isManager(storeId: number): boolean
     {
         let storeApp: Appointment = this.getStoreapp(storeId);
-        return storeApp.isManager();
+        if( storeApp !== undefined)
+            return storeApp.isManager();
+        return false;
     }
     
     isOwner(storeId: number): boolean
     {
         let storeApp: Appointment = this.getStoreapp(storeId);
-        return storeApp.isOwner();
+        if (storeApp != undefined)
+            return storeApp.isOwner();
+        return false;
     }
 
   

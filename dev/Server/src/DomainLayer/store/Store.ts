@@ -14,6 +14,7 @@ import Purchase from "../purchase/Purchase";
 import { DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
+import { AppointmentManager } from "../user/AppointmentManager";
 
 
 export class Store
@@ -275,13 +276,17 @@ export class Store
     public isOwner(userId: number): boolean
     {
         let app: Appointment = this.getAppointmentById(userId);
-        return app.isOwner();
+        if (app != undefined)
+            return app.isOwner();
+        return false;
     }
 
     public isManager(userId: number): boolean
     {
         let app: Appointment = this.getAppointmentById(userId);
-        return app.isManager();
+        if( app !== undefined)
+            return app.isManager();
+        return false;
     }
 
     public recieveMessage(userId: number, message: string): Result<string> {
@@ -356,7 +361,7 @@ export class Store
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
-            return Appointment.removeAppointment(appointment);
+            return AppointmentManager.removeAppointment(appointment);
         }
         else
         {
@@ -379,7 +384,7 @@ export class Store
         if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || Authentication.isSystemManager(appointer.getUserId())
             || appointer.getUserId() === this.storeFounderId)
         {
-            return Appointment.appoint_owner(appointer, this, appointee);
+            return AppointmentManager.appoint_owner(appointer, this, appointee);
         }
         return makeFailure("user is not permited to appoint store owner");
 
@@ -390,7 +395,7 @@ export class Store
         if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || Authentication.isSystemManager(appointer.getUserId())
             || appointer.getUserId() === this.storeFounderId)
         {
-            return Appointment.appoint_manager(appointer, this, appointee)
+            return AppointmentManager.appoint_manager(appointer, this, appointee)
         }
         return makeFailure("user is not permited to appoint store manager");
     }

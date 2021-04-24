@@ -15,6 +15,7 @@ import Purchase from "./purchase/Purchase";
 import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
 import { ProductDB } from "./store/ProductDB";
+import { AppointmentManager } from "./user/AppointmentManager";
 
 export class SystemFacade
 {
@@ -202,7 +203,7 @@ export class SystemFacade
         if(subscriber !== undefined)
         {
             let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
-            Appointment.appoint_founder(subscriber, store);
+            AppointmentManager.appoint_founder(subscriber, store);
             return makeOk(store);
         }
         return makeFailure("user not found");
