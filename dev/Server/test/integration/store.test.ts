@@ -1,12 +1,12 @@
 import {expect} from 'chai';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Category, Rating } from "../../../src/DomainLayer/store/Common";
-import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
-import { Login } from '../../../src/DomainLayer/user/Login';
-import { SystemFacade } from '../../../src/DomainLayer/SystemFacade';
-import { isOk } from '../../../src/Result';
-import { StoreProductInfo } from '../../../src/DomainLayer/store/StoreInfo';
-import { Service } from '../../../src/ServiceLayer/Service';
+import { Store } from '../../src/DomainLayer/store/Store';
+import { Category, Rating } from "../../src/DomainLayer/store/Common";
+import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
+import { Login } from '../../src/DomainLayer/user/Login';
+import { SystemFacade } from '../../src/DomainLayer/SystemFacade';
+import { isOk } from '../../src/Result';
+import { StoreProductInfo } from '../../src/DomainLayer/store/StoreInfo';
+import { Service } from '../../src/ServiceLayer/Service';
 
 
 describe('view store products' , () => {
