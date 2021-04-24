@@ -14,6 +14,8 @@ import Purchase from "../purchase/Purchase";
 import { discountOption, DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
+import { StoreHistory } from "./StoreHistory";
+import Transaction from "../purchase/Transaction";
 
 
 export class Store
@@ -40,6 +42,7 @@ export class Store
     private appointments: Appointment[]
     private discounts: DiscountOption[];
     private buyingOptions: buyingOption[];
+    private storeHistory: StoreHistory;
 
     public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = undefined, buyingPolicy: BuyingPolicy = undefined)
     {
@@ -66,6 +69,7 @@ export class Store
         this.appointments = []
         this.discounts = [];
         this.buyingOptions = [buyingOption.INSTANT];
+        this.storeHistory = new StoreHistory(this.storeId);
 
         StoreDB.addStore(this);
     }
@@ -125,6 +129,10 @@ export class Store
             return this.storeRating
         }
         return NaN
+    }
+
+    public getPurchaseHistory() : Transaction[]{
+        return this.storeHistory.getPurchaseHistory();
     }
 
     public isProductAvailable(productId: number, quantity: number): boolean {
