@@ -32,7 +32,7 @@ describe('2.9: buy products', function () {
             service.addProductTocart(avi.getUserId(), store.getStoreId(), banana.value, 10);
             service.addProductTocart(avi.getUserId(), store.getStoreId(), apple.value, 7);
             service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-            expect(isOk(service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569)))).to.equal(true);
+            expect(isOk(service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address"))).to.equal(true);
         }
     })
 
@@ -46,7 +46,7 @@ describe('2.9: buy products', function () {
             service.addProductTocart(avi.getUserId(), store.getStoreId(), banana.value, 40);
             service.addProductTocart(ali.getUserId(), store.getStoreId(), banana.value, 40);
             service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-            service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569));
+            service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
             expect(isOk(service.checkoutBasket(ali.getUserId(), store.getStoreId(), "king Goerge st 42"))).to.equal(false);
         }
     })

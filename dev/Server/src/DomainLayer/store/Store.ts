@@ -17,6 +17,8 @@ import { StoreHistory } from "./StoreHistory";
 import Transaction from "../purchase/Transaction";
 import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
+import PaymentInfo from "../purchase/PaymentInfo";
+import ShippingInfo from "../purchase/ShippingInfo";
 
 
 export class Store
@@ -192,15 +194,17 @@ export class Store
         }
         let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
 
-        Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, this.cancelReservedShoppingBasket(reservedProducts));
         return makeOk(true);
     }
 
 
     public cancelReservedShoppingBasket(reservedProducts: Map <number, number>) {
-        if(reservedProducts !== undefined){
-            for (let [id, quantity] of reservedProducts.entries()) {
-                this.inventory.returnReservedProduct(id, quantity);
+        return () => {
+            if(reservedProducts !== undefined){
+                for (let [id, quantity] of reservedProducts.entries()) {
+                    this.inventory.returnReservedProduct(id, quantity);
+                }
             }
         }
     }
@@ -234,7 +238,7 @@ export class Store
         productMap.set(productPrice, quantity);
         let fixedPrice = this.applyDiscountPolicy(productMap);
 
-        Purchase.checkout(this, fixedPrice, buyerId, productMap, userAddress);
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.cancelReservedShoppingBasket(productMap));
         return makeOk("Checkout passed to purchase");
     }
 
@@ -463,6 +467,15 @@ export class Store
     public deleteBuyingOption( buyingOption: buyingOption)
     {
         this.buyingOptions = this.buyingOptions.filter(option => option !== buyingOption);
+    }
+
+    public completeOrder(userId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
+    {
+        return Purchase.CompleteOrder(userId,
+            this.storeId,
+            new ShippingInfo(this.storeAddress, userAddress),
+            paymentInfo,
+            this.bankAccount);
     }
 
 }

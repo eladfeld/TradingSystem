@@ -34,7 +34,7 @@ describe('3.7: get subscriber history', function () {
         service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
         service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569));
+        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
         let historyRes: Result<any> = service.getSubscriberPurchaseHistory(avi.getUserId(), avi.getUserId());
         if (isOk(historyRes)) {
             let history = JSON.parse(historyRes.value);

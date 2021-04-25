@@ -94,9 +94,9 @@ export class Service
         return this.facade.checkoutSingleProduct(userId, productId, quantity, storeId, supply_address);
     }
 
-    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
+    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
     {
-        return this.facade.completeOrder(userId, storeId,paymentInfo);
+        return this.facade.completeOrder(userId, storeId,paymentInfo, userAddress);
     }
 
 

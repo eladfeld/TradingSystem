@@ -10,6 +10,7 @@ import { Product } from '../../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../../src/DomainLayer/store/Store';
 import { Appointment } from '../../../src/DomainLayer/user/Appointment';
+import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../../src/Result';
 
@@ -20,7 +21,7 @@ import { isFailure, isOk, Result } from '../../../src/Result';
 const store1BankAcct = 11223344;
 let subsriber = new Subscriber('something')
 const store1: Store = new Store(subsriber.getUserId(),'store_1', 12345678,"1 sunny ave");
-Appointment.appoint_founder(subsriber, store1)
+MakeAppointment.appoint_founder(subsriber, store1)
 const store1Id: number = store1.getStoreId();
 //const store2: Store = new Store(0,'store2',2,"2 sunny ave", 'none', 'none');
 const user1Id: number = 101;
@@ -50,7 +51,7 @@ describe('purchase tests' , function() {
 
         const checkoutRes: Result<boolean> = Purchase.checkout(store1Id, total1a, user1Id, basket1a, cb);
         expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234); 
+        const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234);
         expect(isFailure(completionRes)).to.equal(true);
         const allTransactions: Transaction[] = Purchase.getAllTransactions();
         expect(allTransactions.length).to.equal(1);
@@ -64,7 +65,7 @@ describe('purchase tests' , function() {
 
         const checkoutRes: Result<boolean> = Purchase.checkout(store1Id, total1a, user1Id, basket1a, cb);
         expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234); 
+        const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234);
         expect(isFailure(completionRes)).to.equal(true);
         const allTransactions: Transaction[] = Purchase.getAllTransactions();
         expect(allTransactions.length).to.equal(1);
