@@ -1,18 +1,15 @@
 import iCategorizer from './Categorizer';
 import iCategory from './iCategory';
 import Discount from './Discount';
+import iBasket from './iBasket';
 
 class UnconditionalDiscount extends Discount{
-
-
-
     //TODO: improve algorithm. extremely inefficient!
-    public getDiscount = (basket: [number, number, number][], categorizer: iCategorizer): number => {
+    public getDiscount = (basket: iBasket, categorizer: iCategorizer): number => {
         const productsInCategory: number[] = categorizer.getProducts(this.category.getName());
-
-        const discounts: number[] = basket.map(([product, price, quantity]) => {
-            if(productsInCategory.includes(product)){
-                return quantity*this.ratio*price;
+        const discounts: number[] = basket.getItems().map((prod) => {
+            if(productsInCategory.includes(prod.getId())){
+                return prod.getQuantity()*this.ratio*prod.getPrice();
             }else return 0;
         });
         var totalDiscount: number = 0;

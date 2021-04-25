@@ -24,9 +24,11 @@ const getSum = (nums: number[]) =>{
     nums.forEach((value) => sum += value);
     return sum;
 }
+
 const ComboPolicies = {
     BEST: new ComboPolicy(getMax),
     COMBINE: new ComboPolicy(getSum)
 }
+
 Object.freeze(ComboPolicies);
 export default ComboPolicies;

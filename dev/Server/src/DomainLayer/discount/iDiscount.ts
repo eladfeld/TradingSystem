@@ -1,6 +1,6 @@
 import iCategorizer from "./Categorizer";
+import iBasket from "./iBasket";
 
 export default interface iDiscount{
-    getDiscount: (basket:[number, number, number][], categorizer: iCategorizer) => number;
-
+    getDiscount: (basket:iBasket, categorizer: iCategorizer) => number;
 } 

@@ -70,4 +70,6 @@ describe('purchase with api fail tests' , function() {
         expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
     });
 
+    
+
 });

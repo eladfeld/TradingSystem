@@ -1,4 +1,3 @@
-
 export default interface iCategorizer{
     getProducts: (category: string) => number[];
     hasProduct: (category: string) => boolean;
