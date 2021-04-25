@@ -6,6 +6,7 @@ import DbDummy from './DbDummy';
 import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import PaymentInfo from './PaymentInfo';
+import { TIMEOUT } from 'dns';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -33,7 +34,10 @@ class Purchase {
         this.cartCheckoutTimers = new Map();
         this.dbDummy = new DbDummy();
     }
-
+    private resetTimer = (userId:number, storeId: number, callback: ()=>void)=>{
+        const timerId = setTimeout(callback, PAYMENT_TIMEOUT_MILLISEC);
+        this.addTimerAndCallback(userId, storeId, timerId, callback);
+    }
     private terminateTransaction = (userId:number, storeId:number, storeCallback: () => void, status: number) => {
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
         if(!transaction) return;
@@ -58,7 +62,7 @@ class Purchase {
         this.onTransactionCancel(userId, storeId, callback);
     }
     public hasTransactionInProgress = (userId: number, storeId: number): boolean => {
-        return this.getTimerAndCallback(userId, storeId) !== undefined;
+        return this.getTimerAndCallback(userId, storeId)[0] !== undefined;
     }
 
     //initiates a transaction between the store and the user that will be completed within 5 minutes, otherwise cancelled.
@@ -73,7 +77,7 @@ class Purchase {
         }
 
         //allow payment within 5 minutes
-        this.dbDummy.storeTransactionInProgress(transaction);
+        this.dbDummy.storeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
@@ -85,17 +89,17 @@ class Purchase {
     //1) no transaction is in progress, 2)Shipping issue 3) payment issue
     public CompleteOrder = (userId: number, storeId: number, shippingInfo: ShippingInfo, paymentInfo: PaymentInfo, storeBankAccount: number) : Result<boolean> => {
         //verify transaction in progress
-        const oldTimerIdAndCallback = this.getTimerAndCallback(userId, storeId);
-        if( oldTimerIdAndCallback === undefined){
+        const [oldTimerId, oldCallback] = this.getTimerAndCallback(userId, storeId);
+        if( oldTimerId === undefined){
             //no checkout is in progress, cancel the old timer/order
-            makeFailure("No checkout in progress");
+            return makeFailure("No checkout in progress");
         }
-        const [oldTimerId, oldCallback] : [ReturnType<typeof setTimeout>,()=>void] = oldTimerIdAndCallback;
         clearTimeout(oldTimerId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
         //approve supply
         const shipmentId: number = this.supplySystem.reserve(shippingInfo);
         if(shipmentId < 0){
+            this.resetTimer(userId, storeId, oldCallback);
             return makeFailure("could not ship items");
         }
         transaction.setShipmentId(shipmentId);
@@ -103,6 +107,7 @@ class Purchase {
         const paymentRes: Result<number> = this.paymentSystem.transfer(paymentInfo, storeBankAccount, transaction.getTotal());
         if(isFailure(paymentRes)){
             this.supplySystem.cancelReservation(shipmentId);
+            this.resetTimer(userId, storeId, oldCallback);
             return paymentRes;
         }
         
@@ -110,6 +115,7 @@ class Purchase {
         transaction.setCardNumber(paymentInfo.getCardNumber());
         transaction.setStatus(TransactionStatus.COMPLETE);
         this.dbDummy.updateTransaction(transaction);
+        this.removeTimerAndCallback(userId, storeId);
         return makeOk(true);
     }
 
@@ -138,7 +144,7 @@ class Purchase {
                 return pair;
             }
         }catch(e){}
-        return undefined;
+        return [undefined, undefined];
     } 
 
 
@@ -158,13 +164,16 @@ class Purchase {
         return this.dbDummy.getCompletedTransactions().filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)));
     }
 
-    getCompletedTransactionsForUser = (userId: number): string => {
+    public getCompletedTransactionsForUser = (userId: number): string => {
         return JSON.stringify(this.dbDummy.getCompletedTransactions().filter(t => t.getUserId()==userId));
     }
     public getCompletedTransactionsForStore = (storeId: number): Transaction[] =>{
         return this.dbDummy.getCompletedTransactions().filter(t => t.getStoreId()==storeId);
     }
 
+    public getAllTransactionsForUser = (userId: number): Transaction[] =>{
+        return this.dbDummy.getAllTransactions().filter(t => t.getUserId() === userId);
+    }
     public getFailedTransactions = ():Transaction[] => {
         return null;
     }

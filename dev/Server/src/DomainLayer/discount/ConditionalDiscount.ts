@@ -1,9 +1,9 @@
 import Categorizer from "./Categorizer";
 import iCategory from "./iCategory";
-import iDiscount from "./iDiscount";
+import Discount from "./Discount";
 import {iPredicate} from "./logic/Predicate";
 
-class ConditionalDiscount extends iDiscount{
+class ConditionalDiscount extends Discount{
     private predicate: iPredicate;
 
     public getDiscount = (basket: [number, number, number][], categorizer: Categorizer):number =>  {

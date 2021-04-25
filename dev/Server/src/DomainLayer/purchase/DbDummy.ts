@@ -1,41 +1,41 @@
-import Transaction from "./Transaction";
+import { exception } from "console";
+import Transaction, { TransactionStatus } from "./Transaction";
 
 class DbDummy{
-    private completedTransactions: Transaction[];
-    private transactionsInProgress: Transaction[];
-    private usersAtCheckout: Map<number,Map<number,Map<number, number>>>;// userId => storeId => productId => quantity
+    private transactions: Transaction[];
 
     constructor(){
-        this.completedTransactions = [];
-        this.transactionsInProgress = [];
-        this.usersAtCheckout = new Map();
+        this.transactions = [];
     }
 
     getAllTransactions = () => {
-        return [...this.transactionsInProgress, ...this.completedTransactions];
+        return [...this.transactions];
     }
     storeCompletedTransaction = (transaction: Transaction) =>{
-        this.completedTransactions.push(transaction);
+        this.transactions.push(transaction);
     }
     getCompletedTransactions = ():Transaction[] => {
-        return this.completedTransactions;
+        return this.transactions.filter(t => t.getStatus() == TransactionStatus.COMPLETE);
     }
 
-    storeTransactionInProgress = (transaction: Transaction) =>{
-        this.transactionsInProgress.push(transaction);
+    storeTransaction = (transaction: Transaction) =>{
+        this.transactions.push(transaction);
     }
-    removeTransactionInProgress = (userId: number, storeId: number):void =>{
-        this.transactionsInProgress = this.transactionsInProgress.filter(t => ((t.getUserId() !== userId) || (t.getStoreId() !== storeId)));
-    }
+
     getTransactionInProgress = (userId: number, storeId: number):Transaction =>{
-        return this.transactionsInProgress.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId)))[0];
+        const ts:Transaction[] = this.transactions.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId) && (t.getStatus() === TransactionStatus.IN_PROGRESS)));
+        if(ts.length === 0)return null;
+        if(ts.length > 1) throw exception(`userId: ${userId} and storeId: ${storeId} have ${ts.length} transactions in progress.\n should be at most 1`);
+        return ts[0];
     }
     getTransactionsInProgress = (userId: number, storeId: number):Transaction[] =>{
-        return this.transactionsInProgress.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId)));
+        return this.transactions.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId) && (t.getStatus() === TransactionStatus.IN_PROGRESS)));
     }
 
     updateTransaction = (transaction: Transaction) => {
-        return;
+        const ts: Transaction[] = this.transactions.filter(t => t.getId() !== transaction.getId());
+        ts.push(transaction);
+        this.transactions = ts;
     }
 
 }

@@ -43,34 +43,34 @@ const shippingInfo: ShippingInfo = new ShippingInfo("src", "dst");
 
 
 
-describe('purchase tests' , function() {
+describe('purchase with api fail tests' , function() {
 
-    it('supply system fails' , function(){
-        PaymentSystem.willSucceed();
-        SupplySystem.willFail();
+    // it('supply system fails' , function(){
+    //     PaymentSystem.willSucceed();
+    //     SupplySystem.willFail();
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(store1Id, total1a, user1Id, basket1a, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
-        const allTransactions: Transaction[] = Purchase.getAllTransactions();
-        expect(allTransactions.length).to.equal(1);
-        const t: Transaction = allTransactions[0];
-        expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
-    });
+    //     const checkoutRes: Result<boolean> = Purchase.checkout(store1Id, total1a, user1Id, basket1a, cb);
+    //     expect(isOk(checkoutRes)).to.equal(true);
+    //     const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234);
+    //     expect(isFailure(completionRes)).to.equal(true);
+    //     const allTransactions: Transaction[] = Purchase.getAllTransactions();
+    //     expect(allTransactions.length).to.equal(1);
+    //     const t: Transaction = allTransactions[0];
+    //     expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
+    // });
 
-    it('payment system fails' , function(){
-        SupplySystem.willSucceed();
-        PaymentSystem.willFail();
+    // it('payment system fails' , function(){
+    //     SupplySystem.willSucceed();
+    //     PaymentSystem.willFail();
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(store1Id, total1a, user1Id, basket1a, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
-        const allTransactions: Transaction[] = Purchase.getAllTransactions();
-        expect(allTransactions.length).to.equal(1);
-        const t: Transaction = allTransactions[0];
-        expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
-    });
+    //     const checkoutRes: Result<boolean> = Purchase.checkout(store1Id, total1a, user1Id, basket1a, cb);
+    //     expect(isOk(checkoutRes)).to.equal(true);
+    //     const completionRes: Result<boolean> = Purchase.CompleteOrder(user1Id, store1Id, shippingInfo, payInfo, 1234);
+    //     expect(isFailure(completionRes)).to.equal(true);
+    //     const allTransactions: Transaction[] = Purchase.getAllTransactions();
+    //     expect(allTransactions.length).to.equal(1);
+    //     const t: Transaction = allTransactions[0];
+    //     expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
+    // });
 
 });

@@ -1,8 +1,8 @@
 import iCategorizer from './Categorizer';
 import iCategory from './iCategory';
-import iDiscount from './iDiscount';
+import Discount from './Discount';
 
-class UnconditionalDiscount extends iDiscount{
+class UnconditionalDiscount extends Discount{
 
 
 
