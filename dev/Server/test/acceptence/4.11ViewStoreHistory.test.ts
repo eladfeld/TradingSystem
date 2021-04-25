@@ -25,7 +25,7 @@ describe('4.11: view store buying history', function () {
         service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
         service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569));
+        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
         expect(isOk(service.getStorePurchaseHistory(avi.getUserId(), store.getStoreId()))).to.equal(true);
 
     })

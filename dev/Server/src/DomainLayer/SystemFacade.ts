@@ -184,13 +184,14 @@ export class SystemFacade
         return makeFailure("user not found");
     }
 
-    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
+    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
     {
         Logger.log(`completeOrder: userId : ${userId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
         if(user !== undefined)
         {
-            return Purchase.CompleteOrder(userId , storeId , paymentInfo);
+            return store.completeOrder(userId, paymentInfo, userAddress);
         }
         return makeFailure("user not found");
     }

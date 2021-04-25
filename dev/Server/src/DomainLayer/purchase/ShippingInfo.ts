@@ -1,15 +1,11 @@
 class ShippingInfo{
-    public userId: number;
-    public storeId: number;
-    public userAddress: string;
-    public storeAddress: string;
+    public from: string;
+    public to: string;
 
     
-    constructor(userId: number,storeId: number,userAddress: string,storeAddress: string){
-        this.userId = userId;
-        this.storeId = storeId;
-        this.userAddress = userAddress;
-        this.storeAddress = storeAddress;
+    constructor(from: string,to: string){
+        this.from = from;
+        this.to = to;
     }
 }
 

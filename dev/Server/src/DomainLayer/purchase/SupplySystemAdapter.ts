@@ -17,7 +17,7 @@ class SupplySystemAdapter {
     }
 
     reserve = (shippingInfo: ShippingInfo) : number => {
-        return SupplySystem.reserve(shippingInfo.storeAddress, shippingInfo.userAddress);
+        return SupplySystem.reserve(shippingInfo.to, shippingInfo.from);
     }
 
     cancelReservation = (reservationId: number) :boolean => {
