@@ -100,6 +100,7 @@ export class Subscriber extends User
 
     public addMessage(message:{}) : void
     {
+        console.log("added message");
         this.pending_messages.push(message);
     }
 
