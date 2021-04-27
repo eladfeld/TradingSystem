@@ -2,12 +2,12 @@ import { expect } from "chai";
 import { SpellCheckerAdapter } from "../../src/DomainLayer/SpellCheckerAdapter";
 
 
-describe('login test' , function() {
+describe('spell checker' , function() {
     
-    it('spellChecker', function(){
+    it('spell Checker', function(){
         let splc: SpellCheckerAdapter = new SpellCheckerAdapter()
         splc.add_word('yatzhaak');
-        console.log(splc.find_similar('yatzhaak'));
+        console.log(splc.find_similar('elad'));
         expect(true).to.equal(true);
     })
 });

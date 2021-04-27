@@ -13,11 +13,13 @@ export class Subscriber extends User
     private username: string;
     private hashPassword: string;
     private appointments: Appointment[];
+    private pending_messages: {}[];
 
     public constructor(username: string ){
         super();
         this.username = username;
         this.appointments = [];
+        this.pending_messages=[]
     }
 
     static buildSubscriber(username: string, hashpassword: string): Subscriber {
@@ -96,7 +98,12 @@ export class Subscriber extends User
         return false;
     }
 
-  
+    public addMessage(message:{}) : void
+    {
+        this.pending_messages.push(message);
+    }
+
+    
 
 
 
@@ -104,5 +111,10 @@ export class Subscriber extends User
     public getAppointments() : Appointment[]
     {
         return this.appointments;
+    }
+
+    public getMessages()
+    {
+        return this.pending_messages;
     }
 }

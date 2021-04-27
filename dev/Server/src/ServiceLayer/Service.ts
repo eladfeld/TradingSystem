@@ -4,30 +4,37 @@ import { Store } from "../DomainLayer/store/Store";
 import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { User } from "../DomainLayer/user/User";
-import { Result } from "../Result";
+import { isOk, makeFailure, makeOk, Result} from "../Result";
 
 export class Service
 {
     private static singletone: Service = undefined;
     private facade: SystemFacade;
+    private send_message_func: (userId:number,message:{}) => Promise<number>; //TODO:change this signature according to future changes in Communication layer
+  
+    private constructor()
+    {
+        this.facade = new SystemFacade();
+        Service.singletone.send_message_func = (userId,message:{}) => { throw 'send_func_not yet set'}
+    }
+
+    public static set_send_func() : void
+    {
+        if (Service.singletone === undefined)
+        {
+            Service.singletone = new Service();;
+            Service.singletone =
+        }
+    }
+
     public static get_instance() : Service
     {
         if (Service.singletone === undefined)
         {
-            let instance : Service = new Service();
-            {
-                Service.singletone = instance;
-                return Service.singletone;
-            }
+            Service.singletone = new Service();
         }
         return Service.singletone;
     }
-
-    private constructor()
-    {
-        this.facade = new SystemFacade();
-    }
-
 
     //user enter the system
     public enter(): Result<number>
@@ -50,10 +57,17 @@ export class Service
         return this.facade.register(username, password);
     }
 
-    public login(userId: number, username: string, password: string): Result<Subscriber>
+    public login(userId: number, username: string, password: string): Result<Subscriber> 
     {
-        return this.facade.login(userId, username, password);
-    }
+        let res: Result<Subscriber> = this.facade.login(userId, username, password);
+        if(isOk(res))
+        {
+            return makeOk(res.value);
+        }
+        else
+            return makeFailure(res.message);
+    } 
+    
 
     public getStoreInfo(userId : number ,storeId: number): Result<string>
     {
