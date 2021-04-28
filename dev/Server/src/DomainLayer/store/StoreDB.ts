@@ -1,6 +1,5 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Category } from "./Common";
 import { Store } from "./Store";
 import { StoreProductInfo } from "./StoreInfo";
 
@@ -46,10 +45,7 @@ export class StoreDB
         return makeOk(JSON.stringify(products))
     }
 
-    public static getPruductInfoByCategory(category: number): Result<string>{
-        if(!Object.values(Category).includes(category)){
-            return makeFailure("Got invalid category")
-        }
+    public static getPruductInfoByCategory(category: string): Result<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {

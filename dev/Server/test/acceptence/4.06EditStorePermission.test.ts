@@ -1,5 +1,4 @@
 import { assert, expect } from 'chai';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
@@ -30,7 +29,8 @@ describe('4.6: edit store permission', function () {
         let avi = enter_register_login(service, "avi", "123456789");
         let moshe = enter_register_login(service, "moshe", "123456789");
         let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+        store.addCategoryToRoot('Sweet')
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        expect(isOk(service.addNewProduct(moshe.getUserId(), store.getStoreId(), "banana", [Category.SWEET], 15))).to.equal(false);
+        expect(isOk(service.addNewProduct(moshe.getUserId(), store.getStoreId(), "banana", ['Sweet'], 15))).to.equal(false);
     })
 });

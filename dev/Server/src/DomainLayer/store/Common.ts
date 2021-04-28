@@ -14,11 +14,88 @@ export enum Rating {
   AMAZING  = 5,
 }
 
-export enum Category {
-  SHIRT         = 1,
-  PANTS         = 2,
-  SPORT         = 3,
-  ELECTRIC      = 4,
-  COMPUTER      = 5,
-  SWEET         = 6,
+
+export class TreeRoot<T> {
+
+    private root: TreeNode<T>;;
+
+    constructor(value: T){
+        this.root = new TreeNode<T>(value, this);
+    }
+
+    public createChildNode(value: T): TreeNode<T> {
+        return this.root.createChildNode(value);
+    }
+
+    public hasChildNode(value: T) : boolean {
+        if(this.root.value === value){
+            return true;
+        }
+        return this.root.hasChildNode(value);
+    }
+
+    public getChildNode(value: T): TreeNode<T> {
+        if(this.root.getValue() === value){
+            return this.root;
+        }
+        return this.root.getChildNode(value)
+    }
+}
+
+
+export class TreeNode<T> {
+    root: TreeRoot<T>;
+    value: T;
+    children: Map<T, TreeNode<T>>;
+
+    constructor(value: T, root: TreeRoot<T>){
+        this.root = root;
+        this.value = value;
+        this.children = new Map<T, TreeNode<T>>();
+    }
+
+    public getValue(){
+        return this.value
+    }
+
+    get childrenCount() {
+        return this.children.size;
+    }
+
+
+    public createChildNode(value: T): TreeNode<T> {
+        if(this.root.hasChildNode(value)){
+            return null;
+        }
+        const newNode = new TreeNode(value, this.root);
+        this.children.set(value, newNode);
+
+        return newNode;
+    }
+
+    public hasChildNode(value: T) {
+      if(this.children.has(value)){
+          return true;
+      }
+      for(let child of this.children.values()) {
+        if(child.hasChildNode(value)){
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public getChildNode(value: T): TreeNode<T> {
+        let node: TreeNode<T> = this.children.get(value);
+        if(node){
+            return node;
+        }
+        for(let child of this.children.values()) {
+            node = child.getChildNode(value);
+            if(node){
+                return node;
+            }
+        }
+        return null;
+    }
 }

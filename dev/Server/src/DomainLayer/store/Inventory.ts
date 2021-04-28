@@ -4,7 +4,6 @@ import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { ProductDB } from "./ProductDB";
 import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
-import { Category } from "./Common";
 
 export class Inventory
 {
@@ -15,7 +14,7 @@ export class Inventory
         this.products = new Map<number, StoreProduct>();
     }
 
-    public addNewProduct(productName: string, categories: Category[], storeId: number, price: number, quantity = 0) : Result<number> {
+    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0) : Result<number> {
         if (quantity < 0){
             Logger.log("Quantity must be non negative")
             return makeFailure("Quantity must be non negative");
@@ -103,7 +102,13 @@ export class Inventory
     public getProductsInfo(): StoreProductInfo[] {
         let storeProducts: StoreProductInfo[] = []
         for(let storeProduct of this.products.values()){
-            storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()))
+            storeProducts.push(new StoreProductInfo(storeProduct.getName(),
+            storeProduct.getProductId(),
+            storeProduct.getPrice(),
+            storeProduct.getStoreId(),
+            storeProduct.getQuantity(),
+            storeProduct.getProductRating(),
+            storeProduct.getNumOfRaters()))
         }
         return storeProducts
     }
@@ -112,18 +117,30 @@ export class Inventory
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
             if(storeProduct.getName().includes(productName)){
-                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
+                storeProducts.push(new StoreProductInfo(storeProduct.getName(),
+                storeProduct.getProductId(),
+                storeProduct.getPrice(),
+                storeProduct.getStoreId(),
+                storeProduct.getQuantity(),
+                storeProduct.getProductRating(),
+                storeProduct.getNumOfRaters()));
 
             }
         }
         return storeProducts;
     }
 
-    public getProductInfoByCategory(category: Category): StoreProductInfo[]{
+    public getProductInfoByCategory(category: string): StoreProductInfo[]{
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
             if(storeProduct.getCategories().find(productCategory=>category===productCategory)!= undefined){
-                storeProducts.push(new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters()));
+                storeProducts.push(new StoreProductInfo(storeProduct.getName(),
+                storeProduct.getProductId(),
+                storeProduct.getPrice(),
+                storeProduct.getStoreId(),
+                storeProduct.getQuantity(),
+                storeProduct.getProductRating(),
+                storeProduct.getNumOfRaters()));
             }
         }
         return storeProducts;

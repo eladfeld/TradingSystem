@@ -43,13 +43,13 @@ export function open_store(service:Service ,founder : Subscriber , name:string, 
     }
 }
 
-export function add_product(service : Service, user:Subscriber ,store : Store, productName: string, categories: number[], price: number, quantity?: number) : number
+export function add_product(service : Service, user:Subscriber ,store : Store, productName: string, categories: string[], price: number, quantity?: number) : number
 {
     let product = service.addNewProduct(user.getUserId() , store.getStoreId() ,productName , categories , price , quantity);
     if (isOk(product))
     {
         return product.value;
     }
-    
+
 }
 
