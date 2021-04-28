@@ -15,16 +15,11 @@ export class Service
     private constructor()
     {
         this.facade = new SystemFacade();
-        Service.singletone.send_message_func = (userId,message:{}) => { throw 'send_func_not yet set'}
     }
 
-    public static set_send_func() : void
+    public set_send_func( send_func: (userId:number,message:{}) => Promise<number>) : void
     {
-        if (Service.singletone === undefined)
-        {
-            Service.singletone = new Service();;
-            Service.singletone =
-        }
+        Service.singletone.send_message_func = send_func;
     }
 
     public static get_instance() : Service
@@ -32,6 +27,7 @@ export class Service
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
+            Service.singletone.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
         }
         return Service.singletone;
     }

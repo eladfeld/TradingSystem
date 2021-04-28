@@ -10,7 +10,6 @@ export class Publisher
     private constructor() 
     {
         this.store_subscribers = new Map();
-        this.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
     }
 
     public set_send_func(send_message : (userId : number, message:{}) => Promise<number>) : void
@@ -23,6 +22,7 @@ export class Publisher
         if (Publisher.singleton === undefined)
         {
             Publisher.singleton = new Publisher();
+            Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
         }
         return Publisher.singleton;
     }
@@ -36,7 +36,8 @@ export class Publisher
         }
         else
         {
-            registered.push(subscriber);
+            if (!registered.filter( sub => sub.getUserId() === subscriber.getUserId()))
+                registered.push(subscriber);
             this.store_subscribers.set(storeId,registered);
         }
     }
@@ -48,15 +49,25 @@ export class Publisher
         this.store_subscribers.set(storeId , deleted_user);
     }
 
-    public send_message(subscriber:Subscriber , message:{}) : void
+    public send_message(subscriber:Subscriber , message:{})
     {
-        let promise = this.send_message_func(subscriber.getUserId() , message);
-        promise.catch( reason => subscriber.addMessage(message))
+        return new Promise( (resolve,reject) => {
+            let promise = this.send_message_func(subscriber.getUserId() , message);
+            promise.catch( reason => {  
+                subscriber.addMessage(message);
+                return;
+            })
+        })
+    
     }
 
     //----------------------------------functions for tests--------------------------------
-    public get_store_subscribers() {
-        return this.store_subscribers;
+    public get_store_subscribers(storeId : number) {
+        return this.store_subscribers.get(storeId);
+    }
+
+    public clear(){
+        this.store_subscribers = new Map();
     }
 
 }
