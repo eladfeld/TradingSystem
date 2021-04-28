@@ -1,9 +1,9 @@
 import { Subscriber } from "../user/Subscriber";
 
 
-export class Messenger
+export class Publisher
 {
-    private static singleton : Messenger = undefined;
+    private static singleton : Publisher = undefined;
     private send_message_func : (userId : number, message:{}) => Promise<number>;
     private store_subscribers:Map<number,Subscriber[]>; //key=storeId , value = registered subscribers
 
@@ -15,16 +15,16 @@ export class Messenger
 
     public set_send_func(send_message : (userId : number, message:{}) => Promise<number>) : void
     {
-        Messenger.singleton.send_message_func = send_message;
+        Publisher.singleton.send_message_func = send_message;
     }
 
     public static get_instance()
     {
-        if (Messenger.singleton === undefined)
+        if (Publisher.singleton === undefined)
         {
-            Messenger.singleton = new Messenger();
+            Publisher.singleton = new Publisher();
         }
-        return Messenger.singleton;
+        return Publisher.singleton;
     }
 
     public register_store(storeId:number, subscriber: Subscriber) : void
