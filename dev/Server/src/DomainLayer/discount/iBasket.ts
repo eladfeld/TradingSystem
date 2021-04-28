@@ -24,7 +24,7 @@ export class MyBasket implements iBasket{
                 case "price":
                     return item.getPrice();
                 case "quantity":
-                    return item.getId();
+                    return item.getQuantity();
                 default:
                     throw exception(`MyCart does not have property '${strs[1]}'`);
             }

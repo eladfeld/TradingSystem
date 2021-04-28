@@ -1,3 +1,4 @@
+import { exception } from "console";
 import iSubject from "./iSubject";
 
 export interface iPredicate<T extends iSubject>{
@@ -9,17 +10,22 @@ export interface iValue<T extends iSubject>{
 
 export class CompositePredicate<T extends iSubject> implements iPredicate<T>{
     protected rater: (a:boolean, b:boolean) => boolean;
-    protected rand1: iPredicate<T>;
-    protected rand2: iPredicate<T>;
+    protected rands: iPredicate<T>[];
 
-    constructor(rand1: iPredicate<T>, rand2: iPredicate<T>, rater: (a:boolean, b:boolean)=>boolean){
-        this.rand1 = rand1;
-        this.rand2 = rand2;
+    constructor(rands: iPredicate<T>[], rater: (a:boolean, b:boolean)=>boolean){
+        this.rands = rands;
         this.rater = rater;
     }
 
     public isSatisfied = (subject: T):boolean => {
-        return this.rater(this.rand1.isSatisfied(subject), this.rand2.isSatisfied(subject));
+        if(this.rands.length < 2){
+            throw exception("not enough operands");
+        }
+        var acc: boolean = this.rater(this.rands[0].isSatisfied(subject), this.rands[1].isSatisfied(subject));
+        for(var i:number = 2; i<this.rands.length; i++){
+            acc = this.rater(acc, this.rands[i].isSatisfied(subject));
+        }
+        return acc;
     }
 }
   
