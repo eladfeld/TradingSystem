@@ -12,7 +12,6 @@ const OKSTATUS: number = 200;
 
 const enter = (req: Request, res: Response, next: NextFunction) =>
 {
-    console.log('command recived');
     let userId: Result<number> = service.enter();
     if(isOk(userId))
         return res.status(OKSTATUS).json({
@@ -53,7 +52,7 @@ const login = (req: Request, res: Response, next: NextFunction) =>
             userId: user.value.getUserId()
         })
     return res.status(OKSTATUS).json({
-       error: 'could not enter' 
+       error: user.message
     })
 }
 
@@ -111,7 +110,7 @@ const getPruductInfoByName = (req: Request, res: Response, next: NextFunction) =
 const getPruductInfoByCategory = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
-    let productCategory: number = req.body.productCategory;
+    let productCategory: string = req.body.productCategory;
     let product: Result<string> = service.getPruductInfoByCategory(userId, productCategory);
     if(isOk(product))
         return res.status(OKSTATUS).json(JSON.parse(product.value))
@@ -205,7 +204,8 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
     let paymentInfo: PaymentInfo = req.body.paymentInfo;
-    let result: Result<boolean> = service.completeOrder(userId, storeId, paymentInfo);
+    let userAddress: string = req.body.userAddress;
+    let result: Result<boolean> = service.completeOrder(userId, storeId, paymentInfo, userAddress);
     if(isOk(result))
         return res.status(OKSTATUS).json({
             message: result.value
@@ -226,7 +226,7 @@ const openStore = (req: Request, res: Response, next: NextFunction) =>
     let result: Result<Store> = service.openStore(userId, storeName, bankAccountNumber, storeAddress);
     if(isOk(result))
         return res.status(OKSTATUS).json({
-            message: result.value
+            message: result.value.getStoreAddress()
         })
     return res.status(OKSTATUS).json({
        error: result.message
@@ -255,7 +255,7 @@ const addNewProduct = (req: Request, res: Response, next: NextFunction) =>
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
     let productName: string = req.body.productName;
-    let categories: number[] = req.body.categories;
+    let categories: string[] = req.body.categories;
     let quantity: number = req.body.quantity;
     let price: number = req.body.price;
     let result: Result<number> = service.addNewProduct(userId, storeId, productName, categories, price, quantity);

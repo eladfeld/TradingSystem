@@ -1,5 +1,6 @@
 import { exception } from 'console';
 import iBasket from '../iBasket';
+import { iProduct } from '../iProduct';
 import {SimpleOps, CompositeOps, getSimpleOperator, getCompositeOperator} from './LogicalOperators';
 import {CompositePredicate, SimplePredicate, Field, Value} from './Predicate';
 
@@ -29,7 +30,10 @@ class MyBasket implements iBasket{
         }
         return -1;
     };
-    public getItems = () => this.basket;
+
+    public getItems: () => iProduct[];
+
+    //public getItems = () => this.basket;
 }
 
 
