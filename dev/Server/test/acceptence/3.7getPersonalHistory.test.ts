@@ -3,7 +3,6 @@ import { servicesVersion } from 'typescript';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
@@ -29,12 +28,13 @@ describe('3.7: get subscriber history', function () {
 
         let avi = enter_register_login(service, "avi", "1234");
         let store = open_store(service, avi, "Mega", 123456, "Tel aviv");
-        let banana = add_product(service, avi, store, "banana", [Category.SWEET], 1, 50);
-        let apple = add_product(service, avi, store, "apple", [Category.SWEET], 1, 10);
+        store.addCategoryToRoot('Sweet')
+        let banana = add_product(service, avi, store, "banana", ['Sweet'], 1, 50);
+        let apple = add_product(service, avi, store, "apple", ['Sweet'], 1, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
         service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569));
+        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
         let historyRes: Result<any> = service.getSubscriberPurchaseHistory(avi.getUserId(), avi.getUserId());
         if (isOk(historyRes)) {
             let history = JSON.parse(historyRes.value);

@@ -1,5 +1,4 @@
 import {assert, expect} from 'chai';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
@@ -30,6 +29,6 @@ describe('3.1: Logout' , function() {
     it('system manager tries to open store store after logout' , function(){
         let sys_manager = enter_login(service , "michael" , "1234");
         service.logout(sys_manager.getUserId());
-        expect(isOk(service.openStore(sys_manager.getUserId() , "aluf Hasport" , 123456 , "Tel Aviv"))).to.equal(false); 
+        expect(isOk(service.openStore(sys_manager.getUserId() , "aluf Hasport" , 123456 , "Tel Aviv"))).to.equal(false);
     });
 });

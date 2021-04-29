@@ -80,7 +80,7 @@ export class Service
         return this.facade.getPruductInfoByName(userId, productName);
     }
 
-    public getPruductInfoByCategory(userId : number, category: number): Result<string>
+    public getPruductInfoByCategory(userId : number, category: string): Result<string>
     {
         return this.facade.getPruductInfoByCategory(userId, category);
     }
@@ -109,9 +109,9 @@ export class Service
         return this.facade.checkoutSingleProduct(userId, productId, quantity, storeId, supply_address);
     }
 
-    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
+    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
     {
-        return this.facade.completeOrder(userId, storeId,paymentInfo);
+        return this.facade.completeOrder(userId, storeId,paymentInfo, userAddress);
     }
 
 
@@ -125,7 +125,7 @@ export class Service
         return this.facade.editStoreInventory(userId, storeId, productId, quantity);
     }
 
-    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<number>
+    public addNewProduct(userId: number, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Result<number>
     {
         return this.facade.addNewProduct(userId, storeId, productName, categories, price, quantity);
     }

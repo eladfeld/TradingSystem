@@ -1,33 +1,48 @@
-import { ShoppingCart } from "../user/ShoppingCart";
-import { User } from "../user/User";
-
 export const TransactionStatus = {
-    TIMED_OUT: -3,
-    FAIL_RESERVE: -2,
-    CANCELED: -1,
     IN_PROGRESS: 0,
-    ITEMS_RESERVED: 2,
-    PAID: 3,
-    SUPPLIED: 4
+    CANCELLED: 1,
+    TIMED_OUT: 2,
+    COMPLETE: 3
 };
+
 Object.freeze(TransactionStatus);
 
 class Transaction {
 
-    
-    private transcationId: number;
-    private userId: number;
-    private storeId: number;
-    private total: number;
-    private cardNumber: number;
+    private transcationId: number;//
+    private userId: number;//
+    private storeId: number;//
+    private total: number;//
+    private cardNumber: number;//
     private items: Map<number, number>; //productId => quantity
-    private status: number;
-    private time: number;
-    private shipmentId: number;
+    private status: number;//
+    private time: number;//
+    private shipmentId: number;//
+    private paymentId: number;//
     
     private static nextId = 1;
 
+    asJson = () => {
+        var obj : any = {}
+        obj['transcationId'] = this.transcationId
+        obj['userId'] = this.userId
+        obj['storeId'] = this.storeId
+        obj['total'] = this.total
+        obj['cardNumber'] = this.cardNumber
+        obj['status'] = this.status
+        obj['time'] = this.time
+        obj['shipmentId'] = this.shipmentId
 
+        var items = [];
+        for(const [key, value] of this.items){
+            items.push({ 
+                'productId':key,
+                'quantity':value,
+            });
+        }
+        obj['items']=items;
+        return obj;
+    }
 
     constructor(userId: number, storeId: number, items: Map<number, number>, total:number ){
         this.transcationId = Transaction.nextId++;
@@ -41,26 +56,20 @@ class Transaction {
         this.shipmentId = -1;
     }
 
-    setShipmentId = (shipmentId: number):void => {
-        this.shipmentId = shipmentId;
-    }
-
-    setStatus = (status: number) =>{
-        this.status = status;
-    }
-
-    setCardNumber = (cardNumber: number) => {
-        this.cardNumber = cardNumber;
-    }
+    setShipmentId = (shipmentId: number):void => {this.shipmentId = shipmentId;}
+    setPaymentId = (paymentId: number):void => {this.paymentId = paymentId;}
+    setStatus = (status: number) =>{this.status = status;}
+    setCardNumber = (cardNumber: number) => {this.cardNumber = cardNumber;}
 
     getTotal = (): number => this.total;
-
     getId = () : number => this.transcationId;
     getShipmentId = () : number => this.shipmentId;
+    getPaymentId = () : number => this.paymentId;
     getUserId = () : number => this.userId;
     getStoreId = () : number => this.storeId;
     getItems = () : Map<number, number> => this.items;
     getStatus = () : number => this.status;
+    getTime = () : number => this.time;
 
     toJSON = () => {
         var obj : any = {};
@@ -78,11 +87,10 @@ class Transaction {
             obj['items'].push({ 
                 'productId':key,
                 'Quantity':value,
-            })
+            });
         }
         return obj;
-    }
-
+    }  
 }
 
 export default Transaction;

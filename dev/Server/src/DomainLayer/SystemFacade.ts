@@ -132,7 +132,7 @@ export class SystemFacade
 
     }
 
-    public getPruductInfoByCategory(userId : number, category: number): Result<string>
+    public getPruductInfoByCategory(userId : number, category: string): Result<string>
     {
         Logger.log(`getPruductInfoByCategory : userId:${userId} , category:${category}`);
         return StoreDB.getPruductInfoByCategory(category);
@@ -184,13 +184,14 @@ export class SystemFacade
         return makeFailure("user not found");
     }
 
-    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo) : Result<boolean>
+    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
     {
         Logger.log(`completeOrder: userId : ${userId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
         let user: User = this.logged_guest_users.find(user => user.getUserId() === userId);
+        let store: Store = StoreDB.getStoreByID(storeId);
         if(user !== undefined)
         {
-            return Purchase.CompleteOrder(userId , storeId , paymentInfo);
+            return store.completeOrder(userId, paymentInfo, userAddress);
         }
         return makeFailure("user not found");
     }
@@ -221,7 +222,7 @@ export class SystemFacade
         return makeFailure("subscriber or store wasn't found");
     }
 
-    public addNewProduct(userId: number, storeId: number, productName: string, categories: number[], price: number, quantity = 0): Result<number>
+    public addNewProduct(userId: number, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Result<number>
     {
         Logger.log(`addNewProduct : userId:${userId} , storeId:${storeId}, productName:${productName} , categories:${categories} , price:${price} , quantity:${quantity} `);
         let subscriber: Subscriber = this.logged_subscribers.find(subscriber => subscriber.getUserId() === userId);

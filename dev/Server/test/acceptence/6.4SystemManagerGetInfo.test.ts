@@ -1,6 +1,5 @@
 import { assert, expect } from 'chai';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
@@ -20,9 +19,10 @@ describe('6.4: System Manager Get Info', function () {
         let avi = enter_register_login(service, "avi", "1234");
         let sys_manager = enter_login(service, "michael", "1234");
         let store = open_store(service, avi, "Aluf hasport", 123456, "Tel aviv");
-        let apple = add_product(service, avi, store, "apple", [Category.SWEET], 10, 15);
+        store.addCategoryToRoot('Sweet')
+        let apple = add_product(service, avi, store, "apple", ['Sweet'], 10, 15);
         service.checkoutSingleProduct(sys_manager.getUserId(), apple, 5, store.getStoreId(), "King Goerge street");
-        service.completeOrder(sys_manager.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 48948));
+        service.completeOrder(sys_manager.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
         expect(isOk(service.getStorePurchaseHistory(sys_manager.getUserId(), store.getStoreId())));
 
     })
@@ -32,9 +32,10 @@ describe('6.4: System Manager Get Info', function () {
         let ali = enter_register_login(service, "ali", "1234");
         let sys_manager = enter_login(service, "michael", "1234");
         let store = open_store(service, avi, "Aluf hasport", 123456, "Tel aviv");
-        let apple = add_product(service, avi, store, "apple", [Category.SWEET], 10, 15);
+        store.addCategoryToRoot('Sweet')
+        let apple = add_product(service, avi, store, "apple", ['Sweet'], 10, 15);
         service.checkoutSingleProduct(ali.getUserId(), apple, 5, store.getStoreId(), "King Goerge street");
-        service.completeOrder(ali.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 48948));
+        service.completeOrder(ali.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
         expect(isOk(service.getSubscriberPurchaseHistory(sys_manager.getUserId(), ali.getUserId()))).to.equal(true);
     })
 });

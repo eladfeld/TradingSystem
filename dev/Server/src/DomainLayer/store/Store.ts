@@ -1,7 +1,7 @@
 import { DiscountPolicy } from "./DiscountPolicy";
 import { BuyingPolicy } from "./BuyingPolicy";
 import { Inventory } from "./Inventory";
-import {Category, ID, Rating} from './Common'
+import { TreeRoot, ID, Rating } from './Common'
 import { Appointment } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreDB } from "./StoreDB";
@@ -17,6 +17,8 @@ import { StoreHistory } from "./StoreHistory";
 import Transaction from "../purchase/Transaction";
 import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
+import PaymentInfo from "../purchase/PaymentInfo";
+import ShippingInfo from "../purchase/ShippingInfo";
 
 
 export class Store
@@ -44,6 +46,7 @@ export class Store
     private discounts: DiscountOption[];
     private buyingOptions: buyingOption[];
     private storeHistory: StoreHistory;
+    private categiries: TreeRoot<string>;
 
     public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = undefined, buyingPolicy: BuyingPolicy = undefined)
     {
@@ -71,6 +74,7 @@ export class Store
         this.discounts = [];
         this.buyingOptions = [buyingOption.INSTANT];
         this.storeHistory = new StoreHistory(this.storeId);
+        this.categiries = new TreeRoot<string>('root category');
 
         StoreDB.addStore(this);
     }
@@ -143,7 +147,7 @@ export class Store
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(subscriber: Subscriber, productName: string, categories: number[], price: number, quantity = 0): Result<number> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: string[], price: number, quantity = 0): Result<number> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -152,7 +156,7 @@ export class Store
             return makeFailure("User not permitted")
         }
         for(let category of categories){
-            if(!Object.values(Category).includes(category)){
+            if(!this.categiries.hasChildNode(category)){
                 return makeFailure("Got invalid category")
             }
         }
@@ -192,15 +196,17 @@ export class Store
         }
         let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
 
-        Purchase.checkout(this, fixedPrice, buyerId, reservedProducts, userAddress);
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, this.cancelReservedShoppingBasket(reservedProducts));
         return makeOk(true);
     }
 
 
     public cancelReservedShoppingBasket(reservedProducts: Map <number, number>) {
-        if(reservedProducts !== undefined){
-            for (let [id, quantity] of reservedProducts.entries()) {
-                this.inventory.returnReservedProduct(id, quantity);
+        return () => {
+            if(reservedProducts !== undefined){
+                for (let [id, quantity] of reservedProducts.entries()) {
+                    this.inventory.returnReservedProduct(id, quantity);
+                }
             }
         }
     }
@@ -234,7 +240,7 @@ export class Store
         productMap.set(productPrice, quantity);
         let fixedPrice = this.applyDiscountPolicy(productMap);
 
-        Purchase.checkout(this, fixedPrice, buyerId, productMap, userAddress);
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.cancelReservedShoppingBasket(productMap));
         return makeOk("Checkout passed to purchase");
     }
 
@@ -333,7 +339,11 @@ export class Store
         return this.inventory.getProductInfoByName(productName);
     }
 
-    public searchByCategory(category: Category): StoreProductInfo[]{
+    public searchByCategory(category: string): StoreProductInfo[]{
+        if(!this.categiries.hasChildNode(category)){
+            Logger.log(`No category: ${category} in store: ${this.storeName}`);
+            return [];
+        }
         return this.inventory.getProductInfoByCategory(category);
     }
 
@@ -463,6 +473,38 @@ export class Store
     public deleteBuyingOption( buyingOption: buyingOption)
     {
         this.buyingOptions = this.buyingOptions.filter(option => option !== buyingOption);
+    }
+
+    public completeOrder(userId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
+    {
+        return Purchase.CompleteOrder(userId,
+            this.storeId,
+            new ShippingInfo(this.storeAddress, userAddress),
+            paymentInfo,
+            this.bankAccount);
+    }
+
+    public addCategory(categoryFather: string, category: string): Result<string>{
+        if(this.categiries.hasChildNode(category)){
+            return makeFailure(`Category: ${category} already exists in store: ${this.storeName}`)
+        }
+
+        if(!this.categiries.hasChildNode(categoryFather)){
+            return makeFailure(`Category Father: ${categoryFather} does not exists in store: ${this.storeName}`)
+        }
+
+        let fatherNode = this.categiries.getChildNode(categoryFather)
+        fatherNode.createChildNode(category)
+        return makeOk('category was added')
+    }
+
+    public addCategoryToRoot(category: string): Result<string>{
+        if(this.categiries.hasChildNode(category)){
+            return makeFailure(`Category: ${category} already exists in store: ${this.storeName}`)
+        }
+
+        this.categiries.createChildNode(category);
+        return makeOk('category was added')
     }
 
 }
