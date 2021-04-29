@@ -17,6 +17,11 @@ export class Service
         this.facade = new SystemFacade();
     }
 
+    public get_word_list(word: string): string[]
+    {
+        return ['asd', 'bdsa', 'casd', 'ddsa'];
+    }
+
     public set_send_func( send_func: (userId:number,message:{}) => Promise<number>) : void
     {
         Service.singletone.send_message_func = send_func;
