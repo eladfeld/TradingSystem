@@ -1,4 +1,3 @@
-import { Category } from "../store/Common";
 import iCategorizer from "./Categorizer";
 import iBasket from "./iBasket";
 // import iCategory from "./iCategory";

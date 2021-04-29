@@ -1,5 +1,4 @@
 import { assert, expect } from 'chai';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
@@ -35,7 +34,7 @@ describe('4.3: Appoint Owner tests', function () {
         let store = open_store(service,avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
         expect(isOk(service.appointStoreOwner(moshe.getUserId(), store.getStoreId(), ali.getUserId()))).to.equal(false);
- 
+
     })
 
 });

@@ -1,6 +1,5 @@
 import {expect} from 'chai';
 import { buyingOption } from '../../../src/DomainLayer/store/BuyingOption';
-import { BuyingPolicy } from '../../../src/DomainLayer/store/BuyingPolicy';
 import { DiscountPolicy } from '../../../src/DomainLayer/store/DiscountPolicy';
 import { Store } from '../../../src/DomainLayer/store/Store';
 
@@ -19,6 +18,7 @@ describe('buying policy tests' , () => {
         let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
         store.addBuyingOption(buyingOption.BID)
         store.addBuyingOption(buyingOption.OFFER)
+        store.deleteBuyingOption(buyingOption.INSTANT)
         expect(store.hasBuyingOption(buyingOption.INSTANT)).to.equal(false)
         expect(store.hasBuyingOption(buyingOption.BID)).to.equal(true)
         expect(store.hasBuyingOption(buyingOption.OFFER)).to.equal(true)
