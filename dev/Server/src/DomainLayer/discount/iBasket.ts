@@ -13,7 +13,7 @@ export default interface iBasket extends iSubject{
 //example implementation
 export class MyBasket implements iBasket{
     constructor(){}
-    private basket: iProduct[] = [1,2,3,4].map(n => new MyProduct(n, n*10, n*100, `product #${n}`));
+    private basket: iProduct[] = [1,2,3,4].map(n => new MyProduct(n, n*10, n*100, `product #${n}`, [`category${n}`]));
     
     getValue = (field: string):number => {
         const strs: string[] = field.split("_");

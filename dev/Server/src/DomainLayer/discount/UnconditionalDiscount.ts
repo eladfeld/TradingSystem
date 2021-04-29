@@ -1,14 +1,16 @@
 import iCategorizer from './Categorizer';
-import iCategory from './iCategory';
 import Discount from './Discount';
 import iBasket from './iBasket';
 
-class UnconditionalDiscount extends Discount{
+export default class UnconditionalDiscount extends Discount{
+    constructor(ratio: number, category: string|number){
+        super(ratio, category);
+    }
     //TODO: improve algorithm. extremely inefficient!
     public getDiscount = (basket: iBasket, categorizer: iCategorizer): number => {
-        const productsInCategory: number[] = categorizer.getProducts(this.category.getName());
+        const productsInCategory: number[] = this.getProductsInCategory(categorizer);
         const discounts: number[] = basket.getItems().map((prod) => {
-            if(productsInCategory.includes(prod.getId())){
+            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getId())){
                 return prod.getQuantity()*this.ratio*prod.getPrice();
             }else return 0;
         });
