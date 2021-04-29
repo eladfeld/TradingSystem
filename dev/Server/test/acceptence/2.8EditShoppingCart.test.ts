@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
@@ -19,12 +18,14 @@ describe('2.8: Shopping Cart view and edit' , function() {
         Authentication.clean();
     });
 
-    it('shopping cart before and after delete' , function() 
+    it('shopping cart before and after delete' , function()
     {
         let avi = enter_register_login(service,"avi", "123456789");
         let store1 = open_store(service,avi,"Aluf Hasport" , 123456 , "Tel Aviv" );
-        let product1: Product = new Product("banana", [Category.SWEET]);
-        store1.addNewProduct(avi,product1.getName(),[Category.COMPUTER],500,100);
+        store1.addCategoryToRoot('Sweet')
+        store1.addCategoryToRoot('Computer')
+        let product1: Product = new Product("banana", ['Sweet']);
+        store1.addNewProduct(avi,product1.getName(),['Computer'],500,100);
         service.addProductTocart(avi.getUserId(), store1.getStoreId() , product1.getProductId() , 10);
         let cart: Result<string> = service.getCartInfo(avi.getUserId());
         if(isOk(cart))
@@ -38,4 +39,4 @@ describe('2.8: Shopping Cart view and edit' , function() {
             }
         }
     })
-}); 
+});

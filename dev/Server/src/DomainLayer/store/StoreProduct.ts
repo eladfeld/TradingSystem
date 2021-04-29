@@ -1,6 +1,6 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Category, Rating } from "./Common";
+import { Rating } from "./Common"
 
 export class StoreProduct
 {
@@ -12,9 +12,9 @@ export class StoreProduct
     private quantity: number;
     private productRating: number
     private numOfRaters: number
-    private categories: Category[];
+    private categories: string[];
 
-    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: Category[])
+    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: string[])
     {
         this.productId = productId;
         this.name = name;

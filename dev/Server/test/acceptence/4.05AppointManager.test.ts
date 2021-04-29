@@ -1,5 +1,4 @@
 import { assert, expect } from 'chai';
-import { Category } from '../../src/DomainLayer/store/Common';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
@@ -30,7 +29,8 @@ describe('4.5:Appoint manager tests', function () {
         let moshe = enter_register_login(service, "moshe", "123456789")
         let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        expect(isOk(service.addNewProduct(moshe.getUserId(), store.getStoreId(), "banana", [Category.SWEET], 15))).to.equal(false);
+        store.addCategoryToRoot('Sweet')
+        expect(isOk(service.addNewProduct(moshe.getUserId(), store.getStoreId(), "banana", ['Sweet'], 15))).to.equal(false);
 
     })
 });

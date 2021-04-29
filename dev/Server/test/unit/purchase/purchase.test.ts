@@ -5,7 +5,6 @@ import { PaymentInfo } from '../../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../../src/DomainLayer/purchase/Purchase'
 import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
-import { Category } from '../../../src/DomainLayer/store/Common';
 import { Product } from '../../../src/DomainLayer/store/Product';
 import { ProductDB } from '../../../src/DomainLayer/store/ProductDB';
 import { Store } from '../../../src/DomainLayer/store/Store';
