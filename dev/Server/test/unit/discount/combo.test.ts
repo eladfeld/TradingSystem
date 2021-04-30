@@ -9,11 +9,11 @@ import DiscountParser from '../../../src/DomainLayer/discount/DiscountParser';
 import iDiscount from '../../../src/DomainLayer/discount/iDiscount';
 import iCategorizer from '../../../src/DomainLayer/discount/Categorizer';
 import { TestBasket, TestCategorizer } from './common';
-import { isOk, Result } from '../../../src/Result';
+import { isFailure, isOk, Result } from '../../../src/Result';
 
 const basket: iBasket = new TestBasket();
 const categorizer: iCategorizer = new TestCategorizer();
-describe('Discount Tests - unconditional' , function() {
+describe('Discount Tests - combo' , function() {
 
     it('15% off product#1 (apples) and 10% off food' , function(){
         const disc: any = {
@@ -65,30 +65,6 @@ describe('Discount Tests - unconditional' , function() {
         }
     });
 
-        it('15% off product#1 (apples) xor 10% off food' , function(){
-        const disc: any = {
-            type: "combo",
-            policy: "max",
-            discounts:[
-                {
-                    type: "unconditional",
-                    category: 1,
-                    ratio: 0.15
-                },
-                {
-                    type: "unconditional",
-                    category: "food",
-                    ratio: 0.10
-                }
-            ]
-        };
-        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
-        expect(isOk(discountRes)).to.equal(true);
-        if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(500);
-        }
-    });
         
 });
 

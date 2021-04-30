@@ -15,6 +15,7 @@ class Parser{
             switch (type) {
                 case "simple":
                     var rater: string = json.operator;
+                    if(rater === undefined) return makeFailure("operator is undefined in simple predicate");
                     const rand1Res: Result<iValue> = this.parseValue(json.operand1);
                     const rand2Res: Result<iValue> = this.parseValue(json.operand2);
                     if(isFailure(rand1Res)) return rand1Res;
@@ -23,14 +24,18 @@ class Parser{
                     return makeOk(new SimplePredicate(rand1Res.value, rand2Res.value, getSimpleOperator(rater)));
                 case "composite":
                     var rater: string = json.operator;
+                    if(rater === undefined) return makeFailure("operator is undefined in composite predicate");
                     const randsArr: any[] = json.operands;
+                    if(randsArr === undefined) return makeFailure("operands are undefined in composite predicate");
+                    if(!Array.isArray(randsArr)) return makeFailure("operands is not array in composite predicate");
+                    if(randsArr.length < 2) return makeFailure("composite predicates must have at least 2 operands");
                     const randsRes: Result<iPredicate[]> =  ResultsToResult(randsArr.map(p => this.parse(p)));
                     if(isFailure(randsRes)) return randsRes;
-                    if(getCompositeOperator(rater) === undefined) return makeFailure(`invalid composite operator ${rater} in:\n ${json}`);
+                    if(getCompositeOperator(rater) === undefined) return makeFailure(`invalid composite operator ${rater} in composite predicate:\n ${json}`);
                    
                     return makeOk(new CompositePredicate(randsRes.value, getCompositeOperator(rater)));
                 default:
-                    return makeFailure("buying policy type must be simple or compound");
+                    return makeFailure("buying policy type must be simple or composite");
             }
             
         }catch(e){
@@ -41,6 +46,7 @@ class Parser{
     }
 
     private parseValue = (v: any):Result<iValue> =>{
+        if(v === undefined) return makeFailure("value is undefined in simple predicate");
         const type: string = typeof v;
         if(type === 'number')
             return makeOk(new Value(v));

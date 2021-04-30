@@ -102,6 +102,170 @@ describe('predicate parser - invalid inputs' , function() {
     });
 
 
+    it('no type in simple predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            operator: ">",
+            operand1: 1,
+            operand2: 0
+        };
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('no operator in simple predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "simple",
+            operand1: 1,
+            operand2: 0
+        };
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('no operand1 in simple predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "simple",
+            operator: ">",
+            operand2: 0
+        };
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('no operand2 in simple predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "simple",
+            operator: ">",
+            operand1: 1,
+        };
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+
+    it('no type composite predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            operator: 1,
+            operands:[
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 2,
+                    operand2: 1
+                },
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 4,
+                    operand2: 3
+                }
+            ]
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('no operator in composite predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operands:[
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 2,
+                    operand2: 1
+                },
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 4,
+                    operand2: 3
+                }
+            ]
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('no operand in composite predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operator: 1
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('empty operands in composite predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operator: 1,
+            operands:[]  
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('only 1 operand composite predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operator: 1,
+            operands:[
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 2,
+                    operand2: 1
+                }
+            ]
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('non array arg for operands' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operator: 1,
+            operands: false
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
+    it('composite predicate with invalid child' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operator: 1,
+            operands:[
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 2,
+                    operand2: 1
+                },
+                {
+                    operator: ">",
+                    operand1: 4,
+                    operand2: 3
+                }
+            ]
+        };  
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isFailure(predRes)).to.equal(true);
+    });
+
 
 });
 
