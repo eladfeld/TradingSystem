@@ -1,23 +1,23 @@
 import { exception } from "console";
 import iSubject from "./iSubject";
 
-export interface iPredicate<T extends iSubject>{
-    isSatisfied: (subject: T)=>boolean;
+export interface iPredicate{
+    isSatisfied: (subject: iSubject)=>boolean;
 }
-export interface iValue<T extends iSubject>{
-    calc: (basket: T)=>number;
+export interface iValue{
+    calc: (basket: iSubject)=>number;
 }
 
-export class CompositePredicate<T extends iSubject> implements iPredicate<T>{
+export class CompositePredicate<T extends iSubject> implements iPredicate{
     protected rater: (a:boolean, b:boolean) => boolean;
-    protected rands: iPredicate<T>[];
+    protected rands: iPredicate[];
 
-    constructor(rands: iPredicate<T>[], rater: (a:boolean, b:boolean)=>boolean){
+    constructor(rands: iPredicate[], rater: (a:boolean, b:boolean)=>boolean){
         this.rands = rands;
         this.rater = rater;
     }
 
-    public isSatisfied = (subject: T):boolean => {
+    public isSatisfied = (subject: iSubject):boolean => {
         if(this.rands.length < 2){
             throw exception("not enough operands");
         }
@@ -29,37 +29,37 @@ export class CompositePredicate<T extends iSubject> implements iPredicate<T>{
     }
 }
   
-export class SimplePredicate<T extends iSubject> implements iPredicate<T>{
+export class SimplePredicate<T extends iSubject> implements iPredicate{
     protected rater: (a:number, b:number) => boolean;
-    protected rand1: iValue<T>;
-    protected rand2: iValue<T>;
+    protected rand1: iValue;
+    protected rand2: iValue;
 
-    constructor(rand1: iValue<T>, rand2: iValue<T>, rater: (a:number, b:number)=>boolean){
+    constructor(rand1: iValue, rand2: iValue, rater: (a:number, b:number)=>boolean){
         this.rand1 = rand1;
         this.rand2 = rand2;
         this.rater = rater;
     }
 
-    public isSatisfied = (subject: T):boolean => {
+    public isSatisfied = (subject: iSubject):boolean => {
         return this.rater(this.rand1.calc(subject), this.rand2.calc(subject));
     } 
 }
 
-export class Field<T extends iSubject> implements iValue<T>{
+export class Field implements iValue{
     //protected getter:(subject: T) => number;
     private field: string;
     constructor( field: string){
         this.field = field;
     }
 
-    public calc = (subject: T):number => {
+    public calc = (subject: iSubject):number => {
         return subject.getValue(this.field);
         return subject.getValue("banana_quantity");
         return subject.getValue("total");
     }   
 }
 
-export class Value implements iValue<any>{
+export class Value implements iValue{
     protected value: number
     
     constructor(value: number){

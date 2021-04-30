@@ -1,4 +1,5 @@
 import { exception } from "console";
+import { isFailure, makeFailure, makeOk, Result, ResultsToResult } from "../../Result";
 import { DiscountPolicy } from "../store/DiscountPolicy";
 import ComboDiscount from "./ComboDiscount";
 import getComboPolicy from "./ComboPolicies";
@@ -38,25 +39,27 @@ class Parser{
         
     }
     //TODO: update iSubject to have string[] getWords() for field checks
-    public parse = (d: any):iDiscount =>{
+    public parse = (d: any):Result<iDiscount> =>{
         const type: string = d.type;
         switch (type) {
             case "unconditional":   
                 var category: any = d.category;
                 var ratio: number = d.ratio;
-                return new UnconditionalDiscount(ratio, category);//TODO: support category
+                return makeOk(new UnconditionalDiscount(ratio, category));//TODO: support category
             case "conditional":   
                 var category: any = d.category;
                 var ratio: number = d.ratio;
-                const predicate: iPredicate<iBasket> = PredicateParser.parse(d.predicate);
-                return new ConditionalDiscount(ratio, category, predicate);           
+                const predRes: Result<iPredicate> = PredicateParser.parse(d.predicate);
+                if(isFailure(predRes))return predRes;
+                return makeOk(new ConditionalDiscount(ratio, category, predRes.value));           
             case "combo":
                 const policy: iComboPolicy = getComboPolicy(d.policy);  
                 const children: any[] = d.discounts;
-                const discounts: iDiscount[] = children.map(disc => this.parse(disc));
-                return new ComboDiscount(policy,discounts);        
+                const discountsRes: Result<iDiscount[]> = ResultsToResult(children.map(disc => this.parse(disc)));
+                if(isFailure(discountsRes)) return discountsRes;
+                return makeOk(new ComboDiscount(policy,discountsRes.value));        
             default:
-                throw exception("discount type must be un/conditional or combo");
+                return makeFailure("discount type must be un/conditional or combo");
         }
     }
 }

@@ -9,6 +9,7 @@ import DiscountParser from '../../../src/DomainLayer/discount/DiscountParser';
 import iDiscount from '../../../src/DomainLayer/discount/iDiscount';
 import iCategorizer from '../../../src/DomainLayer/discount/Categorizer';
 import { TestBasket, TestCategorizer } from './common';
+import { isOk, Result } from '../../../src/Result';
 
 const basket: iBasket = new TestBasket();
 const categorizer: iCategorizer = new TestCategorizer();
@@ -31,9 +32,12 @@ describe('Discount Tests - unconditional' , function() {
                 }
             ]
         };
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(650);
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(650);
+        }
     });
 
     it('15% off product#1 (apples) xor 10% off food' , function(){
@@ -53,9 +57,12 @@ describe('Discount Tests - unconditional' , function() {
                 }
             ]
         };
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(500);
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(500);
+        }
     });
 
         it('15% off product#1 (apples) xor 10% off food' , function(){
@@ -75,9 +82,12 @@ describe('Discount Tests - unconditional' , function() {
                 }
             ]
         };
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(500);
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(500);
+        }
     });
         
 });

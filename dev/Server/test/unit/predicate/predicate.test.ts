@@ -5,6 +5,7 @@ import iSubject from '../../../src/DomainLayer/discount/logic/iSubject';
 import {SimpleOps, CompositeOps, getSimpleOperator, getCompositeOperator} from '../../../src/DomainLayer/discount/logic/LogicalOperators';
 import {CompositePredicate, SimplePredicate, Field, Value, iPredicate} from '../../../src/DomainLayer/discount/logic/Predicate';
 import PredicateParser from '../../../src/DomainLayer/discount/logic/parser';
+import { isOk, Result } from '../../../src/Result';
 
 
 
@@ -18,8 +19,10 @@ describe('Predicate Tests' , function() {
             operand2: 1
         };
         
-        const pred: iPredicate<iSubject> = PredicateParser.parse(obj);
-        expect(pred.isSatisfied(null)).to.equal(true);
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(true);
     });
     
     it('2 < 1 -> false' , function(){
@@ -29,11 +32,13 @@ describe('Predicate Tests' , function() {
             operand1: 2,
             operand2: 1
         };       
-        const pred: iPredicate<iSubject> = PredicateParser.parse(obj);
-        expect(pred.isSatisfied(null)).to.equal(false);
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(false);
     });
 
-    it('((2 < 1) AND (4 > 3)) -> true' , function(){
+    it('((2 > 1) AND (4 > 3)) -> true' , function(){
         const obj: any = {
             type: "composite",
             operator: "and",
@@ -52,8 +57,85 @@ describe('Predicate Tests' , function() {
                 }
             ]
         };       
-        const pred: iPredicate<iSubject> = PredicateParser.parse(obj);
-        expect(pred.isSatisfied(null)).to.equal(true);
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(true);
+    });
+
+    it('((1 > 2) IFF (3 > 4)) -> true' , function(){
+        const obj: any = {
+            type: "composite",
+            operator: "iff",
+            operands:[
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 1,
+                    operand2: 2
+                },
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 3,
+                    operand2: 4
+                }
+            ]
+        };       
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(true);
+    });
+
+    it('((1 < 2) IFF (3 < 4)) -> true' , function(){
+        const obj: any = {
+            type: "composite",
+            operator: "iff",
+            operands:[
+                {
+                    type: "simple",
+                    operator: "<",
+                    operand1: 1,
+                    operand2: 2
+                },
+                {
+                    type: "simple",
+                    operator: "<",
+                    operand1: 3,
+                    operand2: 4
+                }
+            ]
+        };       
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(true);
+    });
+
+    it('((1 < 2) IFF (3 > 4)) -> false' , function(){
+        const obj: any = {
+            type: "composite",
+            operator: "iff",
+            operands:[
+                {
+                    type: "simple",
+                    operator: "<",
+                    operand1: 1,
+                    operand2: 2
+                },
+                {
+                    type: "simple",
+                    operator: ">",
+                    operand1: 3,
+                    operand2: 4
+                }
+            ]
+        };       
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(false);
     });
 
     it('((2 > 1) AND (4 > 3) AND (7<3)) -> false' , function(){
@@ -81,8 +163,10 @@ describe('Predicate Tests' , function() {
                 }
             ]
         };       
-        const pred: iPredicate<iSubject> = PredicateParser.parse(obj);
-        expect(pred.isSatisfied(null)).to.equal(false);
+        const predRes: Result<iPredicate> = PredicateParser.parse(obj);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(null)).to.equal(false);
     });
 
     it('(quantity of product#1 > 0) -> true' , function(){
@@ -94,8 +178,10 @@ describe('Predicate Tests' , function() {
             operand2: 0
         };
         const basket: iSubject = new MyBasket();     
-        const pred: iPredicate<iSubject> = PredicateParser.parse(query);
-        expect(pred.isSatisfied(basket)).to.equal(true);
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(basket)).to.equal(true);
     });
 
     it('((quantity of product#2 < 2) || (price of prod#2 > 1,000,000)) -> false' , function(){
@@ -119,8 +205,10 @@ describe('Predicate Tests' , function() {
             ]
         }; 
         const basket: iSubject = new MyBasket();     
-        const pred: iPredicate<iSubject> = PredicateParser.parse(query);
-        expect(pred.isSatisfied(basket)).to.equal(false);
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(basket)).to.equal(false);
     });
 
     it('((quantity of product#2 < 2) || (price of prod#2 < 1,000,000)) -> true' , function(){
@@ -144,8 +232,10 @@ describe('Predicate Tests' , function() {
             ]
         }; 
         const basket: iSubject = new MyBasket();     
-        const pred: iPredicate<iSubject> = PredicateParser.parse(query);
-        expect(pred.isSatisfied(basket)).to.equal(true);
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(basket)).to.equal(true);
     });
 
     
@@ -158,8 +248,10 @@ describe('Predicate Tests' , function() {
             operand2: "3_price"
         };
         const basket: iSubject = new MyBasket();     
-        const pred: iPredicate<iSubject> = PredicateParser.parse(query);
-        expect(pred.isSatisfied(basket)).to.equal(true);
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes))
+            expect(predRes.value.isSatisfied(basket)).to.equal(true);
     });
 
     

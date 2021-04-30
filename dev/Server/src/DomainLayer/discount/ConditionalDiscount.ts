@@ -4,9 +4,9 @@ import {iPredicate} from "./logic/Predicate";
 import iBasket from "./iBasket";
 
 export default class ConditionalDiscount extends Discount{
-    private predicate: iPredicate<iBasket>;
+    private predicate: iPredicate;
 
-    constructor(ratio: number, category: string|number, predicate: iPredicate<iBasket>){
+    constructor(ratio: number, category: string|number, predicate: iPredicate){
         super(ratio, category);
         this.predicate = predicate;
     }

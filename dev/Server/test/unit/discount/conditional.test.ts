@@ -9,6 +9,7 @@ import DiscountParser from '../../../src/DomainLayer/discount/DiscountParser';
 import iDiscount from '../../../src/DomainLayer/discount/iDiscount';
 import iCategorizer from '../../../src/DomainLayer/discount/Categorizer';
 import { TestBasket, TestCategorizer } from './common';
+import { isOk, Result } from '../../../src/Result';
 
 const basket: iBasket = new TestBasket();
 const categorizer: iCategorizer = new TestCategorizer();
@@ -26,10 +27,12 @@ describe('Discount Tests - unconditional' , function() {
                 operand2: 3
             }
         };
-        
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(150);
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(150);
+        }
     });
     
     it('more than 1,000,000 of product#1 => 25% off category food (not satisfied)' , function(){
@@ -43,10 +46,13 @@ describe('Discount Tests - unconditional' , function() {
                 operand1: "1_quantity",
                 operand2: 1000000
             }
-        };        
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(1250);
+        };     
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(1250);
+        }   
     });
 
     it('more than 5 of product#1 => at 10% off food category (satisfied)' , function(){
@@ -61,9 +67,12 @@ describe('Discount Tests - unconditional' , function() {
                 operand2: 5
             }
         };        
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(500);
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(500);
+        }
     });
 
     it('50% off nothing in basket' , function(){
@@ -72,9 +81,12 @@ describe('Discount Tests - unconditional' , function() {
             category: 'unicorns',
             ratio: 0.50
         };        
-        const discount: iDiscount = DiscountParser.parse(disc);
-        const sale: number = discount.getDiscount(basket, categorizer);
-        expect(sale).to.equal(0);
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: number = discountRes.value.getDiscount(basket, categorizer);
+            expect(sale).to.equal(0);
+        }
     });
     
 });
