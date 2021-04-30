@@ -5,20 +5,13 @@ import { PaymentInfo } from '../../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../../src/DomainLayer/purchase/Purchase'
 import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
-import { Product } from '../../../src/DomainLayer/store/Product';
-import { ProductDB } from '../../../src/DomainLayer/store/ProductDB';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Appointment } from '../../../src/DomainLayer/user/Appointment';
-import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
-import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isFailure, Result } from '../../../src/Result';
 
 
 
 //checkout should have
-var userId: number = 100;
-var storeId: number = 7632;
-const userAdrs: string = "8 Mile Road, Detroit";
+var userId: number = -100;
+var storeId: number = -7632;
 const prod1Id: number=3000;
 const prod2Id: number=4000;
 const prod1Quantity: number=3;
@@ -32,13 +25,13 @@ const shippingInfo: ShippingInfo = new ShippingInfo("src", "dst");
 const cb: ()=>void = ()=>{};
 
 const updateValues = () => {
-    userId++;
+    userId--;
+    storeId--;
 }
 
 
 describe('purchase tests' , function() {
-
-    it('checkout, without completing order' , function(){
+    it('checkout, without completing order' , function(done){
         updateValues();
         PaymentSystem.willSucceed();
         SupplySystem.willSucceed();
@@ -48,16 +41,25 @@ describe('purchase tests' , function() {
         const transaction: Transaction = Purchase.getTransactionInProgress(userId, storeId);
         expect(transaction.getTotal()).to.equal(total1a);
         expect(transaction.getItems().get(prod1Id)).to.equal(prod1Quantity);
+        done()
     });
 
-    it('checkout twice, should override first' , function(){
+    it('checkout twice, should override first' , function(done){
         updateValues();
 
         Purchase.checkout(storeId, total1a, userId, basket1a, cb);
         Purchase.checkout(storeId, total1b, userId, basket1b, cb);
-        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId).sort((t1,t2)=>t2.getTime()-t1.getTime());
+        const allTransactions: Transaction[] = Purchase.getUserStoreHistory(userId, storeId);
+        if(allTransactions.length !== 2){
+            //console.log(allTransactions);
+            allTransactions.forEach(t => console.log(`userId: ${t.getUserId()}\t storeId: ${t.getStoreId()}\t status: ${t.getStatus()}`));
+        }
         expect(allTransactions.length).to.equal(2);
-        const [tCancelled, tInProgress] = allTransactions;
+        const [tInProgress, tCancelled] = allTransactions;
+        if(tInProgress.getStatus() !== TransactionStatus.IN_PROGRESS || tCancelled.getStatus() !== TransactionStatus.CANCELLED){
+            //console.log(allTransactions);
+            allTransactions.forEach(t => console.log(`userId: ${t.getUserId()}\t storeId: ${t.getStoreId()}\t status: ${t.getStatus()}`));
+        }
         //expect IN_PROGRESS transaction
         expect(tInProgress.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
         expect(tInProgress.getItems().get(prod1Id)).to.equal(undefined);
@@ -68,35 +70,38 @@ describe('purchase tests' , function() {
         expect(tCancelled.getItems().get(prod1Id)).to.equal(prod1Quantity);
         expect(tCancelled.getItems().get(prod2Id)).to.equal(undefined);
         expect(Purchase.hasTransactionInProgress(userId,storeId)).to.equal(true);
+        done();
     });
 
 
-    it('checkout, then complete order within time' , function(){
+    it('checkout, then complete order within time' , function(done){
         updateValues();
 
         const res: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, cb);
         const res2: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 12345678 );
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
-        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId).sort((t1,t2)=>t2.getTime()-t1.getTime());
+        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId).sort((t1,t2)=>t2.getStatus()-t1.getStatus());
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];
         expect(Purchase.hasTransactionInProgress(userId,storeId)).to.equal(false);
         expect(t.getItems().get(prod1Id)).to.equal(prod1Quantity);
         expect(t.getItems().get(prod2Id)).to.equal(undefined);
         expect(t.getStatus()).to.equal(TransactionStatus.COMPLETE);
+        done();
     });
 
-    it('attempt completing order before checkout' , function(){
+    it('attempt completing order before checkout' , function(done){
         updateValues();
 
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
         expect(Purchase.hasTransactionInProgress(userId,storeId)).to.equal(false);
         const res: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
         expect(isFailure(res)).to.equal(true);
+        done();
     });
 
 
-    it('attempt completing order after payment time passed' , function(){
+    it('attempt completing order after payment time passed' , function(done){
         updateValues();
 
         Purchase.checkout(storeId, total1a, userId, basket1a, cb);
@@ -104,5 +109,7 @@ describe('purchase tests' , function() {
             const res: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
             expect(isFailure(res)).to.equal(true);
         }, Purchase.getPaymentTimeoutInMillis()+1000);
+        done();
     });
+
 });
