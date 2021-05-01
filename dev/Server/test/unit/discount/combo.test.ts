@@ -35,8 +35,10 @@ describe('Discount Tests - combo' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isOk(discountRes)).to.equal(true);
         if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(650);
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isOk(sale)).to.equal(true);
+            if(isOk(sale))
+                expect(sale.value).to.equal(650);
         }
     });
 
@@ -60,8 +62,10 @@ describe('Discount Tests - combo' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isOk(discountRes)).to.equal(true);
         if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(500);
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isOk(sale)).to.equal(true);
+            if(isOk(sale))
+                expect(sale.value).to.equal(500);
         }
     });
 

@@ -3,26 +3,48 @@ import PredicateParser from "../../discount/logic/parser";
 import { iPredicate } from "../../discount/logic/Predicate";
 import BuyingSubject from "./BuyingSubject";
 
+export class Rule{
+    public name: string;
+    public predicate: iPredicate;
+    public message: string;
+
+    constructor(name:string, predicate:iPredicate, message:string){
+        this.name = name;
+        this.predicate = predicate;
+        this.message = message;    
+    }
+}
+
 export default class BuyingPolicy{
-    private conditions:iPredicate[];
+    private nextId: number = 1;
+    private rules: Map<number,Rule>;
 
     constructor(){
-        this.conditions =[];
+        this.rules = new Map();
     }
 
-    public isSatisfied = (buyingSubject: BuyingSubject):boolean =>{
-        for(var i:number =0; i<this.conditions.length; i++){
-            if(!this.conditions[i].isSatisfied(buyingSubject))
-                return false;
+    //TODO: figure out...
+    //the problem: there are 3 possibilities. 1) rule is satisfied, 2) rule is not satisfied, 3) issue with calculation
+    // 1=> makeOK, 3 => makeFailue, 2 => ???
+    //possibly should return Result<Result<>>???
+    public isSatisfied = (buyingSubject: BuyingSubject): Result<string> =>{
+        for(const [key, rule] of this.rules.entries()){
+            const res: Result<boolean> =  rule.predicate.isSatisfied(buyingSubject);
+            if(isFailure(res)) return res;
+            if(!res.value) return makeOk(rule.message);
         }
-        return true;
+        return makeOk("success");
     }
 
-    public addToPolicy = (obj: any):Result<string> =>{
-        const res: Result<iPredicate> = PredicateParser.parse(obj);
-        if(isFailure(res)) return res;
-        this.conditions.push(res.value);
+    public addPolicy = (predicate: any, name:string, message: string ):Result<string> =>{
+        const predRes: Result<iPredicate> = PredicateParser.parse(predicate);
+        if(isFailure(predRes)) return predRes;
+        this.rules.set(this.nextId++, new Rule(name, predRes.value, message));
         return makeOk("successfully added condition to the buying policy");
+    }
+
+    public removePolicy = (id: number) =>{
+        this.rules.delete(id);
     }
 
 }

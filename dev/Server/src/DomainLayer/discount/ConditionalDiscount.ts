@@ -2,6 +2,7 @@ import Categorizer from "./Categorizer";
 import Discount from "./Discount";
 import {iPredicate} from "./logic/Predicate";
 import iBasket from "./iBasket";
+import { isFailure, makeOk, Result, ResultsToResult } from "../../Result";
 
 export default class ConditionalDiscount extends Discount{
     private predicate: iPredicate;
@@ -11,19 +12,23 @@ export default class ConditionalDiscount extends Discount{
         this.predicate = predicate;
     }
 
-    public getDiscount = (basket: iBasket, categorizer: Categorizer):number =>  {
+    public getDiscount = (basket: iBasket, categorizer: Categorizer):Result<number> =>  {
         const productsInCategory: number[] = this.getProductsInCategory(categorizer);
-        const discounts: number[] = basket.getItems().map((prod) => {
+        const discountsResults: Result<number>[] = basket.getItems().map((prod) => {
             if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getId())){
-                if(this.predicate.isSatisfied(basket)){
-                    return prod.getQuantity()*this.ratio*prod.getPrice();
+                const predRes:Result<boolean> = this.predicate.isSatisfied(basket);
+                if(isFailure(predRes))return predRes;
+                if(predRes.value){
+                    return makeOk(prod.getQuantity()*this.ratio*prod.getPrice());
                 }
             }
-            return 0;
+            return makeOk(0);
         });
+        const res:Result<number[]> = ResultsToResult(discountsResults);
+        if(isFailure(res))return res;
         var totalDiscount: number = 0;
-        discounts.forEach((discount) => totalDiscount += discount);
-        return totalDiscount;
+        res.value.forEach((discount) => totalDiscount += discount);
+        return makeOk(totalDiscount);
     }
 
     public getPredicate = () => this.predicate;

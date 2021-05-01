@@ -1,14 +1,16 @@
 import { exception } from "console";
+import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
 import iSubject from "./iSubject";
 
 export interface iPredicate{
-    isSatisfied: (subject: iSubject)=>boolean;
+    isSatisfied: (subject: iSubject)=>Result<boolean>;
 }
 export interface iValue{
     calc: (basket: iSubject)=>number;
+    toString: () => string;
 }
 
-export class CompositePredicate<T extends iSubject> implements iPredicate{
+export class CompositePredicate implements iPredicate{
     protected rater: (a:boolean, b:boolean) => boolean;
     protected rands: iPredicate[];
 
@@ -17,19 +19,25 @@ export class CompositePredicate<T extends iSubject> implements iPredicate{
         this.rater = rater;
     }
 
-    public isSatisfied = (subject: iSubject):boolean => {
+    public isSatisfied = (subject: iSubject):Result<boolean> => {
         if(this.rands.length < 2){
-            throw exception("not enough operands");
+            return makeFailure("predicate has less than 2 operands");
         }
-        var acc: boolean = this.rater(this.rands[0].isSatisfied(subject), this.rands[1].isSatisfied(subject));
+        const res1: Result<boolean> = this.rands[0].isSatisfied(subject);
+        if(isFailure(res1))return res1;
+        const res2: Result<boolean> = this.rands[1].isSatisfied(subject);
+        if(isFailure(res2))return res2;
+        var acc:boolean = this.rater(res1.value, res2.value);
         for(var i:number = 2; i<this.rands.length; i++){
-            acc = this.rater(acc, this.rands[i].isSatisfied(subject));
+            const res: Result<boolean> = this.rands[i].isSatisfied(subject);
+            if(isFailure(res))return res;
+            acc = this.rater(acc, res.value);
         }
-        return acc;
+        return makeOk(acc);
     }
 }
   
-export class SimplePredicate<T extends iSubject> implements iPredicate{
+export class SimplePredicate implements iPredicate{
     protected rater: (a:number, b:number) => boolean;
     protected rand1: iValue;
     protected rand2: iValue;
@@ -40,8 +48,12 @@ export class SimplePredicate<T extends iSubject> implements iPredicate{
         this.rater = rater;
     }
 
-    public isSatisfied = (subject: iSubject):boolean => {
-        return this.rater(this.rand1.calc(subject), this.rand2.calc(subject));
+    public isSatisfied = (subject: iSubject):Result<boolean> => {
+        const val1: number = this.rand1.calc(subject);
+        if(val1 === undefined) return makeFailure(`'${this.rand1.toString()}' is not a valid value for iSubject ${subject}`);
+        const val2: number = this.rand2.calc(subject);
+        if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
+        return makeOk(this.rater(val1, val2));
     } 
 }
 
@@ -54,9 +66,8 @@ export class Field implements iValue{
 
     public calc = (subject: iSubject):number => {
         return subject.getValue(this.field);
-        return subject.getValue("banana_quantity");
-        return subject.getValue("total");
     }   
+    public toString = (): string => this.field;
 }
 
 export class Value implements iValue{
@@ -69,4 +80,7 @@ export class Value implements iValue{
     public calc = ():number => {
         return this.value;
     }   
+
+    public toString = ():string =>`${this.value}`;
+
 }

@@ -3,8 +3,9 @@ import { iProduct, MyProduct } from './iProduct';
 import iSubject from './logic/iSubject';
 
 export default interface iBasket extends iSubject{
+    //should return the value associated with @field, otherwise return undefined
     getValue: (field: string) => number;
-    getItems: () => iProduct[];//TODO: replace
+    getItems: () => iProduct[];
 }
 
 
@@ -26,10 +27,10 @@ export class MyBasket implements iBasket{
                 case "quantity":
                     return item.getQuantity();
                 default:
-                    throw exception(`MyCart does not have property '${strs[1]}'`);
+                    return undefined;
             }
         }
-        return -1;
+        return undefined;
     };
     public getItems = () => this.basket;
 }

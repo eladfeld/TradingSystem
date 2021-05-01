@@ -1,7 +1,9 @@
 import { expect } from 'chai';
 import {iPredicate} from '../../../src/DomainLayer/discount/logic/Predicate';
 import PredicateParser from '../../../src/DomainLayer/discount/logic/parser';
-import { isFailure, Result } from '../../../src/Result';
+import { isFailure, isOk, Result } from '../../../src/Result';
+import { MyBasket } from '../../../src/DomainLayer/discount/iBasket';
+import iSubject from '../../../src/DomainLayer/discount/logic/iSubject';
 
 describe('predicate parser - invalid inputs' , function() {
 
@@ -266,6 +268,51 @@ describe('predicate parser - invalid inputs' , function() {
         expect(isFailure(predRes)).to.equal(true);
     });
 
+    it('invalid field simple predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "simple",
+            operator: ">",
+            operand1: "badField",
+            operand2: 0
+        };
+        const basket: iSubject = new MyBasket();     
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes)){
+            const satRes: Result<boolean> = predRes.value.isSatisfied(basket);
+            expect(isFailure(satRes)).to.equal(true);
+        }
+    });
+
+    it('invalid field composite predicate' , function(){
+        //id, price, quantity, name
+        const query: any = {
+            type: "composite",
+            operator: "or",
+            operands:[
+                {
+                    type: "simple",
+                    operator: "<",
+                    operand1: "badField",
+                    operand2: 2
+                },
+                {
+                    type: "simple",
+                    operator: "<",
+                    operand1: "2_price",
+                    operand2: 1000000
+                }
+            ]
+        }; 
+        const basket: iSubject = new MyBasket();     
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes)){
+            const satRes: Result<boolean> = predRes.value.isSatisfied(basket);
+            expect(isFailure(satRes)).to.equal(true);
+        }
+    });
 
 });
 

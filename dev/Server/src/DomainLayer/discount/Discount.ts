@@ -1,3 +1,4 @@
+import { Result } from "../../Result";
 import iCategorizer from "./Categorizer";
 import iBasket from "./iBasket";
 // import iCategory from "./iCategory";
@@ -7,7 +8,7 @@ export default abstract class Discount implements iDiscount{
     public static WHOLE_STORE: number = 0;
     protected ratio: number;
     protected category: string|number;
-    public getDiscount: (basket: iBasket, categorizer: iCategorizer) => number;
+    public getDiscount: (basket: iBasket, categorizer: iCategorizer) => Result<number>;
 
     constructor(ratio: number, category:string|number){
         this.ratio=ratio;

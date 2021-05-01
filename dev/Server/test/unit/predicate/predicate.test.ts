@@ -21,8 +21,13 @@ describe('Predicate Tests' , function() {
         
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(true);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(true);
+            }
+        }
     });
     
     it('2 < 1 -> false' , function(){
@@ -34,8 +39,13 @@ describe('Predicate Tests' , function() {
         };       
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(false);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(false);
+            }
+        }
     });
 
     it('((2 > 1) AND (4 > 3)) -> true' , function(){
@@ -59,8 +69,13 @@ describe('Predicate Tests' , function() {
         };       
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(true);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(true);
+            }
+        }
     });
 
     it('((1 > 2) IFF (3 > 4)) -> true' , function(){
@@ -84,8 +99,13 @@ describe('Predicate Tests' , function() {
         };       
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(true);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(true);
+            }
+        }
     });
 
     it('((1 < 2) IFF (3 < 4)) -> true' , function(){
@@ -109,8 +129,13 @@ describe('Predicate Tests' , function() {
         };       
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(true);
+        if(isOk(predRes)){
+            const satRes: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(satRes)).to.equal(true);
+            if(isOk(satRes)){
+                expect(satRes.value).to.equal(true);
+            }
+        }
     });
 
     it('((1 < 2) IFF (3 > 4)) -> false' , function(){
@@ -134,8 +159,13 @@ describe('Predicate Tests' , function() {
         };       
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(false);
+        if(isOk(predRes)){
+            const satRes: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(satRes)).to.equal(true);
+            if(isOk(satRes)){
+                expect(satRes.value).to.equal(false);
+            }
+        }
     });
 
     it('((2 > 1) AND (4 > 3) AND (7<3)) -> false' , function(){
@@ -165,8 +195,13 @@ describe('Predicate Tests' , function() {
         };       
         const predRes: Result<iPredicate> = PredicateParser.parse(obj);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(null)).to.equal(false);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(null);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(false);
+            }
+        }
     });
 
     it('(quantity of product#1 > 0) -> true' , function(){
@@ -180,8 +215,13 @@ describe('Predicate Tests' , function() {
         const basket: iSubject = new MyBasket();     
         const predRes: Result<iPredicate> = PredicateParser.parse(query);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(basket)).to.equal(true);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(basket);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(true);
+            }
+        }
     });
 
     it('((quantity of product#2 < 2) || (price of prod#2 > 1,000,000)) -> false' , function(){
@@ -207,8 +247,13 @@ describe('Predicate Tests' , function() {
         const basket: iSubject = new MyBasket();     
         const predRes: Result<iPredicate> = PredicateParser.parse(query);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(basket)).to.equal(false);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(basket);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(false);
+            }
+        }
     });
 
     it('((quantity of product#2 < 2) || (price of prod#2 < 1,000,000)) -> true' , function(){
@@ -234,8 +279,13 @@ describe('Predicate Tests' , function() {
         const basket: iSubject = new MyBasket();     
         const predRes: Result<iPredicate> = PredicateParser.parse(query);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(basket)).to.equal(true);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(basket);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(true);
+            }
+        }
     });
 
     
@@ -250,8 +300,13 @@ describe('Predicate Tests' , function() {
         const basket: iSubject = new MyBasket();     
         const predRes: Result<iPredicate> = PredicateParser.parse(query);
         expect(isOk(predRes)).to.equal(true);
-        if(isOk(predRes))
-            expect(predRes.value.isSatisfied(basket)).to.equal(true);
+        if(isOk(predRes)){
+            const res: Result<boolean> = predRes.value.isSatisfied(basket);
+            expect(isOk(res)).to.equal(true);
+            if(isOk(res)){
+                expect(res.value).to.equal(true);
+            }
+        }
     });
 
     

@@ -19,11 +19,11 @@ export class TestCategorizer implements iCategorizer{
                 return [];
         }
     }
-    public hasProduct = (category: string) => false;
-    public addProductToCategory = (productId: number, category: string) => {};
-    public removeProductFromCategory = (productId: number, category: string) => {};
-    public addCategoryToCategory = (parent: string, child: string) => {};
-    public moveCategory = (category: string, newParent: string) => {};
+    // public hasProduct = (category: string) => false;
+    // public addProductToCategory = (productId: number, category: string) => {};
+    // public removeProductFromCategory = (productId: number, category: string) => {};
+    // public addCategoryToCategory = (parent: string, child: string) => {};
+    // public moveCategory = (category: string, newParent: string) => {};
    
 }
 
@@ -41,16 +41,17 @@ export class TestBasket implements iBasket{
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);
             const item: iProduct = this.basket.find(i => i.getId()==id);
+            if(item === undefined) return undefined;
             switch(strs[1]){
                 case "price":
                     return item.getPrice();
                 case "quantity":
                     return item.getQuantity();
                 default:
-                    throw exception(`TestCart does not have property '${strs[1]}'`);
+                    return undefined;
             }
         }
-        return -1;
+        return undefined;
     };
     public getItems = () => this.basket;
 }

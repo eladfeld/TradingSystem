@@ -30,8 +30,10 @@ describe('Discount Tests - unconditional' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isOk(discountRes)).to.equal(true);
         if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(150);
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isOk(sale)).to.equal(true);
+            if(isOk(sale))
+                expect(sale.value).to.equal(150);
         }
     });
     
@@ -50,8 +52,10 @@ describe('Discount Tests - unconditional' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isOk(discountRes)).to.equal(true);
         if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(1250);
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isOk(sale)).to.equal(true);
+            if(isOk(sale))
+                expect(sale.value).to.equal(1250);
         }   
     });
 
@@ -70,8 +74,10 @@ describe('Discount Tests - unconditional' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isOk(discountRes)).to.equal(true);
         if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(500);
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isOk(sale)).to.equal(true);
+            if(isOk(sale))
+                expect(sale.value).to.equal(500);
         }
     });
 
@@ -84,8 +90,10 @@ describe('Discount Tests - unconditional' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isOk(discountRes)).to.equal(true);
         if(isOk(discountRes)){
-            const sale: number = discountRes.value.getDiscount(basket, categorizer);
-            expect(sale).to.equal(0);
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isOk(sale)).to.equal(true);
+            if(isOk(sale))
+                expect(sale.value).to.equal(0);
         }
     });
     

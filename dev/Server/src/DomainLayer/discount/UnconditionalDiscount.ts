@@ -1,3 +1,4 @@
+import { makeOk, Result } from '../../Result';
 import iCategorizer from './Categorizer';
 import Discount from './Discount';
 import iBasket from './iBasket';
@@ -7,7 +8,7 @@ export default class UnconditionalDiscount extends Discount{
         super(ratio, category);
     }
     //TODO: improve algorithm. extremely inefficient!
-    public getDiscount = (basket: iBasket, categorizer: iCategorizer): number => {
+    public getDiscount = (basket: iBasket, categorizer: iCategorizer): Result<number> => {
         const productsInCategory: number[] = this.getProductsInCategory(categorizer);
         const discounts: number[] = basket.getItems().map((prod) => {
             if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getId())){
@@ -16,6 +17,6 @@ export default class UnconditionalDiscount extends Discount{
         });
         var totalDiscount: number = 0;
         discounts.forEach((discount) => totalDiscount += discount);
-        return totalDiscount;
+        return makeOk(totalDiscount);
     }
 }

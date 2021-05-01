@@ -195,4 +195,24 @@ describe('Discount Tests - invalid inputs' , function() {
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
         expect(isFailure(discountRes)).to.equal(true);
     });
+
+    it('unrecognized field for conditional discount' , function(){
+        const disc: any = {
+            type: "conditional",
+            category: 1,
+            ratio: 0.15,
+            predicate: {
+                type: "simple",
+                operator: ">",
+                operand1: "badField",
+                operand2: 3
+            }
+        };
+        const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        expect(isOk(discountRes)).to.equal(true);
+        if(isOk(discountRes)){
+            const sale: Result<number> = discountRes.value.getDiscount(basket, categorizer);
+            expect(isFailure(sale)).to.equal(true);
+        }
+    });
 });
