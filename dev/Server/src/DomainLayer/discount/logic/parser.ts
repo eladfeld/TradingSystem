@@ -1,6 +1,4 @@
-import { exception } from "console";
-import { isFailure, isOk, makeFailure, makeOk, Result, ResultsToResult } from "../../../Result";
-import iSubject from "./iSubject";
+import { isFailure, makeFailure, makeOk, Result, ResultsToResult } from "../../../Result";
 import { getCompositeOperator, getSimpleOperator } from "./LogicalOperators";
 import { CompositePredicate, Field, iPredicate, iValue, SimplePredicate, Value } from "./Predicate";
 

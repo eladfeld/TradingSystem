@@ -1,4 +1,3 @@
-import { exception } from 'console';
 import { iProduct, MyProduct } from './iProduct';
 import iSubject from './logic/iSubject';
 

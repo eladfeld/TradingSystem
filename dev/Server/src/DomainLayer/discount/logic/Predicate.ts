@@ -1,4 +1,3 @@
-import { exception } from "console";
 import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
 import iSubject from "./iSubject";
 

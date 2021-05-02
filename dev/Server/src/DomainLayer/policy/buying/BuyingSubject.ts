@@ -1,5 +1,7 @@
 import iSubject from "../../discount/logic/iSubject";
 
+
+//A composite form of the iSubject
 export default class BuyingSubject implements iSubject{
 
     private user: iSubject;

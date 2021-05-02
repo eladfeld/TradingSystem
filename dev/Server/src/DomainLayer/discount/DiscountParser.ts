@@ -1,11 +1,8 @@
-import { exception } from "console";
 import { isFailure, makeFailure, makeOk, Result, ResultsToResult } from "../../Result";
-import { DiscountPolicy } from "../store/DiscountPolicy";
 import ComboDiscount from "./ComboDiscount";
 import getComboPolicy from "./ComboPolicies";
-import ComboPolicies, { iComboPolicy } from "./ComboPolicies";
+import { iComboPolicy } from "./ComboPolicies";
 import ConditionalDiscount from "./ConditionalDiscount";
-import iBasket from "./iBasket";
 import iDiscount from "./iDiscount";
 import PredicateParser from "./logic/parser";
 import { iPredicate } from "./logic/Predicate";

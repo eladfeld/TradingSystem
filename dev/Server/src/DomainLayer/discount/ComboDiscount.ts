@@ -1,7 +1,6 @@
 import { isFailure, makeOk, Result, ResultsToResult } from "../../Result";
 import Categorizer from "./Categorizer";
 import { iComboPolicy } from "./ComboPolicies";
-import Discount from "./Discount";
 import iBasket from "./iBasket";
 import iDiscount from "./iDiscount";
 
