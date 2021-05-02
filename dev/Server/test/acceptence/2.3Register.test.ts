@@ -12,16 +12,15 @@ describe('2.3: register test' , function() {
 
     afterEach(function() {
         service.clear();
-        Authentication.clean();
     });
 
     it('guest user register' , function() {
-        expect(isOk(service.register("avi", "123456789"))).to.equal(true);
+        expect(isOk(service.register("avi", "123456789",13))).to.equal(true);
     })
 
     it('register with the same username' , function() {
-        service.register("avi", "123456789");
-        expect(isOk(service.register("avi", "1234"))).to.equal(false); 
+        service.register("avi", "123456789",13);
+        expect(isOk(service.register("avi", "1234",13))).to.equal(false); 
     })
 
 

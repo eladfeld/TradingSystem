@@ -13,7 +13,6 @@ describe('4.11: view store buying history', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('viwe store history', function () {
         let avi = enter_register_login(service, "avi", "123456789");

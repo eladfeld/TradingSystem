@@ -13,7 +13,6 @@ describe('4.9: get store staff', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
     it('get staff', function () {

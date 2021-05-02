@@ -13,7 +13,6 @@ describe('4.6: edit store permission', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('avi opens store and appoints manager with all the permissions', function () {
         let avi = enter_register_login(service, "avi", "123456789");

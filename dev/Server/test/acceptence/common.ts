@@ -9,7 +9,7 @@ export function enter_register_login(service :Service , userName:string, passwor
     let userId = service.enter();
     if (isOk(userId))
     {
-        service.register(userName,password);
+        service.register(userName,password,13);
         let user = service.login(userId.value, userName, password);
         if (isOk(user))
         {

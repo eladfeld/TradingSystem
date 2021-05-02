@@ -107,6 +107,19 @@ export class Subscriber extends User
     }
 
     public getValue = (field: string): number => this.age;
+    public isPendingMessages() : boolean
+    {
+        if (this.pending_messages.length === 0)
+            return false;
+        return true;
+    }
+
+    public takeMessages(): {}[]
+    {
+        let messages = this.pending_messages;
+        this.pending_messages = [];
+        return messages;
+    }
 
     
 

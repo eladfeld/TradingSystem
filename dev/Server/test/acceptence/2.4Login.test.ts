@@ -14,14 +14,13 @@ describe('2.4: login system test' , function() {
 
     afterEach(function() {
         service.clear();
-        Authentication.clean();
     });
 
     it('user login' , function() {
         let res = service.enter();
         if (isOk(res))
         {
-            service.register("avi", "123456789");
+            service.register("avi", "123456789",13);
             expect(isOk(service.login(res.value,"avi","123456789"))).to.equal(true);
         }
     })
@@ -30,7 +29,7 @@ describe('2.4: login system test' , function() {
         let res = service.enter();
         if (isOk(res))
         {
-            service.register("avi", "123456789");
+            service.register("avi", "123456789",13);
             expect(isOk(service.login(res.value,"avi","1234"))).to.equal(false);
         }
     })
@@ -39,7 +38,7 @@ describe('2.4: login system test' , function() {
         let res = service.enter();
         if (isOk(res))
         {
-            service.register("avi", "123456789");
+            service.register("avi", "123456789",13);
             expect(isOk(service.login(res.value,"yogev ha'melech","123456789"))).to.equal(false);
         }
     })

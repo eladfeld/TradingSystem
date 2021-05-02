@@ -10,7 +10,7 @@ describe('subscriber tests' , function() {
     it('add appointment test', function(){
         //this test has no logic just to check that add appointment works
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
-        let subscriber1 : Subscriber = new Subscriber("micha");
+        let subscriber1 : Subscriber = new Subscriber("micha", 13);
         let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
         subscriber1.addAppointment(appointment1);
         subscriber1.addAppointment(appointment1);
@@ -20,8 +20,8 @@ describe('subscriber tests' , function() {
     it('delete appointment test', function(){
         //this test has no logic just to check that delete appointment works
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
-        let subscriber1 : Subscriber = new Subscriber("micha");
-        let subscriber2 : Subscriber = new Subscriber("elad");
+        let subscriber1 : Subscriber = new Subscriber("micha", 13);
+        let subscriber2 : Subscriber = new Subscriber("elad", 13);
         let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber2,new Permission(0));
         let appointment2 : Appointment = new ManagerAppointment(subscriber2,store,subscriber2,new Permission(0));
         subscriber1.addAppointment(appointment1);
@@ -33,7 +33,7 @@ describe('subscriber tests' , function() {
     it('get title test', function(){
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
-        let subscriber1 : Subscriber = new Subscriber("micha");
+        let subscriber1 : Subscriber = new Subscriber("micha", 13);
         let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.isOwner(444)).to.equal(true);
@@ -42,7 +42,7 @@ describe('subscriber tests' , function() {
     it('check if permitted positive test', function(){
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
-        let subscriber1 : Subscriber = new Subscriber("micha");
+        let subscriber1 : Subscriber = new Subscriber("micha", 13);
         let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.checkIfPerrmited(ACTION.APPOINT_MANAGER,store)).to.equal(true);
@@ -51,7 +51,7 @@ describe('subscriber tests' , function() {
     it('check if permitted negative test', function(){
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
-        let subscriber1 : Subscriber = new Subscriber("micha");
+        let subscriber1 : Subscriber = new Subscriber("micha", 13);
         let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.checkIfPerrmited(ACTION.APPOINT_OWNER,store)).to.equal(false);

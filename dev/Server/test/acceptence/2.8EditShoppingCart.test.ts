@@ -15,7 +15,6 @@ describe('2.8: Shopping Cart view and edit' , function() {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
     it('shopping cart before and after delete' , function()

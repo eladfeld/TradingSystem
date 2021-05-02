@@ -17,7 +17,6 @@ describe('4.3: Appoint Owner tests', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('avi opens store and appoints moshe to owner', function () {
 

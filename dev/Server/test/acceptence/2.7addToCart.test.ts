@@ -17,7 +17,6 @@ describe('2.7: add to cart test' , function() {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('add to cart good' , function() {
         let avi = enter_register_login(service,"avi","123456789");

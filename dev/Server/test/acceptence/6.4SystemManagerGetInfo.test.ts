@@ -13,7 +13,6 @@ describe('6.4: System Manager Get Info', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('system manager get store purchase history', function () {
         let avi = enter_register_login(service, "avi", "1234");

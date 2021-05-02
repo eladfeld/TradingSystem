@@ -91,7 +91,7 @@ describe('search product in store' , () => {
             Service.get_instance()
             let manager = Login.login('michael', '1234')
             if(isOk(manager)){
-                let subsriber = new Subscriber('something')
+                let subsriber = new Subscriber('something', 13)
                 const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
                 store1.addCategoryToRoot('Shirt')
                 const user1Id: number = 100;

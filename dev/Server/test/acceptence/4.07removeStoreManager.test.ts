@@ -12,7 +12,6 @@ describe('4.7: remove appointment', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('remove recursive appointment', function () {
         let avi = enter_register_login(service, "avi", "123456789");
