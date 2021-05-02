@@ -50,7 +50,7 @@ describe('purchase tests' , function() {
         expect(transaction.getItems().get(prod1Id)).to.equal(prod1Quantity);
     });
 
-    it('checkout twice, should override first' , function(){
+    it('checkout twice, should override first' , function(){//TODO: doubt
         updateValues();
 
         Purchase.checkout(storeId, total1a, userId, basket1a, cb);

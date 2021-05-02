@@ -1,0 +1,20 @@
+Predicate CFG
+
+Pred = SimplePred | CompoundPred
+
+SimplePred = (<Value> <SimpleOp> <Value>)
+Value = number | alpha-numeric-string
+SimpleOp = "=" | "<" | ">" | ">=" | "<=" | "!="
+
+CompoundPred = <CompoundOp>(<Pred>*)
+CompoundOp = and | or | xor
+
+-------------------------------------------------------
+
+Discount JSON = {
+	category: "clothes"
+	type: "unconditional",
+	
+
+
+}

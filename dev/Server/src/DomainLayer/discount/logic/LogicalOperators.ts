@@ -32,16 +32,19 @@ export const getSimpleOperator = (op:string): (a: number, b: number)=>boolean =>
 const and = (a: boolean, b:boolean): boolean => a && b;
 const or = (a: boolean, b:boolean): boolean => a || b;
 const xor = (a: boolean, b:boolean): boolean => (a||b) && !(a&&b);
+const iff = (a: boolean, b:boolean): boolean => (a&&b) || (!(a||b));
 
 export const CompositeOps = {
     AND: "and",
     OR: "or",
-    XOR: "xor"
+    XOR: "xor",
+    IFF: "iff"
 };
 const compositeOpsMap: Map<string, (a: boolean, b: boolean)=>boolean> = new Map([
     [CompositeOps.AND, and],
     [CompositeOps.OR, or],
-    [CompositeOps.XOR, xor]
+    [CompositeOps.XOR, xor],
+    [CompositeOps.IFF, iff]
 ]);
 
 export const getCompositeOperator = (op:string): (a: boolean, b: boolean)=>boolean =>{

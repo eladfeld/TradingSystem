@@ -1,59 +1,75 @@
+import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
 import iSubject from "./iSubject";
 
-export interface iPredicate<T extends iSubject>{
-    isSatisfied: (subject: T)=>boolean;
+export interface iPredicate{
+    isSatisfied: (subject: iSubject)=>Result<boolean>;
 }
-export interface iValue<T extends iSubject>{
-    calc: (basket: T)=>number;
+export interface iValue{
+    calc: (basket: iSubject)=>number;
+    toString: () => string;
 }
 
-export class CompositePredicate<T extends iSubject> implements iPredicate<T>{
+export class CompositePredicate implements iPredicate{
     protected rater: (a:boolean, b:boolean) => boolean;
-    protected rand1: iPredicate<T>;
-    protected rand2: iPredicate<T>;
+    protected rands: iPredicate[];
 
-    constructor(rand1: iPredicate<T>, rand2: iPredicate<T>, rater: (a:boolean, b:boolean)=>boolean){
-        this.rand1 = rand1;
-        this.rand2 = rand2;
+    constructor(rands: iPredicate[], rater: (a:boolean, b:boolean)=>boolean){
+        this.rands = rands;
         this.rater = rater;
     }
 
-    public isSatisfied = (subject: T):boolean => {
-        return this.rater(this.rand1.isSatisfied(subject), this.rand2.isSatisfied(subject));
+    public isSatisfied = (subject: iSubject):Result<boolean> => {
+        if(this.rands.length < 2){
+            return makeFailure("predicate has less than 2 operands");
+        }
+        const res1: Result<boolean> = this.rands[0].isSatisfied(subject);
+        if(isFailure(res1))return res1;
+        const res2: Result<boolean> = this.rands[1].isSatisfied(subject);
+        if(isFailure(res2))return res2;
+        var acc:boolean = this.rater(res1.value, res2.value);
+        for(var i:number = 2; i<this.rands.length; i++){
+            const res: Result<boolean> = this.rands[i].isSatisfied(subject);
+            if(isFailure(res))return res;
+            acc = this.rater(acc, res.value);
+        }
+        return makeOk(acc);
     }
 }
   
-export class SimplePredicate<T extends iSubject> implements iPredicate<T>{
+export class SimplePredicate implements iPredicate{
     protected rater: (a:number, b:number) => boolean;
-    protected rand1: iValue<T>;
-    protected rand2: iValue<T>;
+    protected rand1: iValue;
+    protected rand2: iValue;
 
-    constructor(rand1: iValue<T>, rand2: iValue<T>, rater: (a:number, b:number)=>boolean){
+    constructor(rand1: iValue, rand2: iValue, rater: (a:number, b:number)=>boolean){
         this.rand1 = rand1;
         this.rand2 = rand2;
         this.rater = rater;
     }
 
-    public isSatisfied = (subject: T):boolean => {
-        return this.rater(this.rand1.calc(subject), this.rand2.calc(subject));
+    public isSatisfied = (subject: iSubject):Result<boolean> => {
+        const val1: number = this.rand1.calc(subject);
+        if(val1 === undefined) return makeFailure(`'${this.rand1.toString()}' is not a valid value for iSubject ${subject}`);
+        const val2: number = this.rand2.calc(subject);
+        if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
+        return makeOk(this.rater(val1, val2));
     } 
 }
 
-export class Field<T extends iSubject> implements iValue<T>{
+export class Field implements iValue{
     //protected getter:(subject: T) => number;
     private field: string;
     constructor( field: string){
         this.field = field;
     }
 
-    public calc = (subject: T):number => {
+    public calc = (subject: iSubject):number => {
         return subject.getValue(this.field);
-        return subject.getValue("banana_quantity");
-        return subject.getValue("total");
     }   
+    public toString = (): string => this.field;
 }
 
-export class Value implements iValue<any>{
+export class Value implements iValue{
     protected value: number
     
     constructor(value: number){
@@ -63,4 +79,7 @@ export class Value implements iValue<any>{
     public calc = ():number => {
         return this.value;
     }   
+
+    public toString = ():string =>`${this.value}`;
+
 }
