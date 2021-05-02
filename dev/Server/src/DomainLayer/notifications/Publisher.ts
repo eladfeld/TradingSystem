@@ -49,16 +49,41 @@ export class Publisher
         this.store_subscribers.set(storeId , deleted_user);
     }
 
-    public send_message(subscriber:Subscriber , message:{})
+    private send_message(subscriber:Subscriber , message:{}) : Promise<void>
     {
         return new Promise( (resolve,reject) => {
             let promise = this.send_message_func(subscriber.getUserId() , message);
+
+            // if fail message failed add message to subscriber queue
             promise.catch( reason => {  
                 subscriber.addMessage(message);
+                resolve();
                 return;
             })
         })
     
+    }
+
+    public notify_store_update(storeId : number , message:{}) : Promise<void>[]
+    {
+        let subscribers = this.store_subscribers.get(storeId);
+        let promises : Promise<void>[] = [];
+        subscribers.forEach(subscriber => { 
+            let promise = this.send_message(subscriber,message)
+            promises.push(promise)
+        });
+        return promises;
+    }
+
+    public send_pending_messages(subscriber : Subscriber) : Promise<void>[]
+    {
+        let messages = subscriber.takeMessages();
+        let promises : Promise<void>[] = [];
+        messages.forEach(message => {
+            let promise = this.send_message(subscriber,message);
+            promises.push(promise);
+        });
+        return promises;
     }
 
     //----------------------------------functions for tests--------------------------------

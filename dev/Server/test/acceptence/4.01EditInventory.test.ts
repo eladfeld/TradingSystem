@@ -16,7 +16,6 @@ describe('4.1: edit store inventory', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
     it('edit non existent product ', function () {

@@ -20,7 +20,6 @@ describe('2.9: buy products', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('buy shopping basket', function () {
         let avi = enter_register_login(service, "avi", "1234");

@@ -16,7 +16,6 @@ describe('3.1: Logout' , function() {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
     it('good logout' , function(){

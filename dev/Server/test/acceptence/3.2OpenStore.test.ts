@@ -17,7 +17,6 @@ describe('3.2: open store test' , function() {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
     it('open store good' , function() {

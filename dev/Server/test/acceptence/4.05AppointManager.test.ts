@@ -13,7 +13,6 @@ describe('4.5:Appoint manager tests', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
     it('avi opens store and appoints moshe to manager', function () {
 

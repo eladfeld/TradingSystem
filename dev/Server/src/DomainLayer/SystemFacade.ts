@@ -16,6 +16,7 @@ import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
 import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
+import { Publisher } from "./notifications/Publisher";
 
 export class SystemFacade
 {
@@ -109,6 +110,7 @@ export class SystemFacade
             return makeFailure(res.message);
         }
         let subscriber : Subscriber = res.value;
+        Publisher.get_instance().send_pending_messages(subscriber);
         this.logged_guest_users = this.logged_guest_users.map( user => user.getUserId() === userId ? subscriber : user);
         this.logged_subscribers.push(subscriber);
         if(subscriber.isSystemManager())
@@ -326,6 +328,7 @@ export class SystemFacade
         this.logged_guest_users = [];
         this.logged_subscribers = [];
         this.logged_system_managers = [];
+        Authentication.clean();
         StoreDB.clear();
         ProductDB.clear();
     }

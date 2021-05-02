@@ -21,7 +21,6 @@ describe('3.7: get subscriber history', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
     it('get personal purchase history', function () {

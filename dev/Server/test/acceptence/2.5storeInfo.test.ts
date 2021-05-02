@@ -14,7 +14,6 @@ describe('2.5: store info test' , function() {
 
     afterEach(function() {
         service.clear();
-        Authentication.clean();
     });
 
     it('store info test good', function () {

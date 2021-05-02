@@ -14,7 +14,6 @@ describe('2.4: login system test' , function() {
 
     afterEach(function() {
         service.clear();
-        Authentication.clean();
     });
 
     it('user login' , function() {

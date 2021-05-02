@@ -12,7 +12,6 @@ describe('2.3: register test' , function() {
 
     afterEach(function() {
         service.clear();
-        Authentication.clean();
     });
 
     it('guest user register' , function() {
