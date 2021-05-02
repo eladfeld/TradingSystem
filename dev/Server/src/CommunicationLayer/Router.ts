@@ -28,6 +28,10 @@ router.post('/appointStoreOwner', Controller.appointStoreOwner)
 router.post('/appointStoreManager', Controller.appointStoreManager)
 router.post('/getStoreStaff', Controller.getStoreStaff)
 router.post('/getWordList', Controller.getWordList)
+router.post('/addDiscountPolicy', Controller.addDiscountPolicy)
+router.post('/addBuyingPolicy', Controller.addBuyingPolicy)
+router.post('/removeBuyingPolicy', Controller.removeBuyingPolicy)
+router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 
 
 

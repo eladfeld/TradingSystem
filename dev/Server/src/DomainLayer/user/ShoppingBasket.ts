@@ -5,8 +5,9 @@ import { Product } from "../store/Product";
 import { ProductDB } from "../store/ProductDB";
 import { Store } from "../store/Store";
 import { PaymentMeans, SupplyInfo } from "./User";
+import iSubject from "../discount/logic/iSubject";
 
-export class ShoppingBasket
+export class ShoppingBasket implements iSubject
 {
 
     private store : Store ;
@@ -56,9 +57,9 @@ export class ShoppingBasket
         return makeOk("product added to cart");
     }
 
-    public checkout(userId:number, supply_address: string): Result<boolean>
+    public checkout(userId:number, user: iSubject,  supply_address: string): Result<boolean>
     {
-        return this.store.sellShoppingBasket(userId,supply_address,this);
+        return this.store.sellShoppingBasket(userId, supply_address, this);
     }
 
     public edit(productId: number, newQuantity: number): Result<string>
@@ -85,6 +86,9 @@ export class ShoppingBasket
         })
         return basket;
     }
+
+    getValue: (field: string) => number;
+
 
     //------------------------------------functions for tests-------------------------------------
 

@@ -26,7 +26,8 @@ const register = (req: Request, res: Response, next: NextFunction) =>
 {
     let username: string = req.body.username;
     let password: string = req.body.password;
-    let userId: Result<string> = service.register(username, password);
+    let age: number = req.body.age;
+    let userId: Result<string> = service.register(username, password, age);
     if(isOk(userId))
         return res.status(OKSTATUS).json({
             message: userId.value
@@ -390,6 +391,35 @@ const getWordList = (req: Request, res: Response, next: NextFunction) =>
     )
 }
 
+const addDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
+{
+    let discountPolicy: any = req.body;
+    
+    service.removeDiscountPolicy(discountPolicy); 
+}
+
+const addBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
+{
+    let buyingPolicy: any = req.body;
+    
+    service.addBuyingPolicy(buyingPolicy);  
+}
+
+const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
+{
+    let discountNumber: number = req.body.policyId;
+
+    service.removeBuyingPolicy(discountNumber); 
+}
+
+
+const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
+{
+    let discountNumber: number = req.body.policyId;
+
+    service.removeDiscountPolicy(discountNumber);
+}
+
 
 
 
@@ -418,5 +448,9 @@ export default {
     appointStoreOwner,
     appointStoreManager,
     getStoreStaff,
-    getWordList
+    getWordList,
+    addDiscountPolicy,
+    addBuyingPolicy,
+    removeBuyingPolicy,
+    removeDiscountPolicy
     };

@@ -8,6 +8,7 @@ import { isOk, makeFailure, makeOk, Result} from "../Result";
 
 export class Service
 {
+
     private static singletone: Service = undefined;
     private facade: SystemFacade;
     private send_message_func: (userId:number,message:{}) => Promise<number>; //TODO:change this signature according to future changes in Communication layer
@@ -53,9 +54,9 @@ export class Service
         return this.facade.logout(userId)
     }
 
-    public register(username: string, password: string): Result<string>
+    public register(username: string, password: string, age: number): Result<string>
     {
-        return this.facade.register(username, password);
+        return this.facade.register(username, password, age);
     }
 
     public login(userId: number, username: string, password: string): Result<Subscriber> 
@@ -163,6 +164,23 @@ export class Service
 
     public getStoreStaff(userId: number, storeId: number): Result<string> {
         return this.facade.getStoreStaff(userId, storeId);
+    }
+
+    public addDiscountPolicy(buyingPolicy: any)
+    {
+        throw new Error('Method not implemented.');
+    }
+
+    public addBuyingPolicy(buyingPolicy: any) {
+        throw new Error('Method not implemented.');
+    }
+
+    public removeBuyingPolicy(discountNumber: number) {
+        throw new Error('Method not implemented.');
+    }
+
+    public removeDiscountPolicy(discountPolicy: any) {
+        throw new Error('Method not implemented.');
     }
 
 

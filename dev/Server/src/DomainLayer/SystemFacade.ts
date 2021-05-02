@@ -57,7 +57,7 @@ export class SystemFacade
         for (var i in arr)
         {
             let manager: any = arr[i];
-            let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"] )
+            let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
             Authentication.addSystemManager(sub);
         }
         return true
@@ -90,10 +90,10 @@ export class SystemFacade
         return makeOk(user.getUserId());
     }
 
-    public register(username: string, password: string): Result<string>
+    public register(username: string, password: string, age:number): Result<string>
     {
         Logger.log(`register : username:${username}`);
-        return Register.register(username, password);
+        return Register.register(username, password, age);
     }
 
     public login(userId: number, username: string, password: string): Result<Subscriber>

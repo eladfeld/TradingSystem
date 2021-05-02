@@ -5,11 +5,11 @@ import { Subscriber } from "./Subscriber";
 export class Register
 {
 
-    public static register(username:string, password:string) : Result<string> 
+    public static register(username:string, password:string, age:number) : Result<string> 
     {
         if (!Authentication.checkedUsedUserName(username)){
             if (this.checkPassword(password)){
-                Authentication.addSubscriber(new Subscriber(username),password);
+                Authentication.addSubscriber(new Subscriber(username, age),password);
                 return makeOk("user registered sucessfully");
             }
             else{
