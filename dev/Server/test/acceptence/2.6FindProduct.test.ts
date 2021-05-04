@@ -23,21 +23,20 @@ describe('2.6: find product', function () {
         service.clear();
         Authentication.clean();
     });
-    it('find product by name', function () {
-        let avi = enter_register_login(service,"avi","123456");
-        let store = open_store(service,avi,"Mega",123456,"Tel Aviv");
+    it('find product by name', async function () {
+        let avi = await enter_register_login(service,"avi","123456");
+        let store =await open_store(service,avi,"Mega",123456,"Tel Aviv");
         store.addCategoryToRoot('Food')
         let banana = service.addNewProduct(avi.getUserId(), store.getStoreId(), "banana", ['Food'], 156, 50);
         let apple = service.addNewProduct(avi.getUserId(), store.getStoreId(), "apple", ['Food'], 1, 10);
-        let products: Result<string> = service.getPruductInfoByName(avi.getUserId(), "banana")
-        if (isOk(products)) {
-            expect(JSON.parse(products.value)['products'].length).to.equal(1);
-        }
+        service.getPruductInfoByName(avi.getUserId(), "banana")
+        .then(products => expect(JSON.parse(products)['products'].length).to.equal(1))
+        .catch(assert.fail)
     })
 
-    it('find product by category', function () {
-        let avi = enter_register_login(service, "avi", "1234");
-        let store = open_store(service,avi,"Mega",123465,"Tel Aviv");
+    it('find product by category', async function () {
+        let avi = await enter_register_login(service, "avi", "1234");
+        let store =await open_store(service,avi,"Mega",123465,"Tel Aviv");
         store.addCategoryToRoot('Sweet')
         store.addCategoryToRoot('Sport')
         store.addCategoryToRoot('Electric')
@@ -45,9 +44,8 @@ describe('2.6: find product', function () {
         let apple = service.addNewProduct(avi.getUserId(), store.getStoreId(), "apple", ['Sweet'], 1, 10);
         let ball = service.addNewProduct(avi.getUserId(), store.getStoreId(), "ball", ['Sport'], 3, 44);
         let pc = service.addNewProduct(avi.getUserId(), store.getStoreId(), "pc", ['Electric'], 2442, 123);
-        let products: Result<string> = service.getPruductInfoByCategory(avi.getUserId(), 'Sweet');
-        if (isOk(products)) {
-            expect(JSON.parse(products.value)['products'].length).to.equal(2);
-        }
+        service.getPruductInfoByCategory(avi.getUserId(), 'Sweet')
+        .then(products => expect(JSON.parse(products)['products'].length).to.equal(2))
+        .catch(assert.fail)
     })
 });

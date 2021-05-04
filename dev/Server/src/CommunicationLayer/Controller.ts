@@ -8,17 +8,18 @@ import Transaction from '../DomainLayer/purchase/Transaction';
 
 const service: Service = Service.get_instance();
 const OKSTATUS: number = 200;
-
+const FAILSTATUS: number = 500;
 
 const enter = (req: Request, res: Response, next: NextFunction) =>
 {
-    let userId: Result<number> = service.enter();
-    if(isOk(userId))
+    let promise: Promise<number> = service.enter();
+    promise.then( userId => {
         return res.status(OKSTATUS).json({
-            userId: userId.value
+            userId: userId}); 
+        }).catch( message => {
+        return res.status(FAILSTATUS).json({
+            error: MessageChannel
         })
-    return res.status(OKSTATUS).json({
-       error: userId.message
     })
 }
 
@@ -27,14 +28,20 @@ const register = (req: Request, res: Response, next: NextFunction) =>
     let username: string = req.body.username;
     let password: string = req.body.password;
     let age: number = req.body.age;
-    let userId: Result<string> = service.register(username, password, age);
-    if(isOk(userId))
-        return res.status(OKSTATUS).json({
-            message: userId.value
-        })
-    return res.status(OKSTATUS).json({
-       error: userId.message 
-    })
+    let promise = service.register(username, password, age);
+    promise.then(
+        userId =>
+        {
+            res.status(OKSTATUS).json({
+                message: userId
+        })})
+    .catch(
+        message =>
+        {
+            res.status(OKSTATUS).json({
+                error: message 
+        })}
+    )
 }
 
 
@@ -45,15 +52,14 @@ const login = (req: Request, res: Response, next: NextFunction) =>
     let oldId: number = req.body.userId;
     let username: string = req.body.username;
     let password: string = req.body.password;
-    let user: Result<Subscriber> = service.login(oldId, username, password);
-    let userId = isOk(user) ? user.value : undefined;
-    console.log(service.get_logged_subscribers());
-    if(isOk(user))
-        return res.status(OKSTATUS).json({
-            userId: user.value.getUserId()
+    let promise: Promise<Subscriber> = service.login(oldId, username, password);
+    promise.then ( subscriber => {
+        res.status(OKSTATUS).json({
+            userId: subscriber.getUserId()})}
+        ).catch( reason => {
+            res.status(OKSTATUS).json({
+                error: reason
         })
-    return res.status(OKSTATUS).json({
-       error: user.message
     })
 }
 
@@ -70,14 +76,20 @@ const exit = (req: Request, res: Response, next: NextFunction) =>
 const logout = (req: Request, res: Response, next: NextFunction) =>
 {
     let oldId: number = req.body.userId;
-    let userId: Result<number> = service.logout(oldId);
-    if(isOk(userId))
-        return res.status(OKSTATUS).json({
-            userId: userId.value
-        })
-    return res.status(OKSTATUS).json({
-       error: userId.message
-    })
+    let promise = service.logout(oldId);
+
+    promise.then(
+        userid =>
+        {
+            res.status(OKSTATUS).json({
+                userId: userid
+            })
+        }
+    ).catch(message =>
+        res.status(OKSTATUS).json({
+            error: message
+
+        }))
 }
 
 
@@ -85,14 +97,8 @@ const getStoreInfo = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
-    let storeInfo: Result<string> = service.getStoreInfo(userId, storeId);
-    if(isOk(storeInfo))
-        return res.status(OKSTATUS).json({
-            userId: storeInfo.value
-        })
-    return res.status(OKSTATUS).json({
-       error: storeInfo.message
-    })
+    let storeInfo: Promise<string> = service.getStoreInfo(userId, storeId);
+    storeInfo.then(storeinfo => res.status(OKSTATUS).json(storeinfo)).catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -100,24 +106,18 @@ const getPruductInfoByName = (req: Request, res: Response, next: NextFunction) =
 {
     let userId: number = req.body.userId;
     let productName: string = req.body.productName;
-    let product: Result<string> = service.getPruductInfoByName(userId, productName);
-    if(isOk(product))
-        return res.status(OKSTATUS).json(JSON.parse(product.value))
-    return res.status(OKSTATUS).json({
-       error: product.message
-    })
+    service.getPruductInfoByName(userId, productName)
+    .then(product => res.status(OKSTATUS).json(product))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 const getPruductInfoByCategory = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
     let productCategory: string = req.body.productCategory;
-    let product: Result<string> = service.getPruductInfoByCategory(userId, productCategory);
-    if(isOk(product))
-        return res.status(OKSTATUS).json(JSON.parse(product.value))
-    return res.status(OKSTATUS).json({
-       error: product.message
-    })
+    service.getPruductInfoByCategory(userId, productCategory)
+    .then(product => res.status(OKSTATUS).json(product))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 const addProductTocart = (req: Request, res: Response, next: NextFunction) =>
@@ -126,26 +126,18 @@ const addProductTocart = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
-    let result: Result<string> = service.addProductTocart(userId, storeId, productId, quantity );
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.addProductTocart(userId, storeId, productId, quantity )
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
 const getCartInfo = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
-    let cart: Result<string> = service.getCartInfo(userId);
-    if(isOk(cart))
-        return res.status(OKSTATUS).json(JSON.parse(cart.value))
-    return res.status(OKSTATUS).json({
-       error: cart.message
-    })
+    service.getCartInfo(userId)
+    .then(cart => res.status(OKSTATUS).json(cart))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -155,14 +147,9 @@ const editCart = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
-    let result: Result<string> = service.editCart(userId, storeId, productId, quantity );
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.editCart(userId, storeId, productId, quantity )
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -171,14 +158,9 @@ const checkoutBasket = (req: Request, res: Response, next: NextFunction) =>
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
     let supplyAddress: string = req.body.supplyAddress;
-    let result: Result<boolean> = service.checkoutBasket(userId, storeId, supplyAddress );
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.checkoutBasket(userId, storeId, supplyAddress)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -189,14 +171,9 @@ const checkoutSingleProduct = (req: Request, res: Response, next: NextFunction) 
     let quantity: number = req.body.quantity;
     let storeId: number = req.body.storeId;
     let supplyAddress: string = req.body.supplyAddress;
-    let result: Result<string> = service.checkoutSingleProduct(userId, productId, quantity, storeId, supplyAddress);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.checkoutSingleProduct(userId, productId, quantity, storeId, supplyAddress)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -206,14 +183,9 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let paymentInfo: PaymentInfo = req.body.paymentInfo;
     let userAddress: string = req.body.userAddress;
-    let result: Result<boolean> = service.completeOrder(userId, storeId, paymentInfo, userAddress);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.completeOrder(userId, storeId, paymentInfo, userAddress)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -224,14 +196,14 @@ const openStore = (req: Request, res: Response, next: NextFunction) =>
     let storeName: string = req.body.storeName;
     let bankAccountNumber: number = req.body.bankAccountNumber;
     let storeAddress: string = req.body.storeAddress;
-    let result: Result<Store> = service.openStore(userId, storeName, bankAccountNumber, storeAddress);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value.getStoreAddress()
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    let promise = service.openStore(userId, storeName, bankAccountNumber, storeAddress);
+    promise.then (store => {
+        res.status(OKSTATUS).json({
+            message: store.getStoreId()})})
+    .catch( reason => {
+        res.status(OKSTATUS).json({
+            error: reason
+        })})
 }
 
 
@@ -241,14 +213,9 @@ const editStoreInventory = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
-    let result: Result<string> = service.editStoreInventory(userId, productId, quantity, storeId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            message: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.editStoreInventory(userId, productId, quantity, storeId)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 const addNewProduct = (req: Request, res: Response, next: NextFunction) =>
@@ -259,28 +226,18 @@ const addNewProduct = (req: Request, res: Response, next: NextFunction) =>
     let categories: string[] = req.body.categories;
     let quantity: number = req.body.quantity;
     let price: number = req.body.price;
-    let result: Result<number> = service.addNewProduct(userId, storeId, productName, categories, price, quantity);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.addNewProduct(userId, storeId, productName, categories, price, quantity)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 const getSubscriberPurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
     let subscriberToSeeId: number = req.body.subscriberToSeeId;
-    let result: Result<any> = service.getSubscriberPurchaseHistory(userId, subscriberToSeeId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.getSubscriberPurchaseHistory(userId, subscriberToSeeId)
+    .then(purchaseHistory => res.status(OKSTATUS).json(purchaseHistory))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -289,14 +246,9 @@ const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction
 {
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
-    let result: Result<Transaction[]> = service.getStorePurchaseHistory(userId, storeId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.getStorePurchaseHistory(userId, storeId)
+    .then(purchaseHistory => res.status(OKSTATUS).json(purchaseHistory))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -305,14 +257,9 @@ const deleteManagerFromStore = (req: Request, res: Response, next: NextFunction)
     let userId: number = req.body.userId;
     let managerToDelete: number = req.body.managerToDelete;
     let storeId: number = req.body.storeId;
-    let result: Result<string> = service.deleteManagerFromStore(userId, managerToDelete, storeId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.deleteManagerFromStore(userId, managerToDelete, storeId)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -322,15 +269,9 @@ const editStaffPermission = (req: Request, res: Response, next: NextFunction) =>
     let managerToEditId: number = req.body.managerToEditId;
     let storeId: number = req.body.storeId;
     let permissionMask: number = req.body.permissionMask;
-
-    let result: Result<string> = service.editStaffPermission(userId, storeId, managerToEditId, permissionMask);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.editStaffPermission(userId, storeId, managerToEditId, permissionMask)
+    .then(productNumber => res.status(OKSTATUS).json(productNumber))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -339,14 +280,9 @@ const appointStoreOwner = (req: Request, res: Response, next: NextFunction) =>
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
     let newOwnerId: number = req.body.newOwnerId;
-    let result: Result<string> = service.appointStoreOwner(userId, storeId, newOwnerId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.appointStoreOwner(userId, storeId, newOwnerId)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -355,14 +291,9 @@ const appointStoreManager = (req: Request, res: Response, next: NextFunction) =>
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
     let newManagerId: number = req.body.newManagerId;
-    let result: Result<string> = service.appointStoreManager(userId, storeId, newManagerId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    service.appointStoreManager(userId, storeId, newManagerId)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(OKSTATUS).json(message))
 }
 
 
@@ -370,14 +301,8 @@ const getStoreStaff = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
-    let result: Result<string> = service.getStoreStaff(userId, storeId);
-    if(isOk(result))
-        return res.status(OKSTATUS).json({
-            productNumber: result.value
-        })
-    return res.status(OKSTATUS).json({
-       error: result.message
-    })
+    let storestaff: Promise<string> = service.getStoreStaff(userId, storeId);
+    storestaff.then(staff => res.status(OKSTATUS).json(staff)).catch(message => res.status(OKSTATUS).json(message))
 }
 
 const getWordList = (req: Request, res: Response, next: NextFunction) =>

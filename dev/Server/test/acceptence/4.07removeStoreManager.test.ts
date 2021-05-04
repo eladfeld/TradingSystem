@@ -13,11 +13,11 @@ describe('4.7: remove appointment', function () {
     afterEach(function () {
         service.clear();
     });
-    it('remove recursive appointment', function () {
-        let avi = enter_register_login(service, "avi", "123456789");
-        let moshe = enter_register_login(service, "moshe", "123456789");
-        let hezi = enter_register_login(service, "hezi", "123456789");
-        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+    it('remove recursive appointment',async function () {
+        let avi =await enter_register_login(service, "avi", "123456789");
+        let moshe =await enter_register_login(service, "moshe", "123456789");
+        let hezi =await enter_register_login(service, "hezi", "123456789");
+        let store =await open_store(service, avi, "Mega", 123456, "Tel Aviv");
 
 
         service.appointStoreOwner(avi.getUserId(), store.getStoreId(), moshe.getUserId());
@@ -26,13 +26,14 @@ describe('4.7: remove appointment', function () {
         expect(store.getAppointments().length).to.equal(1);
     })
 
-    it('try to remove manager without permission', function () {
-        let avi = enter_register_login(service, "avi", "123456789");
-        let moshe = enter_register_login(service, "moshe", "123456789");
-        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+    it('try to remove manager without permission',async function () {
+        let avi =await enter_register_login(service, "avi", "123456789");
+        let moshe =await enter_register_login(service, "moshe", "123456789");
+        let store =await open_store(service, avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        expect(isOk(service.deleteManagerFromStore(moshe.getUserId(), avi.getUserId(), store.getStoreId()))).to.equal(false);
-
+        service.deleteManagerFromStore(moshe.getUserId(), avi.getUserId(), store.getStoreId())
+        .then(_ => assert.fail)
+        .catch( _ => assert.ok)
     })
 
 

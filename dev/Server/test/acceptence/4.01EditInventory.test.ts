@@ -18,26 +18,24 @@ describe('4.1: edit store inventory', function () {
         service.clear();
     });
 
-    it('edit non existent product ', function () {
-        let avi = enter_register_login(service, "avi", "123456789")
-        let store = open_store(service, avi, "Aluf Hasport", 123456, "Tel Aviv");
+    it('edit non existent product ',async function () {
+        let avi =await enter_register_login(service, "avi", "123456789")
+        let store = await open_store(service, avi, "Aluf Hasport", 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
         let product1: Product = new Product("banana", ['Sweet']);
-        expect(isOk(service.editStoreInventory(avi.getUserId(), store.getStoreId(), product1.getProductId(), 10))).to.equal(false);
+        service.editStoreInventory(avi.getUserId(), store.getStoreId(), product1.getProductId(), 10)
+        .then(_ => assert.fail)
+        .catch(_ => assert.ok)
     })
 
-    it('edit existing product', function () {
-        let avi = enter_register_login(service, "avi", "123456789")
-        let store = open_store(service, avi, "Aluf Hasport", 123456, "Tel Aviv");
+    it('edit existing product', async function () {
+        let avi = await enter_register_login(service, "avi", "123456789")
+        let store = await open_store(service, avi, "Aluf Hasport", 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = add_product(service, avi, store, "banana", ['Sweet'], 12, 100);
-        expect(isOk(service.editStoreInventory(avi.getUserId(), store.getStoreId(), banana, 10))).to.equal(true);
-
-
+        let banana = await add_product(service, avi, store, "banana", ['Sweet'], 12, 100);
+        service.editStoreInventory(avi.getUserId(), store.getStoreId(), banana, 10)
+        .then(_ => assert.ok)
+        .catch(_ => assert.fail)
     })
-
-
-
-
 
 });

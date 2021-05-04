@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import {assert, expect} from 'chai';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
@@ -19,14 +19,18 @@ describe('3.2: open store test' , function() {
         service.clear();
     });
 
-    it('open store good' , function() {
-        let avi = enter_register_login(service, "avi", "123456789");
-        expect(isOk(service.openStore(avi.getUserId() , "Aluf Hasport" , 123456 , "Tel Aviv" ))).to.equal(true);
+    it('open store good' ,async function() {
+        let avi =await enter_register_login(service, "avi", "123456789");
+        let promise = service.openStore(avi.getUserId() , "Aluf Hasport" , 123456 , "Tel Aviv" );
+        promise.then( _ =>{ assert.ok})
+        .catch( _ => {assert.fail})
     })
 
-    it('open store with non exist subscriber' , function() {
-        let avi = enter_register_login(service, "avi", "123456789");
-        expect(isOk(service.openStore(avi.getUserId() + 1 , "Aluf Hasport" , 123456 , "Tel Aviv" ))).to.equal(false);
+    it('open store with non exist subscriber' ,async function() {
+        let avi =await enter_register_login(service, "avi", "123456789");
+        let promise = service.openStore(avi.getUserId() + 1 , "Aluf Hasport" , 123456 , "Tel Aviv" );
+        promise.catch( _ => {assert.ok})
+        .then( _ => {assert.fail})
     })
 
 });

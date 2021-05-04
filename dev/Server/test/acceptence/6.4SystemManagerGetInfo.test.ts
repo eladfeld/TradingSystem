@@ -14,27 +14,30 @@ describe('6.4: System Manager Get Info', function () {
     afterEach(function () {
         service.clear();
     });
-    it('system manager get store purchase history', function () {
-        let avi = enter_register_login(service, "avi", "1234");
-        let sys_manager = enter_login(service, "michael", "1234");
-        let store = open_store(service, avi, "Aluf hasport", 123456, "Tel aviv");
+    it('system manager get store purchase history',async  function () {
+        let avi =await enter_register_login(service, "avi", "1234");
+        let sys_manager =await enter_login(service, "michael", "1234");
+        let store =await open_store(service, avi, "Aluf hasport", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let apple = add_product(service, avi, store, "apple", ['Sweet'], 10, 15);
+        let apple = await add_product(service, avi, store, "apple", ['Sweet'], 10, 15);
         service.checkoutSingleProduct(sys_manager.getUserId(), apple, 5, store.getStoreId(), "King Goerge street");
         service.completeOrder(sys_manager.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
-        expect(isOk(service.getStorePurchaseHistory(sys_manager.getUserId(), store.getStoreId())));
-
+        service.getStorePurchaseHistory(sys_manager.getUserId(), store.getStoreId())
+        .then(_ => assert.ok)
+        .catch(_ => assert.fail)
     })
 
-    it('system manager get user purchase history', function () {
-        let avi = enter_register_login(service, "avi", "1234");
-        let ali = enter_register_login(service, "ali", "1234");
-        let sys_manager = enter_login(service, "michael", "1234");
-        let store = open_store(service, avi, "Aluf hasport", 123456, "Tel aviv");
+    it('system manager get user purchase history', async function () {
+        let avi = await enter_register_login(service, "avi", "1234");
+        let ali = await enter_register_login(service, "ali", "1234");
+        let sys_manager = await enter_login(service, "michael", "1234");
+        let store =await open_store(service, avi, "Aluf hasport", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let apple = add_product(service, avi, store, "apple", ['Sweet'], 10, 15);
+        let apple = await add_product(service, avi, store, "apple", ['Sweet'], 10, 15);
         service.checkoutSingleProduct(ali.getUserId(), apple, 5, store.getStoreId(), "King Goerge street");
         service.completeOrder(ali.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
-        expect(isOk(service.getSubscriberPurchaseHistory(sys_manager.getUserId(), ali.getUserId()))).to.equal(true);
+        service.getSubscriberPurchaseHistory(sys_manager.getUserId(), ali.getUserId())
+        .then(_ => assert.ok)
+        .catch(_ => assert.fail)
     })
 });
