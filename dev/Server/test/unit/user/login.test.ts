@@ -8,7 +8,7 @@ import { isOk } from '../../../src/Result';
 describe('login test' , function() {
     
     it('postive log in', function(){
-        Register.register("yosi", "1234");
+        Register.register("yosi", "1234", 13);
         expect(Login.login("yosi", "1234")).to.not.null;
     })
 

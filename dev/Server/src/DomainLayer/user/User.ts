@@ -1,4 +1,5 @@
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
+import iSubject from '../discount/logic/iSubject';
 import { buyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
@@ -8,7 +9,7 @@ export type PaymentMeans = undefined;
 export type SupplyInfo = undefined;
 
 
-export class User
+export class User implements iSubject
 {
     protected shoppingCart: ShoppingCart;
     protected userId: number;
@@ -27,7 +28,7 @@ export class User
 
     public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId() ,shopId, supply_address);
+        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address);
     }
 
     public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Result<string>
@@ -59,6 +60,9 @@ export class User
     {
         return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
+
+    getValue =  (field: string): number => undefined
+
 
 
 }

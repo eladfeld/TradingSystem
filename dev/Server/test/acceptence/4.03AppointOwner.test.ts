@@ -17,24 +17,26 @@ describe('4.3: Appoint Owner tests', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
-    it('avi opens store and appoints moshe to owner', function () {
+    it('avi opens store and appoints moshe to owner',async function () {
 
-        let avi = enter_register_login(service, "avi", "123456789")
-        let moshe = enter_register_login(service, "moshe", "123456789")
-        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
-        expect(isOk(service.appointStoreOwner(avi.getUserId(), store.getStoreId(), moshe.getUserId()))).to.equal(true);
+        let avi =await enter_register_login(service, "avi", "123456789")
+        let moshe =await enter_register_login(service, "moshe", "123456789")
+        let store = await open_store(service, avi, "Mega", 123456, "Tel Aviv");
+        service.appointStoreOwner(avi.getUserId(), store.getStoreId(), moshe.getUserId())
+        .then(_ => assert.ok)
+        .catch( _ => assert.fail)
     })
 
-    it('moshe tries to appoint ali to owner without permissions', function () {
-        let avi = enter_register_login(service, "avi", "123456789")
-        let moshe = enter_register_login(service, "moshe", "123456789")
-        let ali = enter_register_login(service, "ali", "123456789")
-        let store = open_store(service,avi, "Mega", 123456, "Tel Aviv");
+    it('moshe tries to appoint ali to owner without permissions',async function () {
+        let avi =await enter_register_login(service, "avi", "123456789")
+        let moshe =await enter_register_login(service, "moshe", "123456789")
+        let ali =await enter_register_login(service, "ali", "123456789")
+        let store = await open_store(service,avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        expect(isOk(service.appointStoreOwner(moshe.getUserId(), store.getStoreId(), ali.getUserId()))).to.equal(false);
-
+        service.appointStoreOwner(moshe.getUserId(), store.getStoreId(), ali.getUserId())
+        .then(_ => assert.ok)
+        .catch( _ => assert.fail)
     })
 
 });

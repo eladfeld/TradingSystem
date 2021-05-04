@@ -21,25 +21,23 @@ describe('3.7: get subscriber history', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
-    it('get personal purchase history', function () {
+    it('get personal purchase history',async function () {
 
-        let avi = enter_register_login(service, "avi", "1234");
-        let store = open_store(service, avi, "Mega", 123456, "Tel aviv");
+        let avi =await enter_register_login(service, "avi", "1234");
+        let store = await open_store(service, avi, "Mega", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = add_product(service, avi, store, "banana", ['Sweet'], 1, 50);
-        let apple = add_product(service, avi, store, "apple", ['Sweet'], 1, 10);
+        let banana = await add_product(service, avi, store, "banana", ['Sweet'], 1, 50);
+        let apple = await add_product(service, avi, store, "apple", ['Sweet'], 1, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
         service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
         service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-        let historyRes: Result<any> = service.getSubscriberPurchaseHistory(avi.getUserId(), avi.getUserId());
-        if (isOk(historyRes)) {
-            let history = JSON.parse(historyRes.value);
+        service.getSubscriberPurchaseHistory(avi.getUserId(), avi.getUserId())
+        .then(historyRes =>{
+            let history = JSON.parse(historyRes);
             expect(history.length).to.equal(1);
-        }
-        else assert.fail();
+        }).catch( _ => assert.fail )
     })
 });

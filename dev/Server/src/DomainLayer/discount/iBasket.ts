@@ -1,10 +1,10 @@
-import { exception } from 'console';
 import { iProduct, MyProduct } from './iProduct';
 import iSubject from './logic/iSubject';
 
 export default interface iBasket extends iSubject{
+    //should return the value associated with @field, otherwise return undefined
     getValue: (field: string) => number;
-    getItems: () => iProduct[];//TODO: replace
+    getItems: () => iProduct[];
 }
 
 
@@ -13,7 +13,7 @@ export default interface iBasket extends iSubject{
 //example implementation
 export class MyBasket implements iBasket{
     constructor(){}
-    private basket: iProduct[] = [1,2,3,4].map(n => new MyProduct(n, n*10, n*100, `product #${n}`));
+    private basket: iProduct[] = [1,2,3,4].map(n => new MyProduct(n, n*10, n*100, `product #${n}`, [`category${n}`]));
     
     getValue = (field: string):number => {
         const strs: string[] = field.split("_");
@@ -24,12 +24,12 @@ export class MyBasket implements iBasket{
                 case "price":
                     return item.getPrice();
                 case "quantity":
-                    return item.getId();
+                    return item.getQuantity();
                 default:
-                    throw exception(`MyCart does not have property '${strs[1]}'`);
+                    return undefined;
             }
         }
-        return -1;
+        return undefined;
     };
     public getItems = () => this.basket;
 }

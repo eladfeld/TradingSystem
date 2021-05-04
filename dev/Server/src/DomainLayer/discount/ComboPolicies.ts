@@ -29,6 +29,15 @@ const ComboPolicies = {
     BEST: new ComboPolicy(getMax),
     COMBINE: new ComboPolicy(getSum)
 }
-
-Object.freeze(ComboPolicies);
-export default ComboPolicies;
+export const ComboPolicyNames = {
+    BEST: "max",
+    COMBINE: "add"
+};
+const comboPolicyMap: Map<string, iComboPolicy> = new Map([
+    [ComboPolicyNames.BEST, ComboPolicies.BEST],
+    [ComboPolicyNames.COMBINE, ComboPolicies.COMBINE]
+]);
+const getComboPolicy = (name: string): iComboPolicy =>{
+    return comboPolicyMap.get(name);
+}
+export default getComboPolicy;

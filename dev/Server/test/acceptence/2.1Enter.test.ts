@@ -14,31 +14,31 @@ describe('2.1: enter system test' , function() {
     });
     
     it('guest user enter system' , function() {
-        let res: Result<number> = service.enter()
-        expect(isOk(res) ? res.value : res.message).to.greaterThanOrEqual(0);
+        let res: Promise<number> = service.enter()
+        res.then( id => {
+            expect(id).to.greaterThanOrEqual(0);
+        })
     })
 
     it('enter 3 users' , function() {
-        let res1: Result<number> = service.enter()
-        let res2: Result<number> = service.enter()
-        let res3: Result<number> = service.enter()
-        if(isOk(res1) && isOk(res2) && isOk(res3))
-        {
-            expect(res1.value !== res2.value && res1.value!==res3.value && res2.value!==res3.value);
-        }   
+        let res1: Promise<number> = service.enter()
+        let res2: Promise<number> = service.enter()
+        let res3: Promise<number> = service.enter()
+        Promise.all([res1,res2,res3]).then ( ([r1, r2, r3])=> {
+            expect(r1 !== r2 && r1!==r3 && r2!==r3);
+        })
     })
 
     describe('exit system test' , function() {
         it('enter 3 users and exit 1' , function() {
-            let res1: Result<number> = service.enter()
-            let res2: Result<number> = service.enter()
-            let res3: Result<number> = service.enter()
-            
-            if(isOk(res1) && isOk(res2) && isOk(res3))
+            let res1: Promise<number> = service.enter()
+            let res2: Promise<number> = service.enter()
+            let res3: Promise<number> = service.enter()
+            Promise.all([res1,res2,res3]).then( ([r1,r2,r3]) =>
             {
-                service.exit(res2.value);
+                service.exit(r2);
                 expect(service.get_logged_guest_users().length).to.equal(2);
-            }   
+            })
         })
 
         it('fail exit' , function() {

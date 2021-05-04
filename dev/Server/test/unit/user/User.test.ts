@@ -9,7 +9,7 @@ import { StoreStub } from './StoreStub';
 
 describe('view shopping cart' , function() {
     it("view shopping cart", function(){
-        let subscriber: Subscriber = new Subscriber("micha");
+        let subscriber: Subscriber = new Subscriber("micha", 13);
         let store = new StoreStub(subscriber.getUserId(),"Aluf hasport" , 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
         let product1: Product = new Product("glida", ['Sweet']);
