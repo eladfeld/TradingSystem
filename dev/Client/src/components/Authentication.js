@@ -23,7 +23,7 @@ const Authentication=({getAppState, setAppState})=>{
         if(res.data.userId !== undefined)
         {
             setAppState({userId: res.data.userId, username: res.data.username});  
-            history.push('/welcome');          
+            history.push('/welcome');         
         }
         else
         {
