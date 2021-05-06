@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
+export default function Banner() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -115,8 +115,13 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Manage System</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Cart</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Transactions</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Complain</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Open Store</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
     </Menu>
   );
 

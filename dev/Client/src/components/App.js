@@ -7,7 +7,7 @@ import { useState } from 'react';
 import history from '../history';
 import Welcome from './Welcome';
 import React from 'react';
-import PrimarySearchAppBar from './Banner';
+import Banner from './Banner';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 
@@ -41,7 +41,7 @@ class App extends React.Component
           <Route
             path='/welcome' exact
             render={(props) => (
-              <PrimarySearchAppBar {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <Banner {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>
