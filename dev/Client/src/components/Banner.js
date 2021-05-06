@@ -16,9 +16,9 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import axios from 'axios';
 import history from '../history';
+import {SERVER_BASE_URL} from '../constants';
 
-
-const BASE_URL ='http://192.168.56.1:3333/command/';
+const BASE_URL = SERVER_BASE_URL;
 
 
 const getUsername = () =>

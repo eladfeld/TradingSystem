@@ -1,6 +1,60 @@
+import Banner from "./Banner"
 
-export const Transactions = () => {
-    return(
-        <div>Transactions Page</div>
+
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+    position: 'relative',
+    overflow: 'auto',
+    maxHeight: 300,
+  },
+  listSection: {
+    backgroundColor: 'inherit',
+  },
+  ul: {
+    backgroundColor: 'inherit',
+    padding: 0,
+  },
+}));
+
+export default function Transactions({getAppState, setAppState}) {
+  const classes = useStyles();
+  const {transactions} = getAppState();
+
+  const renderTransaction = (t) =>{
+      return (
+        <ListItem key={`item-${t.transactionId}`}>
+            <ListItemText primary={`${t.storeId}-${t.time}-${t.total}`} />
+        </ListItem>
+      );
+  };
+  return (
+      <div>
+        <Banner/>
+        <List className={classes.root} subheader={<li />}>
+            {transactions.map((transaction) => renderTransaction(transaction))}
+        </List>
+    </div>
+  );
+}
+
+
+export const Transactions2 = ({getAppState, setAppState}) => {
+    const {transactions} = getAppState();
+    return(        
+        <div>
+            <Banner/>
+            Transactions Page
+            
+        </div>
     );
 };

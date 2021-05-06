@@ -8,14 +8,12 @@ import history from '../history';
 import Welcome from './Welcome';
 import React from 'react';
 import Banner from './Banner';
-import { Transactions } from './Transactions';
-import { Cart } from './Cart';
+import Transactions  from './Transactions';
+import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
-
-
 class App extends React.Component
 {
   constructor(){
