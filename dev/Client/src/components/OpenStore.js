@@ -6,6 +6,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Button, ButtonGroup, Container } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
+import Banner from './Banner';
 
 const theme = createMuiTheme({
   palette: {
@@ -38,68 +39,70 @@ export const OpenStore = ({getAppState, setAppState}) => {
     const classes = useStyles();
 
   return (
-    <Container >
-      <div className={classes.margin}>
-      <Grid container spacing={1} alignItems="flex-end">
-          <Grid item xs={5}/>
-          <Grid item>
-            <AccountCircle />
-          </Grid>
-          <Grid item>
-            <TextField id="input-with-icon-grid" value={_storeName} label="Store name" onChange={(event) => setStoreName(event.target.value)}/>
-          </Grid>
-        </Grid>
+    <div>
+        <Banner getAppState={getAppState} setAppState={setAppState}/>
+        <Container >
+        <div className={classes.margin}>
         <Grid container spacing={1} alignItems="flex-end">
-        <Grid item xs={5}/>
-          <Grid item>
-            <AccountCircle />
-          </Grid>
-          <Grid item>
-            <TextField id="input-with-icon-grid" value={_storeBankAccount} label="Bank account number" onChange={(event) => setStoreBankAccount(event.target.value)}/>
-          </Grid>
-        </Grid>
-        <Grid container spacing={1} alignItems="flex-end">
-        <Grid item xs={5}/>
+            <Grid item xs={5}/>
+            <Grid item>
+                <AccountCircle />
+            </Grid>
+            <Grid item>
+                <TextField id="input-with-icon-grid" value={_storeName} label="Store name" onChange={(event) => setStoreName(event.target.value)}/>
+            </Grid>
+            </Grid>
+            <Grid container spacing={1} alignItems="flex-end">
+            <Grid item xs={5}/>
+            <Grid item>
+                <AccountCircle />
+            </Grid>
+            <Grid item>
+                <TextField id="input-with-icon-grid" value={_storeBankAccount} label="Bank account number" onChange={(event) => setStoreBankAccount(event.target.value)}/>
+            </Grid>
+            </Grid>
+            <Grid container spacing={1} alignItems="flex-end">
+            <Grid item xs={5}/>
 
-          <Grid item>
-            <AccountCircle />
-          </Grid>
-          <Grid item>
-            <TextField id="input-with-icon-grid" value={_storeAddress} label="Store address" onChange={(event) => setStoreAddress(event.target.value)}/>
-          </Grid>
-        </Grid>
-      </div>
-      <Grid container>
-          <Grid item xs={5}/>
-          <Grid item>
-          <MuiThemeProvider theme={theme}>
+            <Grid item>
+                <AccountCircle />
+            </Grid>
+            <Grid item>
+                <TextField id="input-with-icon-grid" value={_storeAddress} label="Store address" onChange={(event) => setStoreAddress(event.target.value)}/>
+            </Grid>
+            </Grid>
+        </div>
+        <Grid container>
+            <Grid item xs={5}/>
+            <Grid item>
+            <MuiThemeProvider theme={theme}>
 
-        <ButtonGroup>
-                <Button color='primary' variant="contained" onClick={(e) =>
-                {
-                    let userId = getAppState().userId;
-                    let storeName = _storeName;
-                    let bankAccountNumber = Number(_storeBankAccount);
-                    let storeAddress = _storeAddress;
-                    open(userId, storeName, bankAccountNumber, storeAddress)
-                }}>
-                    open new store
-                </Button>
-                <Button  variant="contained" color='secondary' onClick={(e) => {
-                    setStoreName("");
-                    setStoreBankAccount("");
-                    setStoreAddress("");
+            <ButtonGroup>
+                    <Button color='primary' variant="contained" onClick={(e) =>
+                    {
+                        let userId = getAppState().userId;
+                        let storeName = _storeName;
+                        let bankAccountNumber = Number(_storeBankAccount);
+                        let storeAddress = _storeAddress;
+                        open(userId, storeName, bankAccountNumber, storeAddress)
                     }}>
-                clear
-                </Button>
-        </ButtonGroup>
-        </MuiThemeProvider>
+                        open new store
+                    </Button>
+                    <Button  variant="contained" color='secondary' onClick={(e) => {
+                        setStoreName("");
+                        setStoreBankAccount("");
+                        setStoreAddress("");
+                        }}>
+                    clear
+                    </Button>
+            </ButtonGroup>
+            </MuiThemeProvider>
 
+            </Grid>
+            
         </Grid>
-        
-      </Grid>
 
-    </Container>
-
+        </Container>
+    </div>
   );
 }
