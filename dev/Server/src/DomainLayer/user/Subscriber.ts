@@ -12,16 +12,20 @@ export class Subscriber extends User
 
     private username: string;
     private hashPassword: string;
+    private age: number
     private appointments: Appointment[];
+    private pending_messages: {}[];
 
-    public constructor(username: string ){
+    public constructor(username: string, age: number ){
         super();
         this.username = username;
+        this.age = age;
         this.appointments = [];
+        this.pending_messages=[]
     }
 
-    static buildSubscriber(username: string, hashpassword: string): Subscriber {
-        let subscriber: Subscriber = new Subscriber(username);
+    static buildSubscriber(username: string, hashpassword: string, age: number): Subscriber {
+        let subscriber: Subscriber = new Subscriber(username, age);
         subscriber.hashPassword = hashpassword;
         return subscriber;
     }
@@ -96,7 +100,28 @@ export class Subscriber extends User
         return false;
     }
 
-  
+    public addMessage(message:{}) : void
+    {
+        console.log("added message");
+        this.pending_messages.push(message);
+    }
+
+    public getValue = (field: string): number => this.age;
+    public isPendingMessages() : boolean
+    {
+        if (this.pending_messages.length === 0)
+            return false;
+        return true;
+    }
+
+    public takeMessages(): {}[]
+    {
+        let messages = this.pending_messages;
+        this.pending_messages = [];
+        return messages;
+    }
+
+    
 
 
 
@@ -104,5 +129,10 @@ export class Subscriber extends User
     public getAppointments() : Appointment[]
     {
         return this.appointments;
+    }
+
+    public getMessages()
+    {
+        return this.pending_messages;
     }
 }

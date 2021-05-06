@@ -20,35 +20,34 @@ describe('2.9: buy products', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
-    it('buy shopping basket', function () {
-        let avi = enter_register_login(service, "avi", "1234");
-        let store = open_store(service, avi, "Mega", 123456, "Tel aviv");
+    it('buy shopping basket',async function () {
+        let avi =await enter_register_login(service, "avi", "1234");
+        let store = await open_store(service, avi, "Mega", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = service.addNewProduct(avi.getUserId(), store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        let apple = service.addNewProduct(avi.getUserId(), store.getStoreId(), "apple", ['Sweet'], 1, 10);
-        if (isOk(banana) && isOk(apple)) {
-            service.addProductTocart(avi.getUserId(), store.getStoreId(), banana.value, 10);
-            service.addProductTocart(avi.getUserId(), store.getStoreId(), apple.value, 7);
-            service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-            expect(isOk(service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address"))).to.equal(true);
-        }
+        let banana = await service.addNewProduct(avi.getUserId(), store.getStoreId(), "banana", ['Sweet'], 1, 50);
+        let apple = await service.addNewProduct(avi.getUserId(), store.getStoreId(), "apple", ['Sweet'], 1, 10);
+        service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
+        service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
+        service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
+        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        .then(_ => assert.ok)
+        .catch(_ => assert.fail)
     })
 
 
-    it('try to buy too much items', function () {
-        let avi = enter_register_login(service, "avi", "1234");
-        let ali = enter_register_login(service, "ali", "1234");
-        let store = open_store(service, avi, "Mega", 123456, "Tel aviv");
+    it('try to buy too much items',async function () {
+        let avi =await enter_register_login(service, "avi", "1234");
+        let ali =await enter_register_login(service, "ali", "1234");
+        let store = await open_store(service, avi, "Mega", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = service.addNewProduct(avi.getUserId(), store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        if (isOk(banana)) {
-            service.addProductTocart(avi.getUserId(), store.getStoreId(), banana.value, 40);
-            service.addProductTocart(ali.getUserId(), store.getStoreId(), banana.value, 40);
-            service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-            service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-            expect(isOk(service.checkoutBasket(ali.getUserId(), store.getStoreId(), "king Goerge st 42"))).to.equal(false);
-        }
+        let banana =await  service.addNewProduct(avi.getUserId(), store.getStoreId(), "banana", ['Sweet'], 1, 50);
+        service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 40);
+        service.addProductTocart(ali.getUserId(), store.getStoreId(), banana, 40);
+        service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
+        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        service.checkoutBasket(ali.getUserId(), store.getStoreId(), "king Goerge st 42")
+        .then(_ => assert.fail)
+        .catch(_ => assert.ok)
     })
 });

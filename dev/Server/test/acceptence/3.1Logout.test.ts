@@ -16,19 +16,20 @@ describe('3.1: Logout' , function() {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
 
-    it('good logout' , function(){
-        let sys_manager = enter_login(service , "michael" , "1234");
+    it('good logout' ,async function(){
+        let sys_manager =await enter_login(service , "michael" , "1234");
         expect(service.get_logged_system_managers().length).to.equal(1);
         service.logout(sys_manager.getUserId())
         expect(service.get_logged_system_managers().length).to.equal(0);
     });
 
-    it('system manager tries to open store store after logout' , function(){
-        let sys_manager = enter_login(service , "michael" , "1234");
+    it('system manager tries to open store store after logout' ,async function(){
+        let sys_manager =await enter_login(service , "michael" , "1234");
         service.logout(sys_manager.getUserId());
-        expect(isOk(service.openStore(sys_manager.getUserId() , "aluf Hasport" , 123456 , "Tel Aviv"))).to.equal(false);
+        let promise = service.openStore(sys_manager.getUserId() , "aluf Hasport" , 123456 , "Tel Aviv");
+        promise.catch(reason => { assert.ok("open store failed (and should have}")}).
+        then( value => {assert.fail("open store should have failed")})
     });
 });

@@ -13,24 +13,28 @@ describe('4.6: edit store permission', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
-    it('avi opens store and appoints manager with all the permissions', function () {
-        let avi = enter_register_login(service, "avi", "123456789");
-        let moshe = enter_register_login(service, "moshe", "123456789");
-        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+    it('avi opens store and appoints manager with all the permissions', async function () {
+        let avi = await enter_register_login(service, "avi", "123456789");
+        let moshe = await enter_register_login(service, "moshe", "123456789");
+        let store = await open_store(service, avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        expect(isOk(service.getStoreStaff(moshe.getUserId(), store.getStoreId()))).to.equal(false);
-        service.editStaffPermission(avi.getUserId(), moshe.getUserId(), store.getStoreId(), -1);
-        expect(isOk(service.getStoreStaff(moshe.getUserId(), store.getStoreId()))).to.equal(true);
+        service.getStoreStaff(moshe.getUserId(), store.getStoreId())
+        .then( _ => assert.fail)
+        .catch( _ => assert.ok)
+        service.editStaffPermission(avi.getUserId(), moshe.getUserId(), store.getStoreId(), -1)
+        .then( _ => assert.ok)
+        .catch( _ => assert.fail)
     })
 
-    it('moshe, a store manager tries to edit store inventory without permissions', function () {
-        let avi = enter_register_login(service, "avi", "123456789");
-        let moshe = enter_register_login(service, "moshe", "123456789");
-        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
+    it('moshe, a store manager tries to edit store inventory without permissions', async function () {
+        let avi = await enter_register_login(service, "avi", "123456789");
+        let moshe = await enter_register_login(service, "moshe", "123456789");
+        let store = await open_store(service, avi, "Mega", 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
         service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        expect(isOk(service.addNewProduct(moshe.getUserId(), store.getStoreId(), "banana", ['Sweet'], 15))).to.equal(false);
+        service.addNewProduct(moshe.getUserId(), store.getStoreId(), "banana", ['Sweet'], 15)
+        .then(_ => assert.fail)
+        .catch(_ => assert.ok)
     })
 });

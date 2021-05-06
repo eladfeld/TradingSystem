@@ -13,19 +13,20 @@ describe('4.11: view store buying history', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
     });
-    it('viwe store history', function () {
-        let avi = enter_register_login(service, "avi", "123456789");
-        let store = open_store(service, avi, "Mega", 123456, "Tel Aviv");
-        let banana = add_product(service, avi, store, "banana", ['Sweet'], 1, 50);
-        let apple = add_product(service, avi, store, "apple", ['Sweet'], 1, 10);
-
+    it('viwe store history',async function () {
+        let avi =await enter_register_login(service, "avi", "123456789");
+        let store = await open_store(service, avi, "Mega", 123456, "Tel Aviv");
+        
+        console.log("----------------------------------------------------------------------------------");
+        let banana = await add_product(service, avi, store, "banana", [], 1, 50);
+        let apple = await add_product(service, avi, store, "apple", [], 1, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
         service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
         service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
         service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-        expect(isOk(service.getStorePurchaseHistory(avi.getUserId(), store.getStoreId()))).to.equal(true);
-
+        service.getStorePurchaseHistory(avi.getUserId(), store.getStoreId())
+        .then(_ => assert.ok)
+        .catch(_ => assert.fail)
     })
 });

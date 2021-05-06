@@ -10,7 +10,7 @@ describe('Store owner manage store inventory' , () => {
 
     it('Owner adds valid product to inventory', () => {
         let service: Service = Service.get_instance()
-        service.register("shir", "123")
+        service.register("shir", "123",13)
         let res = Login.login("shir","123")
         if(isOk(res)){
             let store= new Store(res.value.getUserId(), 'nike', 123, 'Herzelyia leyad bbb')
@@ -30,7 +30,7 @@ describe('Store owner manage store inventory' , () => {
 
     it('Owner adds negative quantity of products to inventory', () => {
         let service: Service = Service.get_instance()
-        service.register("shir", "123")
+        service.register("shir", "123", 13)
         let res = Login.login("shir","123")
         if(isOk(res)){
             let store= new Store(res.value.getUserId(), 'nike', 123, 'Herzelyia leyad bbb')
