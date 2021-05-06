@@ -14,12 +14,15 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import axios from 'axios';
 
 
 
-const getUsername = () =>
+const getUsername =  async (userId) =>
 {
-  return "elad"
+  const res =  axios.post('http://192.168.56.1:3333/command/getUsername', {userId} )
+  .then()
+  return userId;
 }
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -85,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Banner() {
+export default function Banner({getAppState, setAppState}) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -185,7 +188,7 @@ export default function Banner() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-             {getUsername()}
+             {getAppState().username}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -203,12 +206,12 @@ export default function Banner() {
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
+              <Badge badgeContent={0} color="secondary">
                 <MailIcon />
               </Badge>
             </IconButton>
             <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
+              <Badge badgeContent={0} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>

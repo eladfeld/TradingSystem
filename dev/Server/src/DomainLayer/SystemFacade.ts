@@ -593,6 +593,16 @@ export class SystemFacade
         }
     }
 
+    public getUsername(userId: number): Promise<string>
+    {
+        let user = this.logged_subscribers.find(user => user.getUserId() === userId);
+        if(user !== undefined)
+        {
+            return new Promise((resolve, reject) => resolve(user.getUsername()));
+        }
+        return new Promise((res, rej) => res("guest"));
+    }
+
 
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users() : User[]

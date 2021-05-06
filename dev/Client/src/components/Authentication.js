@@ -16,12 +16,13 @@ const Authentication=({getAppState, setAppState})=>{
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const {userId} = getAppState();
+
     const login = async (userId, username, password) =>
     {
         const res = await axios.post('http://192.168.56.1:3333/command/login', {userId, username, password} )
         if(res.data.userId !== undefined)
         {
-            setAppState({userId: res.data.userId});  
+            setAppState({userId: res.data.userId, username: res.data.username});  
             history.push('/welcome');          
         }
         else
