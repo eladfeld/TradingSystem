@@ -5,12 +5,6 @@ import { PaymentInfo } from '../../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../../src/DomainLayer/purchase/Purchase'
 import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
-import { Product } from '../../../src/DomainLayer/store/Product';
-import { ProductDB } from '../../../src/DomainLayer/store/ProductDB';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Appointment } from '../../../src/DomainLayer/user/Appointment';
-import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
-import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../../src/Result';
 
 
@@ -18,8 +12,8 @@ import { isFailure, isOk, Result } from '../../../src/Result';
 //checkout should have
 
 //checkout should have
-var userId: number = 1000;
-var storeId: number = 7653;
+var userId: number = -1000;
+var storeId: number = -7653;
 const userAdrs: string = "8 Mile Road, Detroit";
 const prod1Id: number=3000;
 const prod2Id: number=4000;
@@ -34,11 +28,10 @@ const shippingInfo: ShippingInfo = new ShippingInfo("src", "dst");
 const cb: ()=>void = ()=>{};
 
 const updateValues = () => {
-    userId++;
+    userId--;
 }
 
 describe('purchase with api fail tests' , function() {
-
     it('supply system fails' , function(){
         updateValues();
         PaymentSystem.willSucceed();
