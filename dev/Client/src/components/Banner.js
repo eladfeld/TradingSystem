@@ -179,7 +179,7 @@ export default function Banner() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+             YO YO YO rock in the house
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
