@@ -1,3 +1,0 @@
-export const SUBSCRIBER_ACTION_TYPES = {
-    LOGOUT: "LOGOUT"
-};
