@@ -15,6 +15,12 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 
+
+
+const getUsername = () =>
+{
+  return "elad"
+}
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -179,7 +185,7 @@ export default function Banner() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-             YO YO YO rock in the house
+             {getUsername()}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
