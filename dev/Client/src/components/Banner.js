@@ -121,19 +121,18 @@ export default function Banner({getAppState, setAppState}) {
     handleMenuClose();
   };
   const handleCartClick = () => {
-    handleMenuClose();
+    history.push('/cart');
   };
   const handleTransactionsClick = () => {
-    //handleMenuClose();
     history.push('/transactions');
   };
 
   const handleComplainClick  = () => {
-    handleMenuClose();
+    history.push('/complain');
   };
 
   const handleOpenStoreClick  = () => {
-    handleMenuClose();
+    history.push('/openstore');
   };
 
   const handleLogoutClick  = async () => {
@@ -156,10 +155,10 @@ export default function Banner({getAppState, setAppState}) {
     >
       <MenuItem onClick={handleMenuClose}>Manage System</MenuItem>
       <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Cart</MenuItem>
+      <MenuItem onClick={handleCartClick}>Cart</MenuItem>
       <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Complain</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Open Store</MenuItem>
+      <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
+      <MenuItem onClick={handleOpenStoreClick}>Open Store</MenuItem>
       <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
     </Menu>
   );
