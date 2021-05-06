@@ -56,7 +56,9 @@ const login = (req: Request, res: Response, next: NextFunction) =>
     let promise: Promise<Subscriber> = service.login(oldId, username, password);
     promise.then ( subscriber => {
         res.status(OKSTATUS).json({
-            userId: subscriber.getUserId()})}
+            userId: subscriber.getUserId(),
+            username: subscriber.getUsername()
+        })}
         ).catch( reason => {
             res.status(FAILSTATUS).json({
                 error: reason
@@ -303,7 +305,18 @@ const getStoreStaff = (req: Request, res: Response, next: NextFunction) =>
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
     let storestaff: Promise<string> = service.getStoreStaff(userId, storeId);
-    storestaff.then(staff => res.status(OKSTATUS).json(staff)).catch(message => res.status(FAILSTATUS).json(message))
+    storestaff.then(staff => res.status(OKSTATUS).json(staff)).
+    catch(message => res.status(FAILSTATUS).json(message))
+}
+
+
+const getUsername = (req: Request, res: Response, next: NextFunction) =>
+{
+    let userId: number = req.body.userId;
+
+    service.getUsername(userId)
+    .then(username => res.status(OKSTATUS).json(username))
+    .catch(message => res.status(FAILSTATUS).json(message))
 }
 
 const getWordList = (req: Request, res: Response, next: NextFunction) =>
@@ -349,6 +362,8 @@ const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =
 
 
 
+
+
 export default { 
     enter,
     register,
@@ -378,5 +393,6 @@ export default {
     addDiscountPolicy,
     addBuyingPolicy,
     removeBuyingPolicy,
-    removeDiscountPolicy
+    removeDiscountPolicy,
+    getUsername
     };

@@ -21,9 +21,11 @@ import {SERVER_BASE_URL} from '../constants';
 const BASE_URL = SERVER_BASE_URL;
 
 
-const getUsername = () =>
+const getUsername =  async (userId) =>
 {
-  return "elad"
+  const res =  axios.post('http://192.168.56.1:3333/command/getUsername', {userId} )
+  .then()
+  return userId;
 }
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -217,7 +219,7 @@ export default function Banner({getAppState, setAppState}) {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-             {getUsername()}
+             {getAppState().username}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -235,12 +237,12 @@ export default function Banner({getAppState, setAppState}) {
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
+              <Badge badgeContent={0} color="secondary">
                 <MailIcon />
               </Badge>
             </IconButton>
             <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
+              <Badge badgeContent={0} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>

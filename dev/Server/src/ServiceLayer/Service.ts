@@ -160,6 +160,11 @@ export class Service
         return this.facade.getStoreStaff(userId, storeId);
     }
 
+    public getUsername(userId: number)
+    {
+        return this.facade.getUsername(userId);
+    }
+
     public addDiscountPolicy(buyingPolicy: any)
     {
         throw new Error('Method not implemented.');
