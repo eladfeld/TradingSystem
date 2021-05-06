@@ -1,11 +1,10 @@
 import React from 'react';
+import Banner from './Banner';
 
 
 
 
 class Welcome extends React.Component{
-
-
     constructor({getAppState, setAppState}){
         super();
         const {userId} = getAppState();
@@ -15,7 +14,11 @@ class Welcome extends React.Component{
 
 
     render=()=>{
-        return <div>Welcome {this.state.userId}</div>;
+        return (
+            <div>
+                <Banner getAppState={this.props.getAppState} setAppState={this.props.setAppState}/>
+            </div>
+        );
     }
 
 

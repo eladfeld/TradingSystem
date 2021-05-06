@@ -14,7 +14,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import axios from 'axios';
+import history from '../history';
 
+
+const BASE_URL ='http://192.168.56.1:3333/command/';
 
 
 const getUsername = () =>
@@ -85,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Banner() {
+export default function Banner({getAppState, setAppState}) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -110,6 +114,35 @@ export default function Banner() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleManageSystemClick = () => {
+    handleMenuClose();
+  };
+  const handleManageStoresClick = () => {
+    handleMenuClose();
+  };
+  const handleCartClick = () => {
+    handleMenuClose();
+  };
+  const handleTransactionsClick = () => {
+    //handleMenuClose();
+    history.push('/transactions');
+  };
+
+  const handleComplainClick  = () => {
+    handleMenuClose();
+  };
+
+  const handleOpenStoreClick  = () => {
+    handleMenuClose();
+  };
+
+  const handleLogoutClick  = async () => {
+    //handleMenuClose();
+    const {userId} = getAppState();
+    console.log(`banner userId: ${userId}`);
+    await axios.post(BASE_URL+'logout',{userId});
+    history.push('/');
+  };
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -124,10 +157,10 @@ export default function Banner() {
       <MenuItem onClick={handleMenuClose}>Manage System</MenuItem>
       <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem>
       <MenuItem onClick={handleMenuClose}>Cart</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Transactions</MenuItem>
+      <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
       <MenuItem onClick={handleMenuClose}>Complain</MenuItem>
       <MenuItem onClick={handleMenuClose}>Open Store</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
     </Menu>
   );
 

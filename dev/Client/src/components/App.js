@@ -8,6 +8,7 @@ import history from '../history';
 import Welcome from './Welcome';
 import React from 'react';
 import Banner from './Banner';
+import { Transactions } from './Transactions';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 
@@ -42,6 +43,12 @@ class App extends React.Component
             path='/welcome' exact
             render={(props) => (
               <Banner {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/transactions' exact
+            render={(props) => (
+              <Transactions {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>
