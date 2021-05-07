@@ -68,10 +68,9 @@ export class ShoppingBasket implements iSubject
             return makeFailure("negative quantity");
         if (!this.store.isProductAvailable(productId,newQuantity))
             return makeFailure("quantity not available");
-
-        this.products.set(productId,newQuantity);
         if (newQuantity === 0)
             this.products.delete(productId);
+        else this.products.set(productId,newQuantity);
         return makeOk("added to cart");
     }
 

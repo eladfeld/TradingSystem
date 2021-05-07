@@ -1,4 +1,5 @@
 import http from 'http';
+import https from 'https';
 import express from 'express';
 import bodyParser from 'body-parser';
 import Config from './config/config';
@@ -48,3 +49,11 @@ router.use((req, res, next) => {
 const httpServer = http.createServer(router);
 
 httpServer.listen(Config.server.port, () => console.log(`Server is running on ${Config.server.hostname}:${Config.server.port}`));
+
+// const httpsServer = https.createServer({
+//     key: '',
+//     cert
+// },
+// router);
+
+// httpServer.listen(Config.server.port, () => console.log(`https Server is running on ${Config.server.hostname}:${Config.server.port}`))
