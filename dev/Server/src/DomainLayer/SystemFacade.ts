@@ -208,6 +208,72 @@ export class SystemFacade
 
     }
 
+    public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
+    {
+        Logger.log(`getPruductInfoAbovePrice : userId:${userId} , price:${price}`);
+        let res: Result<string> = StoreDB.getProductInfoAbovePrice(price);
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
+    }
+
+    public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
+    {
+        Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
+        let res: Result<string> = StoreDB.getProductInfoAbovePrice(price);
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
+    }
+
+    public getPruductInfoAboveRating(userId : number, rating: number): Promise<string>
+    {
+        Logger.log(`getPruductInfoAboveRating : userId:${userId} , rating:${rating}`);
+        let res: Result<string> = StoreDB.getProductInfoAboveRating(rating);
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
+    }
+
     public addProductTocart(userId: number, storeId: number, productId: number, quantity: number): Promise<string>
     {
         Logger.log(`addProductTocart : userId:${userId} , storeId: ${storeId} , productId:${productId} , quantity: ${quantity}`);

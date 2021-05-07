@@ -7,6 +7,7 @@ import { Button, ButtonGroup, Container } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
 import Banner from './Banner';
+import {SERVER_BASE_URL} from '../constants'
 
 const theme = createMuiTheme({
   palette: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 const open = async (userId, storeName, bankAccountNumber, storeAddress) =>
 {
-    const res = await axios.post('http://192.168.56.1:3333/command/openStore', {userId, storeName, bankAccountNumber, storeAddress})
+    const res = await axios.post(`${SERVER_BASE_URL}openStore`, {userId, storeName, bankAccountNumber, storeAddress})
 
 }
 
@@ -99,7 +100,7 @@ export const OpenStore = ({getAppState, setAppState}) => {
             </MuiThemeProvider>
 
             </Grid>
-            
+
         </Grid>
 
         </Container>

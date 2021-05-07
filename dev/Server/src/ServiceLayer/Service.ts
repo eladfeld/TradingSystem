@@ -12,7 +12,7 @@ export class Service
     private static singletone: Service = undefined;
     private facade: SystemFacade;
     private send_message_func: (userId:number,message:{}) => Promise<number>; //TODO:change this signature according to future changes in Communication layer
-  
+
     private constructor()
     {
         this.facade = new SystemFacade();
@@ -59,11 +59,11 @@ export class Service
         return this.facade.register(username, password, age);
     }
 
-    public async login(userId: number, username: string, password: string): Promise<Subscriber> 
+    public async login(userId: number, username: string, password: string): Promise<Subscriber>
     {
         return this.facade.login(userId, username, password);
-    } 
-    
+    }
+
 
     public getStoreInfo(userId : number ,storeId: number): Promise<string>
     {
@@ -79,6 +79,22 @@ export class Service
     {
         return this.facade.getPruductInfoByCategory(userId, category);
     }
+
+    public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
+    {
+        return this.facade.getPruductInfoAbovePrice(userId, price);
+    }
+
+    public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
+    {
+        return this.facade.getPruductInfoBelowPrice(userId, price);
+    }
+
+    public getPruductInfoAboveRating(userId : number, rating: number): Promise<string>
+    {
+        return this.facade.getPruductInfoAboveRating(userId, rating);
+    }
+
     public addProductTocart(userId: number, storeId: number, productId: number, quantity: number): Promise<string>
     {
         return this.facade.addProductTocart(userId, storeId, productId, quantity);

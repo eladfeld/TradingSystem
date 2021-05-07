@@ -29,10 +29,35 @@ export class StoreDB
     }
 
     public static getPruductInfoByName(productName: string): Result<string>{
+        var products : any = {
+            'products': [{ 'productName':'apple' ,
+                'numberOfRaters':1,
+                'rating':3,
+                'price': 100,
+                'storeName': 'apple',
+            },]
+        }
+        // products['products']=[]
+        this.stores.forEach((store) => {
+            let storeProducts: StoreProductInfo[] = store.searchByName(productName);
+            for(let storeProduct of storeProducts){
+                products['products'].push({ 'productName':storeProduct.getName() ,
+                                            'numberOfRaters':storeProduct.getNumOfRaters(),
+                                            'rating':storeProduct.getProductRating(),
+                                            'price': storeProduct.getPrice(),
+                                            'storeName': store.getStoreName(),
+                                        })
+            }
+        })
+        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
+        return makeOk(JSON.stringify(products))
+    }
+
+    public static getPruductInfoByCategory(category: string): Result<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchByName(productName);
+            let storeProducts: StoreProductInfo[] = store.searchByCategory(category);
             for(let storeProduct of storeProducts){
                 products['products'].push({ 'product name':storeProduct.getName() ,
                                             'number of raters':storeProduct.getNumOfRaters(),
@@ -45,11 +70,45 @@ export class StoreDB
         return makeOk(JSON.stringify(products))
     }
 
-    public static getPruductInfoByCategory(category: string): Result<string>{
+    public static getProductInfoAbovePrice(price: number): Result<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchByCategory(category);
+            let storeProducts: StoreProductInfo[] = store.searchAbovePrice(price);
+            for(let storeProduct of storeProducts){
+                products['products'].push({ 'product name':storeProduct.getName() ,
+                                            'number of raters':storeProduct.getNumOfRaters(),
+                                            'rating':storeProduct.getProductRating(),
+                                            'price': storeProduct.getPrice(),
+                                            'store name': store.getStoreName(),
+                                        })
+            }
+        })
+        return makeOk(JSON.stringify(products))
+    }
+
+    public static getProductInfoBelowPrice(price: number): Result<string>{
+        var products : any = {}
+        products['products']=[]
+        this.stores.forEach((store) => {
+            let storeProducts: StoreProductInfo[] = store.searchBelowPrice(price);
+            for(let storeProduct of storeProducts){
+                products['products'].push({ 'product name':storeProduct.getName() ,
+                                            'number of raters':storeProduct.getNumOfRaters(),
+                                            'rating':storeProduct.getProductRating(),
+                                            'price': storeProduct.getPrice(),
+                                            'store name': store.getStoreName(),
+                                        })
+            }
+        })
+        return makeOk(JSON.stringify(products))
+    }
+
+    public static getProductInfoAboveRating(rating: number): Result<string>{
+        var products : any = {}
+        products['products']=[]
+        this.stores.forEach((store) => {
+            let storeProducts: StoreProductInfo[] = store.searchAboveRating(rating);
             for(let storeProduct of storeProducts){
                 products['products'].push({ 'product name':storeProduct.getName() ,
                                             'number of raters':storeProduct.getNumOfRaters(),

@@ -23,7 +23,7 @@ const BASE_URL = SERVER_BASE_URL;
 
 const getUsername =  async (userId) =>
 {
-  const res =  axios.post('http://192.168.56.1:3333/command/getUsername', {userId} )
+  const res =  axios.post(`${SERVER_BASE_URL}getUsername`, {userId} )
   .then()
   return userId;
 }
@@ -260,14 +260,7 @@ export default function Banner({getAppState, setAppState}) {
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
+
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>

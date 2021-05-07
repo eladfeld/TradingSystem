@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 //import { Grid,Paper, TextField, Button, Typography,Link } from '@material-ui/core'
 import axios from 'axios';
 import history from '../history';
-
+import {SERVER_BASE_URL} from '../constants'
 
 
 const Enter = ({setAppState}) =>
 {
-    axios.get('http://192.168.56.1:3333/command/enter')
+    axios.get(`${SERVER_BASE_URL}enter`)
     .then((res) => {
         setAppState({userId: res.data.userId});
         history.push('/auth');

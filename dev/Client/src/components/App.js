@@ -13,6 +13,8 @@ import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
 import Checkout from './Checkout';
+import {SERVER_BASE_URL} from '../constants'
+import { Search, SearchByName, SearchAbovePrice, SearchAboveRating, SearchBelowPrice, SearchByCategory, SearchByKeyword} from './Search'
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -77,6 +79,48 @@ class App extends React.Component
               <Checkout {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
+          <Route
+            path='/search' exact
+            render={(props) => (
+              <Search {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/search/name' exact
+            render={(props) => (
+              <SearchByName {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/search/category' exact
+            render={(props) => (
+              <SearchByCategory {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/search/keyword' exact
+            render={(props) => (
+              <SearchByKeyword {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/search/aboveprice' exact
+            render={(props) => (
+              <SearchAbovePrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/search/belowprice' exact
+            render={(props) => (
+              <SearchBelowPrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/search/aboverating' exact
+            render={(props) => (
+              <SearchAboveRating {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
         </div>
       </Router>
     );
@@ -103,14 +147,14 @@ class App extends React.Component
 //           )}
 //         />
 //         <ButtonGroup>
-//           <Button 
+//           <Button
 //             onClick={()=> alert('register')}
-//             variant="contained" 
+//             variant="contained"
 //             color="primary">
 //             register
 //           </Button>
-//           <Button onClick={()=> alert('sign in')} 
-//           variant="contained" 
+//           <Button onClick={()=> alert('sign in')}
+//           variant="contained"
 //           color="secondary">
 //             sign in
 //           </Button>
@@ -132,7 +176,7 @@ class App extends React.Component
 
 function changeOptionBaseOnValue(value)
 {
-  axios.post('http://192.168.56.1:3333/command/getWordList', {word: value} ).then((response) => response.data.list.map((e) => options.push(e))).catch((error) => alert("error"));
+  axios.post(`${SERVER_BASE_URL}getWordList`, {word: value} ).then((response) => response.data.list.map((e) => options.push(e))).catch((error) => alert("error"));
 }
 const options = ['Option 1', 'Option 2'];
 
