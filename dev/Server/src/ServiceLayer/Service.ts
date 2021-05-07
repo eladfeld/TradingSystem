@@ -1,3 +1,4 @@
+import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
@@ -15,7 +16,7 @@ export class Service
   
     private constructor()
     {
-        this.facade = new SystemFacade();
+        this.facade = new FakeSystemFacade().getFacade();
     }
 
     public get_word_list(word: string): string[]

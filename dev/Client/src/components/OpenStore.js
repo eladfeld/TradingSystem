@@ -11,7 +11,7 @@ import Banner from './Banner'
 import axios from 'axios';
 import history from '../history';
 import Alert from '@material-ui/lab/Alert';
-
+import { SERVER_BASE_URL } from '../constants';
 
 const theme = createMuiTheme({
   palette: {
@@ -164,6 +164,5 @@ export const OpenStore = ({getAppState, setAppState}) => {
 
     </div>
   </div>
-
   );
 }

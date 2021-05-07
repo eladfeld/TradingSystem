@@ -16,14 +16,14 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import axios from 'axios';
 import history from '../history';
+import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 
-
-const BASE_URL ='http://192.168.56.1:3333/command/';
+const BASE_URL = SERVER_BASE_URL;
 
 
 const getUsername =  async (userId) =>
 {
-  const res =  axios.post('http://192.168.56.1:3333/command/getUsername', {userId} )
+  const res =  axios.post(`${SERVER_BASE_URL}getUsername`, {userId} )
   .then()
   return userId;
 }
@@ -122,11 +122,42 @@ export default function Banner({getAppState, setAppState}) {
   const handleManageStoresClick = () => {
     handleMenuClose();
   };
-  const handleCartClick = () => {
-    history.push('/cart');
+
+
+  const handleCartClick = async () => {
+    const {userId} = getAppState();
+    const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
+    console.log("response: ", response);
+    switch(response.status){
+        case SERVER_RESPONSE_OK:
+            const cart = JSON.parse(response.data);
+            setAppState({cart});
+            history.push('/cart');
+            return;
+        case SERVER_RESPONSE_BAD:
+            alert(response.data.message);
+            return;
+        default:
+            alert(`unexpected response code: ${response.status}`);
+            return;
+    }
   };
-  const handleTransactionsClick = () => {
-    history.push('/transactions');
+  const handleTransactionsClick = async () => {
+    const {userId} = getAppState();
+    const response = await axios.post(BASE_URL+'getSubscriberPurchaseHistory',{userId, subscriberToSeeId:userId});
+    console.log('transaction:',response);
+    switch(response.status){
+      case SERVER_RESPONSE_OK:
+        setAppState({myTransactions: JSON.parse(response.data)});
+        history.push('/transactions');
+        return;
+      case SERVER_RESPONSE_BAD:
+        alert(response.data.message);
+        return;
+      default:
+        alert(`unknown response code ${response.status}`);
+        return;
+    }
   };
 
   const handleComplainClick  = () => {

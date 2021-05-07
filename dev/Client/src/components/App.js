@@ -8,14 +8,14 @@ import history from '../history';
 import Welcome from './Welcome';
 import React from 'react';
 import Banner from './Banner';
-import { Transactions } from './Transactions';
-import { Cart } from './Cart';
+import Transactions  from './Transactions';
+import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
+import Checkout from './Checkout';
+import { SERVER_BASE_URL } from '../constants';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
-
-
 class App extends React.Component
 {
   constructor(){
@@ -70,6 +70,12 @@ class App extends React.Component
             path='/openstore' exact
             render={(props) => (
               <OpenStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/checkout' exact
+            render={(props) => (
+              <Checkout {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>
@@ -127,7 +133,7 @@ class App extends React.Component
 
 function changeOptionBaseOnValue(value)
 {
-  axios.post('http://192.168.56.1:3333/command/getWordList', {word: value} ).then((response) => response.data.list.map((e) => options.push(e))).catch((error) => alert("error"));
+  axios.post(`${SERVER_BASE_URL}getWordList`, {word: value} ).then((response) => response.data.list.map((e) => options.push(e))).catch((error) => alert("error"));
 }
 const options = ['Option 1', 'Option 2'];
 

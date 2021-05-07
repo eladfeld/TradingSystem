@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { Grid,Paper, TextField, Button, Typography, Link } from '@material-ui/core'
 import axios from 'axios';
 import history from '../history';
+import { SERVER_BASE_URL } from '../constants';
 
 
 const register = async (username, password) =>
 {
-    const res = await axios.post('http://192.168.56.1:3333/command/register', {username, password} )
+    const res = await axios.post(`${SERVER_BASE_URL}register`, {username, password} )
     alert(res.data.message)
 }
 
@@ -19,7 +20,7 @@ const Authentication=({getAppState, setAppState})=>{
 
     const login = async (userId, username, password) =>
     {
-        const res = await axios.post('http://192.168.56.1:3333/command/login', {userId, username, password} )
+        const res = await axios.post(`${SERVER_BASE_URL}login`, {userId, username, password} )
         if(res.data.userId !== undefined)
         {
             setAppState({userId: res.data.userId, username: res.data.username});  
