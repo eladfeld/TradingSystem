@@ -17,7 +17,6 @@ const CartItem = ({getAppState, setAppState, basket, product}) =>{
             productId: product.productId,
             quantity
         });
-        console.log(`update quantity click:`, response);
         switch(response.status){
             case SERVER_RESPONSE_OK:
                 cart.baskets.find(b => b.storeId === basket.storeId).products.find(p => p.productId === product.productId).quantity = quantity;

@@ -38,12 +38,9 @@ const Cart = ({getAppState, setAppState}) => {
     const onCheckoutCartClick = async (storeId) =>{
         const {userId} = getAppState();
         const response = await axios.post(SERVER_BASE_URL+'checkoutBasket',{userId, storeId});
-        console.log('checkout cart response:', response);
         switch(response.status){
             case SERVER_RESPONSE_OK:
                 setAppState({basketAtCheckout:storeId});
-                alert(`${response.data}`);
-                console.log('checkout click bro',response.data);
                 history.push('/checkout');
                 return;
             case SERVER_RESPONSE_BAD:

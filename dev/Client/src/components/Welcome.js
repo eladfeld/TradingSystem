@@ -9,7 +9,6 @@ class Welcome extends React.Component{
         super();
         const {userId} = getAppState();
         this.state = {userId};
-        console.log(userId);
     }
 
 

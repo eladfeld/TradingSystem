@@ -38,7 +38,6 @@ const useStyles = makeStyles({
 export default function MyTransaction({getAppState, setAppState}) {
   const classes = useStyles();
   const {myTansactionToView} = getAppState();
-  console.log('transaction to view', myTansactionToView);
 
   const onBackClick = () =>{
       history.push('/mytransactions');

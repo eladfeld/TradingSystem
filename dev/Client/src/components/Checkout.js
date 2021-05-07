@@ -21,11 +21,8 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
     const onCompleteClick = async () =>{
         const paymentInfo = {cardNumber: Number(CardNumberText), cvv: Number(cvvText), expiraion:Number(expirationText)};
         const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, supplyAddress: userAddress, paymentInfo});
-        console.log("response - complete checkout: ", response);
-        console.log('complete order:', response.data);
         switch(response.status){
             case SERVER_RESPONSE_OK:
-                alert(response.data);
                 setAppState({basketAtCheckout: undefined});
                 history.push('/cart');
                 return;
