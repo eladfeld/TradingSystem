@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import {SERVER_BASE_URL} from '../constants'
-import InputBase from '@material-ui/core/InputBase';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import Banner from './Banner';
 import {List, ListItemText, ListItem, Grid, Button, TextField, Paper } from '@material-ui/core';
@@ -9,9 +8,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import { IconContext } from 'react-icons';
-import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
 import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles((theme) => ({
