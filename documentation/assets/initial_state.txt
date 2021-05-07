@@ -1,0 +1,18 @@
+Initial Users and Passwords:
+System Manager:
+	michael 1234
+	elad	1234
+
+Store:
+	Founder:
+		joe	pwd
+	Owners:
+		josh	pwd
+		john	pwd
+	Managers:
+		jack	pwd
+		jim	pwd
+
+Subscriber:
+	tupac	pwd
+	
