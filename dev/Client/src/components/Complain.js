@@ -1,5 +1,10 @@
-export const Complain = () => {
+import Banner from "./Banner";
+
+export const Complain = ({getAppState, setAppState}) => {
     return(
-        <div>Complain Page</div>
+        <div>
+            <Banner getAppState={getAppState} setAppState={setAppState} />
+            Complain Page
+        </div>
     );
 };

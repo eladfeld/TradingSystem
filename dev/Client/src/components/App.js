@@ -12,6 +12,7 @@ import Transactions  from './Transactions';
 import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
+import Checkout from './Checkout';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -68,6 +69,12 @@ class App extends React.Component
             path='/openstore' exact
             render={(props) => (
               <OpenStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/checkout' exact
+            render={(props) => (
+              <Checkout {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>

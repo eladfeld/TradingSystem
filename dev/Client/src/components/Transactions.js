@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Transactions({getAppState, setAppState}) {
   const classes = useStyles();
-  const {transactions} = getAppState();
+  const {myTransactions} = getAppState();
 
   const renderTransaction = (t) =>{
       return (
@@ -37,24 +37,18 @@ export default function Transactions({getAppState, setAppState}) {
         </ListItem>
       );
   };
+
+
   return (
+      myTransactions===undefined || myTransactions===null ? <div><h1>Loading...</h1></div> :
       <div>
-        <Banner/>
+        <Banner getAppState={getAppState} setAppState={setAppState}/>
+        <h1>Your Transactions</h1>
         <List className={classes.root} subheader={<li />}>
-            {transactions.map((transaction) => renderTransaction(transaction))}
+            {myTransactions.map((transaction) => renderTransaction(transaction))}
         </List>
     </div>
   );
 }
 
 
-export const Transactions2 = ({getAppState, setAppState}) => {
-    const {transactions} = getAppState();
-    return(        
-        <div>
-            <Banner/>
-            Transactions Page
-            
-        </div>
-    );
-};

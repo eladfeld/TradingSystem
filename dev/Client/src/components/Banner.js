@@ -16,7 +16,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import axios from 'axios';
 import history from '../history';
-import {SERVER_BASE_URL} from '../constants';
+import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 
 const BASE_URL = SERVER_BASE_URL;
 
@@ -122,11 +122,46 @@ export default function Banner({getAppState, setAppState}) {
   const handleManageStoresClick = () => {
     handleMenuClose();
   };
-  const handleCartClick = () => {
-    history.push('/cart');
+
+  const fetchCart = async () =>{
+
+}
+
+  const handleCartClick = async () => {
+    const {userId} = getAppState();
+    const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
+    console.log("response: ", response);
+    switch(response.status){
+        case SERVER_RESPONSE_OK:
+            const cart = JSON.parse(response.data);
+            setAppState({cart});
+            console.log('state cart:', cart);
+            history.push('/cart');
+            return;
+        case SERVER_RESPONSE_BAD:
+            alert(response.data.message);
+            return;
+        default:
+            alert(`unexpected response code: ${response.status}`);
+            return;
+    }
   };
-  const handleTransactionsClick = () => {
-    history.push('/transactions');
+  const handleTransactionsClick = async () => {
+    const {userId} = getAppState();
+    const response = await axios.post(BASE_URL+'getSubscriberPurchaseHistory',{userId, subscriberToSeeId:userId});
+    console.log('transaction:',response);
+    switch(response.status){
+      case SERVER_RESPONSE_OK:
+        setAppState({myTransactions: JSON.parse(response.data)});
+        history.push('/transactions');
+        return;
+      case SERVER_RESPONSE_BAD:
+        alert(response.data.message);
+        return;
+      default:
+        alert(`unknown response code ${response.status}`);
+        return;
+    }
   };
 
   const handleComplainClick  = () => {

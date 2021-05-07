@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import Banner from './Banner';
+import history from '../history';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,28 +33,13 @@ const useStyles = makeStyles((theme) => ({
 //TODO: FIX the multiple fetchCart requests issue
 const Cart = ({getAppState, setAppState}) => {
     const classes = useStyles();
-    const [cart, setCart] = useState(null);
-    const {userId} = getAppState();
+    const {cart} = getAppState();
 
-    
-    const fetchCart = async () =>{
-        const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
-        console.log("response: ", response);
-        switch(response.status){
-            case SERVER_RESPONSE_OK:
-                const cartData = JSON.parse(response.data);
-                setCart(cartData);
-                console.log('state cart:', cart);
-                return;
-            case SERVER_RESPONSE_BAD:
-                alert(response.data.message);
-                return;
-            default:
-                alert(`unexpected response code: ${response.status}`);
-                return;
-        }
+    const onCheckoutCartClick = (storeId) =>{
+        setAppState({basketAtCheckout:storeId});
+        history.push('/checkout');
     }
-    fetchCart();
+
 
     return (
         <div>
@@ -74,7 +60,6 @@ const Cart = ({getAppState, setAppState}) => {
                                 buy basket
                             </Button>
                         </Grid>
-
                     </Grid>                    
                 </ListSubheader>
                 {basket.products.map((product) => (
@@ -99,7 +84,7 @@ const Cart = ({getAppState, setAppState}) => {
             </li>
         ))}
         </List>
-        <Button variant="contained" color="primary" startIcon={<ShoppingCartIcon/>}>
+        <Button variant="contained" color="primary" startIcon={<ShoppingCartIcon/>} onClick={() => onCheckoutCartClick(0)}>
             Proceed to checkout
         </Button>
         </div>
