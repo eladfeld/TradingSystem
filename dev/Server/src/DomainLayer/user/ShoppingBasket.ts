@@ -79,6 +79,7 @@ export class ShoppingBasket implements iSubject
     {
         var basket : any = {}
         basket['store'] = this.store.getStoreName();
+        basket['storeId'] = this.store.getStoreId();
         basket['products']=[]
         this.products.forEach(function(quantity,productId,map){
             let product: Product = ProductDB.getProductById(productId);

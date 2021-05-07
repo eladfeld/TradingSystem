@@ -17,6 +17,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
+import { initialAppState } from './componentUtil';
 
 const BASE_URL = SERVER_BASE_URL;
 
@@ -173,6 +174,8 @@ export default function Banner({getAppState, setAppState}) {
     const {userId} = getAppState();
     console.log(`banner userId: ${userId}`);
     await axios.post(BASE_URL+'logout',{userId});
+    setAppState(initialAppState);
+    console.log(`logged out: userId now ${getAppState().userId}`);
     history.push('/');
   };
   const menuId = 'primary-search-account-menu';

@@ -39,12 +39,12 @@ const Cart = ({getAppState, setAppState}) => {
     const onCheckoutCartClick = async (storeId) =>{
         const {userId} = getAppState();
         const response = await axios.post(SERVER_BASE_URL+'checkoutBasket',{userId, storeId});
+        console.log('checkout cart response:', response);
         switch(response.status){
             case SERVER_RESPONSE_OK:
-                const resp = JSON.parse(response);
                 setAppState({basketAtCheckout:storeId});
-                alert(`${resp.data}`);
-                console.log('checkout click bro',resp.data);
+                alert(`${response.data}`);
+                console.log('checkout click bro',response.data);
                 history.push('/checkout');
                 return;
             case SERVER_RESPONSE_BAD:
@@ -55,9 +55,6 @@ const Cart = ({getAppState, setAppState}) => {
                 alert(`unexpected response code: ${response.status}`);
                 return;
         }
-
-
-
     }
 
 
@@ -76,7 +73,7 @@ const Cart = ({getAppState, setAppState}) => {
                             <ListItemText primary={`${basket.store}`}/>
                         </Grid>
                         <Grid item xs={3} md={2}>
-                            <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} >
+                            <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} onClick={() => onCheckoutCartClick(basket.storeId)} >
                                 buy basket
                             </Button>
                         </Grid>
@@ -87,7 +84,7 @@ const Cart = ({getAppState, setAppState}) => {
                     <Grid container>
                         <Grid item xs={9} md={6}>
                             <ListItemText primary={`name: ${product.name}`} />
-                            <ListItemText primary={`prod id: ${product.id}`} />
+                            <ListItemText primary={`prod id: ${product.productId}`} />
                             <ListItemText primary={`quantity: ${product.quantity}`} />
                         </Grid>
                         <Grid item xs={3} md={2}>

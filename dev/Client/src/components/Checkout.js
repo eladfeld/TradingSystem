@@ -26,6 +26,7 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
         switch(response.status){
             case SERVER_RESPONSE_OK:
                 alert(response.data);
+                setAppState({basketAtCheckout: undefined});
                 history.push('/cart');
                 return;
             case SERVER_RESPONSE_BAD:
