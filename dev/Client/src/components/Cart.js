@@ -1,15 +1,14 @@
-import {List, ListSubheader, ListItemText, ListItem, Grid, Button, Container } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {List, ListSubheader, ListItemText, Grid, Button } from '@material-ui/core';
 import PaymentIcon from '@material-ui/icons/Payment';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import React, { useState } from 'react';
-import {connect} from 'react-redux';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import Banner from './Banner';
 import history from '../history';
 import ProgressWheel from './ProgreeWheel';
+import CartItem from './CartItem';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,28 +40,21 @@ const Cart = ({getAppState, setAppState}) => {
         const response = await axios.post(SERVER_BASE_URL+'checkoutBasket',{userId, storeId});
         switch(response.status){
             case SERVER_RESPONSE_OK:
-                const resp = JSON.parse(response);
                 setAppState({basketAtCheckout:storeId});
-                alert(`${resp.data}`);
-                console.log('checkout click bro',resp.data);
                 history.push('/checkout');
                 return;
             case SERVER_RESPONSE_BAD:
                 alert(response.data);
-                history.push('/checkout');//TODO: REMOVE LINE!
+                //history.push('/checkout');//TODO: REMOVE LINE!
                 return;
             default:
                 alert(`unexpected response code: ${response.status}`);
                 return;
         }
-
-
-
     }
 
-
     return (
-        <div>
+        <div >
         <Banner getAppState={getAppState} setAppState={setAppState}/>
         <List className={classes.root} subheader={<li />}>
         {
@@ -76,37 +68,19 @@ const Cart = ({getAppState, setAppState}) => {
                             <ListItemText primary={`${basket.store}`}/>
                         </Grid>
                         <Grid item xs={3} md={2}>
-                            <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} >
+                            <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} onClick={() => onCheckoutCartClick(basket.storeId)} >
                                 buy basket
                             </Button>
                         </Grid>
                     </Grid>                    
                 </ListSubheader>
                 {basket.products.map((product) => (
-                <ListItem key={`item-${basket.store}-${product.productId}`}>
-                    <Grid container>
-                        <Grid item xs={9} md={6}>
-                            <ListItemText primary={`name: ${product.name}`} />
-                            <ListItemText primary={`prod id: ${product.id}`} />
-                            <ListItemText primary={`quantity: ${product.quantity}`} />
-                        </Grid>
-                        <Grid item xs={3} md={2}>
-                            <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>} 
-                                    onClick={() => {}}>
-                                remove
-                            </Button>
-                        </Grid>
-
-                    </Grid>
-                </ListItem>
+                    <CartItem getAppState={getAppState} setAppState={setAppState} basket={basket} product={product}/>
                 ))}
             </ul>
             </li>
         ))}
         </List>
-        <Button variant="contained" color="primary" startIcon={<ShoppingCartIcon/>} onClick={() => onCheckoutCartClick(0)}>
-            Proceed to checkout
-        </Button>
         </div>
     );
 }

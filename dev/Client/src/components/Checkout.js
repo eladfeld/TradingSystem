@@ -1,4 +1,4 @@
-import { Grid,Paper, TextField, Button, Typography, Link, Divider } from '@material-ui/core'
+import { Grid,Paper, TextField, Button, Typography} from '@material-ui/core'
 import axios from 'axios';
 import { useState } from 'react';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../constants';
@@ -19,13 +19,11 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
         history.push('/cart');
     }
     const onCompleteClick = async () =>{
-        const paymentInfo = {cardNumber: CardNumberText, cvv: cvvText, expiraion:expirationText};
+        const paymentInfo = {cardNumber: Number(CardNumberText), cvv: Number(cvvText), expiraion:Number(expirationText)};
         const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, supplyAddress: userAddress, paymentInfo});
-        console.log("response - complete checkout: ", response);
-        console.log('complete order:', response.data);
         switch(response.status){
             case SERVER_RESPONSE_OK:
-                alert(response.data);
+                setAppState({basketAtCheckout: undefined});
                 history.push('/cart');
                 return;
             case SERVER_RESPONSE_BAD:

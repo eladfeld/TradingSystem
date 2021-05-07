@@ -1,19 +1,18 @@
 import axios from 'axios';
-import { BrowserRouter, Route, Router } from 'react-router-dom';
+import {Route, Router } from 'react-router-dom';
 
 import Authentication from './Authentication'
 import Enter from './Enter'
-import { useState } from 'react';
 import history from '../history';
-import Welcome from './Welcome';
 import React from 'react';
 import Banner from './Banner';
-import Transactions  from './Transactions';
 import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
 import Checkout from './Checkout';
 import { SERVER_BASE_URL } from '../constants';
+import MyTransactions from './MyTransactions';
+import MyTransaction from './MyTransaction';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -49,9 +48,9 @@ class App extends React.Component
             )}
           />
           <Route
-            path='/transactions' exact
+            path='/mytransactions' exact
             render={(props) => (
-              <Transactions {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <MyTransactions {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
           <Route
@@ -76,6 +75,12 @@ class App extends React.Component
             path='/checkout' exact
             render={(props) => (
               <Checkout {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/viewmytransaction' exact
+            render={(props) => (
+              <MyTransaction {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>
