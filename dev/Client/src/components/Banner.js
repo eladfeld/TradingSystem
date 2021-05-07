@@ -23,7 +23,7 @@ const BASE_URL = SERVER_BASE_URL;
 
 const getUsername =  async (userId) =>
 {
-  const res =  axios.post('http://192.168.56.1:3333/command/getUsername', {userId} )
+  const res =  axios.post(`${SERVER_BASE_URL}getUsername`, {userId} )
   .then()
   return userId;
 }

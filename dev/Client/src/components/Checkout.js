@@ -51,18 +51,21 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
                     onChange={(event) => setUserAddress(event.target.value)} 
                     fullWidth/>
                 <TextField 
+                    type='number'
                     label='Card Number' 
                     placeholder='Enter Credit Card' 
                     value={CardNumberText} 
                     onChange={(event) => setCardNumberText(event.target.value)} 
                     fullWidth/>
                 <TextField 
+                    type='number'
                     label='Expiration' 
                     placeholder='Enter expiration date' 
                     value={expirationText} 
                     onChange={(event) => setExpirationText(event.target.value)} 
                     fullWidth/>
                 <TextField 
+                    type='number'
                     label='cvv' 
                     placeholder='Enter cvv' 
                     value={cvvText} 

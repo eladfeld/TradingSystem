@@ -13,6 +13,7 @@ import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
 import Checkout from './Checkout';
+import { SERVER_BASE_URL } from '../constants';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -132,7 +133,7 @@ class App extends React.Component
 
 function changeOptionBaseOnValue(value)
 {
-  axios.post('http://192.168.56.1:3333/command/getWordList', {word: value} ).then((response) => response.data.list.map((e) => options.push(e))).catch((error) => alert("error"));
+  axios.post(`${SERVER_BASE_URL}getWordList`, {word: value} ).then((response) => response.data.list.map((e) => options.push(e))).catch((error) => alert("error"));
 }
 const options = ['Option 1', 'Option 2'];
 
