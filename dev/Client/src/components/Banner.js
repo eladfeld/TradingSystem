@@ -123,9 +123,6 @@ export default function Banner({getAppState, setAppState}) {
     handleMenuClose();
   };
 
-  const fetchCart = async () =>{
-
-}
 
   const handleCartClick = async () => {
     const {userId} = getAppState();
@@ -135,7 +132,6 @@ export default function Banner({getAppState, setAppState}) {
         case SERVER_RESPONSE_OK:
             const cart = JSON.parse(response.data);
             setAppState({cart});
-            console.log('state cart:', cart);
             history.push('/cart');
             return;
         case SERVER_RESPONSE_BAD:

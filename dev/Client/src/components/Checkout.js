@@ -1,4 +1,4 @@
-import { Grid,Paper, TextField, Button, Typography, Link } from '@material-ui/core'
+import { Grid,Paper, TextField, Button, Typography, Link, Divider } from '@material-ui/core'
 import axios from 'axios';
 import { useState } from 'react';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../constants';
@@ -48,33 +48,31 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
                     label='Address' 
                     placeholder='Enter address' 
                     value={userAddress} 
-                    onChange={(event) => setUserAddress(event.target.value)} 
+                    onChange={(event) =>  setUserAddress(event.target.value)} 
                     fullWidth/>
                 <TextField 
-                    type='number'
                     label='Card Number' 
                     placeholder='Enter Credit Card' 
                     value={CardNumberText} 
                     onChange={(event) => setCardNumberText(event.target.value)} 
                     fullWidth/>
                 <TextField 
-                    type='number'
                     label='Expiration' 
                     placeholder='Enter expiration date' 
                     value={expirationText} 
                     onChange={(event) => setExpirationText(event.target.value)} 
                     fullWidth/>
                 <TextField 
-                    type='number'
                     label='cvv' 
                     placeholder='Enter cvv' 
                     value={cvvText} 
                     onChange={(event) => setCvvText(event.target.value)} 
                     fullWidth/>
+                <br/> <br/> 
                 <Button type='submit' color='primary' variant="contained" style={btnstyle}
-                    onClick={onCancelClick} fullWidth>Cancel</Button>
-                <Button type='submit' color='secondary' variant="contained" style={btnstyle}
                     onClick={onCompleteClick} fullWidth>Complete</Button>
+                <Button type='submit' color='secondary' variant="contained" style={btnstyle}
+                    onClick={onCancelClick} fullWidth>Cancel</Button>
 
             </Paper>
         </Grid>

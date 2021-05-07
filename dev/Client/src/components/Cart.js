@@ -9,6 +9,7 @@ import axios from 'axios';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import Banner from './Banner';
 import history from '../history';
+import ProgressWheel from './ProgreeWheel';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,9 +36,28 @@ const Cart = ({getAppState, setAppState}) => {
     const classes = useStyles();
     const {cart} = getAppState();
 
-    const onCheckoutCartClick = (storeId) =>{
-        setAppState({basketAtCheckout:storeId});
-        history.push('/checkout');
+    const onCheckoutCartClick = async (storeId) =>{
+        const {userId} = getAppState();
+        const response = await axios.post(SERVER_BASE_URL+'checkoutBasket',{userId, storeId});
+        switch(response.status){
+            case SERVER_RESPONSE_OK:
+                const resp = JSON.parse(response);
+                setAppState({basketAtCheckout:storeId});
+                alert(`${resp.data}`);
+                console.log('checkout click bro',resp.data);
+                history.push('/checkout');
+                return;
+            case SERVER_RESPONSE_BAD:
+                alert(response.data);
+                history.push('/checkout');//TODO: REMOVE LINE!
+                return;
+            default:
+                alert(`unexpected response code: ${response.status}`);
+                return;
+        }
+
+
+
     }
 
 
@@ -46,7 +66,7 @@ const Cart = ({getAppState, setAppState}) => {
         <Banner getAppState={getAppState} setAppState={setAppState}/>
         <List className={classes.root} subheader={<li />}>
         {
-        cart === null || cart === undefined ? <h1>Loading...</h1> :
+        cart === null || cart === undefined ? <ProgressWheel/> :
         cart.baskets.map((basket) => (
             <li key={`cart-section-${basket.store}`} className={classes.listSection}>
             <ul className={classes.ul}>
