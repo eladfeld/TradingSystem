@@ -150,7 +150,7 @@ export default function Banner({getAppState, setAppState}) {
     switch(response.status){
       case SERVER_RESPONSE_OK:
         setAppState({myTransactions: JSON.parse(response.data)});
-        history.push('/transactions');
+        history.push('/mytransactions');
         return;
       case SERVER_RESPONSE_BAD:
         alert(response.data.message);
@@ -174,9 +174,9 @@ export default function Banner({getAppState, setAppState}) {
     const {userId} = getAppState();
     console.log(`banner userId: ${userId}`);
     await axios.post(BASE_URL+'logout',{userId});
-    setAppState(initialAppState);
     console.log(`logged out: userId now ${getAppState().userId}`);
     history.push('/');
+    setAppState(initialAppState);
   };
   const menuId = 'primary-search-account-menu';
   const renderMenu = (

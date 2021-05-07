@@ -1,4 +1,7 @@
 export const initialAppState = {
     userId: 0,
-    basketAtCheckout: undefined
+    userName: 'Guest',
+    basketAtCheckout: undefined,
+    cart: undefined,
+    myTransactions: undefined
 };

@@ -184,7 +184,8 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
 {
     let userId: number = req.body.userId;
     let storeId: number = req.body.storeId;
-    let paymentInfo: PaymentInfo = req.body.paymentInfo;
+    let paymentInfoObj: any = req.body.paymentInfo;
+    let paymentInfo: PaymentInfo = new PaymentInfo(paymentInfoObj.cardNumber, paymentInfoObj.expiration, paymentInfoObj.cvv);
     let userAddress: string = req.body.userAddress;
     service.completeOrder(userId, storeId, paymentInfo, userAddress)
     .then(result => res.status(OKSTATUS).json(result))
