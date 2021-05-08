@@ -148,6 +148,7 @@ export class SystemFacade
     {
         Logger.log(`getStoreInfo : sessionId:${sessionId} , storeId:${storeId}`);
         let store: Store = StoreDB.getStoreByID(storeId);
+        console.log(storeId);
         let user = this.logged_guest_users.get(sessionId)
         if (user === undefined)
             return new Promise((resolve,reject) => reject("user is not logged in"))
@@ -362,31 +363,15 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Result<boolean>
     {
         Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let res: Result<boolean> = user.checkoutBasket(shopId, supply_address);
-            if(isOk(res))
-            {
-                let value = res.value;
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
-                })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
+            return user.checkoutBasket(shopId, supply_address);
         }
-        return new Promise((resolve, reject) => reject("user not found"));
+        return makeFailure("user not found");
     }
 
     public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
@@ -524,6 +509,16 @@ export class SystemFacade
             {
                 return new Promise((resolve, reject) => resolve(Purchase.getCompletedTransactionsForUser(subscriberToSeeId)));
             }
+        return new Promise((resolve, reject) => reject("user don't have permissions"));
+    }
+
+    public getMyPurchaseHistory(sessionId: string): Promise<any>
+    {
+        Logger.log(`getMyPurchaseHistory : sessionId:${sessionId}`);
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let myId = subscriber.getUserId();
+        if (subscriber !== undefined)
+            return new Promise((resolve, reject) => resolve(Purchase.getCompletedTransactionsForUser(myId)));
         return new Promise((resolve, reject) => reject("user don't have permissions"));
     }
 

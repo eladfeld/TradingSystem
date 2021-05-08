@@ -37,7 +37,7 @@ router.post('/removeBuyingPolicy', Controller.removeBuyingPolicy)
 router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 router.post('/getUsername', Controller.getUsername)
 router.post('/getUserStores', Controller.getUserStores)
-
+router.post('/getMyPurchaseHistory', Controller.getMyPurchaseHistory)
 
 
 export = router;

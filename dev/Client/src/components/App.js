@@ -16,6 +16,8 @@ import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
 import Register from './Register';
 import ManageStores from './ManageStores'
+import ManageStore from './ManageStore'
+
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -152,6 +154,12 @@ class App extends React.Component
             path='/viewmytransaction' exact
             render={(props) => (
               <MyTransaction {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path= '/:store/:storeId' exact
+            render={(props) => (
+              <ManageStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>
