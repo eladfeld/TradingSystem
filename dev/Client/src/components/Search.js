@@ -183,8 +183,8 @@ export const Products=({getAppState, setAppState})=>{
                 <li key={`${product.productName}`} className={classes.listSection}>
                 <ul className={classes.ul}>
                     <ListItem key={`item-${product.productName}`} align='center'>
-                        <Grid container maxWidth={10} align='right' style={paperStyle}>
-                            <Grid item xs={9} md={6} maxWidth={10} align='center'>
+                        <Grid container align='right' style={paperStyle}>
+                            <Grid item xs={9} md={6} align='center'>
                                 <ListItemText primary={`name: ${product.productName}`} />
                                 <ListItemText primary={`price: ${product.price}`} />
                                 <ListItemText primary={`store: ${product.storeName}`} />

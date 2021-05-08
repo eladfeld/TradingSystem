@@ -94,6 +94,10 @@ export default function TypographyMenu({getAppState, setAppState}) {
                     setStaff(null)
                 }
                 return <Employees getAppState={getAppState} setAppState={setAppState} staff={staff}/>
+            case "appointowner":
+                return <AppointOwner getAppState={getAppState} setAppState={setAppState}></AppointOwner>
+            case "appointmanager":
+                return <AppointManager getAppState={getAppState} setAppState={setAppState}></AppointManager>
             default:
                 return <h1>default</h1>
         }

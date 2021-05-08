@@ -73,7 +73,6 @@ export const AppointManager = ({getAppState, setAppState}) => {
   return (
       <div className={classes.margin}>
       <div>
-      <Banner getAppState={getAppState} setAppState={setAppState}/>
         {_isSucsess ?
         <Alert
         action={
