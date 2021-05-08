@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import SendIcon from '@material-ui/icons/Send';
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
-import { useParams } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import Banner from './Banner';
 import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -52,6 +52,14 @@ export default function TypographyMenu({getAppState, setAppState}) {
         setPage("inventory");
     }
 
+    const onAppointOwnerClick =() =>{
+        setPage("appointowner");
+    }
+
+    const onAppointManagerClick =() =>{
+        setPage("appointmanager");
+    }
+
   alert(`storeId: ${Number(storeId)}`)
   return (
     <div>
@@ -71,28 +79,33 @@ export default function TypographyMenu({getAppState, setAppState}) {
             <Typography variant="inherit">View employees</Typography>
             </MenuItem>
             <MenuItem>
-            <ListItemIcon>
-                <PersonAddIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit" noWrap>
-                Appoint new owner
-            </Typography>
+                <MenuItem onClick={onAppointOwnerClick} >
+                    <ListItemIcon>
+                        <PersonAddIcon fontSize="small" />
+                    </ListItemIcon>
+                    <Typography variant="inherit" noWrap>
+                        Appoint new owner
+                    </Typography>
+                </MenuItem>
+
             </MenuItem>
             <MenuItem>
-            <ListItemIcon>
-                <PersonAddIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit" noWrap>
-                Appoint new manager
-            </Typography>
+                <MenuItem onClick={onAppointManagerClick} >
+                    <ListItemIcon>
+                        <PersonAddIcon fontSize="small" />
+                    </ListItemIcon>
+                    <Typography variant="inherit" noWrap>
+                        Appoint new manager
+                    </Typography>
+                </MenuItem>
             </MenuItem>
         </MenuList>
         </Paper>
-        
-        {renderPage(page, getAppState, setAppState, storeId) }
-            
 
-        
+        {renderPage(page, getAppState, setAppState, storeId) }
+
+
+
     </div>
   );
 }
