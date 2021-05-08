@@ -40,9 +40,8 @@ const editProduct = (product) =>
   alert(`edit product ${product.productId}`)
 }
 
-export default function Inventory({getAppState, setAppState}) {
+export default function Inventory({getAppState, setAppState, inventory}) {
   const classes = useStyles();
-  const inventory = getAppState().storeInventory;
   console.log(inventory)
   return (
     
