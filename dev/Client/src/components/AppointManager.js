@@ -100,7 +100,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
                       <TextField
                           label='Manager username'
                           placeholder='Enter new manager username'
-                          value={_storeBankAccount}
+                          value={_ManagerUsername}
                           onChange={(event) => setManagerUsername(event.target.value)}
                       fullWidth/>
                     </Grid>
@@ -109,9 +109,9 @@ export const AppointManager = ({getAppState, setAppState}) => {
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(userId, storeName, _ManagerUsername)
+                        appoint(userId, storeId, _ManagerUsername)
                     }}
-                  fullWidth>open store
+                  fullWidth>add manager
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
                   onClick={(e) => clearFields()}
@@ -132,3 +132,5 @@ export const AppointManager = ({getAppState, setAppState}) => {
   </div>
   );
 }
+
+export default AppointManager;

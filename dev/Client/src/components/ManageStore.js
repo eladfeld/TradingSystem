@@ -11,6 +11,8 @@ import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 import { useParams } from "react-router-dom";
 import Banner from './Banner';
 import Inventory from './Inventory'
+import AppointManager from './AppointManager'
+import AppointOwner from './AppointOwner'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -38,6 +40,10 @@ const renderPage = (page, getAppState, setAppState, storeId) =>{
             return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
         case "shit":
             return <h1>shit------------------------------------------------------------------------------------------------ </h1>
+        case "appointowner":
+            return <AppointOwner getAppState={getAppState} setAppState={setAppState}></AppointOwner>
+        case "appointmanager":
+            return <AppointManager getAppState={getAppState} setAppState={setAppState}></AppointManager>
         default:
             return <h1>default ------------------------------------------------------------------------------------------------</h1>
     }
