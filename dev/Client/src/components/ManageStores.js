@@ -29,10 +29,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const renderStore = (store) =>
+const renderStore = (store, setAppState) =>
 {
   return(
       <Button onClick={() => {
+        setAppState({storeId: store.storeId})
         history.push(`/store/${store.storeId}`)
       }}>
         {store.storeName}
@@ -43,16 +44,13 @@ const renderStore = (store) =>
 const ManageStores = ({getAppState, setAppState}) => {
     const classes = useStyles();
     const {stores} = getAppState();
-
-
-    console.log(stores)
     return (
         <div >
         <Banner getAppState={getAppState} setAppState={setAppState}/>
         <List className={classes.root} subheader={<li />}>
         {
         stores === null || stores === undefined ? <ProgressWheel/> :
-        stores.map(store => renderStore(store))
+        stores.map(store => renderStore(store, setAppState))
         }
         </List>
         </div>
