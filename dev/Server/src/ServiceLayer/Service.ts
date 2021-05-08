@@ -168,14 +168,14 @@ export class Service
         return this.facade.editStaffPermission(sessionId, managerToEditId, storeId, permissionMask);
     }
 
-    public appointStoreOwner(sessionId: string, storeId: number, newOwnerId: number): Promise<string>
+    public appointStoreOwner(sessionId: string, storeId: number, newOwnerUsername: string): Promise<string>
     {
-        return this.facade.appointStoreManager(sessionId, storeId, newOwnerId);
+        return this.facade.appointStoreOwner(sessionId, storeId, newOwnerUsername);
     }
 
-    public appointStoreManager(sessionId: string, storeId: number, newManagerId: number): Promise<string>
+    public appointStoreManager(sessionId: string, storeId: number, newManagerUsername: string): Promise<string>
     {
-        return this.facade.appointStoreManager(sessionId, storeId, newManagerId);
+        return this.facade.appointStoreManager(sessionId, storeId, newManagerUsername);
     }
 
     public getStoreStaff(sessionId: string, storeId: number): Promise<string> {

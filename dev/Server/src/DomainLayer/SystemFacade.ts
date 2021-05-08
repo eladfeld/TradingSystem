@@ -591,12 +591,12 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("wrong parameter given"));
     }
 
-    public appointStoreOwner(sessionId: string, storeId: number, newOwnerId: number): Promise<string>
+    public appointStoreOwner(sessionId: string, storeId: number, newOwnerUsername: string): Promise<string>
     {
-        Logger.log(`appointStoreOwner : sessionId:${sessionId} , storeId:${storeId}, newOwnerId:${newOwnerId}`);
+        Logger.log(`appointStoreOwner : sessionId:${sessionId} , storeId:${storeId}, newOwnerUsername:${newOwnerUsername}`);
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
-        let res: Result<string> = store.appointStoreOwner(appointer, Authentication.getSubscriberById(newOwnerId));
+        let res: Result<string> = store.appointStoreOwner(appointer, Authentication.getSubscriberByName(newOwnerUsername));
         if(isOk(res))
         {
             let value = res.value;
@@ -615,12 +615,12 @@ export class SystemFacade
         }
     }
 
-    public appointStoreManager(sessionId: string, storeId: number, newManagerId: number): Promise<string>
+    public appointStoreManager(sessionId: string, storeId: number, newManagerUsername: string): Promise<string>
     {
-        Logger.log(`appointStoreManager : sessionId:${sessionId} , storeId:${storeId}, newManagerId:${newManagerId}`);
+        Logger.log(`appointStoreManager : sessionId:${sessionId} , storeId:${storeId}, newManagerUsername:${newManagerUsername}`);
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
-        let res: Result<string> =  store.appointStoreManager(appointer, Authentication.getSubscriberById(newManagerId));
+        let res: Result<string> =  store.appointStoreManager(appointer, Authentication.getSubscriberByName(newManagerUsername));
         if(isOk(res))
         {
             let value = res.value;

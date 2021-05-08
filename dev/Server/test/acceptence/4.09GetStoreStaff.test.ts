@@ -22,7 +22,7 @@ describe('4.9: get store staff', function () {
         let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789");
         let store = await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
 
-        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId());
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         service.getStoreStaff(avi_sessionId, store.getStoreId())
         .then(staffRes => {
             var staff = JSON.parse(staffRes);
