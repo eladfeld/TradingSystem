@@ -23,7 +23,7 @@ const onRegisterClick = async (username, password, confirmPassword, age) =>
             history.push('/auth');
             return;
         case SERVER_RESPONSE_BAD:
-            alert(response.data.message);
+            alert(response.data.error);
             return;
         default:
             alert(unknownStatusMessage(response));
@@ -58,39 +58,39 @@ const Register=({getAppState, setAppState})=>{
                     {/* <Avatar style={avatarStyle}><LockOutlinedIcon/></Avatar> */}
                     <h2>Register</h2>
                 </Grid>
-                <TextField 
-                    label='Username' 
-                    placeholder='Enter username' 
-                    value={username} 
-                    onChange={(event) => setUsername(event.target.value)} 
+                <TextField
+                    label='Username'
+                    placeholder='Enter username'
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
                 fullWidth/>
-                <TextField 
-                    label='Password' 
-                    placeholder='Enter password' 
-                    value={password} 
-                    onChange={(event) => setPassword(event.target.value)} 
-                    type='password' 
+                <TextField
+                    label='Password'
+                    placeholder='Enter password'
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    type='password'
                 fullWidth/>
-                <TextField 
-                    label='Confirm Password' 
-                    placeholder='Confirm password' 
-                    value={confirmPassword} 
-                    onChange={(event) => setConfirmPassword(event.target.value)} 
-                    type='password' 
+                <TextField
+                    label='Confirm Password'
+                    placeholder='Confirm password'
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    type='password'
                 fullWidth/>
-                <TextField 
+                <TextField
                     type="number"
-                    label='Age' 
-                    placeholder='Enter your age' 
-                    value={age} 
-                    onChange={(event) => setAge(event.target.value)} 
+                    label='Age'
+                    placeholder='Enter your age'
+                    value={age}
+                    onChange={(event) => setAge(event.target.value)}
                 fullWidth/>
-                <Button type='submit' color='primary' variant="contained" 
+                <Button type='submit' color='primary' variant="contained"
                     onClick={()=> onRegisterClick(username, password, confirmPassword, age)}
                     style={btnstyle} fullWidth>
                         Register
                 </Button>
-                <Button type='submit' color='primary' variant="contained" 
+                <Button type='submit' color='primary' variant="contained"
                     onClick={()=> onBackClick()}
                     style={btnstyle} fullWidth>
                         Back to Login
