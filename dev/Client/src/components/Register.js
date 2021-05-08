@@ -51,7 +51,6 @@ const Register=({getAppState, setAppState})=>{
 
     return(
         <div>
-            <h1>{userId}</h1>
         <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
