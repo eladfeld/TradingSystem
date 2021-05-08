@@ -19,7 +19,7 @@ describe('2.2: exit system test' , function() {
             id=>
             {
                 service.exit(id);
-                expect(service.get_logged_guest_users().length).to.equal(0);   
+                expect(service.get_logged_guest_users().size).to.equal(0);   
             }
         )
     })
@@ -33,7 +33,7 @@ describe('2.2: exit system test' , function() {
             {
                 service.exit(r1);
                 service.exit(r1);
-                expect(service.get_logged_guest_users().length === 1);
+                expect(service.get_logged_guest_users().size === 1);
             }
         )
     })

@@ -59,6 +59,10 @@ export class Inventory
         return makeOk("Quantity was set");
     }
 
+    public getProductQuantity(productId : number) : number {
+        return this.products.get(productId).getQuantity();
+    }
+
     public isProductAvailable(productId: number, quantity: number) : boolean {
         //TODO: check synchronization accotding to the internet we don't need to sync in javascript
         let product = this.products.get(productId);

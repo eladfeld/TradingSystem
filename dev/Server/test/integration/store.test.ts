@@ -101,7 +101,7 @@ describe('search product in store' , () => {
                     const basket1a: ShoppingBasket = new ShoppingBasket (store1);
                     basket1a.addProduct(res.value, 1)
                     store1.setBuyingPolicy(new BuyingPolicy("Min 100$ for purchase"))
-                    let sellRes = store1.sellShoppingBasket(user1Id, user1Adrs, basket1a)
+                    let sellRes = store1.sellShoppingBasket(user1Id, user1Adrs, basket1a, ()=>{})
                     // expect(isFailure(sellRes)).to.equal(true)
                 }
 

@@ -6,7 +6,7 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
-import { enter_register_login, open_store } from './common';
+import { register_login, open_store } from './common';
 
 describe('2.8: Shopping Cart view and edit' , function() {
 
@@ -20,17 +20,18 @@ describe('2.8: Shopping Cart view and edit' , function() {
 
     it('shopping cart before and after delete' , async function()
     {
-        let avi = await enter_register_login(service,"avi", "123456789");
-        let store1 = await open_store(service,avi,"Aluf Hasport" , 123456 , "Tel Aviv" );
+        let sessionId = await service.enter()
+        let avi = await register_login(service,sessionId,"avi", "123456789");
+        let store1 = await open_store(service,sessionId,avi,"Aluf Hasport" , 123456 , "Tel Aviv" );
         store1.addCategoryToRoot('Sweet')
         store1.addCategoryToRoot('Computer')
         let product1: Product = new Product("banana", ['Sweet']);
         store1.addNewProduct(avi,product1.getName(),['Computer'],500,100);
-        service.addProductTocart(avi.getUserId(), store1.getStoreId() , product1.getProductId() , 10);
-        service.getCartInfo(avi.getUserId())
+        service.addProductTocart(sessionId, store1.getStoreId() , product1.getProductId() , 10);
+        service.getCartInfo(sessionId)
         .then(cart =>{
-            service.editCart(avi.getUserId(), store1.getStoreId(), product1.getProductId(), 0 );
-            service.getCartInfo(avi.getUserId()).
+            service.editCart(sessionId, store1.getStoreId(), product1.getProductId(), 0 );
+            service.getCartInfo(sessionId).
             then(cart => {
                 let tester: any = JSON.parse(cart);
                 expect(tester['baskets'][0]['products'].length).to.equal(0);
