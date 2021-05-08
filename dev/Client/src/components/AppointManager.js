@@ -50,6 +50,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
 
     const appoint = async (newManagerUsername) =>
     {
+        console.log(newManagerUsername)
         axios.post(`${SERVER_BASE_URL}appointStoreManager`, {userId, storeId, newManagerUsername})
         .then(res => {
           if(res.status == 200){
@@ -100,7 +101,6 @@ export const AppointManager = ({getAppState, setAppState}) => {
                       <TextField
                           label='Manager username'
                           placeholder='Enter new manager username'
-                          value={_ManagerUsername}
                           onChange={(event) => setManagerUsername(event.target.value)}
                       fullWidth/>
                     </Grid>
@@ -109,7 +109,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(userId, storeId, _ManagerUsername)
+                        appoint(_ManagerUsername)
                     }}
                   fullWidth>add manager
                 </Button>
