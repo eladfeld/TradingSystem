@@ -3,6 +3,7 @@ import {ListItemText, ListItem, Grid, Button,  TextField } from '@material-ui/co
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
+import { isNonNegativeInteger } from './componentUtil';
 
 
 
@@ -11,11 +12,16 @@ const CartItem = ({getAppState, setAppState, basket, product}) =>{
     const [quantity, setQuantity] = useState(product.quantity);
 
     const onUpdateQuantityClick = async () =>{
+        if(!isNonNegativeInteger(quantity)){
+            setQuantity(product.quantity);
+            alert('quantity must be a non-negative number');
+            return;
+        }
         const response = await axios.post(SERVER_BASE_URL+'editCart',{
             userId,
             storeId: basket.storeId,
             productId: product.productId,
-            quantity
+            quantity: Number(quantity)
         });
         switch(response.status){
             case SERVER_RESPONSE_OK:

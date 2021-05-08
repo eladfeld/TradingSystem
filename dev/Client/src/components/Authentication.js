@@ -39,7 +39,6 @@ const Authentication=({getAppState, setAppState})=>{
     const btnstyle={margin:'8px 0'}
     return(
         <div>
-            <h1>{userId}</h1>
         <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>

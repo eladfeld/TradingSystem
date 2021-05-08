@@ -343,7 +343,7 @@ export class Store
     }
 
     public getProductsInfo(): StoreProductInfo[]{
-        return this.inventory.getProductInfoByFilter((_) => false);
+        return this.inventory.getProductInfoByFilter((_) => true);
     }
 
     public searchByCategory(category: string): StoreProductInfo[]{
