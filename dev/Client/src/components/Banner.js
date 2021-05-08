@@ -165,6 +165,7 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
   const handleTransactionsClick = async () => {
+    console.log(`[T] transaction click userId: ${userId}`);
     const response = await axios.post(BASE_URL+'getSubscriberPurchaseHistory',{userId, subscriberToSeeId:userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:

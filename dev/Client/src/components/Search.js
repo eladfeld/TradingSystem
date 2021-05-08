@@ -120,7 +120,7 @@ export const Search=({getAppState, setAppState, intersect})=>{
             <IconContext.Provider value={{ color: '#fff' }}>
             <div>
                 <Link to='#' className='menu-bars'>
-                    <SearchIcon onClick={showSidebar} />
+                    <SearchIcon onClick={showSidebar} color='secondary'/>
                 </Link>
             </div>
                 <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
