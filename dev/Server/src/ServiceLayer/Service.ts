@@ -111,7 +111,7 @@ export class Service
         return this.facade.editCart(sessionId, storeId, productId, newQuantity);
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Result<boolean>
     {
         return this.facade.checkoutBasket(sessionId, shopId, supply_address);
     }
@@ -145,6 +145,11 @@ export class Service
     public getSubscriberPurchaseHistory(sessionId: string, subscriberToSeeId: number): Promise<any>
     {
         return this.facade.getSubscriberPurchaseHistory(sessionId, subscriberToSeeId);
+    }
+
+    public getMyPurchaseHistory(sessionId: string): Promise<any>
+    {
+        return this.facade.getMyPurchaseHistory(sessionId);
     }
 
     //this function is used by subscribers that wants to see stores's history
