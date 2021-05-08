@@ -9,7 +9,7 @@ import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 
-describe('2.9: buy products', function () {
+describe('7.1: Api Fail', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {

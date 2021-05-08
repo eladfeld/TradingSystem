@@ -34,41 +34,55 @@ const getInventory = async (userId, storeId) =>
     console.log(storeInfo.inventory);
     return storeInfo.inventory;
 }
-const renderPage = async (page, getAppState, setAppState, storeId) =>{
-    const {userId} = getAppState();
-    switch(page){
-        case "inventory":
-            const inventory = getInventory(getAppState().userId, Number(storeId));
-            return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
-        case "staff":
-            const staffResponse = await axios.post(SERVER_BASE_URL+'/editStaffPermission', {userId, storeId});
-            switch(staffResponse.status){
-                case SERVER_RESPONSE_OK:
-                    console.log('[T] staff response data', staffResponse.data);
-                    const staff = JSON.parse(staffResponse.data);
-                    return <Employees getAppState={getAppState} setAppState={setAppState} staff={staff}/>;
-                case SERVER_RESPONSE_BAD:
-                    alert(staffResponse.data);
-                    return <ProgressWheel/> ;
-                default:
-                    alert(unknownStatusMessage(staffResponse));
-                    return <ProgressWheel/>;
-            }
-        default:
-            return <h1>default ------------------------------------------------------------------------------------------------</h1>
-    }
-}
+
 
 export default function TypographyMenu({getAppState, setAppState}) {
-  const classes = useStyles();
-  let storeId = getAppState().storeId
+    const classes = useStyles();
+    let storeId = getAppState().storeId
     const [page, setPage] = useState("");
+    const [staff, setStaff] = useState(undefined);
 
     const onInventoryClick =() =>{setPage("inventory");}
+    const onStaffClick = () => {
+        setPage("staff");
+        if(staff !== undefined)setStaff(undefined);
+    }
 
-    const onStaffClick = () => {setPage("staff");}
 
-  alert(`storeId: ${Number(storeId)}`)
+    const renderPage = () =>{
+        const {userId} = getAppState();
+        switch(page){
+            case "inventory":
+                return <h1>Inventory</h1>
+                const inventory = getInventory(getAppState().userId, Number(storeId));
+                //return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
+            case "staff":
+                //return <h1>Staff</h1>;
+                if(staff === undefined){
+                    const foo = async () =>{
+                        const staffResponse = await axios.post(SERVER_BASE_URL+'/getStoreStaff', {userId, storeId});
+                        console.log('[T] staff response data', staffResponse.data);
+                        switch(staffResponse.status){
+                            case SERVER_RESPONSE_OK:
+                                const staff = JSON.parse(staffResponse.data);
+                                setStaff(staff);
+                            case SERVER_RESPONSE_BAD:
+                                alert(staffResponse.data);
+                                break;
+                            default:
+                                alert(unknownStatusMessage(staffResponse));
+                                break;
+                        }
+                    }
+                    foo();
+                    setStaff(null)
+                }
+                return <Employees getAppState={getAppState} setAppState={setAppState} staff={staff}/>
+            default:
+                return <h1>default</h1>
+        }
+    }
+
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>
@@ -104,11 +118,9 @@ export default function TypographyMenu({getAppState, setAppState}) {
             </MenuItem>
         </MenuList>
         </Paper>
-        
-        {renderPage(page, getAppState, setAppState, storeId) }
-            
+        {renderPage(page, getAppState, setAppState, storeId)}
 
-        
+        {/* {renderPage(page, getAppState, setAppState, storeId) }         */}
     </div>
   );
 }

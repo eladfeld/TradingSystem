@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import history from '../history';
 import Banner from './Banner';
 import { Grid } from '@material-ui/core';
+import ProgressWheel from './ProgreeWheel';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -38,10 +39,11 @@ const useStyles = makeStyles({
 export default function Employees({getAppState, setAppState, staff}) {
   const classes = useStyles();
   //const {myTransactions} = getAppState();
-
+    if(staff === null || staff === undefined){
+        return <ProgressWheel/>;
+    }
   return (    
     <div>
-      <Banner getAppState={getAppState} setAppState={setAppState}/>
       <Grid container>
         <Grid item xs={0} md={3}/>
         <Grid item xs={12} md={6}>
@@ -56,7 +58,7 @@ export default function Employees({getAppState, setAppState, staff}) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {staff.map((t) => (
+                {[0,1,2,3].map((t) => (
                   <StyledTableRow key={t.transactionId}>
                     <StyledTableCell component="th" scope="row">
                       {0}
