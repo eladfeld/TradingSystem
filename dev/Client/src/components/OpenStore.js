@@ -52,7 +52,7 @@ export const OpenStore = ({getAppState, setAppState}) => {
 
     const open = async (userId, storeName, bankAccountNumber, storeAddress) =>
     {
-        axios.post('http://192.168.56.1:3333/command/openStore', {userId, storeName, bankAccountNumber, storeAddress})
+        axios.post(`${SERVER_BASE_URL}openStore`, {userId, storeName, bankAccountNumber, storeAddress})
         .then(res => {
           if(res.status == 200){
             setIsSucsess(true);

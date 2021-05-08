@@ -6,6 +6,9 @@ import Config from './config/config';
 import {Logger} from '../Logger'
 import { config } from 'dotenv/types';
 import  Route from './Router'
+import fs  from 'fs';
+import path from 'path';
+
 
 const router = express();
 
@@ -48,12 +51,12 @@ router.use((req, res, next) => {
 // create the server
 const httpServer = http.createServer(router);
 
-httpServer.listen(Config.server.port, () => console.log(`Server is running on ${Config.server.hostname}:${Config.server.port}`));
+// httpServer.listen(Config.server.port, () => console.log(`Server is running on ${Config.server.hostname}:${Config.server.port}`));
 
-// const httpsServer = https.createServer({
-//     key: '',
-//     cert
-// },
-// router);
+const httpsServer = https.createServer({
+    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+},
+router);
 
-// httpServer.listen(Config.server.port, () => console.log(`https Server is running on ${Config.server.hostname}:${Config.server.port}`))
+httpsServer.listen(Config.server.port, () => console.log(`https Server is running on ${Config.server.hostname}:${Config.server.port}`))
