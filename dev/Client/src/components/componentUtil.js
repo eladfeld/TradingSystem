@@ -5,7 +5,8 @@ export const initialAppState = {
     cart: undefined,
     myTransactions: undefined,
     stores: [],
-    storeInventory: undefined
+    storeInventory: undefined,
+    staffToView: undefined
 };
 
 export const unknownStatusMessage = (res) =>{

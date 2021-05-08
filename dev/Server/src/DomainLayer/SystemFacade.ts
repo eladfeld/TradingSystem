@@ -411,6 +411,7 @@ export class SystemFacade
     public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
     {
         Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
+        supply_address = " down da block";
         if(supply_address === ''|| supply_address === undefined || supply_address === null){
             return new Promise((resolve,reject) => { reject("invalid user Address")})
         }
@@ -443,6 +444,7 @@ export class SystemFacade
 
     public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
     {
+        console.log(`user address on complete: ${userAddress}`)
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
         if(userAddress === ''|| userAddress === undefined || userAddress === null){
             return new Promise((resolve,reject) => { reject("invalid user Address")})
