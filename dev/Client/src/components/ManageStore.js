@@ -26,12 +26,15 @@ const useStyles = makeStyles({
 
 const getInventory = async (userId, storeId) =>
 {
-    return await axios.post(`${SERVER_BASE_URL}getStoreInventory`, {userId, storeId})
+    console.log(storeId);
+    const storeInfo = await axios.post(`${SERVER_BASE_URL}getStoreInfo`, {userId, storeId});
+    console.log(storeInfo.inventory);
+    return storeInfo.inventory;
 }
 const renderPage = (page, getAppState, setAppState, storeId) =>{
     switch(page){
         case "inventory":
-            const inventory = getInventory(getAppState().userId, storeId);
+            const inventory = getInventory(getAppState().userId, Number(storeId));
             return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
         case "shit":
             return <h1>shit------------------------------------------------------------------------------------------------ </h1>
@@ -42,14 +45,14 @@ const renderPage = (page, getAppState, setAppState, storeId) =>{
 
 export default function TypographyMenu({getAppState, setAppState}) {
   const classes = useStyles();
-  let { storeId} = useParams(); 
+  let storeId = getAppState().storeId
     const [page, setPage] = useState("");
 
     const onInventoryClick =() =>{
         setPage("inventory");
     }
 
-  alert(`storeId: ${storeId}`)
+  alert(`storeId: ${Number(storeId)}`)
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>
