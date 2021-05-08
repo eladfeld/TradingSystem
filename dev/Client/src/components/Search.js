@@ -10,6 +10,9 @@ import './Navbar.css';
 import { IconContext } from 'react-icons';
 import * as AiIcons from 'react-icons/ai';
 import SearchIcon from '@material-ui/icons/Search';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+//TODO: keep search and filter with new - add checkbox to clear search
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -108,15 +111,15 @@ const useStyles = makeStyles((theme) => ({
     }
   ];
 
-export const Search=({getAppState, setAppState})=>{
+export const Search=({getAppState, setAppState, intersect})=>{
     const [sidebar, setSidebar] = useState(false);
-
     const showSidebar = () => setSidebar(!sidebar);
+    const classes = useStyles();
+
     return(
         <div>
-            <Banner getAppState={getAppState} setAppState={setAppState}/>
             <IconContext.Provider value={{ color: '#fff' }}>
-            <div className='navbar'>
+            <div>
                 <Link to='#' className='menu-bars'>
                     <SearchIcon onClick={showSidebar} />
                 </Link>
@@ -145,49 +148,35 @@ export const Search=({getAppState, setAppState})=>{
     )
 }
 
-export const SearchByName=({getAppState, setAppState})=>{
-    const [products, setProducts] = useState([])
-    const [productsByName, setProductsByName] = useState([])
 
-    const {userId} = getAppState();
+export const Products=({getAppState, setAppState})=>{
     const classes = useStyles();
-    const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
+    const {products} = getAppState();
+    const reset = () => setAppState({products:[]});
+    const paperStyle={padding :20,width:400, margin:"20px auto"}
 
-    const searchByName = async (productName) =>
-    {
-        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
-        setProductsByName(JSON.parse(res.data)['products'])
-        if(productsByName !== null || productsByName !== undefined ){
-            setProducts(productsByName)
-        }
-    }
     return(
         <div>
-        <Banner getAppState={getAppState} setAppState={setAppState}/>
-
-        <Grid>
-            <Grid align='center'>
-                <h2>Search by product name</h2>
-            </Grid>
-            <TextField
-                placeholder='Enter product name'
-                onChange={(event) => searchByName(event.target.value)}
-            fullWidth/>
+        <Grid item align='right'>
+            <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
+                    onClick={reset}>
+                clear
+            </Button>
         </Grid>
-        <List className={classes.root} subheader={<li />}>
+        <List className={classes.search} subheader={<li />} align='right' style={paperStyle}>
             {
             products === null || products === undefined ? <h1></h1> :
             products.map((product) => (
-                <li key={`${product.product_name}`} className={classes.listSection}>
+                <li key={`${product.productName}`} className={classes.listSection}>
                 <ul className={classes.ul}>
-                    <ListItem key={`item-${product.productId}`}>
-                        <Grid container>
-                            <Grid item xs={9} md={6}>
+                    <ListItem key={`item-${product.productName}`} align='center'>
+                        <Grid container maxWidth={10} align='right' style={paperStyle}>
+                            <Grid item xs={9} md={6} maxWidth={10} align='center'>
                                 <ListItemText primary={`name: ${product.productName}`} />
                                 <ListItemText primary={`price: ${product.price}`} />
                                 <ListItemText primary={`store: ${product.storeName}`} />
                             </Grid>
-                            <Grid item xs={3} md={2}>
+                            <Grid item xs={3} md={2} align='right'>
                                 <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
                                         onClick={() => {}}>
                                     add to cart
@@ -205,11 +194,44 @@ export const SearchByName=({getAppState, setAppState})=>{
     )
 }
 
-export const SearchByCategory=({getAppState, setAppState})=>{
-    const [products, setProducts] = useState([])
+export const SearchByName=({getAppState, setAppState, intersect})=>{
+    const [productsByName, setProductsByName] = useState([])
+
+    const userId = getAppState().userId;
+    const classes = useStyles();
+    const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
+
+    const searchByName = async (productName) =>
+    {
+        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
+        setProductsByName(JSON.parse(res.data)['products'])
+        if(productsByName !== null || productsByName !== undefined ){
+            intersect(getAppState().products, productsByName)
+        }
+    }
+    return(
+        <div>
+        <Banner getAppState={getAppState} setAppState={setAppState}/>
+        <Grid>
+            <Grid align='center'>
+                <h2>Search by product name</h2>
+            </Grid>
+            <TextField
+                placeholder='Enter product name'
+                onChange={(event) => searchByName(event.target.value)}
+            fullWidth/>
+        </Grid>
+        <Products getAppState={getAppState} setAppState={setAppState}/>
+
+    </div>
+    )
+}
+
+export const SearchByCategory=({getAppState, setAppState, intersect})=>{
+    // const [products, setProducts] = useState([])
     const [productsByCategory, setProductsByCategory] = useState([])
 
-    const {userId} = getAppState();
+    const userId = getAppState().userId;
     const classes = useStyles();
 
     const searchByCategory = async (category) =>
@@ -218,7 +240,7 @@ export const SearchByCategory=({getAppState, setAppState})=>{
         setProductsByCategory(JSON.parse(res.data)['products'])
         if(productsByCategory !== null || productsByCategory !== undefined ){
 
-            setProducts(productsByCategory)
+            intersect(getAppState().products, productsByCategory)
         }
     }
     return(
@@ -234,53 +256,27 @@ export const SearchByCategory=({getAppState, setAppState})=>{
                 onChange={(event) => searchByCategory(event.target.value)}
             fullWidth/>
         </Grid>
-        <List className={classes.root} subheader={<li />}>
-            {
-            products === null || products === undefined ? <h1></h1> :
-            products.map((product) => (
-                <li key={`${product.product_name}`} className={classes.listSection}>
-                <ul className={classes.ul}>
-                    <ListItem key={`item-${product.productId}`}>
-                        <Grid container>
-                            <Grid item xs={9} md={6}>
-                                <ListItemText primary={`name: ${product.productName}`} />
-                                <ListItemText primary={`price: ${product.price}`} />
-                                <ListItemText primary={`store: ${product.storeName}`} />
-                            </Grid>
-                            <Grid item xs={3} md={2}>
-                                <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
-                                        onClick={() => {}}>
-                                    add to cart
-                                </Button>
-                            </Grid>
-
-                        </Grid>
-                    </ListItem>
-                    )
-                </ul>
-                </li>
-            ))}
-            </List>
+        <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
     )
 }
 
-export const SearchByKeyword=({getAppState, setAppState})=>{
-    const [products, setProducts] = useState([])
+export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
+    const [productsByKeyword, setProductsByKeyword] = useState([])
     const [productsByName, setProductsByName] = useState([])
     const [productsByCategory, setProductsByCategory] = useState([])
     const [sidebar, setSidebar] = useState(false);
     const showSidebar = () => setSidebar(!sidebar);
 
-    const {userId} = getAppState();
     const classes = useStyles();
+    const userId = getAppState().userId;
 
     const searchByName = async (productName) =>
     {
         const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
         setProductsByName(JSON.parse(res.data)['products'])
         if(productsByName !== null || productsByName !== undefined ){
-            setProducts(productsByName)
+            setProductsByKeyword(productsByName)
         }
     }
 
@@ -290,26 +286,27 @@ export const SearchByKeyword=({getAppState, setAppState})=>{
         setProductsByCategory(JSON.parse(res.data)['products'])
         if(productsByCategory !== null || productsByCategory !== undefined ){
 
-            setProducts(productsByCategory)
+            setProductsByKeyword(productsByCategory)
         }
     }
 
     const enlist = async (strToSearch) => {
-        setProducts([])
+        setProductsByKeyword([])
         searchByName(strToSearch)
         console.log('by name')
 
         searchByCategory(strToSearch)
         console.log('by cat')
 
-        productsByName === null || productsByName === undefined ? setProducts(productsByCategory) :
-        productsByCategory === null || productsByCategory === undefined ? setProducts(productsByName) :
-        setProducts([...new Set([...productsByName,...productsByCategory])])
+        productsByName === null || productsByName === undefined ? setProductsByKeyword(productsByCategory) :
+        productsByCategory === null || productsByCategory === undefined ? setProductsByKeyword(productsByName) :
+        setProductsByKeyword([...new Set([...productsByName,...productsByCategory])])
+        intersect(getAppState().products, productsByKeyword)
+
     }
     return(
         <div>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
-
         <Grid>
             <Grid align='center'>
                 <h2>Search by keyword</h2>
@@ -319,42 +316,16 @@ export const SearchByKeyword=({getAppState, setAppState})=>{
                 onChange={(event) => enlist(event.target.value)}
             fullWidth/>
         </Grid>
-        <List className={classes.root} subheader={<li />}>
-            {
-            products === null || products === undefined ? <h1></h1> :
-            products.map((product) => (
-                <li key={`${product.product_name}`} className={classes.listSection}>
-                <ul className={classes.ul}>
-                    <ListItem key={`item-${product.productId}`}>
-                        <Grid container>
-                            <Grid item xs={9} md={6}>
-                                <ListItemText primary={`name: ${product.productName}`} />
-                                <ListItemText primary={`price: ${product.price}`} />
-                                <ListItemText primary={`store: ${product.storeName}`} />
-                            </Grid>
-                            <Grid item xs={3} md={2}>
-                                <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
-                                        onClick={() => {}}>
-                                    add to cart
-                                </Button>
-                            </Grid>
-
-                        </Grid>
-                    </ListItem>
-                    )
-                </ul>
-                </li>
-            ))}
-            </List>
+        <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
     )
 }
 
-export const SearchBelowPrice=({getAppState, setAppState})=>{
-    const [products, setProducts] = useState([])
+export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
+    // const [products, setProducts] = useState([])
     const [productsBelowPrice, setProductsBelowPrice] = useState([])
+    const userId = getAppState().userId;
 
-    const {userId} = getAppState();
     const classes = useStyles();
 
     const SearchBelowPrice = async (price) =>
@@ -366,14 +337,13 @@ export const SearchBelowPrice=({getAppState, setAppState})=>{
             const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price })
             setProductsBelowPrice(JSON.parse(res.data)['products'])
             if(productsBelowPrice !== null || productsBelowPrice !== undefined ){
-                setProducts(productsBelowPrice)
+                intersect(getAppState().products,  productsBelowPrice)
             }
         }
     }
     return(
         <div>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
-
         <Grid>
             <Grid align='center'>
                 <h2>Search Below price</h2>
@@ -383,42 +353,16 @@ export const SearchBelowPrice=({getAppState, setAppState})=>{
                 onChange={(event) => SearchBelowPrice(event.target.value)}
             fullWidth/>
         </Grid>
-        <List className={classes.root} subheader={<li />}>
-            {
-            products === null || products === undefined ? <h1></h1> :
-            products.map((product) => (
-                <li key={`${product.product_name}`} className={classes.listSection}>
-                <ul className={classes.ul}>
-                    <ListItem key={`item-${product.productId}`}>
-                        <Grid container>
-                            <Grid item xs={9} md={6}>
-                                <ListItemText primary={`name: ${product.productName}`} />
-                                <ListItemText primary={`price: ${product.price}`} />
-                                <ListItemText primary={`store: ${product.storeName}`} />
-                            </Grid>
-                            <Grid item xs={3} md={2}>
-                                <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
-                                        onClick={() => {}}>
-                                    add to cart
-                                </Button>
-                            </Grid>
-
-                        </Grid>
-                    </ListItem>
-                    )
-                </ul>
-                </li>
-            ))}
-            </List>
+        <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
     )
 }
 
-export const SearchAbovePrice=({getAppState, setAppState})=>{
-    const [products, setProducts] = useState([])
+export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
+    // const [products, setProducts] = useState([])
     const [productsAbovePrice, setProductsAbovePrice] = useState([])
+    const userId = getAppState().userId;
 
-    const {userId} = getAppState();
     const classes = useStyles();
 
     const SearchAbovePrice = async (price) =>
@@ -430,14 +374,13 @@ export const SearchAbovePrice=({getAppState, setAppState})=>{
             const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} )
             setProductsAbovePrice(JSON.parse(res.data)['products'])
             if(productsAbovePrice !== null || productsAbovePrice !== undefined ){
-                setProducts(productsAbovePrice)
+                intersect(getAppState().products, productsAbovePrice)
             }
         }
     }
     return(
         <div>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
-
         <Grid>
             <Grid align='center'>
                 <h2>Search above price</h2>
@@ -447,43 +390,17 @@ export const SearchAbovePrice=({getAppState, setAppState})=>{
                 onChange={(event) => SearchAbovePrice(event.target.value)}
             fullWidth/>
         </Grid>
-        <List className={classes.root} subheader={<li />}>
-            {
-            products === null || products === undefined ? <h1></h1> :
-            products.map((product) => (
-                <li key={`${product.product_name}`} className={classes.listSection}>
-                <ul className={classes.ul}>
-                    <ListItem key={`item-${product.productId}`}>
-                        <Grid container>
-                            <Grid item xs={9} md={6}>
-                                <ListItemText primary={`name: ${product.productName}`} />
-                                <ListItemText primary={`price: ${product.price}`} />
-                                <ListItemText primary={`store: ${product.storeName}`} />
-                            </Grid>
-                            <Grid item xs={3} md={2}>
-                                <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
-                                        onClick={() => {}}>
-                                    add to cart
-                                </Button>
-                            </Grid>
-
-                        </Grid>
-                    </ListItem>
-                    )
-                </ul>
-                </li>
-            ))}
-            </List>
+        <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
     )
 }
 
 
-export const SearchAboveRating=({getAppState, setAppState})=>{
-    const [products, setProducts] = useState([])
+export const SearchAboveRating=({getAppState, setAppState, intersect})=>{
+    // const [products, setProducts] = useState([])
     const [productsAboveRating, setProductsAboveRating] = useState([])
+    const userId = getAppState().userId;
 
-    const {userId} = getAppState();
     const classes = useStyles();
     const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
 
@@ -496,14 +413,13 @@ export const SearchAboveRating=({getAppState, setAppState})=>{
             const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoAboveRating`, {userId, rating} )
             setProductsAboveRating(JSON.parse(res.data)['products'])
             if(productsAboveRating !== null || productsAboveRating !== undefined ){
-                setProducts(productsAboveRating)
+                intersect(getAppState().products, productsAboveRating)
             }
         }
     }
     return(
         <div>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
-
         <Grid>
             <Grid align='center'>
                 <h2>Search above rating</h2>
@@ -513,33 +429,12 @@ export const SearchAboveRating=({getAppState, setAppState})=>{
                 onChange={(event) => SearchAboveRating(event.target.value)}
             fullWidth/>
         </Grid>
-        <List className={classes.root} subheader={<li />}>
-            {
-            products === null || products === undefined ? <h1></h1> :
-            products.map((product) => (
-                <li key={`${product.product_name}`} className={classes.listSection}>
-                <ul className={classes.ul}>
-                    <ListItem key={`item-${product.productId}`}>
-                        <Grid container>
-                            <Grid item xs={9} md={6}>
-                                <ListItemText primary={`name: ${product.productName}`} />
-                                <ListItemText primary={`price: ${product.price}`} />
-                                <ListItemText primary={`store: ${product.storeName}`} />
-                            </Grid>
-                            <Grid item xs={3} md={2}>
-                                <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
-                                        onClick={() => {}}>
-                                    add to cart
-                                </Button>
-                            </Grid>
-
-                        </Grid>
-                    </ListItem>
-                    )
-                </ul>
-                </li>
-            ))}
-            </List>
+        <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
     )
+}
+
+export default {
+    Search,
+    SidebarData
 }

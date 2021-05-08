@@ -25,7 +25,19 @@ class App extends React.Component
   }
   getAppState = () => this.state;
   setAppState = (state) => this.setState(state);
+  intersect = (products, newProducts) => {
+    if(products !== null && products !== undefined && products.length !== 0){
+      let intersection = new Set([...products].filter(x => !newProducts.includes(x)));
+      this.setAppState({products: Array.from(intersection)})
+      console.log(this.getAppState())
 
+    }
+    else{
+      this.setAppState({products:newProducts})
+      console.log(this.getAppState())
+
+    }
+}
   render(){
     //const [userId, setUserId] = useState(0);
     return(
@@ -82,43 +94,43 @@ class App extends React.Component
           <Route
             path='/search' exact
             render={(props) => (
-              <Search {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <Search {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
           <Route
             path='/search/name' exact
             render={(props) => (
-              <SearchByName {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <SearchByName {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
           <Route
             path='/search/category' exact
             render={(props) => (
-              <SearchByCategory {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <SearchByCategory {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
           <Route
             path='/search/keyword' exact
             render={(props) => (
-              <SearchByKeyword {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <SearchByKeyword {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
           <Route
             path='/search/aboveprice' exact
             render={(props) => (
-              <SearchAbovePrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <SearchAbovePrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
           <Route
             path='/search/belowprice' exact
             render={(props) => (
-              <SearchBelowPrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <SearchBelowPrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
           <Route
             path='/search/aboverating' exact
             render={(props) => (
-              <SearchAboveRating {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <SearchAboveRating {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
             )}
           />
         </div>
