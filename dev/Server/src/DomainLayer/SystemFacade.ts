@@ -120,12 +120,14 @@ export class SystemFacade
         Logger.log(`login : sessionId:${sessionId} , username:${username}`);
         if(this.logged_guest_users.get(sessionId) === undefined)
         {
+            Logger.log(`login => user didn't enter the system`);
             return new Promise( (resolve,reject) => {reject("user didn't enter the system")});
         }
         let res: Result<Subscriber> =  Login.login(username, password);
         if (isFailure(res))
         {
             let msg = res.message;
+            Logger.log(`login => ${msg}`);
             return new Promise( (resolve,reject) => {reject(msg)});;
         }
         let subscriber : Subscriber = res.value;
@@ -136,7 +138,10 @@ export class SystemFacade
         {
             this.logged_system_managers.set(sessionId,subscriber);
         }
-        return new Promise( (resolve,reject) => { resolve(subscriber)});
+        
+        return new Promise( (resolve,reject) => { 
+        Logger.log(`login => logged in`); 
+        resolve(subscriber)});
     }
 
     public getStoreInfo(sessionId : string ,storeId: number): Promise<string>
@@ -612,7 +617,17 @@ export class SystemFacade
         return createHash('sha1').update(id).digest('hex');
     }
 
-
+    public  getUserStores(sessionId:string) : Promise<{}>
+    {
+        console.log(this.logged_subscribers)
+        let subscriber = this.logged_subscribers.get(sessionId);
+        console.log(subscriber)
+        if(subscriber !== undefined)
+        {
+            return new Promise((resolve, reject) => resolve(subscriber.getStores()));
+        }
+        return new Promise((res, rej) => rej("subscriber not logged in"));
+    }
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users() 
     {

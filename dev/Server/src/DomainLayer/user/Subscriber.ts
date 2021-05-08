@@ -121,6 +121,12 @@ export class Subscriber extends User
         return messages;
     }
 
+    public getStores() : {}
+    {
+        return {"stores":[{"storeId": 1}, {"storeId":2}]
+        }
+    }
+
     
 
 

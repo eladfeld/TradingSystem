@@ -14,6 +14,7 @@ import { SERVER_BASE_URL } from '../constants';
 import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
 import Register from './Register';
+import ManageStores from './ManageStores'
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -37,6 +38,13 @@ class App extends React.Component
             path='/' exact
             render={(props) => (
               <Enter {...props} setAppState={this.setAppState} />
+            )}
+          />
+
+          <Route
+            path='/manageStores' exact
+            render={(props) => (
+              <ManageStores {...props} setAppState={this.setAppState} />
             )}
           />
           <Route

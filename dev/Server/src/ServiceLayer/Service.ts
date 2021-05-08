@@ -166,6 +166,10 @@ export class Service
         return this.facade.getUsername(sessionId);
     }
 
+    public getUserStores(sessionId : string){
+        return this.facade.getUserStores(sessionId);
+    }
+
     public addDiscountPolicy(buyingPolicy: any)
     {
         throw new Error('Method not implemented.');
@@ -183,7 +187,7 @@ export class Service
         throw new Error('Method not implemented.');
     }
 
-
+   
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users() 
     {

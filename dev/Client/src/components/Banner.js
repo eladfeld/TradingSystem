@@ -122,12 +122,29 @@ export default function Banner({getAppState, setAppState}) {
   const handleManageSystemClick = () => {
     handleMenuClose();
   };
-  const handleManageStoresClick = () => {
-    handleMenuClose();
-  };
+
 
   const {userId, isGuest, isSystemManager} = getAppState();
 
+
+  const handleManageStoresClick = async () => {
+    const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
+    switch(response.status){
+        case SERVER_RESPONSE_OK:
+            const stores = JSON.parse(response.data);
+            setAppState({stores});
+            history.push('/manageStores');
+            return;
+        case SERVER_RESPONSE_BAD:
+            alert(response.data);
+            return;
+        default:
+            alert(`unexpected response code: ${response.status}`);
+            return;
+    }
+  };
+
+  
   const handleCartClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
     switch(response.status){
@@ -194,6 +211,7 @@ export default function Banner({getAppState, setAppState}) {
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
           {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
+          <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem>
           <MenuItem onClick={handleCartClick}>Cart</MenuItem>
           <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
           <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
@@ -217,7 +235,7 @@ export default function Banner({getAppState, setAppState}) {
     >
       <MenuItem>
         <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
+          <Badge badgeContent={0} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
@@ -225,7 +243,7 @@ export default function Banner({getAppState, setAppState}) {
       </MenuItem>
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
+          <Badge badgeContent={0} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>

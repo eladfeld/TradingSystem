@@ -331,6 +331,16 @@ const getWordList = (req: Request, res: Response, next: NextFunction) =>
     )
 }
 
+const getUserStores = (req: Request , res:Response , next : NextFunction) =>
+{
+    let sessionId :string = req.body.sessionId;
+    let promise = service.getUserStores(sessionId);
+    promise
+    .then( stores => res.status(OKSTATUS).json(stores))
+    .catch(message => res.status(FAILSTATUS).json(message))
+}
+
+
 const addDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
     let discountPolicy: any = req.body;
@@ -359,6 +369,7 @@ const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =
 
     service.removeDiscountPolicy(discountNumber);
 }
+
 
 
 
@@ -395,5 +406,6 @@ export default {
     addBuyingPolicy,
     removeBuyingPolicy,
     removeDiscountPolicy,
-    getUsername
+    getUsername,
+    getUserStores
     };

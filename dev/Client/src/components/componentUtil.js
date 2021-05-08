@@ -3,7 +3,8 @@ export const initialAppState = {
     userName: 'Guest',
     basketAtCheckout: undefined,
     cart: undefined,
-    myTransactions: undefined
+    myTransactions: undefined,
+    stores: []
 };
 
 export const unknownStatusMessage = (res) =>{

@@ -33,6 +33,7 @@ router.post('/addBuyingPolicy', Controller.addBuyingPolicy)
 router.post('/removeBuyingPolicy', Controller.removeBuyingPolicy)
 router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 router.post('/getUsername', Controller.getUsername)
+router.post('/getUserStores', Controller.getUserStores)
 
 
 
