@@ -72,13 +72,16 @@ describe('7.1: Api Fail', function () {
         catch{
 
         }
-
-        console.log(avi.GetShoppingCart())
-        let cart_info = await service.getCartInfo(sessionId)
-        let cart = JSON.parse( String(cart_info));
-        expect(cart['baskets'][0]['products'].length).to.equal(2);
-        expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
-        expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
+        
+        setTimeout(async () => {
+            console.log(avi.GetShoppingCart())
+            let cart_info = await service.getCartInfo(sessionId)
+            let cart = JSON.parse( String(cart_info));
+            expect(cart['baskets'][0]['products'].length).to.equal(2);
+            expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
+            expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
+        }, 10);
+        
         
 
     })
