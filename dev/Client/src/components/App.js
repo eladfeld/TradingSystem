@@ -13,6 +13,7 @@ import Checkout from './Checkout';
 import { SERVER_BASE_URL } from '../constants';
 import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
+import Register from './Register';
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -24,8 +25,11 @@ class App extends React.Component
   getAppState = () => this.state;
   setAppState = (state) => this.setState(state);
 
+
   render(){
     //const [userId, setUserId] = useState(0);
+    if(this.state.userId === 0)
+      history.push('/');
     return(
       <Router history={history}>
         <div>
@@ -39,6 +43,12 @@ class App extends React.Component
             path='/auth' exact
             render={(props) => (
               <Authentication {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/register' exact
+            render={(props) => (
+              <Register {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
           <Route

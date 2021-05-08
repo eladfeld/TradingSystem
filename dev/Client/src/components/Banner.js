@@ -14,6 +14,8 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+
 import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
@@ -124,9 +126,9 @@ export default function Banner({getAppState, setAppState}) {
     handleMenuClose();
   };
 
+  const {userId, isGuest, isSystemManager} = getAppState();
 
   const handleCartClick = async () => {
-    const {userId} = getAppState();
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
     switch(response.status){
         case SERVER_RESPONSE_OK:
@@ -143,7 +145,6 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
   const handleTransactionsClick = async () => {
-    const {userId} = getAppState();
     const response = await axios.post(BASE_URL+'getSubscriberPurchaseHistory',{userId, subscriberToSeeId:userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:
@@ -169,11 +170,14 @@ export default function Banner({getAppState, setAppState}) {
 
   const handleLogoutClick  = async () => {
     //handleMenuClose();
-    const {userId} = getAppState();
     await axios.post(BASE_URL+'logout',{userId});
     history.push('/');
     setAppState(initialAppState);
   };
+
+  const handleSignInClick = () => {
+    history.push('/auth');
+  }
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -185,13 +189,18 @@ export default function Banner({getAppState, setAppState}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Manage System</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem>
-      <MenuItem onClick={handleCartClick}>Cart</MenuItem>
-      <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
-      <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
-      <MenuItem onClick={handleOpenStoreClick}>Open Store</MenuItem>
-      <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+      {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage System</MenuItem> : <div></div>}
+      { isGuest ? 
+          <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
+        <div>
+          {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
+          <MenuItem onClick={handleCartClick}>Cart</MenuItem>
+          <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
+          <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
+          <MenuItem onClick={handleOpenStoreClick}>Open Store</MenuItem>
+          <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+        </div>
+      }
     </Menu>
   );
 
@@ -266,6 +275,11 @@ export default function Banner({getAppState, setAppState}) {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
+            <IconButton aria-label="view shopping cart" color="inherit" onClick={handleCartClick}>
+              <Badge badgeContent={0} color="secondary">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
             <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={0} color="secondary">
                 <MailIcon />

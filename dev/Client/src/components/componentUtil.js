@@ -5,3 +5,7 @@ export const initialAppState = {
     cart: undefined,
     myTransactions: undefined
 };
+
+export const unknownStatusMessage = (res) =>{
+    return `unknown response code ${res.status}`;
+}
