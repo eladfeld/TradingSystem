@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
@@ -9,7 +9,14 @@ import DraftsIcon from '@material-ui/icons/Drafts';
 import SendIcon from '@material-ui/icons/Send';
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 import { useParams } from "react-router-dom"; 
+import Banner from './Banner';
+import Inventory from './Inventory'
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import PeopleIcon from '@material-ui/icons/People';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import { SERVER_BASE_URL } from '../constants';
 
+import axios from 'axios';
 
 const useStyles = makeStyles({
   root: {
@@ -17,34 +24,75 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TypographyMenu() {
+const getInventory = async (userId, storeId) =>
+{
+    console.log(storeId);
+    const storeInfo = await axios.post(`${SERVER_BASE_URL}getStoreInfo`, {userId, storeId});
+    console.log(storeInfo.inventory);
+    return storeInfo.inventory;
+}
+const renderPage = (page, getAppState, setAppState, storeId) =>{
+    switch(page){
+        case "inventory":
+            const inventory = getInventory(getAppState().userId, Number(storeId));
+            return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
+        case "shit":
+            return <h1>shit------------------------------------------------------------------------------------------------ </h1>
+        default:
+            return <h1>default ------------------------------------------------------------------------------------------------</h1>
+    }
+}
+
+export default function TypographyMenu({getAppState, setAppState}) {
   const classes = useStyles();
-  let { storeId} = useParams(); 
-  alert(`storeId: ${storeId}`)
+  let storeId = getAppState().storeId
+    const [page, setPage] = useState("");
+
+    const onInventoryClick =() =>{
+        setPage("inventory");
+    }
+
+  alert(`storeId: ${Number(storeId)}`)
   return (
-    <Paper className={classes.root}>
-      <MenuList>
-        <MenuItem>
-          <ListItemIcon>
-            <SendIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit">A short message</Typography>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <PriorityHighIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit">A very long text that overflows</Typography>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <DraftsIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            A very long text that overflows
-          </Typography>
-        </MenuItem>
-      </MenuList>
-    </Paper>
+    <div>
+      <Banner getAppState={getAppState} setAppState={setAppState}/>
+        <Paper className={classes.root}>
+        <MenuList>
+            <MenuItem onClick={onInventoryClick} >
+                <ListItemIcon>
+                    <AssignmentIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit">Inventory</Typography>
+            </MenuItem>
+            <MenuItem>
+            <ListItemIcon>
+                <PeopleIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit">View employees</Typography>
+            </MenuItem>
+            <MenuItem>
+            <ListItemIcon>
+                <PersonAddIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+                Appoint new owner
+            </Typography>
+            </MenuItem>
+            <MenuItem>
+            <ListItemIcon>
+                <PersonAddIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+                Appoint new manager
+            </Typography>
+            </MenuItem>
+        </MenuList>
+        </Paper>
+        
+        {renderPage(page, getAppState, setAppState, storeId) }
+            
+
+        
+    </div>
   );
 }

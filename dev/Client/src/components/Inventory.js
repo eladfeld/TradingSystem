@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import history from '../history';
 import Banner from './Banner';
 import { Grid } from '@material-ui/core';
-
+import ProgressWheel from './ProgreeWheel';
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -35,15 +35,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MyTransactions({getAppState, setAppState}) {
-  const classes = useStyles();
-  const {myTransactions} = getAppState();
+const editProduct = (product) =>
+{
+  alert(`edit product ${product.productId}`)
+}
 
-  const onTransactionClick = (t) =>{
-    //stopPropagation(e);
-    setAppState({myTansactionToView: t});
-    history.push('/viewmytransaction');
-  }
+export default function Inventory({getAppState, setAppState, inventory}) {
+  const classes = useStyles();
 
   return (
     
@@ -56,21 +54,19 @@ export default function MyTransactions({getAppState, setAppState}) {
             <Table className={classes.table} aria-label="customized table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Store</StyledTableCell>
-                  <StyledTableCell align="right">Date</StyledTableCell>
-                  <StyledTableCell align="right">Rating</StyledTableCell>
-                  <StyledTableCell align="right">Total</StyledTableCell>
+                  <StyledTableCell>product id</StyledTableCell>
+                  <StyledTableCell align="right">product name</StyledTableCell>
+                  <StyledTableCell align="right">quantity</StyledTableCell>
+                  <StyledTableCell align="right">price per product</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {myTransactions.map((t) => (
-                  <StyledTableRow key={t.transactionId} onClick={(e) => onTransactionClick(t)}>
-                    <StyledTableCell component="th" scope="row">
-                      {t.storeId}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{new Date(t.time).toUTCString()}</StyledTableCell>
-                    <StyledTableCell align="right">{0}</StyledTableCell>
-                    <StyledTableCell align="right">{t.total}</StyledTableCell>
+                {inventory === undefined ? <ProgressWheel/>:inventory.map((item) => (
+                  <StyledTableRow key={item.productId} onClick={(e) => editProduct(item)}>
+                    <StyledTableCell component="th" scope="row">{item.productId} </StyledTableCell>
+                    <StyledTableCell align="right">{item.productName}</StyledTableCell>
+                    <StyledTableCell align="right">{item.quantity}</StyledTableCell>
+                    <StyledTableCell align="right">{item.price}</StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
