@@ -62,12 +62,14 @@ export default function TypographyMenu({getAppState, setAppState}) {
                                 const staff = JSON.parse(staffResponse.data);
                                 setAppState({staffToView: staff.subscribers})
                                 setStaff([]);
+                                return;
                             case SERVER_RESPONSE_BAD:
                                 alert(staffResponse.data);
+                                return;
                                 break;
                             default:
                                 alert(unknownStatusMessage(staffResponse));
-                                break;
+                                return;
                         }
                     }
                     setStaff(null)
