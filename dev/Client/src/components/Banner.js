@@ -14,13 +14,14 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import {Search} from './Search'
 import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import { Link } from 'react-router-dom';
-import './Navbar.css';
 import * as AiIcons from 'react-icons/ai';
-import { Search } from './Search'
+import { initialAppState } from './componentUtil';
 
 const BASE_URL = SERVER_BASE_URL;
 
@@ -124,23 +125,35 @@ export default function Banner({getAppState, setAppState}) {
   const handleManageSystemClick = () => {
     handleMenuClose();
   };
-  const handleManageStoresClick = () => {
-    handleMenuClose();
+
+
+  const {userId, isGuest, isSystemManager} = getAppState();
+
+
+  const handleManageStoresClick = async () => {
+    const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
+    switch(response.status){
+        case SERVER_RESPONSE_OK:
+            const stores = JSON.parse(response.data);
+            setAppState({stores});
+            history.push('/manageStores');
+            return;
+        case SERVER_RESPONSE_BAD:
+            alert(response.data);
+            return;
+        default:
+            alert(`unexpected response code: ${response.status}`);
+            return;
+    }
   };
 
-  const fetchCart = async () =>{
-
-}
 
   const handleCartClick = async () => {
-    const {userId} = getAppState();
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
-    console.log("response: ", response);
     switch(response.status){
         case SERVER_RESPONSE_OK:
             const cart = JSON.parse(response.data);
             setAppState({cart});
-            console.log('state cart:', cart);
             history.push('/cart');
             return;
         case SERVER_RESPONSE_BAD:
@@ -152,13 +165,11 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
   const handleTransactionsClick = async () => {
-    const {userId} = getAppState();
     const response = await axios.post(BASE_URL+'getSubscriberPurchaseHistory',{userId, subscriberToSeeId:userId});
-    console.log('transaction:',response);
     switch(response.status){
       case SERVER_RESPONSE_OK:
         setAppState({myTransactions: JSON.parse(response.data)});
-        history.push('/transactions');
+        history.push('/mytransactions');
         return;
       case SERVER_RESPONSE_BAD:
         alert(response.data.message);
@@ -179,11 +190,14 @@ export default function Banner({getAppState, setAppState}) {
 
   const handleLogoutClick  = async () => {
     //handleMenuClose();
-    const {userId} = getAppState();
-    console.log(`banner userId: ${userId}`);
     await axios.post(BASE_URL+'logout',{userId});
     history.push('/');
+    setAppState(initialAppState);
   };
+
+  const handleSignInClick = () => {
+    history.push('/auth');
+  }
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -195,13 +209,19 @@ export default function Banner({getAppState, setAppState}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Manage System</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem>
-      <MenuItem onClick={handleCartClick}>Cart</MenuItem>
-      <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
-      <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
-      <MenuItem onClick={handleOpenStoreClick}>Open Store</MenuItem>
-      <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+      {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage System</MenuItem> : <div></div>}
+      { isGuest ?
+          <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
+        <div>
+          {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
+          <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem>
+          <MenuItem onClick={handleCartClick}>Cart</MenuItem>
+          <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
+          <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
+          <MenuItem onClick={handleOpenStoreClick}>Open Store</MenuItem>
+          <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+        </div>
+      }
     </Menu>
   );
 
@@ -218,7 +238,7 @@ export default function Banner({getAppState, setAppState}) {
     >
       <MenuItem>
         <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
+          <Badge badgeContent={0} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
@@ -226,7 +246,7 @@ export default function Banner({getAppState, setAppState}) {
       </MenuItem>
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
+          <Badge badgeContent={0} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -265,6 +285,11 @@ export default function Banner({getAppState, setAppState}) {
 
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
+            <IconButton aria-label="view shopping cart" color="inherit" onClick={handleCartClick}>
+              <Badge badgeContent={0} color="secondary">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
             <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={0} color="secondary">
                 <MailIcon />

@@ -11,7 +11,7 @@ router.post('/logout', Controller.logout)
 router.post('/getStoreInfo', Controller.getStoreInfo)
 router.post('/getPruductInfoByName', Controller.getPruductInfoByName)
 router.post('/getPruductInfoByCategory', Controller.getPruductInfoByCategory)
-router.post('/getPruductInfoAboveRating', Controller.getPruductInfoAboveRating)
+router.post('/getPruductInfoByStore', Controller.getPruductInfoByStore)
 router.post('/getPruductInfoBelowPrice', Controller.getPruductInfoBelowPrice)
 router.post('/getPruductInfoAbovePrice', Controller.getPruductInfoAbovePrice)
 router.post('/addProductTocart', Controller.addProductTocart)
@@ -36,6 +36,7 @@ router.post('/addBuyingPolicy', Controller.addBuyingPolicy)
 router.post('/removeBuyingPolicy', Controller.removeBuyingPolicy)
 router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 router.post('/getUsername', Controller.getUsername)
+router.post('/getUserStores', Controller.getUserStores)
 
 
 

@@ -12,7 +12,6 @@ import * as AiIcons from 'react-icons/ai';
 import SearchIcon from '@material-ui/icons/Search';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-//TODO: keep search and filter with new - add checkbox to clear search
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -396,24 +395,24 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
 }
 
 
-export const SearchAboveRating=({getAppState, setAppState, intersect})=>{
+export const SearchByStore=({getAppState, setAppState, intersect})=>{
     // const [products, setProducts] = useState([])
-    const [productsAboveRating, setProductsAboveRating] = useState([])
+    const [productsByStore, setProductsByStore] = useState([])
     const userId = getAppState().userId;
 
     const classes = useStyles();
     const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
 
-    const SearchAboveRating = async (rating) =>
+    const SearchByStore = async (rating) =>
     {
         if(Number. isInteger(rating)){
             alert("not a number")
         }
         else{
-            const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoAboveRating`, {userId, rating} )
-            setProductsAboveRating(JSON.parse(res.data)['products'])
-            if(productsAboveRating !== null || productsAboveRating !== undefined ){
-                intersect(getAppState().products, productsAboveRating)
+            const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, rating} )
+            setProductsByStore(JSON.parse(res.data)['products'])
+            if(productsByStore !== null || productsByStore !== undefined ){
+                intersect(getAppState().products, productsByStore)
             }
         }
     }
@@ -426,7 +425,7 @@ export const SearchAboveRating=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter Rating'
-                onChange={(event) => SearchAboveRating(event.target.value)}
+                onChange={(event) => SearchByStore(event.target.value)}
             fullWidth/>
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>

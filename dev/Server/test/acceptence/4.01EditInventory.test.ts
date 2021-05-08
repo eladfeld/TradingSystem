@@ -7,7 +7,7 @@ import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { add_product, enter_register_login, open_store } from './common';
+import { add_product, register_login, open_store } from './common';
 
 describe('4.1: edit store inventory', function () {
     var service: Service = Service.get_instance();
@@ -19,21 +19,23 @@ describe('4.1: edit store inventory', function () {
     });
 
     it('edit non existent product ',async function () {
-        let avi =await enter_register_login(service, "avi", "123456789")
-        let store = await open_store(service, avi, "Aluf Hasport", 123456, "Tel Aviv");
+        let sessionId = await service.enter();
+        let avi =await register_login(service,sessionId, "avi", "123456789")
+        let store = await open_store(service,sessionId, avi, "Aluf Hasport", 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
         let product1: Product = new Product("banana", ['Sweet']);
-        service.editStoreInventory(avi.getUserId(), store.getStoreId(), product1.getProductId(), 10)
+        service.editStoreInventory(sessionId, store.getStoreId(), product1.getProductId(), 10)
         .then(_ => assert.fail)
         .catch(_ => assert.ok)
     })
 
     it('edit existing product', async function () {
-        let avi = await enter_register_login(service, "avi", "123456789")
-        let store = await open_store(service, avi, "Aluf Hasport", 123456, "Tel Aviv");
+        let sessionId = await service.enter();
+        let avi = await register_login(service,sessionId, "avi", "123456789")
+        let store = await open_store(service,sessionId, avi, "Aluf Hasport", 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = await add_product(service, avi, store, "banana", ['Sweet'], 12, 100);
-        service.editStoreInventory(avi.getUserId(), store.getStoreId(), banana, 10)
+        let banana = await add_product(service,sessionId, avi, store, "banana", ['Sweet'], 12, 100);
+        service.editStoreInventory(sessionId, store.getStoreId(), banana, 10)
         .then(_ => assert.ok)
         .catch(_ => assert.fail)
     })

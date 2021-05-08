@@ -59,7 +59,22 @@ export class ShoppingBasket implements iSubject
 
     public checkout(userId:number, user: iSubject,  supply_address: string): Result<boolean>
     {
-        return this.store.sellShoppingBasket(userId, supply_address, this);
+        // this function restores the basket in case the purchase failed
+        let products = this.getProducts()
+        let onfail = () => {
+            products.forEach( (quantity , productId , _ ) =>
+                this.addProduct(productId,quantity)
+            )
+        }
+
+        let result =  this.store.sellShoppingBasket(userId, supply_address, this , onfail);
+        if (isOk(result))
+        {
+            this.products.forEach( (qauntity,productId,_) =>
+                this.products.delete(productId)
+            )
+        }
+        return result;
     }
 
     public edit(productId: number, newQuantity: number): Result<string>
@@ -68,10 +83,9 @@ export class ShoppingBasket implements iSubject
             return makeFailure("negative quantity");
         if (!this.store.isProductAvailable(productId,newQuantity))
             return makeFailure("quantity not available");
-
-        this.products.set(productId,newQuantity);
         if (newQuantity === 0)
             this.products.delete(productId);
+        else this.products.set(productId,newQuantity);
         return makeOk("added to cart");
     }
 
@@ -79,6 +93,7 @@ export class ShoppingBasket implements iSubject
     {
         var basket : any = {}
         basket['store'] = this.store.getStoreName();
+        basket['storeId'] = this.store.getStoreId();
         basket['products']=[]
         this.products.forEach(function(quantity,productId,map){
             let product: Product = ProductDB.getProductById(productId);
@@ -99,5 +114,10 @@ export class ShoppingBasket implements iSubject
     public setStore(store:Store) : void
     {
         this.store = store;
+    }
+
+    quantity = (productId : number) : number =>
+    {
+        return this.products.get(productId);
     }
 }

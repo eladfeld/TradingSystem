@@ -175,7 +175,7 @@ export class Store
         return this.inventory.setProductQuantity(productId, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<boolean> {
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket , onFail : ()=>void): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -196,7 +196,10 @@ export class Store
         }
         let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
 
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, this.cancelReservedShoppingBasket(reservedProducts));
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, () => {
+            onFail();
+            this.cancelReservedShoppingBasket(reservedProducts)}
+         );
         return makeOk(true);
     }
 
@@ -337,6 +340,10 @@ export class Store
 
     public searchByName(productName:string): StoreProductInfo[]{
         return this.inventory.getProductInfoByName(productName);
+    }
+
+    public getProductsInfo(): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((_) => false);
     }
 
     public searchByCategory(category: string): StoreProductInfo[]{
@@ -505,6 +512,10 @@ export class Store
 
         this.categiries.createChildNode(category);
         return makeOk('category was added')
+    }
+
+    public getProductQuantity(productId : number) : number{
+        return this.inventory.getProductQuantity(productId);
     }
 
 }

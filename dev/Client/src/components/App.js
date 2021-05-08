@@ -1,20 +1,21 @@
 import axios from 'axios';
-import { BrowserRouter, Route, Router } from 'react-router-dom';
+import {Route, Router } from 'react-router-dom';
 
 import Authentication from './Authentication'
 import Enter from './Enter'
-import { useState } from 'react';
 import history from '../history';
-import Welcome from './Welcome';
 import React from 'react';
 import Banner from './Banner';
-import Transactions  from './Transactions';
 import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
 import Checkout from './Checkout';
-import {SERVER_BASE_URL} from '../constants'
-import { Search, SearchByName, SearchAbovePrice, SearchAboveRating, SearchBelowPrice, SearchByCategory, SearchByKeyword} from './Search'
+import { Search, SearchByName, SearchAbovePrice, SearchByStore, SearchBelowPrice, SearchByCategory, SearchByKeyword} from './Search'
+import { SERVER_BASE_URL } from '../constants';
+import MyTransactions from './MyTransactions';
+import MyTransaction from './MyTransaction';
+import Register from './Register';
+import ManageStores from './ManageStores'
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
 class App extends React.Component
@@ -40,6 +41,8 @@ class App extends React.Component
 }
   render(){
     //const [userId, setUserId] = useState(0);
+    if(this.state.userId === 0)
+      history.push('/');
     return(
       <Router history={history}>
         <div>
@@ -49,10 +52,23 @@ class App extends React.Component
               <Enter {...props} setAppState={this.setAppState} />
             )}
           />
+
+          <Route
+            path='/manageStores' exact
+            render={(props) => (
+              <ManageStores {...props} setAppState={this.setAppState} />
+            )}
+          />
           <Route
             path='/auth' exact
             render={(props) => (
               <Authentication {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path='/register' exact
+            render={(props) => (
+              <Register {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
           <Route
@@ -62,9 +78,9 @@ class App extends React.Component
             )}
           />
           <Route
-            path='/transactions' exact
+            path='/mytransactions' exact
             render={(props) => (
-              <Transactions {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <MyTransactions {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
           <Route
@@ -128,9 +144,16 @@ class App extends React.Component
             )}
           />
           <Route
-            path='/search/aboverating' exact
+            path='/search/store' exact
             render={(props) => (
-              <SearchAboveRating {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+              <SearchByStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+
+            path='/viewmytransaction' exact
+            render={(props) => (
+              <MyTransaction {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>

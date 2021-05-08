@@ -7,7 +7,7 @@ import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { enter_register_login } from './common';
+import { register_login } from './common';
 
 describe('3.2: open store test' , function() {
 
@@ -20,15 +20,17 @@ describe('3.2: open store test' , function() {
     });
 
     it('open store good' ,async function() {
-        let avi =await enter_register_login(service, "avi", "123456789");
-        let promise = service.openStore(avi.getUserId() , "Aluf Hasport" , 123456 , "Tel Aviv" );
+        let sessionId = await service.enter()
+        let avi =await register_login(service,sessionId, "avi", "123456789");
+        let promise = service.openStore(sessionId , "Aluf Hasport" , 123456 , "Tel Aviv" );
         promise.then( _ =>{ assert.ok})
         .catch( _ => {assert.fail})
     })
 
     it('open store with non exist subscriber' ,async function() {
-        let avi =await enter_register_login(service, "avi", "123456789");
-        let promise = service.openStore(avi.getUserId() + 1 , "Aluf Hasport" , 123456 , "Tel Aviv" );
+        let sessionId = await service.enter()
+        let avi =await register_login(service,sessionId, "avi", "123456789");
+        let promise = service.openStore(sessionId + 1 , "Aluf Hasport" , 123456 , "Tel Aviv" );
         promise.catch( _ => {assert.ok})
         .then( _ => {assert.fail})
     })

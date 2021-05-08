@@ -104,11 +104,11 @@ export class StoreDB
         return makeOk(JSON.stringify(products))
     }
 
-    public static getProductInfoAboveRating(rating: number): Result<string>{
+    public static getPruductInfoByStore(storeName: string): Result<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchAboveRating(rating);
+            let storeProducts: StoreProductInfo[] = store.getStoreName() === storeName ? store.getProductsInfo() : [];
             for(let storeProduct of storeProducts){
                 products['products'].push({ 'product name':storeProduct.getName() ,
                                             'number of raters':storeProduct.getNumOfRaters(),

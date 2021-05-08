@@ -1,3 +1,4 @@
+import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
@@ -15,7 +16,7 @@ export class Service
 
     private constructor()
     {
-        this.facade = new SystemFacade();
+        this.facade = new FakeSystemFacade().getFacade();
     }
 
     public get_word_list(word: string): string[]
@@ -39,19 +40,19 @@ export class Service
     }
 
     //user enter the system
-    public async enter(): Promise<number>
+    public async enter(): Promise<string>
     {
         return this.facade.enter();
     }
 
-    public exit(userId: number): void
+    public exit(sessionId: string): void
     {
-        this.facade.exit(userId)
+        this.facade.exit(sessionId)
     }
 
-    public logout(userId: number): Promise<number>
+    public logout(sessionId: string): Promise<string>
     {
-        return this.facade.logout(userId)
+        return this.facade.logout(sessionId)
     }
 
     public async register(username: string, password: string, age: number): Promise<string>
@@ -59,25 +60,25 @@ export class Service
         return this.facade.register(username, password, age);
     }
 
-    public async login(userId: number, username: string, password: string): Promise<Subscriber>
+    public async login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
-        return this.facade.login(userId, username, password);
+        return this.facade.login(sessionId, username, password);
     }
 
 
-    public getStoreInfo(userId : number ,storeId: number): Promise<string>
+    public getStoreInfo(sessionId : string ,storeId: number): Promise<string>
     {
-        return this.facade.getStoreInfo(userId, storeId);
+        return this.facade.getStoreInfo(sessionId, storeId);
     }
 
-    public getPruductInfoByName(userId : number, productName: string): Promise<string>
+    public getPruductInfoByName(sessionId : string, productName: string): Promise<string>
     {
-        return this.facade.getPruductInfoByName(userId, productName);
+        return this.facade.getPruductInfoByName(sessionId, productName);
     }
 
-    public getPruductInfoByCategory(userId : number, category: string): Promise<string>
+    public getPruductInfoByCategory(sessionId : string, category: string): Promise<string>
     {
-        return this.facade.getPruductInfoByCategory(userId, category);
+        return this.facade.getPruductInfoByCategory(sessionId, category);
     }
 
     public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
@@ -90,95 +91,99 @@ export class Service
         return this.facade.getPruductInfoBelowPrice(userId, price);
     }
 
-    public getPruductInfoAboveRating(userId : number, rating: number): Promise<string>
+    public getPruductInfoByStore(userId : number, store: string): Promise<string>
     {
-        return this.facade.getPruductInfoAboveRating(userId, rating);
+        return this.facade.getPruductInfoByStore(userId, store);
     }
 
-    public addProductTocart(userId: number, storeId: number, productId: number, quantity: number): Promise<string>
+    public addProductTocart(sessionId: string, storeId: number, productId: number, quantity: number): Promise<string>
     {
-        return this.facade.addProductTocart(userId, storeId, productId, quantity);
+        return this.facade.addProductTocart(sessionId, storeId, productId, quantity);
     }
 
-    public getCartInfo(userId: number): Promise<string>
+    public getCartInfo(sessionId: string): Promise<string>
     {
-        return this.facade.getCartInfo(userId);
+        return this.facade.getCartInfo(sessionId);
     }
 
-    public editCart(userId: number , storeId : number , productId : number , newQuantity : number): Promise<string>
+    public editCart(sessionId: string , storeId : number , productId : number , newQuantity : number): Promise<string>
     {
-        return this.facade.editCart(userId, storeId, productId, newQuantity);
+        return this.facade.editCart(sessionId, storeId, productId, newQuantity);
     }
 
-    public checkoutBasket(userId: number, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
     {
-        return this.facade.checkoutBasket(userId, shopId, supply_address);
+        return this.facade.checkoutBasket(sessionId, shopId, supply_address);
     }
 
-    public checkoutSingleProduct(userId : number, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
+    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
     {
-        return this.facade.checkoutSingleProduct(userId, productId, quantity, storeId, supply_address);
+        return this.facade.checkoutSingleProduct(sessionId, productId, quantity, storeId, supply_address);
     }
 
-    public completeOrder(userId : number , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
+    public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
     {
-        return this.facade.completeOrder(userId, storeId,paymentInfo, userAddress);
+        return this.facade.completeOrder(sessionId, storeId,paymentInfo, userAddress);
     }
 
 
-    public async openStore(userId: number, storeName : string , bankAccountNumber : number ,storeAddress : string): Promise<Store>
+    public async openStore(sessionId: string, storeName : string , bankAccountNumber : number ,storeAddress : string): Promise<Store>
     {
-        return this.facade.openStore(userId, storeName, bankAccountNumber, storeAddress);
+        return this.facade.openStore(sessionId, storeName, bankAccountNumber, storeAddress);
     }
 
-    public editStoreInventory(userId: number, storeId: number, productId: number, quantity: number): Promise<string>
+    public editStoreInventory(sessionId: string, storeId: number, productId: number, quantity: number): Promise<string>
     {
-        return this.facade.editStoreInventory(userId, storeId, productId, quantity);
+        return this.facade.editStoreInventory(sessionId, storeId, productId, quantity);
     }
 
-    public addNewProduct(userId: number, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
+    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
     {
-        return this.facade.addNewProduct(userId, storeId, productName, categories, price, quantity);
+        return this.facade.addNewProduct(sessionId, storeId, productName, categories, price, quantity);
     }
 
-    public getSubscriberPurchaseHistory(requestingUserId: number, subscriberToSeeId: number): Promise<any>
+    public getSubscriberPurchaseHistory(sessionId: string, subscriberToSeeId: number): Promise<any>
     {
-        return this.facade.getSubscriberPurchaseHistory(requestingUserId, subscriberToSeeId);
+        return this.facade.getSubscriberPurchaseHistory(sessionId, subscriberToSeeId);
     }
 
     //this function is used by subscribers that wants to see stores's history
-    public getStorePurchaseHistory(userId: number, storeId: number): Promise<Transaction[]>
+    public getStorePurchaseHistory(sessionId: string, storeId: number): Promise<Transaction[]>
     {
-        return this.facade.getStorePurchaseHistory(userId, storeId);
+        return this.facade.getStorePurchaseHistory(sessionId, storeId);
     }
 
-    public deleteManagerFromStore(userId: number, managerToDelete: number, storeId: number): Promise<string>
+    public deleteManagerFromStore(sessionId: string, managerToDelete: number, storeId: number): Promise<string>
     {
-        return this.facade.deleteManagerFromStore(userId, managerToDelete, storeId);
+        return this.facade.deleteManagerFromStore(sessionId, managerToDelete, storeId);
     }
 
-    public editStaffPermission(userId: number, managerToEditId: number, storeId: number, permissionMask: number):Promise<string>
+    public editStaffPermission(sessionId: string, managerToEditId: number, storeId: number, permissionMask: number):Promise<string>
     {
-        return this.facade.editStaffPermission(userId, managerToEditId, storeId, permissionMask);
+        return this.facade.editStaffPermission(sessionId, managerToEditId, storeId, permissionMask);
     }
 
-    public appointStoreOwner(userId: number, storeId: number, newOwnerId: number): Promise<string>
+    public appointStoreOwner(sessionId: string, storeId: number, newOwnerId: number): Promise<string>
     {
-        return this.facade.appointStoreManager(userId, storeId, newOwnerId);
+        return this.facade.appointStoreManager(sessionId, storeId, newOwnerId);
     }
 
-    public appointStoreManager(userId: number, storeId: number, newManagerId: number): Promise<string>
+    public appointStoreManager(sessionId: string, storeId: number, newManagerId: number): Promise<string>
     {
-        return this.facade.appointStoreManager(userId, storeId, newManagerId);
+        return this.facade.appointStoreManager(sessionId, storeId, newManagerId);
     }
 
-    public getStoreStaff(userId: number, storeId: number): Promise<string> {
-        return this.facade.getStoreStaff(userId, storeId);
+    public getStoreStaff(sessionId: string, storeId: number): Promise<string> {
+        return this.facade.getStoreStaff(sessionId, storeId);
     }
 
-    public getUsername(userId: number)
+    public getUsername(sessionId: string)
     {
-        return this.facade.getUsername(userId);
+        return this.facade.getUsername(sessionId);
+    }
+
+    public getUserStores(sessionId : string){
+        return this.facade.getUserStores(sessionId);
     }
 
     public addDiscountPolicy(buyingPolicy: any)
@@ -200,17 +205,17 @@ export class Service
 
 
     //------------------------------------------functions for tests-------------------------
-    public get_logged_guest_users() : User[]
+    public get_logged_guest_users()
     {
         return this.facade.get_logged_guest_users();
     }
 
-    public get_logged_subscribers() : User[]
+    public get_logged_subscribers()
     {
         return this.facade.get_logged_subscribers();
     }
 
-    public get_logged_system_managers() : User[]
+    public get_logged_system_managers()
     {
         return this.facade.get_logged_subscribers();
     }

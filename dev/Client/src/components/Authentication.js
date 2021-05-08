@@ -5,11 +5,12 @@ import history from '../history';
 import {SERVER_BASE_URL} from '../constants'
 
 
-const register = async (username, password) =>
+const onRegisterClick = async () =>
 {
-    const res = await axios.post(`${SERVER_BASE_URL}register`, {username, password} )
-    alert(res.data.message)
+    history.push('/register');
 }
+
+
 
 
 
@@ -23,7 +24,7 @@ const Authentication=({getAppState, setAppState})=>{
         const res = await axios.post(`${SERVER_BASE_URL}login`, {userId, username, password} )
         if(res.data.userId !== undefined)
         {
-            setAppState({userId: res.data.userId, username: res.data.username});
+            setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});
             history.push('/welcome');
         }
         else
@@ -32,16 +33,17 @@ const Authentication=({getAppState, setAppState})=>{
         }
     }
 
+    const onGuestClick = () =>{
+        setAppState({isGuest: true, username: 'guest'});
+        history.push('/welcome');
+    }
+
     const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
     //const avatarStyle={backgroundColor:'#1bbd7e'}
     const btnstyle={margin:'8px 0'}
     return(
         <div>
-            <h1>
-                {
-                    userId
-                }
-            </h1>
+            <h1>{userId}</h1>
         <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
@@ -62,9 +64,14 @@ const Authentication=({getAppState, setAppState})=>{
                     type='password'
                 fullWidth/>
                 <Button type='submit' color='primary' variant="contained" onClick={()=> login(userId, username, password)} style={btnstyle} fullWidth>Sign in</Button>
-                <Button type='submit' color='primary' variant="contained" onClick={()=> register(username, password)} style={btnstyle} fullWidth>Register</Button>
                 <Typography >
-                    <Link href="#" >
+                    {"Don't have an account?  "}
+                    <Link href="#" onClick={onRegisterClick}>
+                        Sign up
+                    </Link>
+                </Typography>
+                <Typography >
+                    <Link href="#" onClick={onGuestClick}>
                         Continue as guest
                     </Link>
                 </Typography>

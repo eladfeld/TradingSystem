@@ -31,27 +31,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 //TODO: FIX the multiple fetchCart requests issue
-const Cart = ({getAppState, setAppState}) => {
+const Inventory = ({getAppState, setAppState}) => {
     const classes = useStyles();
-    const {cart} = getAppState();
-
-    const onCheckoutCartClick = async (storeId) =>{
-        const {userId} = getAppState();
-        const response = await axios.post(SERVER_BASE_URL+'checkoutBasket',{userId, storeId});
-        switch(response.status){
-            case SERVER_RESPONSE_OK:
-                setAppState({basketAtCheckout:storeId});
-                history.push('/checkout');
-                return;
-            case SERVER_RESPONSE_BAD:
-                alert(response.data);
-                //history.push('/checkout');//TODO: REMOVE LINE!
-                return;
-            default:
-                alert(`unexpected response code: ${response.status}`);
-                return;
-        }
-    }
+    const {Inventory} = getAppState();
 
     return (
         <div >
@@ -85,4 +67,4 @@ const Cart = ({getAppState, setAppState}) => {
     );
 }
 
-export default Cart;
+export default Inventory;

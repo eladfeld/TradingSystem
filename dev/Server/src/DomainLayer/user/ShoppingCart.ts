@@ -78,4 +78,9 @@ export class ShoppingCart
         return mycart;
     }
 
+    quantityInBasket = (storeId:number , productId:number ) : number =>
+    {
+        return this.baskets.get(storeId).quantity(productId)
+    }
+
 }
