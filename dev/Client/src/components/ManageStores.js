@@ -33,8 +33,7 @@ const renderStore = (store) =>
 {
   return(
       <Button onClick={() => {
-        //history.push(`/store/:${store.storeId}`)
-        alert(`yay you enter ${store.storeName}`);
+        history.push(`/store/:${store.storeId}`)
       }}>
         {store.storeName}
       </Button>
