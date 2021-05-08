@@ -386,6 +386,7 @@ export class SystemFacade
     public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
     {
         Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
+        supply_address = "down the block";
         if(supply_address === ''|| supply_address === undefined || supply_address === null){
             return new Promise((res,rej) => rej("invalid user Address"))
         }

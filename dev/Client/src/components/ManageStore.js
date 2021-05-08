@@ -32,17 +32,6 @@ const getInventory = async(userId, storeId, setAppState) =>
     const store = JSON.parse(storeInfo.data);
     setAppState({storeInventory: store.storeProducts})
 }
-const renderPage = async(page, getAppState, setAppState, storeId) =>{
-    switch(page){
-        case "inventory":
-            const inventory = await getInventory(getAppState().userId, storeId, setAppState);
-            return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
-        case "shit":
-            return <h1>shit</h1>
-        default:
-            return <h1>default</h1>
-    }
-}
 
 export default function TypographyMenu({getAppState, setAppState}) {
   const classes = useStyles();
@@ -64,7 +53,6 @@ export default function TypographyMenu({getAppState, setAppState}) {
                 const inventory = getInventory(getAppState().userId, Number(storeId));
                 //return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
             case "staff":
-                //return <h1>Staff</h1>;
                 if(staff === undefined){
                     const foo = async () =>{
                         const staffResponse = await axios.post(SERVER_BASE_URL+'/getStoreStaff', {userId, storeId});
@@ -106,11 +94,11 @@ export default function TypographyMenu({getAppState, setAppState}) {
                 </ListItemIcon>
                 <Typography variant="inherit">Inventory</Typography>
             </MenuItem>
-            <MenuItem>
-            <ListItemIcon>
-                <PeopleIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">View employees</Typography>
+            <MenuItem onClick={onStaffClick}>
+                <ListItemIcon>
+                    <PeopleIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit">View employees</Typography>
             </MenuItem>
             <MenuItem>
             <ListItemIcon>
