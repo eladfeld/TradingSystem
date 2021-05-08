@@ -47,15 +47,15 @@ export default class FakeSystemFacade extends SystemFacade {
                                                                                                     .then(orangeId => {
                                                                                                         this.RegisterAndLogin('john', john_session_id, (jonhSubscriber: Subscriber) => {
                                                                                                             this.RegisterAndLogin('josh', josh_session_id, (joshSubscriber) => {
-                                                                                                                this.facade.appointStoreOwner(joe_sessionId, joesStoreId, jonhSubscriber.getUserId())
+                                                                                                                this.facade.appointStoreOwner(joe_sessionId, joesStoreId, jonhSubscriber.getUsername())
                                                                                                                     .then(s => {
-                                                                                                                        this.facade.appointStoreOwner(joe_sessionId, joesStoreId, joshSubscriber.getUserId())
+                                                                                                                        this.facade.appointStoreOwner(joe_sessionId, joesStoreId, joshSubscriber.getUsername())
                                                                                                                             .then(s => {
                                                                                                                                 this.RegisterAndLogin('jack', jack_session_id, (jackSubscriber) => {
                                                                                                                                     this.RegisterAndLogin('jim', jim_session_id, (jimSubscriber) => {
-                                                                                                                                        this.facade.appointStoreManager(joe_sessionId, joesStoreId, jackSubscriber.getUserId())
+                                                                                                                                        this.facade.appointStoreManager(joe_sessionId, joesStoreId, jackSubscriber.getUsername())
                                                                                                                                             .then(s => {
-                                                                                                                                                this.facade.appointStoreManager(joe_sessionId, joesStoreId, jimSubscriber.getUserId())
+                                                                                                                                                this.facade.appointStoreManager(joe_sessionId, joesStoreId, jimSubscriber.getUsername())
                                                                                                                                                     .then(s => {
 
                                                                                                                                                         this.RegisterAndLogin('tupac', topac_session_id, (tupacSubscriber) => {

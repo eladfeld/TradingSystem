@@ -192,9 +192,9 @@ const checkoutBasket = (req: Request, res: Response, next: NextFunction) =>
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
     let supplyAddress: string = req.body.supplyAddress;
-    service.checkoutBasket(sessionId, storeId, supplyAddress)
-    .then(result => res.status(OKSTATUS).json(result))
-    .catch(message => res.status(FAILSTATUS).json(message))
+    let checkout_res = service.checkoutBasket(sessionId, storeId, supplyAddress)
+    isOk(checkout_res) ? res.status(OKSTATUS).json(checkout_res.value) :
+    res.status(FAILSTATUS).json(checkout_res.message)
 }
 
 
@@ -275,6 +275,14 @@ const getSubscriberPurchaseHistory = (req: Request, res: Response, next: NextFun
     .catch(message => res.status(FAILSTATUS).json(message))
 }
 
+const getMyPurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId: string = req.body.userId;
+    service.getMyPurchaseHistory(sessionId)
+    .then(purchaseHistory => res.status(OKSTATUS).json(purchaseHistory))
+    .catch(message => res.status(FAILSTATUS).json(message))
+}
+
 
 //TODO: change transaction to any
 const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
@@ -314,8 +322,8 @@ const appointStoreOwner = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let newOwnerId: number = req.body.newOwnerId;
-    service.appointStoreOwner(sessionId, storeId, newOwnerId)
+    let newOwnerUsername: string = req.body.newOwnerUsername;
+    service.appointStoreOwner(sessionId, storeId, newOwnerUsername)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -325,8 +333,8 @@ const appointStoreManager = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let newManagerId: number = req.body.newManagerId;
-    service.appointStoreManager(sessionId, storeId, newManagerId)
+    let newManagerUsername: string = req.body.newManagerUsername;
+    service.appointStoreManager(sessionId, storeId, newManagerUsername)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -441,5 +449,6 @@ export default {
     removeBuyingPolicy,
     removeDiscountPolicy,
     getUsername,
-    getUserStores
+    getUserStores,
+    getMyPurchaseHistory,
     };

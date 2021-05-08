@@ -24,8 +24,8 @@ describe('4.7: remove appointment', function () {
         let store =await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
 
 
-        service.appointStoreOwner(avi_sessionId, store.getStoreId(), moshe.getUserId());
-        service.appointStoreManager(moshe_sessionId, store.getStoreId(), hezi.getUserId());
+        service.appointStoreOwner(avi_sessionId, store.getStoreId(), moshe.getUsername());
+        service.appointStoreManager(moshe_sessionId, store.getStoreId(), hezi.getUsername());
         service.deleteManagerFromStore(avi_sessionId, moshe.getUserId(), store.getStoreId())
         expect(store.getAppointments().length).to.equal(1);
     })
@@ -36,7 +36,7 @@ describe('4.7: remove appointment', function () {
         let avi =await register_login(service,avi_sessionId, "avi", "123456789");
         let moshe =await register_login(service,moshe_sessionId, "moshe", "123456789");
         let store =await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
-        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId());
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         service.deleteManagerFromStore(moshe_sessionId, avi.getUserId(), store.getStoreId())
         .then(_ => assert.fail)
         .catch( _ => assert.ok)

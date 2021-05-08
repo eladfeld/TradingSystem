@@ -111,7 +111,7 @@ export class Service
         return this.facade.editCart(sessionId, storeId, productId, newQuantity);
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Result<boolean>
     {
         return this.facade.checkoutBasket(sessionId, shopId, supply_address);
     }
@@ -147,6 +147,11 @@ export class Service
         return this.facade.getSubscriberPurchaseHistory(sessionId, subscriberToSeeId);
     }
 
+    public getMyPurchaseHistory(sessionId: string): Promise<any>
+    {
+        return this.facade.getMyPurchaseHistory(sessionId);
+    }
+
     //this function is used by subscribers that wants to see stores's history
     public getStorePurchaseHistory(sessionId: string, storeId: number): Promise<Transaction[]>
     {
@@ -163,14 +168,14 @@ export class Service
         return this.facade.editStaffPermission(sessionId, managerToEditId, storeId, permissionMask);
     }
 
-    public appointStoreOwner(sessionId: string, storeId: number, newOwnerId: number): Promise<string>
+    public appointStoreOwner(sessionId: string, storeId: number, newOwnerUsername: string): Promise<string>
     {
-        return this.facade.appointStoreManager(sessionId, storeId, newOwnerId);
+        return this.facade.appointStoreOwner(sessionId, storeId, newOwnerUsername);
     }
 
-    public appointStoreManager(sessionId: string, storeId: number, newManagerId: number): Promise<string>
+    public appointStoreManager(sessionId: string, storeId: number, newManagerUsername: string): Promise<string>
     {
-        return this.facade.appointStoreManager(sessionId, storeId, newManagerId);
+        return this.facade.appointStoreManager(sessionId, storeId, newManagerUsername);
     }
 
     public getStoreStaff(sessionId: string, storeId: number): Promise<string> {

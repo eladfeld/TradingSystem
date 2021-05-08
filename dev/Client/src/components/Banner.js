@@ -165,7 +165,7 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
   const handleTransactionsClick = async () => {
-    const response = await axios.post(BASE_URL+'getMyPurchaseHistory',{userId});
+    const response = await axios.post(BASE_URL+'/getMyPurchaseHistory',{userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:
         setAppState({myTransactions: JSON.parse(response.data)});
