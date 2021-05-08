@@ -1,5 +1,5 @@
 import { assert, expect } from 'chai';
-import { servicesVersion } from 'typescript';
+import { convertCompilerOptionsFromJson, servicesVersion } from 'typescript';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import { Product } from '../../src/DomainLayer/store/Product';
@@ -58,7 +58,7 @@ describe('2.9: buy products', function () {
         isOk(checkout_res) ? assert.fail : assert.ok
     })
 
-    it('parallel buy of last item',async function (done) {
+    it('parallel buy of last item',async function () {
         let avi_sessionId = await service.enter()
         let ali_sessionId = await service.enter()
 
@@ -81,10 +81,10 @@ describe('2.9: buy products', function () {
         let avi_buy_res =service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
         let ali_buy_res =service.completeOrder(ali_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
 
-        console.log(avi_buy_res)
-        console.log(ali_buy_res)
+        // console.log(avi_buy_res)
+        // console.log(ali_buy_res)
         console.log(a)
-        console.log(b)
+       
 
         avi_buy_res.then( avi_buy =>{
             ali_buy_res.then( ali_buy => {
@@ -96,7 +96,8 @@ describe('2.9: buy products', function () {
                 expect(ali.quantityInBasket(store.getStoreId(),banana_id)).to.equal(0) 
                 expect(store.getProductQuantity(banana_id)).to.equal(0);
                 expect(Purchase.getAllTransactions().length).to.equal(1);
-
+                console.log(avi)
+                console.log(ali)
             })
         }).catch( msg => {
             // if here avi failed and ali succeeded

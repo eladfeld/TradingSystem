@@ -32,12 +32,10 @@ class App extends React.Component
     if(products !== null && products !== undefined && products.length !== 0){
       let intersection = new Set([...products].filter(x => !newProducts.includes(x)));
       this.setAppState({products: Array.from(intersection)})
-      console.log(this.getAppState())
 
     }
     else{
       this.setAppState({products:newProducts})
-      console.log(this.getAppState())
 
     }
 }

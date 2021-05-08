@@ -20,7 +20,7 @@ describe('4.6: edit store permission', function () {
         let avi = await register_login(service,avi_sessionId, "avi", "123456789");
         let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789");
         let store = await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
-        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId());
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         service.getStoreStaff(moshe_sessionId, store.getStoreId())
         .then( _ => assert.fail)
         .catch( _ => assert.ok)
@@ -36,7 +36,7 @@ describe('4.6: edit store permission', function () {
         let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789");
         let store = await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
         store.addCategoryToRoot('Sweet')
-        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId());
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         service.addNewProduct(moshe_sessionId, store.getStoreId(), "banana", ['Sweet'], 15)
         .then(_ => assert.fail)
         .catch(_ => assert.ok)

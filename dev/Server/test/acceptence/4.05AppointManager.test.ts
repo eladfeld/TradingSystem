@@ -20,7 +20,7 @@ describe('4.5:Appoint manager tests', function () {
         let avi = await register_login(service,avi_sessionId, "avi", "123456789");
         let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789");
         let store = await open_store(service, avi_sessionId,avi, "Mega", 123456, "Tel Aviv");
-        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId())
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername())
         .then(_ => assert.ok)
         .catch(_ => assert.fail)
     })
@@ -31,7 +31,7 @@ describe('4.5:Appoint manager tests', function () {
         let avi = await register_login(service,avi_sessionId, "avi", "123456789")
         let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789")
         let store = await open_store(service, avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
-        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId());
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         store.addCategoryToRoot('Sweet')
         service.addNewProduct(moshe_sessionId, store.getStoreId(), "banana", ['Sweet'], 15)
         .then(_ => assert.fail)
