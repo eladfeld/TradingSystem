@@ -14,9 +14,11 @@ import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { SERVER_BASE_URL } from '../constants';
+import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../constants';
 
 import axios from 'axios';
+import { unknownStatusMessage } from './componentUtil';
+import Employees from './Employees';
 
 const useStyles = makeStyles({
   root: {
@@ -93,9 +95,6 @@ export default function TypographyMenu({getAppState, setAppState}) {
         setPage("appointowner");
     }
 
-    const onInventoryClick =() =>{
-        setPage("inventory");
-    }
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>
