@@ -47,7 +47,7 @@ export const OpenStore = ({getAppState, setAppState}) => {
     const [problem, setProblem] = useState("");
 
 
-    
+
     const classes = useStyles();
 
     const open = async (userId, storeName, bankAccountNumber, storeAddress) =>
@@ -87,10 +87,10 @@ export const OpenStore = ({getAppState, setAppState}) => {
       >
         Store created sussfully!
       </Alert> :
-      _hasProblem ?  
+      _hasProblem ?
       <Alert severity="warning">A problem accured while opening the store: {problem}!</Alert>
 
-      
+
       :<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
@@ -101,11 +101,11 @@ export const OpenStore = ({getAppState, setAppState}) => {
                       <StoreIcon />
                     </Grid>
                     <Grid item>
-                <TextField 
-                    label='Store name' 
-                    placeholder='Enter store name' 
-                    value={_storeName} 
-                    onChange={(event) => setStoreName(event.target.value)} 
+                <TextField
+                    label='Store name'
+                    placeholder='Enter store name'
+                    value={_storeName}
+                    onChange={(event) => setStoreName(event.target.value)}
                 fullWidth/>
                 </Grid>
                 </Grid>
@@ -114,11 +114,11 @@ export const OpenStore = ({getAppState, setAppState}) => {
                       <AttachMoneyIcon />
                     </Grid>
                     <Grid item>
-                      <TextField 
-                          label='Bank account' 
-                          placeholder='Enter bank account' 
-                          value={_storeBankAccount} 
-                          onChange={(event) => setStoreBankAccount(event.target.value)} 
+                      <TextField
+                          label='Bank account'
+                          placeholder='Enter bank account'
+                          value={_storeBankAccount}
+                          onChange={(event) => setStoreBankAccount(event.target.value)}
                       fullWidth/>
                     </Grid>
                   </Grid>
@@ -127,16 +127,16 @@ export const OpenStore = ({getAppState, setAppState}) => {
                       <HomeIcon />
                     </Grid>
                     <Grid item>
-                        <TextField 
-                        label='Address' 
-                        placeholder='Enter address' 
-                        value={_storeAddress} 
-                        onChange={(event) => setStoreAddress(event.target.value)} 
+                        <TextField
+                        label='Address'
+                        placeholder='Enter address'
+                        value={_storeAddress}
+                        onChange={(event) => setStoreAddress(event.target.value)}
                         fullWidth/>
                     </Grid>
                     </Grid>
               <MuiThemeProvider theme={theme}>
-                <Button type='submit' color='primary' variant="contained"  style={btnstyle} 
+                <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
                         let userId = getAppState().userId;

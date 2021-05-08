@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,10 +15,12 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-
+import {Search} from './Search'
 import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
+import { Link } from 'react-router-dom';
+import * as AiIcons from 'react-icons/ai';
 import { initialAppState } from './componentUtil';
 
 const BASE_URL = SERVER_BASE_URL;
@@ -98,7 +100,8 @@ export default function Banner({getAppState, setAppState}) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+  const [sidebar, setSidebar] = useState(false);
+  const showSidebar = () => setSidebar(!sidebar);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -144,7 +147,7 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
 
-  
+
   const handleCartClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
     switch(response.status){
@@ -207,7 +210,7 @@ export default function Banner({getAppState, setAppState}) {
       onClose={handleMenuClose}
     >
       {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage System</MenuItem> : <div></div>}
-      { isGuest ? 
+      { isGuest ?
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
           {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
@@ -278,19 +281,8 @@ export default function Banner({getAppState, setAppState}) {
           <Typography className={classes.title} variant="h6" noWrap>
              {getAppState().username}
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div>
+          <Search getAppState={getAppState} setAppState={setAppState}/>
+
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="view shopping cart" color="inherit" onClick={handleCartClick}>

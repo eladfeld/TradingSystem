@@ -7,9 +7,9 @@ const fs = require('fs');
 const https = require('https');
 
 const instance = axios.create({
-    httpsAgent: new https.Agent({  
+    httpsAgent: new https.Agent({
         rejectUnauthorized: false
-        
+
     })
 });
 const Enter = ({setAppState}) =>

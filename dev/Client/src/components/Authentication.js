@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Grid,Paper, TextField, Button, Typography, Link } from '@material-ui/core'
 import axios from 'axios';
 import history from '../history';
-import { SERVER_BASE_URL } from '../constants';
+import {SERVER_BASE_URL} from '../constants'
 
 
 const onRegisterClick = async () =>
@@ -20,8 +20,8 @@ const Authentication=({getAppState, setAppState})=>{
         const res = await axios.post(`${SERVER_BASE_URL}login`, {userId, username, password} )
         if(res.data.userId !== undefined)
         {
-            setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});  
-            history.push('/welcome');         
+            setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});
+            history.push('/welcome');
         }
         else
         {
@@ -46,18 +46,18 @@ const Authentication=({getAppState, setAppState})=>{
                     {/* <Avatar style={avatarStyle}><LockOutlinedIcon/></Avatar> */}
                     <h2>Login</h2>
                 </Grid>
-                <TextField 
-                    label='Username' 
-                    placeholder='Enter username' 
-                    value={username} 
-                    onChange={(event) => setUsername(event.target.value)} 
+                <TextField
+                    label='Username'
+                    placeholder='Enter username'
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
                 fullWidth/>
-                <TextField 
-                    label='Password' 
-                    placeholder='Enter password' 
-                    value={password} 
-                    onChange={(event) => setPassword(event.target.value)} 
-                    type='password' 
+                <TextField
+                    label='Password'
+                    placeholder='Enter password'
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    type='password'
                 fullWidth/>
                 <Button type='submit' color='primary' variant="contained" onClick={()=> login(userId, username, password)} style={btnstyle} fullWidth>Sign in</Button>
                 <Typography >

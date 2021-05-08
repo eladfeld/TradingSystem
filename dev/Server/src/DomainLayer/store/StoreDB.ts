@@ -30,18 +30,31 @@ export class StoreDB
 
     public static getPruductInfoByName(productName: string): Result<string>{
         var products : any = {}
-        products['products']=[]
+        // var products : any = {
+        //     'products': [{ 'productName':'apple' ,
+        //         'numberOfRaters':1,
+        //         'rating':3,
+        //         'price': 100,
+        //         'storeName': 'apple',
+        //         'storeId': 1,
+        //         'productId': 1,
+        //     },]
+        // }
+        // products['products']=[]
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByName(productName);
             for(let storeProduct of storeProducts){
-                products['products'].push({ 'product name':storeProduct.getName() ,
-                                            'number of raters':storeProduct.getNumOfRaters(),
+                products['products'].push({ 'productName':storeProduct.getName() ,
+                                            'numberOfRaters':storeProduct.getNumOfRaters(),
                                             'rating':storeProduct.getProductRating(),
                                             'price': storeProduct.getPrice(),
-                                            'store name': store.getStoreName(),
+                                            'storeName': store.getStoreName(),
+                                            'storeId': store.getStoreId(),
+                                            'productId': storeProduct.getProductId(),
                                         })
             }
         })
+        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
         return makeOk(JSON.stringify(products))
     }
 
@@ -51,11 +64,70 @@ export class StoreDB
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByCategory(category);
             for(let storeProduct of storeProducts){
-                products['products'].push({ 'product name':storeProduct.getName() ,
-                                            'number of raters':storeProduct.getNumOfRaters(),
-                                            'rating':storeProduct.getProductRating(),
-                                            'price': storeProduct.getPrice(),
-                                            'store name': store.getStoreName(),
+                products['products'].push({ 'productName':storeProduct.getName() ,
+                'numberOfRaters':storeProduct.getNumOfRaters(),
+                'rating':storeProduct.getProductRating(),
+                'price': storeProduct.getPrice(),
+                'storeName': store.getStoreName(),
+                'storeId': store.getStoreId(),
+                'productId': storeProduct.getProductId(),
+                                        })
+            }
+        })
+        return makeOk(JSON.stringify(products))
+    }
+
+    public static getProductInfoAbovePrice(price: number): Result<string>{
+        var products : any = {}
+        products['products']=[]
+        this.stores.forEach((store) => {
+            let storeProducts: StoreProductInfo[] = store.searchAbovePrice(price);
+            for(let storeProduct of storeProducts){
+                products['products'].push({ 'productName':storeProduct.getName() ,
+                'numberOfRaters':storeProduct.getNumOfRaters(),
+                'rating':storeProduct.getProductRating(),
+                'price': storeProduct.getPrice(),
+                'storeName': store.getStoreName(),
+                'storeId': store.getStoreId(),
+                'productId': storeProduct.getProductId(),
+                                        })
+            }
+        })
+        return makeOk(JSON.stringify(products))
+    }
+
+    public static getProductInfoBelowPrice(price: number): Result<string>{
+        var products : any = {}
+        products['products']=[]
+        this.stores.forEach((store) => {
+            let storeProducts: StoreProductInfo[] = store.searchBelowPrice(price);
+            for(let storeProduct of storeProducts){
+                products['products'].push({ 'productName':storeProduct.getName() ,
+                'numberOfRaters':storeProduct.getNumOfRaters(),
+                'rating':storeProduct.getProductRating(),
+                'price': storeProduct.getPrice(),
+                'storeName': store.getStoreName(),
+                'storeId': store.getStoreId(),
+                'productId': storeProduct.getProductId(),
+                                        })
+            }
+        })
+        return makeOk(JSON.stringify(products))
+    }
+
+    public static getPruductInfoByStore(storeName: string): Result<string>{
+        var products : any = {}
+        products['products']=[]
+        this.stores.forEach((store) => {
+            let storeProducts: StoreProductInfo[] = store.getStoreName() === storeName ? store.getProductsInfo() : [];
+            for(let storeProduct of storeProducts){
+                products['products'].push({ 'productName':storeProduct.getName() ,
+                'numberOfRaters':storeProduct.getNumOfRaters(),
+                'rating':storeProduct.getProductRating(),
+                'price': storeProduct.getPrice(),
+                'storeName': store.getStoreName(),
+                'storeId': store.getStoreId(),
+                'productId': storeProduct.getProductId(),
                                         })
             }
         })

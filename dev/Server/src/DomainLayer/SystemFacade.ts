@@ -138,9 +138,9 @@ export class SystemFacade
         {
             this.logged_system_managers.set(sessionId,subscriber);
         }
-        
-        return new Promise( (resolve,reject) => { 
-        Logger.log(`login => logged in`); 
+
+        return new Promise( (resolve,reject) => {
+        Logger.log(`login => logged in`);
         resolve(subscriber)});
     }
 
@@ -213,6 +213,72 @@ export class SystemFacade
             })
         }
 
+    }
+
+    public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
+    {
+        Logger.log(`getPruductInfoAbovePrice : userId:${userId} , price:${price}`);
+        let res: Result<string> = StoreDB.getProductInfoAbovePrice(price);
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
+    }
+
+    public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
+    {
+        Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
+        let res: Result<string> = StoreDB.getProductInfoAbovePrice(price);
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
+    }
+
+    public getPruductInfoByStore(userId : number, store: string): Promise<string>
+    {
+        Logger.log(`getPruductInfoByStore : userId:${userId} , store:${store}`);
+        let res: Result<string> = StoreDB.getPruductInfoByStore(store);
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
     }
 
     public addProductTocart(sessionId: string, storeId: number, productId: number, quantity: number): Promise<string>
@@ -611,7 +677,7 @@ export class SystemFacade
         return new Promise((res, rej) => res("guest"));
     }
 
-    private static getSessionId()  
+    private static getSessionId()
     {
         let id = String(this.lastSessionId++ + Math.random())
         return createHash('sha1').update(id).digest('hex');
@@ -633,7 +699,7 @@ export class SystemFacade
 
     
     //------------------------------------------functions for tests-------------------------
-    public get_logged_guest_users() 
+    public get_logged_guest_users()
     {
         return this.logged_guest_users;
     }

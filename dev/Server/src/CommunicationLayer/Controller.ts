@@ -16,7 +16,7 @@ const enter = (req: Request, res: Response, next: NextFunction) =>
     let promise: Promise<string> = service.enter();
     promise.then( userId => {
         return res.status(OKSTATUS).json({
-            userId: userId}); 
+            userId: userId});
         }).catch( message => {
         return res.status(FAILSTATUS).json({
             error: MessageChannel
@@ -40,7 +40,7 @@ const register = (req: Request, res: Response, next: NextFunction) =>
         message =>
         {
             res.status(FAILSTATUS).json({
-                error: message 
+                error: message
         })}
     )
 }
@@ -119,6 +119,33 @@ const getPruductInfoByCategory = (req: Request, res: Response, next: NextFunctio
     let sessionId: string = req.body.userId;
     let productCategory: string = req.body.productCategory;
     service.getPruductInfoByCategory(sessionId, productCategory)
+    .then(product => res.status(OKSTATUS).json(product))
+    .catch(message => res.status(FAILSTATUS).json(message))
+}
+
+const getPruductInfoAbovePrice= (req: Request, res: Response, next: NextFunction) =>
+{
+    let userId: number = req.body.userId;
+    let price: number = req.body.price;
+    service.getPruductInfoAbovePrice(userId, price)
+    .then(product => res.status(OKSTATUS).json(product))
+    .catch(message => res.status(FAILSTATUS).json(message))
+}
+
+const getPruductInfoBelowPrice = (req: Request, res: Response, next: NextFunction) =>
+{
+    let userId: number = req.body.userId;
+    let price: number = req.body.price;
+    service.getPruductInfoBelowPrice(userId, price)
+    .then(product => res.status(OKSTATUS).json(product))
+    .catch(message => res.status(FAILSTATUS).json(message))
+}
+
+const getPruductInfoByStore = (req: Request, res: Response, next: NextFunction) =>
+{
+    let userId: number = req.body.userId;
+    let store: string = req.body.store;
+    service.getPruductInfoByStore(userId, store)
     .then(product => res.status(OKSTATUS).json(product))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -245,7 +272,7 @@ const getSubscriberPurchaseHistory = (req: Request, res: Response, next: NextFun
 }
 
 
-//TODO: change transaction to any 
+//TODO: change transaction to any
 const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
@@ -344,22 +371,22 @@ const getUserStores = (req: Request , res:Response , next : NextFunction) =>
 const addDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
     let discountPolicy: any = req.body;
-    
-    service.removeDiscountPolicy(discountPolicy); 
+
+    service.removeDiscountPolicy(discountPolicy);
 }
 
 const addBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
     let buyingPolicy: any = req.body;
-    
-    service.addBuyingPolicy(buyingPolicy);  
+
+    service.addBuyingPolicy(buyingPolicy);
 }
 
 const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
     let discountNumber: number = req.body.policyId;
 
-    service.removeBuyingPolicy(discountNumber); 
+    service.removeBuyingPolicy(discountNumber);
 }
 
 
@@ -376,7 +403,7 @@ const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =
 
 
 
-export default { 
+export default {
     enter,
     register,
     login,
@@ -385,6 +412,9 @@ export default {
     getStoreInfo,
     getPruductInfoByName,
     getPruductInfoByCategory,
+    getPruductInfoAbovePrice,
+    getPruductInfoBelowPrice,
+    getPruductInfoByStore,
     addProductTocart,
     getCartInfo,
     editCart,

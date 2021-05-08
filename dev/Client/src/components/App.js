@@ -10,6 +10,7 @@ import Cart  from './Cart';
 import { Complain } from './Complain';
 import { OpenStore } from './OpenStore';
 import Checkout from './Checkout';
+import { Search, SearchByName, SearchAbovePrice, SearchByStore, SearchBelowPrice, SearchByCategory, SearchByKeyword} from './Search'
 import { SERVER_BASE_URL } from '../constants';
 import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
@@ -25,8 +26,19 @@ class App extends React.Component
   }
   getAppState = () => this.state;
   setAppState = (state) => this.setState(state);
+  intersect = (products, newProducts) => {
+    if(products !== null && products !== undefined && products.length !== 0){
+      let intersection = new Set([...products].filter(x => !newProducts.includes(x)));
+      this.setAppState({products: Array.from(intersection)})
+      console.log(this.getAppState())
 
+    }
+    else{
+      this.setAppState({products:newProducts})
+      console.log(this.getAppState())
 
+    }
+}
   render(){
     //const [userId, setUserId] = useState(0);
     if(this.state.userId === 0)
@@ -96,6 +108,49 @@ class App extends React.Component
             )}
           />
           <Route
+            path='/search' exact
+            render={(props) => (
+              <Search {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+            path='/search/name' exact
+            render={(props) => (
+              <SearchByName {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+            path='/search/category' exact
+            render={(props) => (
+              <SearchByCategory {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+            path='/search/keyword' exact
+            render={(props) => (
+              <SearchByKeyword {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+            path='/search/aboveprice' exact
+            render={(props) => (
+              <SearchAbovePrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+            path='/search/belowprice' exact
+            render={(props) => (
+              <SearchBelowPrice {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+            path='/search/store' exact
+            render={(props) => (
+              <SearchByStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} intersect={this.intersect}/>
+            )}
+          />
+          <Route
+
             path='/viewmytransaction' exact
             render={(props) => (
               <MyTransaction {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
@@ -127,14 +182,14 @@ class App extends React.Component
 //           )}
 //         />
 //         <ButtonGroup>
-//           <Button 
+//           <Button
 //             onClick={()=> alert('register')}
-//             variant="contained" 
+//             variant="contained"
 //             color="primary">
 //             register
 //           </Button>
-//           <Button onClick={()=> alert('sign in')} 
-//           variant="contained" 
+//           <Button onClick={()=> alert('sign in')}
+//           variant="contained"
 //           color="secondary">
 //             sign in
 //           </Button>

@@ -13,7 +13,7 @@ export class Service
     private static singletone: Service = undefined;
     private facade: SystemFacade;
     private send_message_func: (userId:number,message:{}) => Promise<number>; //TODO:change this signature according to future changes in Communication layer
-  
+
     private constructor()
     {
         this.facade = new FakeSystemFacade().getFacade();
@@ -60,11 +60,11 @@ export class Service
         return this.facade.register(username, password, age);
     }
 
-    public async login(sessionId: string, username: string, password: string): Promise<Subscriber> 
+    public async login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         return this.facade.login(sessionId, username, password);
-    } 
-    
+    }
+
 
     public getStoreInfo(sessionId : string ,storeId: number): Promise<string>
     {
@@ -80,6 +80,22 @@ export class Service
     {
         return this.facade.getPruductInfoByCategory(sessionId, category);
     }
+
+    public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
+    {
+        return this.facade.getPruductInfoAbovePrice(userId, price);
+    }
+
+    public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
+    {
+        return this.facade.getPruductInfoBelowPrice(userId, price);
+    }
+
+    public getPruductInfoByStore(userId : number, store: string): Promise<string>
+    {
+        return this.facade.getPruductInfoByStore(userId, store);
+    }
+
     public addProductTocart(sessionId: string, storeId: number, productId: number, quantity: number): Promise<string>
     {
         return this.facade.addProductTocart(sessionId, storeId, productId, quantity);
@@ -187,14 +203,14 @@ export class Service
         throw new Error('Method not implemented.');
     }
 
-   
+
     //------------------------------------------functions for tests-------------------------
-    public get_logged_guest_users() 
+    public get_logged_guest_users()
     {
         return this.facade.get_logged_guest_users();
     }
 
-    public get_logged_subscribers() 
+    public get_logged_subscribers()
     {
         return this.facade.get_logged_subscribers();
     }

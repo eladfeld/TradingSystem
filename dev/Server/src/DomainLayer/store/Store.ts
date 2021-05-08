@@ -342,6 +342,10 @@ export class Store
         return this.inventory.getProductInfoByName(productName);
     }
 
+    public getProductsInfo(): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((_) => false);
+    }
+
     public searchByCategory(category: string): StoreProductInfo[]{
         if(!this.categiries.hasChildNode(category)){
             Logger.log(`No category: ${category} in store: ${this.storeName}`);
