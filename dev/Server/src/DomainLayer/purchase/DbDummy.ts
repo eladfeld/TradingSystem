@@ -1,4 +1,3 @@
-import { exception } from "console";
 import Transaction, { TransactionStatus } from "./Transaction";
 
 class DbDummy{
@@ -25,7 +24,7 @@ class DbDummy{
     getTransactionInProgress = (userId: number, storeId: number):Transaction =>{
         const ts:Transaction[] = this.transactions.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId) && (t.getStatus() === TransactionStatus.IN_PROGRESS)));
         if(ts.length === 0)return null;
-        if(ts.length > 1) throw exception(`userId: ${userId} and storeId: ${storeId} have ${ts.length} transactions in progress.\n should be at most 1`);
+        if(ts.length > 1) throw (`userId: ${userId} and storeId: ${storeId} have ${ts.length} transactions in progress.\n should be at most 1`);
         return ts[0];
     }
     getTransactionsInProgress = (userId: number, storeId: number):Transaction[] =>{
@@ -36,6 +35,11 @@ class DbDummy{
         const ts: Transaction[] = this.transactions.filter(t => t.getId() !== transaction.getId());
         ts.push(transaction);
         this.transactions = ts;
+    }
+
+    public static clear()
+    {
+        
     }
 
 }

@@ -178,6 +178,12 @@ class Purchase {
         return null;
     }
     public getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
+
+    public clear()
+    {
+        this.cartCheckoutTimers = new Map();
+        this.dbDummy = new DbDummy();
+    }
 }
 const INSTANCE :Purchase = new Purchase();
 export default INSTANCE;

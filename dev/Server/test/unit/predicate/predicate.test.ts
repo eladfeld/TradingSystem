@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { exception } from 'console';
 import iBasket, { MyBasket } from '../../../src/DomainLayer/discount/iBasket';
 import iSubject from '../../../src/DomainLayer/discount/logic/iSubject';
 import {SimpleOps, CompositeOps, getSimpleOperator, getCompositeOperator} from '../../../src/DomainLayer/discount/logic/LogicalOperators';

@@ -32,7 +32,15 @@ class App extends React.Component
   setAppState = (state) => this.setState(state);
   intersect = (products, newProducts) => {
     if(products !== null && products !== undefined && products.length !== 0){
-      let intersection = new Set([...products].filter(x => !newProducts.includes(x)));
+      let intersection = new Set([...products].filter(x => {
+        return newProducts.reduce((acc, curr) => acc || x.productId === curr.productId, false)
+      }));
+      console.log('intersection')
+      console.log(intersection)
+      console.log('products')
+      console.log(products)
+      console.log('newProducts')
+      console.log(newProducts)
       this.setAppState({products: Array.from(intersection)})
 
     }

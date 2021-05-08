@@ -4,7 +4,8 @@ export const initialAppState = {
     basketAtCheckout: undefined,
     cart: undefined,
     myTransactions: undefined,
-    stores: []
+    stores: [],
+    storeInventory: undefined
 };
 
 export const unknownStatusMessage = (res) =>{

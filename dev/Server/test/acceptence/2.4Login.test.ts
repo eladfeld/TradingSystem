@@ -4,6 +4,7 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
+import { doesNotMatch } from 'assert';
 
 describe('2.4: login system test' , function() {
 
@@ -28,16 +29,23 @@ describe('2.4: login system test' , function() {
         let id =await service.enter();
         service.register("avi", "123456789",13);
         let subscriber = service.login(id,"avi","1234")
-        subscriber.catch( reason => {assert.ok("login failed")}).
-        then( _=> {assert.fail("login should fail")})
+        subscriber.
+        then( _=> {
+            assert.fail("login should fail")
+            })
+        .catch( reason => {
+            assert.ok
+            })
     })
 
     it('user false username login' ,async function() {
         let id =await service.enter();
         service.register("avi", "123456789",13);
-        let subscriber = service.login(id, "yogev ha'melech","123456789");
-        subscriber.catch ( reason => {assert.ok("login failed (and should have)")})
-        .then (_ => {assert.fail("login should fail")})
+        try {
+        let subscriber =await service.login(id, "yogev ha'melech","123456789");
+        } catch {
+            assert.ok
+        }
     });
 
 });
