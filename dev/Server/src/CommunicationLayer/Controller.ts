@@ -3,6 +3,7 @@ import {Request, Response, NextFunction} from 'express';
 import { isOk, Result } from '../Result';
 import { Subscriber } from '../DomainLayer/user/Subscriber';
 import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
+import { checkout } from './Router';
 
 const service: Service = Service.get_instance();
 const OKSTATUS: number = 200;
@@ -190,8 +191,8 @@ const checkoutBasket = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let supplyAddress: string = req.body.supplyAddress;
     let checkout_res = service.checkoutBasket(sessionId, storeId, supplyAddress)
-    isOk(checkout_res) ? res.status(OKSTATUS).json(checkout_res.value) :
-    res.status(FAILSTATUS).json(checkout_res.message)
+    checkout_res.then(result => res.status(OKSTATUS).json(result))
+    .catch( message =>res.status(FAILSTATUS).json(message))
 }
 
 

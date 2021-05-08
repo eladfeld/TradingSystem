@@ -388,7 +388,7 @@ export class SystemFacade
     {
         Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
         if(supply_address === ''|| supply_address === undefined || supply_address === null){
-            return makeFailure("invalid user Address")
+            return new Promise((res,rej) => rej("invalid user Address"))
         }
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
