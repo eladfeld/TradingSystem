@@ -5,6 +5,7 @@ import { Subscriber } from '../DomainLayer/user/Subscriber';
 import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
 import { Store } from '../DomainLayer/store/Store';
 import Transaction from '../DomainLayer/purchase/Transaction';
+import { isNumber } from 'util';
 
 const service: Service = Service.get_instance();
 const OKSTATUS: number = 200;
@@ -176,7 +177,10 @@ const editCart = (req: Request, res: Response, next: NextFunction) =>
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
+    console.log(req.body)
+
     let quantity: number = req.body.quantity;
+
     service.editCart(sessionId, storeId, productId, quantity )
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))

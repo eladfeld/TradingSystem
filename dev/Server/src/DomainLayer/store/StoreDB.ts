@@ -40,7 +40,7 @@ export class StoreDB
         //         'productId': 1,
         //     },]
         // }
-        // products['products']=[]
+        products['products']=[]
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByName(productName);
             for(let storeProduct of storeProducts){

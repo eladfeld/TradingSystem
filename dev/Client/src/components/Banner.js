@@ -134,7 +134,7 @@ export default function Banner({getAppState, setAppState}) {
     const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:
-        const stores = JSON.parse(response.data);
+        const stores = JSON.parse(response.data).stores;
         setAppState({stores});
             history.push('/manageStores');
             return;

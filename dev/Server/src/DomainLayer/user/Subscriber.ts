@@ -122,10 +122,11 @@ export class Subscriber extends User
 
     public getStores() : {}
     {
-        // this.appointments.forEach( appointment =>{
-        //     appointment.
-        // })
-        return JSON.stringify({"stores":[{"storeId": 1}, {"storeId":2}]})
+        let stores: any =[] 
+        this.appointments.forEach( appointment =>{
+            stores.push({storeId: appointment.getStore().getStoreId(), storeName: appointment.getStore().getStoreName() , permissions: appointment.getPermissions()})
+        })
+        return JSON.stringify({stores:stores})
     }
 
     

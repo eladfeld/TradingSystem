@@ -29,7 +29,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
+const renderStore = (store) =>
+{
+  return(
+      <Button onClick={() => {
+        //history.push(`/store/:${store.storeId}`)
+        alert(`yay you enter ${store.storeName}`);
+      }}>
+        {store.storeName}
+      </Button>
+  )
+}
 //TODO: FIX the multiple fetchCart requests issue
 const ManageStores = ({getAppState, setAppState}) => {
     const classes = useStyles();
@@ -43,9 +53,8 @@ const ManageStores = ({getAppState, setAppState}) => {
         <List className={classes.root} subheader={<li />}>
         {
         stores === null || stores === undefined ? <ProgressWheel/> :
-        stores.stores.map(store => (
-                <h1>{store.storeId}</h1>
-        ))}
+        stores.map(store => renderStore(store))
+        }
         </List>
         </div>
     );
