@@ -104,8 +104,8 @@ const useStyles = makeStyles((theme) => ({
       cName: 'nav-text'
     },
     {
-      title: 'Above Rating',
-      path: '/search/rating',
+      title: 'Store',
+      path: '/search/store',
       cName: 'nav-text'
     }
   ];
@@ -153,7 +153,20 @@ export const Products=({getAppState, setAppState})=>{
     const {products} = getAppState();
     const reset = () => setAppState({products:[]});
     const paperStyle={padding :20,width:400, margin:"20px auto"}
+    const userId = getAppState().userId;
 
+    const addToCart = async (storeId, productId) =>
+    {
+        const res = await axios.post(`${SERVER_BASE_URL}addProductTocart`, {userId, storeId, productId, quantity:1} )
+        if(res.status !== 200)
+        {
+            alert("product added successfully")
+        }
+        else
+        {
+            alert("could not add product")
+        }
+    }
     return(
         <div>
         <Grid item align='right'>
@@ -177,7 +190,7 @@ export const Products=({getAppState, setAppState})=>{
                             </Grid>
                             <Grid item xs={3} md={2} align='right'>
                                 <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
-                                        onClick={() => {}}>
+                                        onClick={() => addToCart(product.storeId, product.productId)}>
                                     add to cart
                                 </Button>
                             </Grid>
@@ -421,10 +434,10 @@ export const SearchByStore=({getAppState, setAppState, intersect})=>{
         <Banner getAppState={getAppState} setAppState={setAppState}/>
         <Grid>
             <Grid align='center'>
-                <h2>Search above rating</h2>
+                <h2>Search Store</h2>
             </Grid>
             <TextField
-                placeholder='Enter Rating'
+                placeholder='Enter Store Name'
                 onChange={(event) => SearchByStore(event.target.value)}
             fullWidth/>
         </Grid>
