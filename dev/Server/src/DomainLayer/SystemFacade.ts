@@ -363,15 +363,25 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Result<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
     {
         Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            return user.checkoutBasket(shopId, supply_address);
+            let checkout_res = user.checkoutBasket(shopId, supply_address);
+            if (isOk(checkout_res))
+            {
+                let res = checkout_res.value
+                return new Promise((resolve,reject)=>resolve(res))
+            }
+            else 
+            {
+                let msg = checkout_res.message
+                return new Promise((resolve,reject)=>reject(msg))
+            }
         }
-        return makeFailure("user not found");
+        return new Promise ((res,rej) => rej("user not found"));
     }
 
     public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
@@ -420,7 +430,7 @@ export class SystemFacade
             else
             {
                 let error = res.message;
-                return new Promise((resulve, reject) =>
+                return new Promise((resolve, reject) =>
                 {
                     reject(error);
                 })
@@ -717,6 +727,7 @@ export class SystemFacade
         Authentication.clean();
         StoreDB.clear();
         ProductDB.clear();
+        Purchase.clear();
     }
 
 }

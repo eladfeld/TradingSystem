@@ -1,4 +1,5 @@
 import { expect , assert} from 'chai';
+import { exception } from 'console';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
@@ -49,14 +50,18 @@ describe('2.5: store info test' , function() {
         let sessionId = await service.enter();
         let avi =await register_login(service,sessionId,"avi","123456789");
         var store1 =await open_store(service,sessionId,avi, "aluf hasport" , 123456 , "Tel Aviv");
-        service.addNewProduct(sessionId , store1.getStoreId() , "Apple" , ['Food'] , 26 , 10);
         //---------------------------------------------------------------
 
         //-----------------system manager watches-------------------------
+
         let sys_manager =await enter_login(service, "michael", "1234")
-        service.getStoreInfo(sessionId, store1.getStoreId())
-        .then( _ => assert.ok)
-        .catch( _ => assert.fail)
+        try {
+            let info = await service.getStoreInfo(sessionId, store1.getStoreId())
+        }
+        catch {
+            assert.fail
+        }
+        assert.ok
         //---------------------------------------------------------------
     })
 

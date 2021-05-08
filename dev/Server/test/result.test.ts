@@ -1,6 +1,5 @@
 
 import {expect} from 'chai';
-import { exception } from 'console';
 import {isOk, makeFailure, makeOk, Result} from '../src/Result'
 
 describe('result' , function() {

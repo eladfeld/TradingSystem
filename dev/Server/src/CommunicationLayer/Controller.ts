@@ -3,9 +3,6 @@ import {Request, Response, NextFunction} from 'express';
 import { isOk, Result } from '../Result';
 import { Subscriber } from '../DomainLayer/user/Subscriber';
 import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
-import { Store } from '../DomainLayer/store/Store';
-import Transaction from '../DomainLayer/purchase/Transaction';
-import { isNumber } from 'util';
 
 const service: Service = Service.get_instance();
 const OKSTATUS: number = 200;
@@ -20,7 +17,7 @@ const enter = (req: Request, res: Response, next: NextFunction) =>
             userId: userId});
         }).catch( message => {
         return res.status(FAILSTATUS).json({
-            error: MessageChannel
+            error: message
         })
     })
 }

@@ -111,7 +111,7 @@ export class Service
         return this.facade.editCart(sessionId, storeId, productId, newQuantity);
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Result<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
     {
         return this.facade.checkoutBasket(sessionId, shopId, supply_address);
     }
