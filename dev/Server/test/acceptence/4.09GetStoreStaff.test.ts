@@ -3,7 +3,7 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { enter_register_login, open_store } from './common';
+import { register_login, open_store } from './common';
 
 describe('4.9: get store staff', function () {
 
@@ -16,12 +16,14 @@ describe('4.9: get store staff', function () {
     });
 
     it('get staff', async function () {
-        let avi = await enter_register_login(service, "avi", "123456789");
-        let moshe = await enter_register_login(service, "moshe", "123456789");
-        let store = await open_store(service, avi, "Mega", 123456, "Tel Aviv");
+        let moshe_sessionId = await service.enter();
+        let avi_sessionId = await service.enter();
+        let avi = await register_login(service,avi_sessionId, "avi", "123456789");
+        let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789");
+        let store = await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
 
-        service.appointStoreManager(avi.getUserId(), store.getStoreId(), moshe.getUserId());
-        service.getStoreStaff(avi.getUserId(), store.getStoreId())
+        service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUserId());
+        service.getStoreStaff(avi_sessionId, store.getStoreId())
         .then(staffRes => {
             var staff = JSON.parse(staffRes);
             expect(staff['subscribers'].length).to.equal(2);

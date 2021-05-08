@@ -59,7 +59,22 @@ export class ShoppingBasket implements iSubject
 
     public checkout(userId:number, user: iSubject,  supply_address: string): Result<boolean>
     {
-        return this.store.sellShoppingBasket(userId, supply_address, this);
+        // this function restores the basket in case the purchase failed
+        let products = this.getProducts()
+        let onfail = () => {
+            products.forEach( (quantity , productId , _ ) =>
+                this.addProduct(productId,quantity)
+            )
+        }
+
+        let result =  this.store.sellShoppingBasket(userId, supply_address, this , onfail);
+        if (isOk(result))
+        {
+            this.products.forEach( (qauntity,productId,_) =>
+                this.products.delete(productId)
+            )
+        }
+        return result;
     }
 
     public edit(productId: number, newQuantity: number): Result<string>
@@ -99,5 +114,10 @@ export class ShoppingBasket implements iSubject
     public setStore(store:Store) : void
     {
         this.store = store;
+    }
+
+    quantity = (productId : number) : number =>
+    {
+        return this.products.get(productId);
     }
 }

@@ -11,7 +11,7 @@ import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { add_product, enter_register_login, open_store } from './common';
+import { add_product, register_login, open_store } from './common';
 
 describe('3.7: get subscriber history', function () {
 
@@ -24,17 +24,17 @@ describe('3.7: get subscriber history', function () {
     });
 
     it('get personal purchase history',async function () {
-
-        let avi =await enter_register_login(service, "avi", "1234");
-        let store = await open_store(service, avi, "Mega", 123456, "Tel aviv");
+        let sessionId = await service.enter()
+        let avi =await register_login(service,sessionId, "avi", "1234");
+        let store = await open_store(service,sessionId, avi, "Mega", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = await add_product(service, avi, store, "banana", ['Sweet'], 1, 50);
-        let apple = await add_product(service, avi, store, "apple", ['Sweet'], 1, 10);
-        service.addProductTocart(avi.getUserId(), store.getStoreId(), banana, 10);
-        service.addProductTocart(avi.getUserId(), store.getStoreId(), apple, 7);
-        service.checkoutBasket(avi.getUserId(), store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(avi.getUserId(), store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-        service.getSubscriberPurchaseHistory(avi.getUserId(), avi.getUserId())
+        let banana = await add_product(service,sessionId, avi, store, "banana", ['Sweet'], 1, 50);
+        let apple = await add_product(service,sessionId, avi, store, "apple", ['Sweet'], 1, 10);
+        service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
+        service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
+        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        service.getSubscriberPurchaseHistory(sessionId, avi.getUserId())
         .then(historyRes =>{
             let history = JSON.parse(historyRes);
             expect(history.length).to.equal(1);
