@@ -29,9 +29,12 @@ describe('3.1: Logout' , function() {
     it('system manager tries to open store store after logout' ,async function(){
         let sessionId = await service.enter()
         let sys_manager =await service.login(sessionId , "michael" , "1234");
-        service.logout(sessionId);
-        let promise = service.openStore(sessionId , "aluf Hasport" , 123456 , "Tel Aviv");
-        promise.catch(reason => { assert.ok("open store failed (and should have}")}).
-        then( value => {assert.fail("open store should have failed")})
+        await service.logout(sessionId);
+        try{
+        let promise =await service.openStore(sessionId , "aluf Hasport" , 123456 , "Tel Aviv");
+            assert.fail("open store should have failed")}
+        catch{
+            assert.ok("open store failed (and should have}")
+        }
     });
 });

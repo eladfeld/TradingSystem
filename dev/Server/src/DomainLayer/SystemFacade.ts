@@ -97,6 +97,15 @@ export class SystemFacade
 
     public register(username: string, password: string, age:number): Promise<string>
     {
+        if(username === '' || username === undefined || username === null){
+            return new Promise((resolve,reject) => { reject("invalid username name")})
+        }
+        if(password === '' || password === undefined || password === null){
+            return new Promise((resolve,reject) => { reject("invalid password")})
+        }
+        if(age < 1 || age === undefined || age === null){
+            return new Promise((resolve,reject) => { reject("invalid age")})
+        }
         Logger.log(`register : username:${username}`);
         let reg =Register.register(username, password, age);
         if(isOk(reg))
@@ -118,6 +127,12 @@ export class SystemFacade
     public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         Logger.log(`login : sessionId:${sessionId} , username:${username}`);
+        if(username === '' || username === undefined || username === null){
+            return new Promise((resolve,reject) => { reject("invalid username name")})
+        }
+        if(password === '' || password === undefined || password === null){
+            return new Promise((resolve,reject) => { reject("invalid password")})
+        }
         if(this.logged_guest_users.get(sessionId) === undefined)
         {
             Logger.log(`login => user didn't enter the system`);
@@ -147,6 +162,9 @@ export class SystemFacade
     public getStoreInfo(sessionId : string ,storeId: number): Promise<string>
     {
         Logger.log(`getStoreInfo : sessionId:${sessionId} , storeId:${storeId}`);
+        if(storeId === undefined || storeId === null){
+            return new Promise((resolve,reject) => { reject("invalid storeId")})
+        }
         let store: Store = StoreDB.getStoreByID(storeId);
         let user = this.logged_guest_users.get(sessionId)
         if (user === undefined)
@@ -338,6 +356,9 @@ export class SystemFacade
     public editCart(sessionId: string , storeId : number , productId : number , newQuantity : number): Promise<string>
     {
         Logger.log(`editCart : sessionId:${sessionId} , storeId:${storeId} , productId:${productId} , newQuantity:${newQuantity}`);
+        if(newQuantity < 0|| newQuantity === undefined || newQuantity === null){
+            return new Promise((resolve,reject) => { reject("invalid quantity")})
+        }
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -362,20 +383,39 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Result<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
     {
         Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
+        if(supply_address === ''|| supply_address === undefined || supply_address === null){
+            return new Promise((res,rej) => rej("invalid user Address"))
+        }
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            return user.checkoutBasket(shopId, supply_address);
+            let checkout_res = user.checkoutBasket(shopId, supply_address);
+            if (isOk(checkout_res))
+            {
+                let res = checkout_res.value
+                return new Promise((resolve,reject)=>resolve(res))
+            }
+            else 
+            {
+                let msg = checkout_res.message
+                return new Promise((resolve,reject)=>reject(msg))
+            }
         }
-        return makeFailure("user not found");
+        return new Promise ((res,rej) => rej("user not found"));
     }
 
     public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
     {
         Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
+        if(supply_address === ''|| supply_address === undefined || supply_address === null){
+            return new Promise((resolve,reject) => { reject("invalid user Address")})
+        }
+        if(quantity < 0|| quantity === undefined || quantity === null){
+            return new Promise((resolve,reject) => { reject("invalid quantity")})
+        }
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -403,6 +443,10 @@ export class SystemFacade
     public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
     {
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
+        if(userAddress === ''|| userAddress === undefined || userAddress === null){
+            return new Promise((resolve,reject) => { reject("invalid user Address")})
+        }
+
         let user: User = this.logged_guest_users.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
         if(user !== undefined)
@@ -419,7 +463,7 @@ export class SystemFacade
             else
             {
                 let error = res.message;
-                return new Promise((resulve, reject) =>
+                return new Promise((resolve, reject) =>
                 {
                     reject(error);
                 })
@@ -432,9 +476,21 @@ export class SystemFacade
     public openStore(sessionId: string, storeName : string , bankAccountNumber : number ,storeAddress : string): Promise<Store>
     {
         Logger.log(`openStore : sessionId:${sessionId} , bankAccountNumber:${bankAccountNumber} , storeAddress:${storeAddress} `);
+        if(storeName === ''|| storeName === undefined || storeName === null){
+            return new Promise((resolve,reject) => { reject("invalid store Name")})
+        }
+        if(storeAddress === ''|| storeAddress === undefined || storeAddress === null){
+            return new Promise((resolve,reject) => { reject("invalid store address")})
+        }
+        if(bankAccountNumber < 0|| bankAccountNumber === undefined || bankAccountNumber === null){
+            return new Promise((resolve,reject) => { reject("invalid bank Account Number")})
+        }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber !== undefined)
         {
+            if(StoreDB.getStoreByName(storeName) !== undefined || storeName === '' || storeName === undefined || storeName === null){
+                return new Promise((resolve,reject) => { reject("invalid store name")})
+            }
             let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
             MakeAppointment.appoint_founder(subscriber, store);
             return new Promise( (resolve,reject) => { resolve(store)});
@@ -445,6 +501,9 @@ export class SystemFacade
     public editStoreInventory(sessionId: string, storeId: number, productId: number, quantity: number): Promise<string>
     {
         Logger.log(`editStoreInventory : sessionId:${sessionId} , storeId:${storeId}, productId:${productId}, quantity:${quantity}`);
+        if(quantity < 0|| quantity === undefined || quantity === null){
+            return new Promise((resolve,reject) => { reject("invalid quantity")})
+        }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
         if(subscriber !== undefined && store !== undefined)
@@ -473,6 +532,15 @@ export class SystemFacade
     public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
     {
         Logger.log(`addNewProduct : sessionId:${sessionId} , storeId:${storeId}, productName:${productName} , categories:${categories} , price:${price} , quantity:${quantity} `);
+        if(productName === '' || productName === undefined || productName === null){
+            return new Promise((resolve,reject) => { reject("invalid product Name")})
+        }
+        if(price < 1|| price === undefined || price === null){
+            return new Promise((resolve,reject) => { reject("invalid price")})
+        }
+        if(quantity < 0|| quantity === undefined || quantity === null){
+            return new Promise((resolve,reject) => { reject("invalid quantity")})
+        }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
         if(subscriber !== undefined && store !== undefined)
@@ -593,6 +661,9 @@ export class SystemFacade
     public appointStoreOwner(sessionId: string, storeId: number, newOwnerUsername: string): Promise<string>
     {
         Logger.log(`appointStoreOwner : sessionId:${sessionId} , storeId:${storeId}, newOwnerUsername:${newOwnerUsername}`);
+        if(newOwnerUsername === '' || newOwnerUsername === undefined || newOwnerUsername === null){
+            return new Promise((resolve,reject) => { reject("invalid new owner Username")})
+        }
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
         let res: Result<string> = store.appointStoreOwner(appointer, Authentication.getSubscriberByName(newOwnerUsername));
@@ -617,6 +688,9 @@ export class SystemFacade
     public appointStoreManager(sessionId: string, storeId: number, newManagerUsername: string): Promise<string>
     {
         Logger.log(`appointStoreManager : sessionId:${sessionId} , storeId:${storeId}, newManagerUsername:${newManagerUsername}`);
+        if(newManagerUsername === '' || newManagerUsername === undefined || newManagerUsername === null){
+            return new Promise((resolve,reject) => { reject("invalid new Manager Username")})
+        }
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
         let res: Result<string> =  store.appointStoreManager(appointer, Authentication.getSubscriberByName(newManagerUsername));
@@ -691,7 +765,7 @@ export class SystemFacade
 
 
 
-    
+
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users()
     {
@@ -716,6 +790,7 @@ export class SystemFacade
         Authentication.clean();
         StoreDB.clear();
         ProductDB.clear();
+        Purchase.clear();
     }
 
 }

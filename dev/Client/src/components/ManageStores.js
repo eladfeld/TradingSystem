@@ -34,7 +34,7 @@ const renderStore = (store, setAppState) =>
   return(
       <Button onClick={() => {
         setAppState({storeId: store.storeId})
-        history.push(`/store/:${store.storeId}`)
+        history.push(`/store/${store.storeId}`)
       }}>
         {store.storeName}
       </Button>

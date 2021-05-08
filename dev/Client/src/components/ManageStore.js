@@ -85,11 +85,7 @@ export default function TypographyMenu({getAppState, setAppState}) {
             </MenuItem>
         </MenuList>
         </Paper>
-        
-        {await renderPage(page, getAppState, setAppState, storeId) }
-            
-
-        
+        {renderPage(page, getAppState, setAppState, storeId)} 
     </div>
   );
 }

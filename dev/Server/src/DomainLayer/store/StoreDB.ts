@@ -30,16 +30,6 @@ export class StoreDB
 
     public static getPruductInfoByName(productName: string): Result<string>{
         var products : any = {}
-        // var products : any = {
-        //     'products': [{ 'productName':'apple' ,
-        //         'numberOfRaters':1,
-        //         'rating':3,
-        //         'price': 100,
-        //         'storeName': 'apple',
-        //         'storeId': 1,
-        //         'productId': 1,
-        //     },]
-        // }
         products['products']=[]
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByName(productName);
@@ -131,6 +121,9 @@ export class StoreDB
                                         })
             }
         })
+
+        Logger.log(`Getting products by store answer: ${JSON.stringify(products)}`)
+
         return makeOk(JSON.stringify(products))
     }
     //------------------------------------------functions for tests-------------------------

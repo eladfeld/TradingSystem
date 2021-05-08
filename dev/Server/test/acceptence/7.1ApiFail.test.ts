@@ -62,20 +62,24 @@ describe('7.1: Api Fail', function () {
         store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
-        .then(_ => assert.fail)
-        .catch(_ => assert.ok)
+        await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
+        await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
+        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        try{
+        await service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        assert.fail
+        }
+        catch{
 
-        service.getCartInfo(sessionId)
-        .then(cartStr => {
-            let cart = JSON.parse( String(cartStr));
-            expect(cart['baskets'][0]['products'].length).to.equal(2);
-            expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
-            expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
-        })
+        }
+
+        console.log(avi.GetShoppingCart())
+        let cart_info = await service.getCartInfo(sessionId)
+        let cart = JSON.parse( String(cart_info));
+        expect(cart['baskets'][0]['products'].length).to.equal(2);
+        expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
+        expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
+        
 
     })
 
@@ -88,13 +92,13 @@ describe('7.1: Api Fail', function () {
         store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 20);
-        service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), apple, 10);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
+        await service.addProductTocart(sessionId, store.getStoreId(), apple, 10);
+        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
         
-        service.getCartInfo(sessionId)
-        .then(cartStr => {
+        try{
+            let cartStr = await service.getCartInfo(sessionId)
             let cart = JSON.parse( String(cartStr));
             console.log(cart['baskets'][0]['products'][0]);
             expect(cart['baskets'][0]['products'].length).to.equal(2);
@@ -104,6 +108,8 @@ describe('7.1: Api Fail', function () {
             expect(store.isProductAvailable(ProductDB.getProductByName('banana').getProductId(), 41)).to.equal(false);
             expect(store.isProductAvailable(ProductDB.getProductByName('apple').getProductId(), 10)).to.equal(true);
             expect(store.isProductAvailable(ProductDB.getProductByName('apple').getProductId(), 11)).to.equal(false);
-        })
+        }
+        catch{assert.fail}
+            
     })
 });

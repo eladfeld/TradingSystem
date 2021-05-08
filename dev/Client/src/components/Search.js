@@ -11,6 +11,7 @@ import { IconContext } from 'react-icons';
 import * as AiIcons from 'react-icons/ai';
 import SearchIcon from '@material-ui/icons/Search';
 import DeleteIcon from '@material-ui/icons/Delete';
+import PaymentIcon from '@material-ui/icons/Payment';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -120,7 +121,7 @@ export const Search=({getAppState, setAppState, intersect})=>{
             <IconContext.Provider value={{ color: '#fff' }}>
             <div>
                 <Link to='#' className='menu-bars'>
-                    <SearchIcon onClick={showSidebar} />
+                    <SearchIcon onClick={showSidebar} color='secondary'/>
                 </Link>
             </div>
                 <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
@@ -158,7 +159,7 @@ export const Products=({getAppState, setAppState})=>{
     const addToCart = async (storeId, productId) =>
     {
         const res = await axios.post(`${SERVER_BASE_URL}addProductTocart`, {userId, storeId, productId, quantity:1} )
-        if(res.status !== 200)
+        if(res.status === 200)
         {
             alert("product added successfully")
         }
@@ -182,8 +183,8 @@ export const Products=({getAppState, setAppState})=>{
                 <li key={`${product.productName}`} className={classes.listSection}>
                 <ul className={classes.ul}>
                     <ListItem key={`item-${product.productName}`} align='center'>
-                        <Grid container maxWidth={10} align='right' style={paperStyle}>
-                            <Grid item xs={9} md={6} maxWidth={10} align='center'>
+                        <Grid container align='right' style={paperStyle}>
+                            <Grid item xs={9} md={6} align='center'>
                                 <ListItemText primary={`name: ${product.productName}`} />
                                 <ListItemText primary={`price: ${product.price}`} />
                                 <ListItemText primary={`store: ${product.storeName}`} />
@@ -208,21 +209,20 @@ export const Products=({getAppState, setAppState})=>{
 
 export const SearchByName=({getAppState, setAppState, intersect})=>{
     const [productsByName, setProductsByName] = useState([])
-
+    const [name, setName] = useState('')
     const userId = getAppState().userId;
-    const classes = useStyles();
-    const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
 
     const searchByName = async (productName) =>
     {
         const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
         setProductsByName(JSON.parse(res.data)['products'])
-        if(productsByName !== null || productsByName !== undefined ){
+        if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0 ){
             intersect(getAppState().products, productsByName)
         }
     }
+
     return(
-        <div>
+        <div key={getAppState().products}>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
         <Grid>
             <Grid align='center'>
@@ -230,8 +230,14 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter product name'
-                onChange={(event) => searchByName(event.target.value)}
+                onChange={(event) => setName(event.target.value)}
             fullWidth/>
+            <Grid item align='right'>
+                <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => searchByName(name)} >
+                    search
+                </Button>
+            </Grid>
+
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>
 
@@ -240,7 +246,7 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
 }
 
 export const SearchByCategory=({getAppState, setAppState, intersect})=>{
-    // const [products, setProducts] = useState([])
+    const [cat, setCat] = useState('')
     const [productsByCategory, setProductsByCategory] = useState([])
 
     const userId = getAppState().userId;
@@ -256,7 +262,7 @@ export const SearchByCategory=({getAppState, setAppState, intersect})=>{
         }
     }
     return(
-        <div>
+        <div >
         <Banner getAppState={getAppState} setAppState={setAppState}/>
 
         <Grid>
@@ -265,8 +271,13 @@ export const SearchByCategory=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter category'
-                onChange={(event) => searchByCategory(event.target.value)}
+                onChange={(event) => setCat(event.target.value)}
             fullWidth/>
+            <Grid item align='right'>
+                <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => searchByCategory(cat)} >
+                    search
+                </Button>
+            </Grid>
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
@@ -277,8 +288,7 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     const [productsByKeyword, setProductsByKeyword] = useState([])
     const [productsByName, setProductsByName] = useState([])
     const [productsByCategory, setProductsByCategory] = useState([])
-    const [sidebar, setSidebar] = useState(false);
-    const showSidebar = () => setSidebar(!sidebar);
+    const [key, setKey] = useState('')
 
     const classes = useStyles();
     const userId = getAppState().userId;
@@ -287,7 +297,7 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     {
         const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
         setProductsByName(JSON.parse(res.data)['products'])
-        if(productsByName !== null || productsByName !== undefined ){
+        if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0){
             setProductsByKeyword(productsByName)
         }
     }
@@ -296,7 +306,7 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     {
         const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} )
         setProductsByCategory(JSON.parse(res.data)['products'])
-        if(productsByCategory !== null || productsByCategory !== undefined ){
+        if(productsByCategory !== null && productsByCategory !== undefined && productsByCategory.length !== 0){
 
             setProductsByKeyword(productsByCategory)
         }
@@ -310,8 +320,8 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
         searchByCategory(strToSearch)
         console.log('by cat')
 
-        productsByName === null || productsByName === undefined ? setProductsByKeyword(productsByCategory) :
-        productsByCategory === null || productsByCategory === undefined ? setProductsByKeyword(productsByName) :
+        productsByName !== null && productsByName !== undefined && productsByName.length !== 0 ? setProductsByKeyword(productsByCategory) :
+        productsByCategory !== null && productsByCategory !== undefined && productsByCategory.length !== 0 ? setProductsByKeyword(productsByName) :
         setProductsByKeyword([...new Set([...productsByName,...productsByCategory])])
         intersect(getAppState().products, productsByKeyword)
 
@@ -325,8 +335,13 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter keyword'
-                onChange={(event) => enlist(event.target.value)}
+                onChange={(event) => setKey(event.target.value)}
             fullWidth/>
+            <Grid item align='right'>
+            <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => enlist(key)} >
+                search
+            </Button>
+            </Grid>
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
@@ -334,7 +349,7 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
 }
 
 export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
-    // const [products, setProducts] = useState([])
+    const [key, setKey] = useState('')
     const [productsBelowPrice, setProductsBelowPrice] = useState([])
     const userId = getAppState().userId;
 
@@ -348,7 +363,7 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
         else {
             const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price })
             setProductsBelowPrice(JSON.parse(res.data)['products'])
-            if(productsBelowPrice !== null || productsBelowPrice !== undefined ){
+            if(productsBelowPrice !== null && productsBelowPrice !== undefined && productsBelowPrice.length !== 0){
                 intersect(getAppState().products,  productsBelowPrice)
             }
         }
@@ -362,8 +377,13 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter price'
-                onChange={(event) => SearchBelowPrice(event.target.value)}
+                onChange={(event) => setKey(event.target.value)}
             fullWidth/>
+            <Grid item align='right'>
+            <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => SearchBelowPrice(key)} >
+                search
+            </Button>
+            </Grid>
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
@@ -371,7 +391,7 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
 }
 
 export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
-    // const [products, setProducts] = useState([])
+    const [key, setKey] = useState('')
     const [productsAbovePrice, setProductsAbovePrice] = useState([])
     const userId = getAppState().userId;
 
@@ -385,7 +405,7 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
         else{
             const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} )
             setProductsAbovePrice(JSON.parse(res.data)['products'])
-            if(productsAbovePrice !== null || productsAbovePrice !== undefined ){
+            if(productsAbovePrice !== null && productsAbovePrice !== undefined && productsAbovePrice.length !== 0){
                 intersect(getAppState().products, productsAbovePrice)
             }
         }
@@ -399,8 +419,13 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter price'
-                onChange={(event) => SearchAbovePrice(event.target.value)}
+                onChange={(event) => setKey(event.target.value)}
             fullWidth/>
+            <Grid item align='right'>
+            <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => SearchAbovePrice(key)} >
+                search
+            </Button>
+            </Grid>
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>
@@ -409,24 +434,16 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
 
 
 export const SearchByStore=({getAppState, setAppState, intersect})=>{
-    // const [products, setProducts] = useState([])
+    const [key, setKey] = useState('')
     const [productsByStore, setProductsByStore] = useState([])
     const userId = getAppState().userId;
 
-    const classes = useStyles();
-    const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
-
-    const SearchByStore = async (rating) =>
+    const SearchByStore = async (store) =>
     {
-        if(Number. isInteger(rating)){
-            alert("not a number")
-        }
-        else{
-            const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, rating} )
-            setProductsByStore(JSON.parse(res.data)['products'])
-            if(productsByStore !== null || productsByStore !== undefined ){
-                intersect(getAppState().products, productsByStore)
-            }
+        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} )
+        setProductsByStore(JSON.parse(res.data)['products'])
+        if(productsByStore !== null && productsByStore !== undefined && productsByStore.length !== 0){
+            intersect(getAppState().products, productsByStore)
         }
     }
     return(
@@ -438,8 +455,13 @@ export const SearchByStore=({getAppState, setAppState, intersect})=>{
             </Grid>
             <TextField
                 placeholder='Enter Store Name'
-                onChange={(event) => SearchByStore(event.target.value)}
+                onChange={(event) => setKey(event.target.value)}
             fullWidth/>
+            <Grid item align='right'>
+            <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => SearchByStore(key)} >
+                search
+            </Button>
+            </Grid>
         </Grid>
         <Products getAppState={getAppState} setAppState={setAppState}/>
     </div>

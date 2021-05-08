@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../constants';
 import history from '../history';
+import { areNonNegativeIntegers } from './componentUtil';
 
 const Checkout = ({getAppState, setAppState, storeId}) =>{
     const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
@@ -19,6 +20,15 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
         history.push('/cart');
     }
     const onCompleteClick = async () =>{
+        if(userAddress.length === 0){
+            alert("you must provide a shipping address");
+            return;            
+        }
+        if(!areNonNegativeIntegers([CardNumberText, cvvText, expirationText])){
+            alert("credit card info must be valid numbers");
+            return;
+        }
+
         const paymentInfo = {cardNumber: Number(CardNumberText), cvv: Number(cvvText), expiraion:Number(expirationText)};
         const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, supplyAddress: userAddress, paymentInfo});
         switch(response.status){
