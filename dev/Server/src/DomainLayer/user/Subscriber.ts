@@ -1,4 +1,5 @@
 import { isOk, Result } from "../../Result";
+import { Publisher } from "../notifications/Publisher";
 import { buyingOption } from "../store/BuyingOption";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
@@ -14,7 +15,7 @@ export class Subscriber extends User
     private hashPassword: string;
     private age: number
     private appointments: Appointment[];
-    private pending_messages: {}[];
+    private pending_messages: string[];
 
     public constructor(username: string, age: number ){
         super();
@@ -100,10 +101,16 @@ export class Subscriber extends User
         return false;
     }
 
-    public addMessage(message:{}) : void
+    public addMessage(message:string) : void
     {
         this.pending_messages.push(message);
     }
+
+    // public GetShoppingCart(): Result<string>
+    // {
+    //     Publisher.get_instance().send_message(this, "hello world");
+    //     return super.GetShoppingCart();
+    // }
 
     public getValue = (field: string): number => this.age;
     public isPendingMessages() : boolean
@@ -113,7 +120,7 @@ export class Subscriber extends User
         return true;
     }
 
-    public takeMessages(): {}[]
+    public takeMessages(): string[]
     {
         let messages = this.pending_messages;
         this.pending_messages = [];

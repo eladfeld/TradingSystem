@@ -408,10 +408,17 @@ const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =
 }
 
 
+getUserStores
+const getSubscriberId = (sessionId: string): number =>
+{
+    return service.getSubscriberId(sessionId);
+}
 
 
-
-
+const setServFunc = (func: (userId:number, message:string) => Promise<string>) =>
+{
+    service.set_send_func(func);
+}
 
 export default {
     enter,
@@ -449,4 +456,6 @@ export default {
     getUsername,
     getUserStores,
     getMyPurchaseHistory,
+    getSubscriberId,
+    setServFunc,
     };

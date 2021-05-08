@@ -8,6 +8,8 @@ import { config } from 'dotenv/types';
 import  Route from './Router'
 import fs  from 'fs';
 import path from 'path';
+import WebSocket from 'ws';
+import Controller from './Controller';
 
 
 const router = express();
@@ -60,3 +62,48 @@ const httpsServer = https.createServer({
 router);
 
 httpsServer.listen(Config.server.port, () => console.log(`https Server is running on ${Config.server.hostname}:${Config.server.port}`))
+
+
+// Websocket configs:
+
+
+const wss = new WebSocket.Server({port: 8082})
+
+
+wss.on("connection", WsConn => {
+    console.log("new Client connected!")
+
+    WsConn.on("close", ()=>{
+        console.log("Client has disconnected!")
+    })
+    WsConn.on("message", data => 
+    {
+        console.log(data);
+        let userId:number = Controller.getSubscriberId(String(data));
+        console.log(userId);
+        if(userId > 0)
+        {
+            wssConnections.set(userId, WsConn);
+            Controller.setServFunc(messageSender);
+        }
+    })
+    
+});
+
+
+const wssConnections: Map<number, WebSocket> = new Map();
+
+
+const messageSender =(userId: number, message: string):Promise<string> =>
+{
+
+    let ws = wssConnections.get(userId);
+    if(ws !== undefined)
+    {
+        ws.send(message);
+        return new Promise((res, rej) => {
+            res( "fine")
+        })
+    }
+    return new Promise((res, rej ) =>rej("user not logged in"));
+}

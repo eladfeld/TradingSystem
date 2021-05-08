@@ -3,8 +3,12 @@ import React from 'react'
 import axios from 'axios';
 import history from '../history';
 import { SERVER_BASE_URL } from '../constants';
+
+
+
 const fs = require('fs');
 const https = require('https');
+
 
 const instance = axios.create({
     httpsAgent: new https.Agent({
@@ -12,6 +16,8 @@ const instance = axios.create({
 
     })
 });
+
+
 const Enter = ({setAppState}) =>
 {
     instance.get(`${SERVER_BASE_URL}enter`)
@@ -19,7 +25,7 @@ const Enter = ({setAppState}) =>
         setAppState({userId: res.data.userId});
         history.push('/auth');
     })
-    .catch(error => {console.log(error);})
+    .catch(error => {console.log(error);});
     return(
         <div>
             <h1>

@@ -1,4 +1,5 @@
 import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
+import { Publisher } from "../DomainLayer/notifications/Publisher";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
@@ -12,7 +13,7 @@ export class Service
 
     private static singletone: Service = undefined;
     private facade: SystemFacade;
-    private send_message_func: (userId:number,message:{}) => Promise<number>; //TODO:change this signature according to future changes in Communication layer
+    private send_message_func: (userId:number, message:string) => Promise<string>; //TODO:change this signature according to future changes in Communication layer
 
     private constructor()
     {
@@ -24,9 +25,10 @@ export class Service
         return ['asd', 'bdsa', 'casd', 'ddsa'];
     }
 
-    public set_send_func( send_func: (userId:number,message:{}) => Promise<number>) : void
+    public set_send_func( send_func: (userId:number,message:string) => Promise<string>) : void
     {
         Service.singletone.send_message_func = send_func;
+        Publisher.get_instance().set_send_func(send_func);
     }
 
     public static get_instance() : Service
@@ -206,6 +208,11 @@ export class Service
 
     public removeDiscountPolicy(discountPolicy: any) {
         throw new Error('Method not implemented.');
+    }
+
+    public getSubscriberId(sessionId: string): number
+    {
+        return this.facade.getSubscriberId(sessionId);
     }
 
 

@@ -14,12 +14,25 @@ const Authentication=({getAppState, setAppState})=>{
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const {userId} = getAppState();
+    
+
+
+
 
     const login = async (userId, username, password) =>
     {
+
         const res = await axios.post(`${SERVER_BASE_URL}login`, {userId, username, password} )
         if(res.data.userId !== undefined)
         {
+            const ws  = new WebSocket('ws://localhost:8082');
+
+            ws.addEventListener("open", ()=> 
+            {
+                ws.send(res.data.userId);
+            })
+
+            ws.addEventListener("message", e => alert(e.data))
             setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});
             history.push('/welcome');
         }

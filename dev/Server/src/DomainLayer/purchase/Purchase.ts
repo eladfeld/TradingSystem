@@ -7,6 +7,7 @@ import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import PaymentInfo from './PaymentInfo';
 import { TIMEOUT } from 'dns';
+import { Publisher } from '../notifications/Publisher';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -116,6 +117,8 @@ class Purchase {
         transaction.setStatus(TransactionStatus.COMPLETE);
         this.dbDummy.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
+
+        Publisher.get_instance().notify_store_update(storeId, `hello world`);
         return makeOk(true);
     }
 

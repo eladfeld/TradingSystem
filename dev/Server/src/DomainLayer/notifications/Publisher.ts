@@ -1,10 +1,11 @@
+import { Logger } from "../../Logger";
 import { Subscriber } from "../user/Subscriber";
 
 
 export class Publisher
 {
     private static singleton : Publisher = undefined;
-    private send_message_func : (userId : number, message:{}) => Promise<number>;
+    private send_message_func : (userId : number, message:string) => Promise<string>;
     private store_subscribers:Map<number,Subscriber[]>; //key=storeId , value = registered subscribers
 
     private constructor() 
@@ -12,13 +13,15 @@ export class Publisher
         this.store_subscribers = new Map();
     }
 
-    public set_send_func(send_message : (userId : number, message:{}) => Promise<number>) : void
+    public set_send_func(send_message : (userId : number, message:string) => Promise<string>) : void
     {
+        console.log("set func");
         Publisher.singleton.send_message_func = send_message;
     }
 
     public static get_instance()
     {
+        Logger.log("Publisher.get instance")
         if (Publisher.singleton === undefined)
         {
             Publisher.singleton = new Publisher();
@@ -27,8 +30,10 @@ export class Publisher
         return Publisher.singleton;
     }
 
+    // start listening to messages about this store
     public register_store(storeId:number, subscriber: Subscriber) : void
     {
+        Logger.log(`Publisher.register_store storeId:${storeId} , subscriber:${subscriber}`)
         let registered: Subscriber[] = this.store_subscribers.get(storeId);
         if (registered === undefined)
         {
@@ -42,15 +47,19 @@ export class Publisher
         }
     }
 
+    // stop listening to messages for this store
     public unregister_store(storeId:number, sub_to_delete:Subscriber) : void
     {
+        Logger.log(`Publisher.unregister_store storeId:${storeId} , sub_to_delete:${sub_to_delete.getUserId()}`)
         let registered = this.store_subscribers.get(storeId);
         let deleted_user = registered.filter( sub => sub.getUserId() !== sub_to_delete.getUserId());
         this.store_subscribers.set(storeId , deleted_user);
     }
 
-    private send_message(subscriber:Subscriber , message:{}) : Promise<void>
+    //send message to specific subscriber
+    public send_message(subscriber:Subscriber , message:string) : Promise<void>
     {
+        Logger.log(`Publisher.send_message  subscriber:${subscriber.getUserId()} , message:${message} `)
         return new Promise( (resolve,reject) => {
             let promise = this.send_message_func(subscriber.getUserId() , message);
 
@@ -60,23 +69,13 @@ export class Publisher
                 resolve();
                 return;
             })
-
         })
     }
 
-    public notify_store_subscribers(storeId:number , message : {}) 
+    // ask the publisher to deliver a message to all listening clients
+    public notify_store_update(storeId : number , message:string) : Promise<void>[]
     {
-        let subscrbiers = this.store_subscribers.get(storeId);
-        let promises: Promise<void>[] = [];
-        subscrbiers.forEach(subscriber => {
-            let promise = this.send_message(subscriber , message);
-            promises.push(promise);
-        });
-        return promises;
-    }
-
-    public notify_store_update(storeId : number , message:{}) : Promise<void>[]
-    {
+        Logger.log(`Publisher.notify_store_update  storeId:${storeId} , message:${message} `)
         let subscribers = this.store_subscribers.get(storeId);
         let promises : Promise<void>[] = [];
         subscribers.forEach(subscriber => { 
@@ -86,8 +85,10 @@ export class Publisher
         return promises;
     }
 
+    //when user is logging in we need to send him his pending messages
     public send_pending_messages(subscriber : Subscriber) : Promise<void>[]
     {
+        Logger.log(`Publisher.send_pending_messages  subscriber:${subscriber.getUserId()} `)
         let messages = subscriber.takeMessages();
         let promises : Promise<void>[] = [];
         messages.forEach(message => {
