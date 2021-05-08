@@ -130,9 +130,9 @@ export default function Banner({getAppState, setAppState}) {
   const handleManageStoresClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
     switch(response.status){
-        case SERVER_RESPONSE_OK:
-            const stores = JSON.parse(response.data);
-            setAppState({stores});
+      case SERVER_RESPONSE_OK:
+        const stores = JSON.parse(response.data);
+        setAppState({stores});
             history.push('/manageStores');
             return;
         case SERVER_RESPONSE_BAD:

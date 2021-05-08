@@ -10,10 +10,6 @@ const onRegisterClick = async () =>
     history.push('/register');
 }
 
-
-
-
-
 const Authentication=({getAppState, setAppState})=>{
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")

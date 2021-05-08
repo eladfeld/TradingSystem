@@ -35,14 +35,16 @@ const ManageStores = ({getAppState, setAppState}) => {
     const classes = useStyles();
     const {stores} = getAppState();
 
+
+    console.log(stores)
     return (
         <div >
         <Banner getAppState={getAppState} setAppState={setAppState}/>
         <List className={classes.root} subheader={<li />}>
         {
         stores === null || stores === undefined ? <ProgressWheel/> :
-        stores.map(store => (
-                store.storeId
+        stores.stores.map(store => (
+                <h1>{store.storeId}</h1>
         ))}
         </List>
         </div>

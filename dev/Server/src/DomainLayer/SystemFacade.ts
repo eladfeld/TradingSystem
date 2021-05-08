@@ -72,7 +72,6 @@ export class SystemFacade
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
         return new Promise( (resolve,reject) => {
-            Logger.log(`enter => ${sessionId}`);
             resolve(sessionId);
         })
     }
@@ -93,9 +92,7 @@ export class SystemFacade
 
         //when someone logs out he is guest again
         this.logged_guest_users.set(sessionId,user);
-        return new Promise( (resolve,reject) => { 
-            Logger.log(`logout => sessionId:${sessionId}`);
-            resolve(sessionId)});
+        return new Promise( (resolve,reject) => { resolve(sessionId)});
     }
 
     public register(username: string, password: string, age:number): Promise<string>
@@ -106,7 +103,6 @@ export class SystemFacade
         {
             let subscriber = reg.value;
             return new Promise( (resolve, reject) =>{
-                Logger.log(`register => ${subscriber}`);
                 resolve(subscriber);
             })
         }
@@ -114,7 +110,6 @@ export class SystemFacade
         {
             let message =  reg.message;
             return new Promise ( (resolve, reject) => {
-                Logger.log(`register => ${message}`);
                 reject(message)
             })
         }
@@ -128,8 +123,6 @@ export class SystemFacade
             Logger.log(`login => user didn't enter the system`);
             return new Promise( (resolve,reject) => {reject("user didn't enter the system")});
         }
-
-
         let res: Result<Subscriber> =  Login.login(username, password);
         if (isFailure(res))
         {
@@ -137,7 +130,6 @@ export class SystemFacade
             Logger.log(`login => ${msg}`);
             return new Promise( (resolve,reject) => {reject(msg)});;
         }
-
         let subscriber : Subscriber = res.value;
         Publisher.get_instance().send_pending_messages(subscriber);
         this.logged_guest_users.set(sessionId,subscriber)
@@ -165,7 +157,6 @@ export class SystemFacade
             let value = res.value;
             return new Promise((resolve, reject) =>
             {
-                Logger.log(`getStoreInfo => ${value}`);
                 resolve(value);
             })
         }
@@ -174,7 +165,6 @@ export class SystemFacade
             let error = res.message;
             return new Promise((resulve, reject) =>
             {
-                Logger.log(`getStoreInfo => ${error}`);
                 reject(error);
             })
         }
@@ -189,7 +179,6 @@ export class SystemFacade
             let value = res.value;
             return new Promise((resolve, reject) =>
             {
-                Logger.log(`getPruductInfoByName => ${value}`);
                 resolve(value);
             })
         }
@@ -198,7 +187,6 @@ export class SystemFacade
             let error = res.message;
             return new Promise((resulve, reject) =>
             {
-                Logger.log(`getPruductInfoByName => ${error}`);
                 reject(error);
             })
         }
@@ -213,7 +201,6 @@ export class SystemFacade
             let value = res.value;
             return new Promise((resolve, reject) =>
             {
-                Logger.log(`getPruductInfoByCategory => ${value}`);
                 resolve(value);
             })
         }
@@ -222,7 +209,6 @@ export class SystemFacade
             let error = res.message;
             return new Promise((resulve, reject) =>
             {
-                Logger.log(`getPruductInfoByCategory => ${error}`);
                 reject(error);
             })
         }
@@ -241,7 +227,6 @@ export class SystemFacade
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    Logger.log(`addProductTocart => ${value}`);
                     resolve(value);
                 })
             }
@@ -250,7 +235,6 @@ export class SystemFacade
                 let error = res.message;
                 return new Promise((resulve, reject) =>
                 {
-                    Logger.log(`addProductTocart => ${error}`);
                     reject(error);
                 })
             }
@@ -270,7 +254,6 @@ export class SystemFacade
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    Logger.log(`getCartInfo => ${value}`);
                     resolve(value);
                 })
             }
@@ -279,15 +262,11 @@ export class SystemFacade
                 let error = res.message;
                 return new Promise((resulve, reject) =>
                 {
-                    Logger.log(`getCartInfo => ${error}`);
                     reject(error);
                 })
             }
         }
-        return new Promise((resolve, reject) => {
-            Logger.log(`getCartInfo => user not found`);
-            reject("user not found")
-        });
+        return new Promise((resolve, reject) => reject("user not found"));
     }
 
     public editCart(sessionId: string , storeId : number , productId : number , newQuantity : number): Promise<string>
@@ -302,7 +281,6 @@ export class SystemFacade
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    Logger.log(`editCart => ${value}`);
                     resolve(value);
                 })
             }
@@ -311,14 +289,11 @@ export class SystemFacade
                 let error = res.message;
                 return new Promise((resulve, reject) =>
                 {
-                    Logger.log(`editCart => ${error}`);
                     reject(error);
                 })
             }
         }
-        return new Promise((resolve, reject) => {
-            Logger.log(`editCart => user not found`);
-            reject("user not found")});
+        return new Promise((resolve, reject) => reject("user not found"));
     }
 
     public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
@@ -333,7 +308,6 @@ export class SystemFacade
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    Logger.log(`checkoutBasket => ${value}`);
                     resolve(value);
                 })
             }
@@ -342,14 +316,11 @@ export class SystemFacade
                 let error = res.message;
                 return new Promise((resulve, reject) =>
                 {
-                    Logger.log(`checkoutBasket => ${error}`);
                     reject(error);
                 })
             }
         }
-        return new Promise((resolve, reject) => {
-            Logger.log(`checkoutBasket => user not found`);
-            reject("user not found")});
+        return new Promise((resolve, reject) => reject("user not found"));
     }
 
     public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
@@ -364,7 +335,6 @@ export class SystemFacade
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    Logger.log(`checkoutSingleProduct => ${value}`)
                     resolve(value);
                 })
             }
@@ -373,14 +343,11 @@ export class SystemFacade
                 let error = res.message;
                 return new Promise((resulve, reject) =>
                 {
-                    Logger.log(`checkoutSingleProduct => ${error}`)
                     reject(error);
                 })
             }
         }
-        return new Promise((resolve, reject) => {
-            Logger.log(`checkoutSingleProduct => user not found`)
-            reject("user not found")});
+        return new Promise((resolve, reject) => reject("user not found"));
     }
 
     public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
@@ -652,6 +619,7 @@ export class SystemFacade
 
     public  getUserStores(sessionId:string) : Promise<{}>
     {
+        Logger.log(`getUserStores : sessionId:${sessionId}`);
         let subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber !== undefined)
         {
@@ -659,6 +627,11 @@ export class SystemFacade
         }
         return new Promise((res, rej) => rej("subscriber not logged in"));
     }
+
+
+
+
+    
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users() 
     {

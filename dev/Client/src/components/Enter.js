@@ -19,7 +19,7 @@ const Enter = ({setAppState}) =>
         setAppState({userId: res.data.userId});
         history.push('/auth');
     })
-    .catch(error => {console.log(error); alert("sad")})
+    .catch(error => {console.log(error);})
     return(
         <div>
             <h1>

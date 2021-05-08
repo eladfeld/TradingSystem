@@ -333,7 +333,7 @@ const getWordList = (req: Request, res: Response, next: NextFunction) =>
 
 const getUserStores = (req: Request , res:Response , next : NextFunction) =>
 {
-    let sessionId :string = req.body.sessionId;
+    let sessionId :string = req.body.userId;
     let promise = service.getUserStores(sessionId);
     promise
     .then( stores => res.status(OKSTATUS).json(stores))

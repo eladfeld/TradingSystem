@@ -1,70 +1,85 @@
-import {List, ListSubheader, ListItemText, Grid, Button } from '@material-ui/core';
-import PaymentIcon from '@material-ui/icons/Payment';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
-import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
-import Banner from './Banner';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import history from '../history';
-import ProgressWheel from './ProgreeWheel';
-import CartItem from './CartItem';
+import Banner from './Banner';
+import { Grid } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-      width: '100%',
-      backgroundColor: theme.palette.background.paper,
-      position: 'relative',
-      alignContent: 'center',
-      overflow: 'auto',
-      maxHeight: 600,
-      maxWidth: 1200
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
     },
-    listSection: {
-      backgroundColor: 'inherit',
-    },
-    ul: {
-      backgroundColor: 'inherit',
-      padding: 0,
-    },
-}));
+  },
+}))(TableRow);
 
+const useStyles = makeStyles({
+  table: {
+    minWidth: 100,
+  },
+});
 
-//TODO: FIX the multiple fetchCart requests issue
-const Inventory = ({getAppState, setAppState}) => {
-    const classes = useStyles();
-    const {Inventory} = getAppState();
+export default function MyTransactions({getAppState, setAppState}) {
+  const classes = useStyles();
+  const {myTransactions} = getAppState();
 
-    return (
-        <div >
-        <Banner getAppState={getAppState} setAppState={setAppState}/>
-        <List className={classes.root} subheader={<li />}>
-        {
-        cart === null || cart === undefined ? <ProgressWheel/> :
-        cart.baskets.map((basket) => (
-            <li key={`cart-section-${basket.store}`} className={classes.listSection}>
-            <ul className={classes.ul}>
-                <ListSubheader>
-                    <Grid container>
-                        <Grid item xs={9} md={6}>
-                            <ListItemText primary={`${basket.store}`}/>
-                        </Grid>
-                        <Grid item xs={3} md={2}>
-                            <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} onClick={() => onCheckoutCartClick(basket.storeId)} >
-                                buy basket
-                            </Button>
-                        </Grid>
-                    </Grid>                    
-                </ListSubheader>
-                {basket.products.map((product) => (
-                    <CartItem getAppState={getAppState} setAppState={setAppState} basket={basket} product={product}/>
+  const onTransactionClick = (t) =>{
+    //stopPropagation(e);
+    setAppState({myTansactionToView: t});
+    history.push('/viewmytransaction');
+  }
+
+  return (
+    
+    <div>
+      <Banner getAppState={getAppState} setAppState={setAppState}/>
+      <Grid container>
+        <Grid item xs={0} md={3}/>
+        <Grid item xs={12} md={6}>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Store</StyledTableCell>
+                  <StyledTableCell align="right">Date</StyledTableCell>
+                  <StyledTableCell align="right">Rating</StyledTableCell>
+                  <StyledTableCell align="right">Total</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {myTransactions.map((t) => (
+                  <StyledTableRow key={t.transactionId} onClick={(e) => onTransactionClick(t)}>
+                    <StyledTableCell component="th" scope="row">
+                      {t.storeId}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">{new Date(t.time).toUTCString()}</StyledTableCell>
+                    <StyledTableCell align="right">{0}</StyledTableCell>
+                    <StyledTableCell align="right">{t.total}</StyledTableCell>
+                  </StyledTableRow>
                 ))}
-            </ul>
-            </li>
-        ))}
-        </List>
-        </div>
-    );
-}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          </Grid>
+          <Grid item xs={0} md={3}/>
+      </Grid>
+    </div>
 
-export default Inventory;
+  );
+}

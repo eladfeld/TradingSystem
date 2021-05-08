@@ -44,7 +44,7 @@ class App extends React.Component
           <Route
             path='/manageStores' exact
             render={(props) => (
-              <ManageStores {...props} setAppState={this.setAppState} />
+              <ManageStores {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
           <Route

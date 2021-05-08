@@ -102,7 +102,6 @@ export class Subscriber extends User
 
     public addMessage(message:{}) : void
     {
-        console.log("added message");
         this.pending_messages.push(message);
     }
 
@@ -123,8 +122,10 @@ export class Subscriber extends User
 
     public getStores() : {}
     {
-        return {"stores":[{"storeId": 1}, {"storeId":2}]
-        }
+        // this.appointments.forEach( appointment =>{
+        //     appointment.
+        // })
+        return JSON.stringify({"stores":[{"storeId": 1}, {"storeId":2}]})
     }
 
     
