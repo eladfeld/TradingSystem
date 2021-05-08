@@ -33,7 +33,7 @@ const renderStore = (store) =>
 {
   return(
       <Button onClick={() => {
-        history.push(`/store/:${store.storeId}`)
+        history.push(`/store/${store.storeId}`)
       }}>
         {store.storeName}
       </Button>

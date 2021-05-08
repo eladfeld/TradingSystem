@@ -14,9 +14,12 @@ import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { SERVER_BASE_URL } from '../constants';
+import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../constants';
 
 import axios from 'axios';
+import { unknownStatusMessage } from './componentUtil';
+import ProgressWheel from './ProgreeWheel';
+import Employees from './Employees';
 
 const useStyles = makeStyles({
   root: {
@@ -28,13 +31,26 @@ const getInventory = async (userId, storeId) =>
 {
     return await axios.post(`${SERVER_BASE_URL}getStoreInventory`, {userId, storeId})
 }
-const renderPage = (page, getAppState, setAppState, storeId) =>{
+const renderPage = async (page, getAppState, setAppState, storeId) =>{
+    const {userId} = getAppState();
     switch(page){
         case "inventory":
             const inventory = getInventory(getAppState().userId, storeId);
             return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
-        case "shit":
-            return <h1>shit------------------------------------------------------------------------------------------------ </h1>
+        case "staff":
+            const staffResponse = await axios.post(SERVER_BASE_URL+'/editStaffPermission', {userId, storeId});
+            switch(staffResponse.status){
+                case SERVER_RESPONSE_OK:
+                    console.log('[T] staff response data', staffResponse.data);
+                    const staff = JSON.parse(staffResponse.data);
+                    return <Employees getAppState={getAppState} setAppState={setAppState} staff={staff}/>;
+                case SERVER_RESPONSE_BAD:
+                    alert(staffResponse.data);
+                    return <ProgressWheel/> ;
+                default:
+                    alert(unknownStatusMessage(staffResponse));
+                    return <ProgressWheel/>;
+            }
         default:
             return <h1>default ------------------------------------------------------------------------------------------------</h1>
     }
@@ -45,9 +61,9 @@ export default function TypographyMenu({getAppState, setAppState}) {
   let { storeId} = useParams(); 
     const [page, setPage] = useState("");
 
-    const onInventoryClick =() =>{
-        setPage("inventory");
-    }
+    const onInventoryClick =() =>{setPage("inventory");}
+
+    const onStaffClick = () => {setPage("staff");}
 
   alert(`storeId: ${storeId}`)
   return (
@@ -61,11 +77,11 @@ export default function TypographyMenu({getAppState, setAppState}) {
                 </ListItemIcon>
                 <Typography variant="inherit">Inventory</Typography>
             </MenuItem>
-            <MenuItem>
-            <ListItemIcon>
-                <PeopleIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">View employees</Typography>
+            <MenuItem onClick={onStaffClick}>
+                <ListItemIcon>
+                    <PeopleIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit">View employees</Typography>
             </MenuItem>
             <MenuItem>
             <ListItemIcon>

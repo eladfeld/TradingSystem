@@ -159,7 +159,7 @@ class App extends React.Component
             )}
           />
           <Route
-            path= '/:store/:storeId' exact
+            path= '/store/:storeId' exact
             render={(props) => (
               <ManageStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
