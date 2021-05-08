@@ -148,7 +148,6 @@ export class SystemFacade
     {
         Logger.log(`getStoreInfo : sessionId:${sessionId} , storeId:${storeId}`);
         let store: Store = StoreDB.getStoreByID(storeId);
-        console.log(storeId);
         let user = this.logged_guest_users.get(sessionId)
         if (user === undefined)
             return new Promise((resolve,reject) => reject("user is not logged in"))
