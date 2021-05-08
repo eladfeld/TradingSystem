@@ -131,6 +131,9 @@ export class StoreDB
                                         })
             }
         })
+
+        Logger.log(`Getting products by store answer: ${JSON.stringify(products)}`)
+
         return makeOk(JSON.stringify(products))
     }
     //------------------------------------------functions for tests-------------------------

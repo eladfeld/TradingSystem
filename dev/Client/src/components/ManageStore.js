@@ -111,7 +111,6 @@ export default function TypographyMenu({getAppState, setAppState}) {
         setPage("appointmanager");
     }
 
-  alert(`storeId: ${Number(storeId)}`)
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>
