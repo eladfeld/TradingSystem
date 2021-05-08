@@ -103,7 +103,6 @@ export const AppointOwner = ({getAppState, setAppState}) => {
                       <TextField
                           label='Owner username'
                           placeholder='Enter new owner username'
-                          value={_ownerUsername}
                           onChange={(event) => setOwnerUsername(event.target.value)}
                       fullWidth/>
                     </Grid>
@@ -112,7 +111,7 @@ export const AppointOwner = ({getAppState, setAppState}) => {
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(userId, storeId, _ownerUsername)
+                        appoint(_ownerUsername)
                     }}
                   fullWidth>add owner
                 </Button>
