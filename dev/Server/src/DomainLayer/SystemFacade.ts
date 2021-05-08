@@ -568,6 +568,8 @@ export class SystemFacade
         Logger.log(`editStaffPermission : sessionId:${sessionId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
+        console.log(store);
+        console.log(this.logged_subscribers);
         if(subscriber !== undefined && store !== undefined)
         {
             let res: Result<string> = store.editStaffPermission(subscriber, managerToEditId, permissionMask);

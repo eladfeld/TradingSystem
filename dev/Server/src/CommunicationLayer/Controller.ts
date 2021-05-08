@@ -312,9 +312,9 @@ const editStaffPermission = (req: Request, res: Response, next: NextFunction) =>
     let managerToEditId: number = req.body.managerToEditId;
     let storeId: number = req.body.storeId;
     let permissionMask: number = req.body.permissionMask;
-    service.editStaffPermission(sessionId, storeId, managerToEditId, permissionMask)
+    service.editStaffPermission(sessionId, managerToEditId, storeId, permissionMask)
     .then(productNumber => res.status(OKSTATUS).json(productNumber))
-    .catch(message => res.status(FAILSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message)) 
 }
 
 

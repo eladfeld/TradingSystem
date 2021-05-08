@@ -64,7 +64,6 @@ export default function TypographyMenu({getAppState, setAppState}) {
         if(staff !== undefined)setStaff(undefined);
     }
 
-
     const renderPage = () =>{
         const {userId} = getAppState();
         switch(page){
@@ -81,7 +80,8 @@ export default function TypographyMenu({getAppState, setAppState}) {
                         switch(staffResponse.status){
                             case SERVER_RESPONSE_OK:
                                 const staff = JSON.parse(staffResponse.data);
-                                setStaff(staff);
+                                setAppState({staffToView: staff.subscribers})
+                                setStaff([]);
                             case SERVER_RESPONSE_BAD:
                                 alert(staffResponse.data);
                                 break;
@@ -90,10 +90,10 @@ export default function TypographyMenu({getAppState, setAppState}) {
                                 break;
                         }
                     }
-                    foo();
                     setStaff(null)
+                    foo();
                 }
-                return <Employees getAppState={getAppState} setAppState={setAppState} staff={staff}/>
+                return <Employees getAppState={getAppState} setAppState={setAppState} storeId={storeId}/>
             default:
                 return <h1>default</h1>
         }
@@ -107,7 +107,6 @@ export default function TypographyMenu({getAppState, setAppState}) {
         setPage("appointmanager");
     }
 
-  alert(`storeId: ${Number(storeId)}`)
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>

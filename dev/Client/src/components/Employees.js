@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,8 +9,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import history from '../history';
 import Banner from './Banner';
-import { Grid } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import ProgressWheel from './ProgreeWheel';
+import { ROUTE_MANAGE_EMPLOYEE } from '../routes';
+import ManageEmployee from './ManageEmployee';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -36,12 +38,59 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Employees({getAppState, setAppState, staff}) {
-  const classes = useStyles();
-  //const {myTransactions} = getAppState();
-    if(staff === null || staff === undefined){
+export default function Employees({getAppState, setAppState, storeId}) {
+    const classes = useStyles();
+    const [selectedEmpId, setSelectedEmpId] = useState(null);
+    const {staffToView} = getAppState();
+
+
+    if(staffToView === null || staffToView === undefined){
         return <ProgressWheel/>;
     }
+
+  const onManageClick = (emp) =>{
+      if(selectedEmpId === emp.id)
+        setSelectedEmpId(null);
+      else setSelectedEmpId(emp.id);
+  } 
+  const updateEmployee = (emp) =>{
+    staffToView.find( e => e.id=== emp.id).permissions = emp.permissions;
+    setAppState({staffToView: [...staffToView]});
+}
+
+  const renderEmployee = (emp) =>{
+    if(emp.id === selectedEmpId){
+        return (
+            <StyledTableRow key={emp.id}>
+                <StyledTableRow key={`${emp.id}-static`}>
+                <StyledTableCell component="th" scope="row">{emp.id}</StyledTableCell>
+                <StyledTableCell align="left">{emp.title}</StyledTableCell>
+                <StyledTableCell align="left">
+                    <Button onClick={() => onManageClick(emp)}>
+                        Manage
+                    </Button>
+                </StyledTableCell>
+                </StyledTableRow>
+                <StyledTableRow key={`${emp.id}-expanded`}>
+                    <ManageEmployee getAppState={getAppState} setAppState={setAppState} emp={emp} storeId={storeId}
+                        onEmpUpdate={updateEmployee}/>
+                </StyledTableRow>
+            </StyledTableRow>
+        );
+    }
+    return (
+        <StyledTableRow key={emp.id}>
+          <StyledTableCell component="th" scope="row">{emp.id}</StyledTableCell>
+          <StyledTableCell align="left">{emp.title}</StyledTableCell>
+          <StyledTableCell align="left">
+              <Button onClick={() => onManageClick(emp)}>
+                  Manage
+              </Button>
+          </StyledTableCell>
+        </StyledTableRow>
+      );
+  }
+
   return (    
     <div>
       <Grid container>
@@ -52,22 +101,12 @@ export default function Employees({getAppState, setAppState, staff}) {
               <TableHead>
                 <TableRow>
                   <StyledTableCell>Id</StyledTableCell>
-                  <StyledTableCell align="right">Name</StyledTableCell>
-                  <StyledTableCell align="right">Rating</StyledTableCell>
-                  <StyledTableCell align="right">Total</StyledTableCell>
+                  <StyledTableCell align="left">Title</StyledTableCell>
+                  <StyledTableCell align="left">Manage</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {[0,1,2,3].map((t) => (
-                  <StyledTableRow key={t.transactionId}>
-                    <StyledTableCell component="th" scope="row">
-                      {0}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{0}</StyledTableCell>
-                    <StyledTableCell align="right">{0}</StyledTableCell>
-                    <StyledTableCell align="right">{0}</StyledTableCell>
-                  </StyledTableRow>
-                ))}
+                {staffToView.map((emp) => renderEmployee(emp))}              
               </TableBody>
             </Table>
           </TableContainer>
