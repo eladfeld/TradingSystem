@@ -259,7 +259,28 @@ const addNewProduct = (req: Request, res: Response, next: NextFunction) =>
     let price: number = req.body.price;
     service.addNewProduct(sessionId, storeId, productName, categories, price, quantity)
     .then(result => res.status(OKSTATUS).json(result))
-    .catch(message => res.status(FAILSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json({error:message}))
+}
+
+const addCategory = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId: string = req.body.userId;
+    let storeId: number = req.body.storeId;
+    let categoryFather: string = req.body.categoryFather;
+    let category: string = req.body.category;
+    service.addCategory(sessionId, storeId, categoryFather, category)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(FAILSTATUS).json({error:message}))
+}
+
+const addCategoryToRoot = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId: string = req.body.userId;
+    let storeId: number = req.body.storeId;
+    let category: string = req.body.category;
+    service.addCategoryToRoot(sessionId, storeId, category)
+    .then(result => res.status(OKSTATUS).json(result))
+    .catch(message => res.status(FAILSTATUS).json({error:message}))
 }
 
 const getSubscriberPurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
@@ -310,7 +331,7 @@ const editStaffPermission = (req: Request, res: Response, next: NextFunction) =>
     let permissionMask: number = req.body.permissionMask;
     service.editStaffPermission(sessionId, managerToEditId, storeId, permissionMask)
     .then(productNumber => res.status(OKSTATUS).json(productNumber))
-    .catch(message => res.status(FAILSTATUS).json(message)) 
+    .catch(message => res.status(FAILSTATUS).json(message))
 }
 
 
@@ -439,6 +460,8 @@ export default {
     openStore,
     editStoreInventory,
     addNewProduct,
+    addCategory,
+    addCategoryToRoot,
     getSubscriberPurchaseHistory,
     getStorePurchaseHistory,
     deleteManagerFromStore,

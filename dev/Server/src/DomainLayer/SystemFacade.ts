@@ -327,6 +327,71 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
+    public addCategoryToRoot(sessionId: string, storeId: number, category: string): Promise<string>
+    {
+        Logger.log(`addCategoryToRoot : sessionId:${sessionId} , storeId: ${storeId} , category:${category}`);
+        if(category === '' || category === undefined || category === null){
+            return new Promise((resolve,reject) => { reject("invalid category Name")})
+        }
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if (subscriber !== undefined)
+        {
+            let res: Result<string> = store.addCategoryToRoot(category)
+            if(isOk(res))
+            {
+                let value = res.value;
+                return new Promise((resolve, reject) =>
+                {
+                    resolve(value);
+                })
+            }
+            else
+            {
+                let error = res.message;
+                return new Promise((resulve, reject) =>
+                {
+                    reject(error);
+                })
+            }
+        }
+        return new Promise((resolve, reject) => reject("user not found"));
+    }
+
+    public addCategory(sessionId: string, storeId: number, categoryFather:string, category: string): Promise<string>
+    {
+        Logger.log(`addCategory : sessionId:${sessionId} , storeId: ${storeId} , categoryFather:${categoryFather} , category:${category}`);
+        if(category === '' || category === undefined || category === null){
+            return new Promise((resolve,reject) => { reject("invalid category Name")})
+        }
+        if(categoryFather === '' || categoryFather === undefined || categoryFather === null){
+            return new Promise((resolve,reject) => { reject("invalid categoryFather Name")})
+        }
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if (subscriber !== undefined)
+        {
+            let res: Result<string> = store.addCategory(categoryFather, category)
+            if(isOk(res))
+            {
+                let value = res.value;
+                return new Promise((resolve, reject) =>
+                {
+                    resolve(value);
+                })
+            }
+            else
+            {
+                let error = res.message;
+                return new Promise((resulve, reject) =>
+                {
+                    reject(error);
+                })
+            }
+        }
+        return new Promise((resolve, reject) => reject("user not found"));
+    }
+
     public getCartInfo(sessionId: string): Promise<string>
     {
         Logger.log(`getCartInfo : sessionId:${sessionId}`);
@@ -396,7 +461,7 @@ export class SystemFacade
                 let res = checkout_res.value
                 return new Promise((resolve,reject)=>resolve(res))
             }
-            else 
+            else
             {
                 let msg = checkout_res.message
                 return new Promise((resolve,reject)=>reject(msg))
@@ -553,6 +618,7 @@ export class SystemFacade
             if(isOk(res))
             {
                 let value = res.value;
+
                 return new Promise((resolve, reject) =>
                 {
                     resolve(value);
@@ -560,7 +626,9 @@ export class SystemFacade
             }
             else
             {
+
                 let error = res.message;
+                Logger.log(error);
                 return new Promise((resulve, reject) =>
                 {
                     reject(error);

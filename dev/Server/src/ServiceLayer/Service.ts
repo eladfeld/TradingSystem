@@ -144,6 +144,16 @@ export class Service
         return this.facade.addNewProduct(sessionId, storeId, productName, categories, price, quantity);
     }
 
+    public addCategory(sessionId: string, storeId: number, categoryFather:string, category: string): Promise<string>
+    {
+        return this.facade.addCategory(sessionId, storeId, categoryFather, category);
+    }
+
+    public addCategoryToRoot(sessionId: string, storeId: number, category: string): Promise<string>
+    {
+        return this.facade.addCategoryToRoot(sessionId, storeId, category);
+    }
+
     public getSubscriberPurchaseHistory(sessionId: string, subscriberToSeeId: number): Promise<any>
     {
         return this.facade.getSubscriberPurchaseHistory(sessionId, subscriberToSeeId);

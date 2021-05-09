@@ -320,7 +320,7 @@ export class Store
     }
 
     public getStoreInfo(): StoreInfo {
-        return (new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo()))
+        return (new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo(), this.categiries))
     }
 
     public addAppointment(appointment : Appointment) : void
