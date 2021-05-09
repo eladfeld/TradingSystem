@@ -8,6 +8,7 @@ import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import PaymentInfo from './PaymentInfo';
 import { TIMEOUT } from 'dns';
 import { Publisher } from '../notifications/Publisher';
+import { userInfo } from 'os';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -35,6 +36,7 @@ class Purchase {
         this.cartCheckoutTimers = new Map();
         this.dbDummy = new DbDummy();
     }
+
     private resetTimer = (userId:number, storeId: number, callback: ()=>void)=>{
         const timerId = setTimeout(callback, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, callback);
@@ -179,6 +181,9 @@ class Purchase {
     }
     public getFailedTransactions = ():Transaction[] => {
         return null;
+    }
+    public getUserStoreHistory = (userId: number, storeId: number):Transaction[] =>{
+        return this.dbDummy.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
 

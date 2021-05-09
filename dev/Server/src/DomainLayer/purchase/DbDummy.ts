@@ -38,8 +38,12 @@ class DbDummy{
     }
 
     public static clear()
-    {
-        
+    {       
+    getUserStoreHistory = (userId: number, storeId:number)=>{
+        return this.transactions.filter(t => t.getUserId()===userId && t.getStoreId()===storeId).sort( (a,b) => {
+            const dt:number = b.getTime() - a.getTime();
+            return dt !== 0 ? dt : a.getStatus() - b.getStatus();
+        });
     }
 
 }
