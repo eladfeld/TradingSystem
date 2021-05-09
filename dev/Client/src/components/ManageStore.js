@@ -14,6 +14,7 @@ import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import AddIcon from '@material-ui/icons/Add';
 import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../constants';
 
 import axios from 'axios';
@@ -28,18 +29,20 @@ const useStyles = makeStyles({
 
 const getInventory = async(userId, storeId, setAppState) =>
 {
-    const storeInfo = await axios.post(`${SERVER_BASE_URL}getStoreInfo`, {userId, storeId})
-    const store = JSON.parse(storeInfo.data);
-    setAppState({storeInventory: store.storeProducts})
+
 }
 
-export default function TypographyMenu({getAppState, setAppState}) {
-  const classes = useStyles();
-  let storeId = getAppState().storeId
+export default function ManageStore({getAppState, setAppState}) {
+    const classes = useStyles();
+    let storeId = getAppState().storeId
     const [page, setPage] = useState("");
     const [staff, setStaff] = useState(undefined);
+    const [inventory, setInventory] = useState(undefined);
 
-    const onInventoryClick =() =>{setPage("inventory");}
+    const onInventoryClick =() =>{
+        setPage("inventory");
+        if(inventory !== undefined) setInventory(undefined);
+    }
     const onStaffClick = () => {
         setPage("staff");
         if(staff !== undefined)setStaff(undefined);
@@ -49,9 +52,28 @@ export default function TypographyMenu({getAppState, setAppState}) {
         const {userId} = getAppState();
         switch(page){
             case "inventory":
-                return <h1>Inventory</h1>
-                const inventory = getInventory(getAppState().userId, Number(storeId));
-                //return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
+                if (inventory === undefined){
+                    const foo = async () =>{
+                        const storeResponse = await axios.post(`${SERVER_BASE_URL}getStoreInfo`, {userId, storeId})
+                        switch(storeResponse.status){
+                            case SERVER_RESPONSE_OK:
+                                const store = JSON.parse(storeResponse.data);
+                                setAppState({inventory: store.storeProducts})
+                                setInventory([]);
+                                break;
+                            case SERVER_RESPONSE_BAD:
+                                alert(storeResponse.data);
+                                break;
+                            default:
+                                alert(unknownStatusMessage(storeResponse));
+                                break;
+                        }
+                    }
+                    foo();
+                    console.log("here");
+
+                }
+                return <Inventory getAppState={getAppState} setAppState={setAppState}></Inventory>
             case "staff":
                 if(staff === undefined){
                     const foo = async () =>{
@@ -62,14 +84,13 @@ export default function TypographyMenu({getAppState, setAppState}) {
                                 const staff = JSON.parse(staffResponse.data);
                                 setAppState({staffToView: staff.subscribers})
                                 setStaff([]);
-                                return;
+                                break;
                             case SERVER_RESPONSE_BAD:
                                 alert(staffResponse.data);
-                                return;
                                 break;
                             default:
                                 alert(unknownStatusMessage(staffResponse));
-                                return;
+                                break;
                         }
                     }
                     setStaff(null)
@@ -116,6 +137,14 @@ export default function TypographyMenu({getAppState, setAppState}) {
             </ListItemIcon>
             <Typography variant="inherit" noWrap>
                 Appoint new manager
+            </Typography>
+            </MenuItem>
+            <MenuItem>
+            <ListItemIcon>
+                <AddIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+                add new product
             </Typography>
             </MenuItem>
         </MenuList>

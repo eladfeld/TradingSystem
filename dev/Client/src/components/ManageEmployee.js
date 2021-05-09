@@ -50,7 +50,7 @@ const arrayToMask = (arr) =>{
 export default function ManageEmployee({getAppState, setAppState, emp, storeId, onEmpUpdate}) {
   const classes = useStyles();
   const {userId} = getAppState();
-  if(!emp.permissions) emp.permissions = 6;//TODO: REMOVE!
+  // if(!emp.permissions) emp.permissions = 6;//TODO: REMOVE!
   const [mask, setMask] = React.useState(emp.permissions);
 
   const switchCheck = (idx) => {

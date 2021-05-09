@@ -25,8 +25,8 @@ describe('6.4: System Manager Get Info', function () {
         service.checkoutSingleProduct(sys_manager_sessionId, apple, 5, store.getStoreId(), "King Goerge street");
         service.completeOrder(sys_manager_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
         service.getStorePurchaseHistory(sys_manager_sessionId, store.getStoreId())
-        .then(_ => assert.ok)
-        .catch(_ => assert.fail)
+        .then(_ => assert.ok(""))
+        .catch(_ => assert.fail())
     })
 
     it('system manager get user purchase history', async function () {
@@ -42,7 +42,7 @@ describe('6.4: System Manager Get Info', function () {
         service.checkoutSingleProduct(ali_sessionId, apple, 5, store.getStoreId(), "King Goerge street");
         service.completeOrder(ali_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
         service.getSubscriberPurchaseHistory(sysm_sessionId, ali.getUserId())
-        .then(_ => assert.ok)
-        .catch(_ => assert.fail)
+        .then(_ => assert.ok(""))
+        .catch(_ => assert.fail())
     })
 });
