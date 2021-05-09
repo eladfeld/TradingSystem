@@ -30,7 +30,7 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
         }
 
         const paymentInfo = {cardNumber: Number(CardNumberText), cvv: Number(cvvText), expiraion:Number(expirationText)};
-        const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, supplyAddress: userAddress, paymentInfo});
+        const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, userAddress, paymentInfo});
         switch(response.status){
             case SERVER_RESPONSE_OK:
                 setAppState({basketAtCheckout: undefined});

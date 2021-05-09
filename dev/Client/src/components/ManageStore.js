@@ -58,7 +58,8 @@ export default function ManageStore({getAppState, setAppState}) {
                         switch(storeResponse.status){
                             case SERVER_RESPONSE_OK:
                                 const store = JSON.parse(storeResponse.data);
-                                setInventory({inventory: store.storeProducts})
+                                setAppState({inventory: store.storeProducts})
+                                setInventory([]);
                                 break;
                             case SERVER_RESPONSE_BAD:
                                 alert(storeResponse.data);
@@ -72,7 +73,7 @@ export default function ManageStore({getAppState, setAppState}) {
                     console.log("here");
 
                 }
-                return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
+                return <Inventory getAppState={getAppState} setAppState={setAppState}></Inventory>
             case "staff":
                 if(staff === undefined){
                     const foo = async () =>{
