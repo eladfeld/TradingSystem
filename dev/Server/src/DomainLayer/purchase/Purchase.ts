@@ -18,7 +18,7 @@ export const stringUtil = {
 };
 Object.freeze(stringUtil);
 
-export const PAYMENT_TIMEOUT_MILLISEC: number = 1;
+export const PAYMENT_TIMEOUT_MILLISEC: number = 100000;
 
 
 class Purchase {
