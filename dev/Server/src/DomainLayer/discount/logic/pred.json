@@ -1,0 +1,19 @@
+{
+    "type": "compound",
+    "operator": "or",
+    "operands":[
+        {
+            "type": "simple",
+            "operand1": "someField",
+            "operator": ">",
+            "operand2": 5
+        },
+        {
+            "type": "simple",
+            "operand1": "someField2",
+            "operator": ">",
+            "operand2": 100
+        }
+    ]
+
+}
