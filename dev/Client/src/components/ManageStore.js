@@ -8,13 +8,15 @@ import Typography from '@material-ui/core/Typography';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import SendIcon from '@material-ui/icons/Send';
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
-import { useParams } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import Banner from './Banner';
 import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../constants';
+import AppointOwner from './AppointOwner'
+import AppointManager from './AppointManager'
 
 import axios from 'axios';
 import { unknownStatusMessage } from './componentUtil';
@@ -67,6 +69,10 @@ export default function TypographyMenu({getAppState, setAppState}) {
                                 alert(staffResponse.data);
                                 return;
                                 break;
+                            case "appointowner":
+                                return <AppointOwner getAppState={getAppState} setAppState={setAppState}></AppointOwner>
+                            case "appointmanager":
+                                return <AppointManager getAppState={getAppState} setAppState={setAppState}></AppointManager>
                             default:
                                 alert(unknownStatusMessage(staffResponse));
                                 return;
@@ -83,6 +89,10 @@ export default function TypographyMenu({getAppState, setAppState}) {
 
     const onAppointOwnerClick =() =>{
         setPage("appointowner");
+    }
+
+    const onAppointManagerClick =() =>{
+        setPage("appointmanager");
     }
 
   return (
@@ -102,25 +112,25 @@ export default function TypographyMenu({getAppState, setAppState}) {
                 </ListItemIcon>
                 <Typography variant="inherit">View employees</Typography>
             </MenuItem>
-            <MenuItem>
-            <ListItemIcon>
-                <PersonAddIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit" noWrap>
-                Appoint new owner
-            </Typography>
-            </MenuItem>
-            <MenuItem>
-            <ListItemIcon>
-                <PersonAddIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit" noWrap>
-                Appoint new manager
-            </Typography>
-            </MenuItem>
+            <MenuItem onClick={onAppointOwnerClick} >
+                    <ListItemIcon>
+                        <PersonAddIcon fontSize="small" />
+                    </ListItemIcon>
+                    <Typography variant="inherit" noWrap>
+                        Appoint new owner
+                    </Typography>
+                </MenuItem>
+            <MenuItem onClick={onAppointManagerClick} >
+                    <ListItemIcon>
+                        <PersonAddIcon fontSize="small" />
+                    </ListItemIcon>
+                    <Typography variant="inherit" noWrap>
+                        Appoint new manager
+                    </Typography>
+                </MenuItem>
         </MenuList>
         </Paper>
-        {renderPage(page, getAppState, setAppState, storeId)} 
+        {renderPage(page, getAppState, setAppState, storeId)}
     </div>
   );
-}
+  }
