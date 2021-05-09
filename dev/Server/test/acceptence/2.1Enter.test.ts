@@ -16,7 +16,7 @@ describe('2.1: enter system test' , function() {
     it('guest user enter system' , function() {
         let res: Promise<string> = service.enter()
         res.then( id => {
-            assert.ok;
+            assert.ok(1);
         })
     })
 

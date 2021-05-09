@@ -506,7 +506,6 @@ export class SystemFacade
 
     public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
     {
-        console.log(`user address on complete: ${userAddress}`)
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
         // if(userAddress === ''|| userAddress === undefined || userAddress === null){
         //     return new Promise((resolve,reject) => { reject("invalid user Address")})
@@ -641,12 +640,13 @@ export class SystemFacade
     public getSubscriberPurchaseHistory(sessionId: string, subscriberToSeeId: number): Promise<any>
     {
         Logger.log(`getSubscriberPurchaseHistory : sessionId:${sessionId} , subscriberId:${subscriberToSeeId}`);
-        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let requestingUserId = subscriber.getUserId();
-        if (subscriber !== undefined)
-            if (requestingUserId === subscriberToSeeId || Authentication.isSystemManager(requestingUserId))
+        let watcher: Subscriber = this.logged_subscribers.get(sessionId);
+        let watchee: Subscriber = Authentication.getSubscriberById(subscriberToSeeId)
+        let requestingUserId = watcher.getUserId();
+        if (watcher !== undefined)
+            if (Authentication.isSystemManager(requestingUserId))
             {
-                return new Promise((resolve, reject) => resolve(Purchase.getCompletedTransactionsForUser(subscriberToSeeId)));
+                return new Promise((resolve, reject) => resolve(watchee.getPurchaseHistory()));
             }
         return new Promise((resolve, reject) => reject("user don't have permissions"));
     }
@@ -707,8 +707,6 @@ export class SystemFacade
         Logger.log(`editStaffPermission : sessionId:${sessionId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
-        console.log(store);
-        console.log(this.logged_subscribers);
         if(subscriber !== undefined && store !== undefined)
         {
             let res: Result<string> = store.editStaffPermission(subscriber, managerToEditId, permissionMask);

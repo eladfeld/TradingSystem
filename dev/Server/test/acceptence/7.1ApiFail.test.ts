@@ -31,8 +31,8 @@ describe('7.1: Api Fail', function () {
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
         service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
-        .then(_ => assert.ok)
-        .catch(_ => assert.fail)
+        .then(_ => assert.ok(""))
+        .catch(_ => assert.fail())
         }
     )
 
@@ -49,8 +49,8 @@ describe('7.1: Api Fail', function () {
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
         service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
-        .then(_ => assert.fail)
-        .catch(_ => assert.ok)
+        .then(_ => assert.fail())
+        .catch(_ => assert.ok(""))
     })
 
     it('Api fails, cart unchanged',async function () {
@@ -67,7 +67,7 @@ describe('7.1: Api Fail', function () {
         await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
         try{
         await service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
-        assert.fail
+        assert.fail()
         }
         catch{
 

@@ -55,8 +55,9 @@ export default function Employees({getAppState, setAppState, storeId}) {
       else setSelectedEmpId(emp.id);
   } 
   const updateEmployee = (emp) =>{
-    staffToView.find( e => e.id=== emp.id).permissions = emp.permissions;
+    staffToView.find( e => e.id=== emp.id).permission = emp.permission;
     setAppState({staffToView: [...staffToView]});
+    setSelectedEmpId(null);
 }
 
   const renderEmployee = (emp) =>{

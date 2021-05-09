@@ -1,10 +1,9 @@
 import {expect} from 'chai';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Login } from '../../../src/DomainLayer/user/Login';
-import { SystemFacade } from '../../../src/DomainLayer/SystemFacade';
-import { isFailure, isOk } from '../../../src/Result';
-import { Service } from '../../../src/ServiceLayer/Service';
-import { Register } from '../../../src/DomainLayer/user/Register';
+import { Store } from '../../src/DomainLayer/store/Store';
+import { Login } from '../../src/DomainLayer/user/Login';
+import { isFailure, isOk } from '../../src/Result';
+import { Service } from '../../src/ServiceLayer/Service';
+import { Register } from '../../src/DomainLayer/user/Register';
 
 
 describe('Store owner manage store inventory' , () => {

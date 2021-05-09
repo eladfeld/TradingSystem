@@ -27,8 +27,8 @@ describe('2.5: store info test' , function() {
         service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10);
         service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20);
         service.getStoreInfo(sessionId, store1.getStoreId())
-        .then( _ => assert.ok)
-        .catch( _ => assert.fail)
+        .then( _ => assert.ok(1))
+        .catch( _ => assert.fail(""))
     })
 
     it('try to watch store without permission',async function () {
@@ -41,8 +41,8 @@ describe('2.5: store info test' , function() {
         service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10);
         service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20);
         service.getStoreInfo(sessionId + 1, store1.getStoreId())
-        .then( _ => assert.fail)
-        .catch( _ => assert.ok)
+        .then( _ => assert.fail())
+        .catch( _ => assert.ok(1))
     })
 
     it('avi opens store , system manager watching it' ,async function() {
@@ -59,9 +59,9 @@ describe('2.5: store info test' , function() {
             let info = await service.getStoreInfo(sessionId, store1.getStoreId())
         }
         catch {
-            assert.fail
+            assert.fail()
         }
-        assert.ok
+        assert.ok(1)
         //---------------------------------------------------------------
     })
 

@@ -34,7 +34,7 @@ describe('2.4: login system test' , function() {
             assert.fail("login should fail")
             })
         .catch( reason => {
-            assert.ok
+            assert.ok(1)
             })
     })
 
@@ -44,7 +44,7 @@ describe('2.4: login system test' , function() {
         try {
         let subscriber =await service.login(id, "yogev ha'melech","123456789");
         } catch {
-            assert.ok
+            assert.ok(1)
         }
     });
 

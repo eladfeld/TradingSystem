@@ -27,7 +27,7 @@ describe('4.11: view store buying history', function () {
         service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
         service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
         service.getStorePurchaseHistory(avi_sessionId, store.getStoreId())
-        .then(_ => assert.ok)
-        .catch(_ => assert.fail)
+        .then(_ => assert.ok(""))
+        .catch(_ => assert.fail())
     })
 });

@@ -76,12 +76,16 @@ export class Publisher
     public notify_store_update(storeId : number , message:string) : Promise<void>[]
     {
         Logger.log(`Publisher.notify_store_update  storeId:${storeId} , message:${message} `)
-        let subscribers = this.store_subscribers.get(storeId);
         let promises : Promise<void>[] = [];
-        subscribers.forEach(subscriber => { 
-            let promise = this.send_message(subscriber,message)
-            promises.push(promise)
-        });
+        let subscribers = this.store_subscribers.get(storeId);
+        if (subscribers !== undefined)
+        {
+            
+            subscribers.forEach(subscriber => { 
+                let promise = this.send_message(subscriber,message)
+                promises.push(promise)
+            });
+        }
         return promises;
     }
 

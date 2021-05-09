@@ -25,8 +25,8 @@ describe('4.1: edit store inventory', function () {
         store.addCategoryToRoot('Sweet')
         let product1: Product = new Product("banana", ['Sweet']);
         service.editStoreInventory(sessionId, store.getStoreId(), product1.getProductId(), 10)
-        .then(_ => assert.fail)
-        .catch(_ => assert.ok)
+        .then(_ => assert.fail())
+        .catch(_ => assert.ok(""))
     })
 
     it('edit existing product', async function () {
@@ -36,8 +36,8 @@ describe('4.1: edit store inventory', function () {
         store.addCategoryToRoot('Sweet')
         let banana = await add_product(service,sessionId, avi, store, "banana", ['Sweet'], 12, 100);
         service.editStoreInventory(sessionId, store.getStoreId(), banana, 10)
-        .then(_ => assert.ok)
-        .catch(_ => assert.fail)
+        .then(_ => assert.ok(""))
+        .catch(_ => assert.fail())
     })
 
 });

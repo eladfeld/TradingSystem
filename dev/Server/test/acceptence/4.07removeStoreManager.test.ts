@@ -38,8 +38,8 @@ describe('4.7: remove appointment', function () {
         let store =await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         service.deleteManagerFromStore(moshe_sessionId, avi.getUserId(), store.getStoreId())
-        .then(_ => assert.fail)
-        .catch( _ => assert.ok)
+        .then(_ => assert.fail())
+        .catch( _ => assert.ok(""))
     })
 
 
