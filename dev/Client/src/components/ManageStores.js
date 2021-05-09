@@ -9,6 +9,7 @@ import Banner from './Banner';
 import history from '../history';
 import ProgressWheel from './ProgreeWheel';
 import CartItem from './CartItem';
+import StoreIcon from '@material-ui/icons/Store';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 const renderStore = (store, setAppState) =>
 {
   return(
-      <Button onClick={() => {
+      <Button startIcon={<StoreIcon/>} variant="contained" color="secondary" onClick={() => {
         setAppState({storeId: store.storeId})
         history.push(`/store/${store.storeId}`)
       }}>

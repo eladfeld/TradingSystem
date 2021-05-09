@@ -427,9 +427,13 @@ export class Store
         staff['subscribers']=[]
         this.appointments.forEach((appointment) => {
             let subscriber = appointment.getAppointee()
-            staff['subscribers'].push({ 'id':subscriber.getUserId() ,
-                                        'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
-                                        })
+            staff['subscribers'].push(
+            {   'id':subscriber.getUserId() ,
+                'username': subscriber.getUsername(),
+                'permission': subscriber.getPermission(this.storeId),
+                'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
+            }
+                                        )
         })
         return makeOk(JSON.stringify(staff))
     }

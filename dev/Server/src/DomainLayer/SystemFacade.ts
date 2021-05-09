@@ -409,9 +409,9 @@ export class SystemFacade
     {
         Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
         supply_address ='a'
-        if(supply_address === ''|| supply_address === undefined || supply_address === null){
-            return new Promise((resolve,reject) => { reject("invalid user Address")})
-        }
+        // if(supply_address === ''|| supply_address === undefined || supply_address === null){
+        //     return new Promise((resolve,reject) => { reject("invalid user Address")})
+        // }
         if(quantity < 0|| quantity === undefined || quantity === null){
             return new Promise((resolve,reject) => { reject("invalid quantity")})
         }
@@ -442,9 +442,9 @@ export class SystemFacade
     public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
     {
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
-        if(userAddress === ''|| userAddress === undefined || userAddress === null){
-            return new Promise((resolve,reject) => { reject("invalid user Address")})
-        }
+        // if(userAddress === ''|| userAddress === undefined || userAddress === null){
+        //     return new Promise((resolve,reject) => { reject("invalid user Address")})
+        // }
 
         let user: User = this.logged_guest_users.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
@@ -638,6 +638,8 @@ export class SystemFacade
         Logger.log(`editStaffPermission : sessionId:${sessionId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
+        console.log(store);
+        console.log(this.logged_subscribers);
         if(subscriber !== undefined && store !== undefined)
         {
             let res: Result<string> = store.editStaffPermission(subscriber, managerToEditId, permissionMask);

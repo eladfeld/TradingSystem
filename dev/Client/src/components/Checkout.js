@@ -37,7 +37,7 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
                 history.push('/cart');
                 return;
             case SERVER_RESPONSE_BAD:
-                alert(response.data.message);
+                alert(response.data);
                 return;
             default:
                 alert(`unexpected response code: ${response.status}`);

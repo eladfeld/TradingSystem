@@ -17,6 +17,8 @@ import MyTransaction from './MyTransaction';
 import Register from './Register';
 import ManageStores from './ManageStores'
 import ManageStore from './ManageStore'
+import { ROUTE_MANAGE_EMPLOYEE } from '../routes';
+import ManageEmployee from './ManageEmployee';
 
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'

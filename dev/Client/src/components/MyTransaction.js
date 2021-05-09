@@ -53,7 +53,7 @@ export default function MyTransaction({getAppState, setAppState}) {
                     <TableHead>
                     <TableRow>
                         <StyledTableCell>Product</StyledTableCell>
-                        <StyledTableCell align="right">Quantity</StyledTableCell>
+                        <StyledTableCell align="left">Quantity</StyledTableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
@@ -62,7 +62,7 @@ export default function MyTransaction({getAppState, setAppState}) {
                         <StyledTableCell component="th" scope="row">
                             {item.productId}
                         </StyledTableCell>
-                        <StyledTableCell align="right">{item.Quantity}</StyledTableCell>
+                        <StyledTableCell align="left">{item.Quantity}</StyledTableCell>
                         </StyledTableRow>
                     ))}
                     </TableBody>

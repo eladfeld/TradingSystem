@@ -136,6 +136,16 @@ export class Subscriber extends User
         return JSON.stringify({stores:stores})
     }
 
+    public getPermission(storeId: number): number
+    {   
+        let appoint: Appointment = this.appointments.find(apppintment => apppintment.getStore().getStoreId() === storeId );
+        if(appoint !== undefined)
+        {
+            return appoint.getPermissions().getPermissions();
+        }
+        return 0;
+    }
+
     
 
 

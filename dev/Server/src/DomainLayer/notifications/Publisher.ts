@@ -15,7 +15,6 @@ export class Publisher
 
     public set_send_func(send_message : (userId : number, message:string) => Promise<string>) : void
     {
-        console.log("set func");
         Publisher.singleton.send_message_func = send_message;
     }
 
@@ -59,12 +58,13 @@ export class Publisher
     //send message to specific subscriber
     public send_message(subscriber:Subscriber , message:string) : Promise<void>
     {
-        Logger.log(`Publisher.send_message  subscriber:${subscriber.getUserId()} , message:${message} `)
+        Logger.log(`Publisher.send_message to sub_name:${subscriber.getUsername()}  sub_id:${subscriber.getUserId()} , message:${message} `)
         return new Promise( (resolve,reject) => {
             let promise = this.send_message_func(subscriber.getUserId() , message);
 
             // if fail message failed add message to subscriber queue
             promise.catch( reason => {  
+                Logger.log(`publisher: can't send message, ${subscriber.getUsername()} is not logged in`);
                 subscriber.addMessage(message);
                 resolve();
                 return;

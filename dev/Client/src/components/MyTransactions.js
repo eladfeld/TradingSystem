@@ -57,9 +57,9 @@ export default function MyTransactions({getAppState, setAppState}) {
               <TableHead>
                 <TableRow>
                   <StyledTableCell>Store</StyledTableCell>
-                  <StyledTableCell align="right">Date</StyledTableCell>
-                  <StyledTableCell align="right">Rating</StyledTableCell>
-                  <StyledTableCell align="right">Total</StyledTableCell>
+                  <StyledTableCell align="left">Date</StyledTableCell>
+                  <StyledTableCell align="left">Rating</StyledTableCell>
+                  <StyledTableCell align="left">Total</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -68,9 +68,9 @@ export default function MyTransactions({getAppState, setAppState}) {
                     <StyledTableCell component="th" scope="row">
                       {t.storeId}
                     </StyledTableCell>
-                    <StyledTableCell align="right">{new Date(t.time).toUTCString()}</StyledTableCell>
-                    <StyledTableCell align="right">{0}</StyledTableCell>
-                    <StyledTableCell align="right">{t.total}</StyledTableCell>
+                    <StyledTableCell align="left">{new Date(t.time).toUTCString()}</StyledTableCell>
+                    <StyledTableCell align="left">{0}</StyledTableCell>
+                    <StyledTableCell align="left">{t.total}</StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>

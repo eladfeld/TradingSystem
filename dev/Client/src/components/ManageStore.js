@@ -14,9 +14,12 @@ import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { SERVER_BASE_URL } from '../constants';
+import AddIcon from '@material-ui/icons/Add';
+import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../constants';
 
 import axios from 'axios';
+import { unknownStatusMessage } from './componentUtil';
+import Employees from './Employees';
 
 const useStyles = makeStyles({
   root: {
@@ -30,26 +33,59 @@ const getInventory = async(userId, storeId, setAppState) =>
     const store = JSON.parse(storeInfo.data);
     setAppState({storeInventory: store.storeProducts})
 }
-const renderPage = async(page, getAppState, setAppState, storeId) =>{
-    switch(page){
-        case "inventory":
-            const inventory = await getInventory(getAppState().userId, storeId, setAppState);
-            return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
-        case "shit":
-            return <h1>shit</h1>
-        default:
-            return <h1>default</h1>
-    }
-}
 
 export default function TypographyMenu({getAppState, setAppState}) {
   const classes = useStyles();
   let storeId = getAppState().storeId
     const [page, setPage] = useState("");
+    const [staff, setStaff] = useState(undefined);
 
-    const onInventoryClick =() =>{
-        setPage("inventory");
+    const onInventoryClick =() =>{setPage("inventory");}
+    const onStaffClick = () => {
+        setPage("staff");
+        if(staff !== undefined)setStaff(undefined);
     }
+
+    const renderPage = () =>{
+        const {userId} = getAppState();
+        switch(page){
+            case "inventory":
+                return <h1>Inventory</h1>
+                const inventory = getInventory(getAppState().userId, Number(storeId));
+                //return <Inventory getAppState={getAppState} setAppState={setAppState} inventory={inventory}></Inventory>
+            case "staff":
+                if(staff === undefined){
+                    const foo = async () =>{
+                        const staffResponse = await axios.post(SERVER_BASE_URL+'/getStoreStaff', {userId, storeId});
+                        console.log('[T] staff response data', staffResponse.data);
+                        switch(staffResponse.status){
+                            case SERVER_RESPONSE_OK:
+                                const staff = JSON.parse(staffResponse.data);
+                                console.log(staff);
+                                setAppState({staffToView: staff.subscribers})
+                                setStaff([]);
+                                break;
+                            case SERVER_RESPONSE_BAD:
+                                alert(staffResponse.data);
+                                break;
+                            default:
+                                alert(unknownStatusMessage(staffResponse));
+                                break;
+                        }
+                    }
+                    setStaff(null)
+                    foo();
+                }
+                return <Employees getAppState={getAppState} setAppState={setAppState} storeId={storeId}/>
+            default:
+                return <h1>default</h1>
+        }
+    }
+
+    const onAppointOwnerClick =() =>{
+        setPage("appointowner");
+    }
+
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>
@@ -61,11 +97,11 @@ export default function TypographyMenu({getAppState, setAppState}) {
                 </ListItemIcon>
                 <Typography variant="inherit">Inventory</Typography>
             </MenuItem>
-            <MenuItem>
-            <ListItemIcon>
-                <PeopleIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">View employees</Typography>
+            <MenuItem onClick={onStaffClick}>
+                <ListItemIcon>
+                    <PeopleIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit">View employees</Typography>
             </MenuItem>
             <MenuItem>
             <ListItemIcon>
@@ -81,6 +117,14 @@ export default function TypographyMenu({getAppState, setAppState}) {
             </ListItemIcon>
             <Typography variant="inherit" noWrap>
                 Appoint new manager
+            </Typography>
+            </MenuItem>
+            <MenuItem>
+            <ListItemIcon>
+                <AddIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+                add new product
             </Typography>
             </MenuItem>
         </MenuList>

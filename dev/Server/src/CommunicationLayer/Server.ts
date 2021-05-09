@@ -96,7 +96,7 @@ const wssConnections: Map<number, WebSocket> = new Map();
 
 const messageSender =(userId: number, message: string):Promise<string> =>
 {
-
+    console.log("message sent :)");
     let ws = wssConnections.get(userId);
     if(ws !== undefined)
     {

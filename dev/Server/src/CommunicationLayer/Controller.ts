@@ -175,8 +175,6 @@ const editCart = (req: Request, res: Response, next: NextFunction) =>
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
-    console.log(req.body)
-
     let quantity: number = req.body.quantity;
 
     service.editCart(sessionId, storeId, productId, quantity )
@@ -310,9 +308,9 @@ const editStaffPermission = (req: Request, res: Response, next: NextFunction) =>
     let managerToEditId: number = req.body.managerToEditId;
     let storeId: number = req.body.storeId;
     let permissionMask: number = req.body.permissionMask;
-    service.editStaffPermission(sessionId, storeId, managerToEditId, permissionMask)
+    service.editStaffPermission(sessionId, managerToEditId, storeId, permissionMask)
     .then(productNumber => res.status(OKSTATUS).json(productNumber))
-    .catch(message => res.status(FAILSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message)) 
 }
 
 
