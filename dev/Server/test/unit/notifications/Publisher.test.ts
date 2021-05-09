@@ -1,11 +1,6 @@
 import {expect} from 'chai';
 import { Publisher } from '../../../src/DomainLayer/notifications/Publisher';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Appointment } from '../../../src/DomainLayer/user/Appointment';
-import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
-import { ACTION, Permission } from '../../../src/DomainLayer/user/Permission';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
-import { isOk } from '../../../src/Result';
 
 describe('Publisher tests' , function() 
 {

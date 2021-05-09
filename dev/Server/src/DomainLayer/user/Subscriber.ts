@@ -4,6 +4,7 @@ import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
+import { SubscriberHistory } from "./SubscriberHistory";
 import {  User } from "./User";
 
 
@@ -15,6 +16,7 @@ export class Subscriber extends User
     private age: number
     private appointments: Appointment[];
     private pending_messages: {}[];
+    private history: SubscriberHistory;
 
     public constructor(username: string, age: number ){
         super();
@@ -22,6 +24,7 @@ export class Subscriber extends User
         this.age = age;
         this.appointments = [];
         this.pending_messages=[]
+        this.history = new SubscriberHistory(this.userId)
     }
 
     static buildSubscriber(username: string, hashpassword: string, age: number): Subscriber {
@@ -127,6 +130,11 @@ export class Subscriber extends User
             stores.push({storeId: appointment.getStore().getStoreId(), storeName: appointment.getStore().getStoreName() , permissions: appointment.getPermissions()})
         })
         return JSON.stringify({stores:stores})
+    }
+
+    public getPurchaseHistory()
+    {
+        return this.history.getPurchaseHistory()
     }
 
     

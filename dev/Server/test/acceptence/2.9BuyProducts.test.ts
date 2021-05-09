@@ -1,17 +1,8 @@
-import { assert, expect, should } from 'chai';
-import { collapseTextChangeRangesAcrossMultipleVersions, convertCompilerOptionsFromJson, servicesVersion } from 'typescript';
+import { assert, expect } from 'chai';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
-import { Product } from '../../src/DomainLayer/store/Product';
-import { Store } from '../../src/DomainLayer/store/Store';
-import { Authentication } from '../../src/DomainLayer/user/Authentication';
-import { Login } from '../../src/DomainLayer/user/Login';
-import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
-import { isFailure, isOk, Result } from '../../src/Result';
-import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
-import { doesNotMatch } from 'assert';
 
 declare interface PromiseConstructor {
     allSettled(promises: Array<Promise<any>>): Promise<Array<{ status: 'fulfilled' | 'rejected', value?: any, reason?: any }>>;
@@ -27,39 +18,66 @@ describe('2.9: buy products', function () {
         service.clear();
     });
     it('buy shopping basket', async function () {
-        let sessionId = await service.enter()
-        let avi = await register_login(service, sessionId, "avi", "1234");
-        let store = await open_store(service, sessionId, avi, "Mega", 123456, "Tel aviv");
+        let avi_sessionId = await service.enter()
+        let avi = await register_login(service, avi_sessionId, "avi", "1234");
+        let store = await open_store(service, avi_sessionId, avi, "Mega", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
-            .then(_ => assert.ok)
-            .catch(_ => assert.fail)
+        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
+        let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
+        await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
+        await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
+        await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
+        let purchase_res = await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+
+        expect(purchase_res).to.equal(true)
+        // check basktet updated successfully
+        expect(avi.quantityInBasket(store.getStoreId(),banana)).to.equal(0)
+        expect(avi.quantityInBasket(store.getStoreId(),apple)).to.equal(0)
+
+        // check store inventory updated successfully
+        expect(store.getProductQuantity(banana)).to.equal(40)
+        expect(store.getProductQuantity(apple)).to.equal(3)
+        
+        // if transaction completed then the external systems were activated 
+        expect(Purchase.getAllTransactions().length).to.equal(1)
     })
 
 
     it('try to buy too much items', async function () {
+        // avi and ali enter the system register and login
         let ali_sessionId = await service.enter()
         let avi_sessionId = await service.enter()
         let avi = await register_login(service, avi_sessionId, "avi", "1234");
         let ali = await register_login(service, ali_sessionId, "ali", "1234");
+
+        // avi opens store and adds 50 bananas to it
         let store = await open_store(service, avi_sessionId, avi, "Mega", 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
+
+        // avi and ali both add 40 bananas to their basket
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 40);
         await service.addProductTocart(ali_sessionId, store.getStoreId(), banana, 40);
-        let a = service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        let b = await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-        let checkout_res = service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42")
-        checkout_res.catch( _ => assert.fail).then( _ => assert.ok)
+
+        // avi buys 40 bananas successfully
+        await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
+        await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        
+        try{
+            let checkout_res =await service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42")
+            assert.fail()
+        }
+        catch{
+            // check that the basket of ali hasn't changed
+            expect(ali.quantityInBasket(store.getStoreId(),banana)).to.equal(40)
+            // chech that the store's inventory hasnt changed
+            expect(store.getProductQuantity(banana)).to.equal(10)
+            // check that transaction wasnt completed
+            expect(Purchase.getAllTransactions().length).to.equal(1);
+        }
     })
 
-    it('parallel buy of last item',function (done) {
-        this.timeout(5000)
+    it('parallel buy of last item',function () {
         //avi and ali enters the system
         service.enter().then(avi_sessionId => {
         service.enter().then(ali_sessionId => {
@@ -89,8 +107,7 @@ describe('2.9: buy products', function () {
         avi_buy_res.then(avi_buy => {
             ali_buy_res.then(ali_buy => {
                 //only one purchase should succeed
-                assert.fail
-                done("fail")
+                assert.fail()
             })
             ali_buy_res.catch(msg => {
                 // if here avi succeeded and ali failed
@@ -98,7 +115,6 @@ describe('2.9: buy products', function () {
                 expect(ali.quantityInBasket(store.getStoreId(), banana_id)).to.equal(1)
                 expect(store.getProductQuantity(banana_id)).to.equal(0);
                 expect(Purchase.getAllTransactions().length).to.equal(1);
-                done()
             })
         })
 
@@ -110,13 +126,12 @@ describe('2.9: buy products', function () {
                 expect(avi.quantityInBasket(store.getStoreId(), banana_id)).to.equal(1)
                 expect(store.getProductQuantity(banana_id)).to.equal(0);
                 expect( Purchase.getAllTransactions().length).to.equal(1);
-                done()
             })
             ali_buy_res.catch(msg => {
                 //only one purchase should fail
-                assert.fail
-                done("fail")
+                assert.fail()
             })})})})
             })})})})})})
     })
+   
 });

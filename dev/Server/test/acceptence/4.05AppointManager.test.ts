@@ -21,8 +21,8 @@ describe('4.5:Appoint manager tests', function () {
         let moshe = await register_login(service,moshe_sessionId, "moshe", "123456789");
         let store = await open_store(service, avi_sessionId,avi, "Mega", 123456, "Tel Aviv");
         service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername())
-        .then(_ => assert.ok)
-        .catch(_ => assert.fail)
+        .then(_ => assert.ok(""))
+        .catch(_ => assert.fail())
     })
 
     it('moshe, a store manager tries to edit store inventory without permissions', async function () {
@@ -34,7 +34,7 @@ describe('4.5:Appoint manager tests', function () {
         service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         store.addCategoryToRoot('Sweet')
         service.addNewProduct(moshe_sessionId, store.getStoreId(), "banana", ['Sweet'], 15)
-        .then(_ => assert.fail)
-        .catch(_ => assert.ok)
+        .then(_ => assert.fail())
+        .catch(_ => assert.ok(""))
     })
 });

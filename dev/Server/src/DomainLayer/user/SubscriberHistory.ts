@@ -9,7 +9,7 @@ export class SubscriberHistory
         this.userId = userId;
     }
 
-    public getPurchaseHistory(userId: number) : string{
-        return Purchase.getCompletedTransactionsForUser(userId)
+    public getPurchaseHistory() : string{
+        return Purchase.getCompletedTransactionsForUser(this.userId)
     }
 }
