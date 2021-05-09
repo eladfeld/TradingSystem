@@ -20,6 +20,7 @@ import { Publisher } from "./notifications/Publisher";
 import { createHash } from 'crypto';
 export class SystemFacade
 {
+
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
@@ -386,10 +387,6 @@ export class SystemFacade
     public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
     {
         Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
-        supply_address = "down the block";
-        if(supply_address === ''|| supply_address === undefined || supply_address === null){
-            return new Promise((res,rej) => rej("invalid user Address"))
-        }
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -446,9 +443,9 @@ export class SystemFacade
     {
         console.log(`user address on complete: ${userAddress}`)
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
-        if(userAddress === ''|| userAddress === undefined || userAddress === null){
-            return new Promise((resolve,reject) => { reject("invalid user Address")})
-        }
+        // if(userAddress === ''|| userAddress === undefined || userAddress === null){
+        //     return new Promise((resolve,reject) => { reject("invalid user Address")})
+        // }
 
         let user: User = this.logged_guest_users.get(sessionId);
         let store: Store = StoreDB.getStoreByID(storeId);
@@ -479,6 +476,8 @@ export class SystemFacade
     public openStore(sessionId: string, storeName : string , bankAccountNumber : number ,storeAddress : string): Promise<Store>
     {
         Logger.log(`openStore : sessionId:${sessionId} , bankAccountNumber:${bankAccountNumber} , storeAddress:${storeAddress} `);
+
+        //illegal paramters
         if(storeName === ''|| storeName === undefined || storeName === null){
             return new Promise((resolve,reject) => { reject("invalid store Name")})
         }
@@ -488,6 +487,7 @@ export class SystemFacade
         if(bankAccountNumber < 0|| bankAccountNumber === undefined || bankAccountNumber === null){
             return new Promise((resolve,reject) => { reject("invalid bank Account Number")})
         }
+
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber !== undefined)
         {
@@ -496,6 +496,7 @@ export class SystemFacade
             }
             let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
             MakeAppointment.appoint_founder(subscriber, store);
+            Publisher.get_instance().register_store(store.getStoreId(),subscriber);
             return new Promise( (resolve,reject) => { resolve(store)});
         }
         return  new Promise( (resolve,reject) => { reject("user not found")});
@@ -769,7 +770,14 @@ export class SystemFacade
 
 
 
-
+    public getSubscriberId(sessionId: string): number {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined)
+        {
+            return -1;
+        }
+        return subscriber.getUserId();
+    }
 
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users()

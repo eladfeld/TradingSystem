@@ -43,6 +43,7 @@ export default function Employees({getAppState, setAppState, storeId}) {
     const [selectedEmpId, setSelectedEmpId] = useState(null);
     const {staffToView} = getAppState();
 
+    
 
     if(staffToView === null || staffToView === undefined){
         return <ProgressWheel/>;
@@ -64,6 +65,7 @@ export default function Employees({getAppState, setAppState, storeId}) {
             <StyledTableRow key={emp.id}>
                 <StyledTableRow key={`${emp.id}-static`}>
                 <StyledTableCell component="th" scope="row">{emp.id}</StyledTableCell>
+                <StyledTableCell align="left">{emp.username}</StyledTableCell>
                 <StyledTableCell align="left">{emp.title}</StyledTableCell>
                 <StyledTableCell align="left">
                     <Button onClick={() => onManageClick(emp)}>
@@ -81,6 +83,7 @@ export default function Employees({getAppState, setAppState, storeId}) {
     return (
         <StyledTableRow key={emp.id}>
           <StyledTableCell component="th" scope="row">{emp.id}</StyledTableCell>
+          <StyledTableCell align="left">{emp.username}</StyledTableCell>
           <StyledTableCell align="left">{emp.title}</StyledTableCell>
           <StyledTableCell align="left">
               <Button onClick={() => onManageClick(emp)}>
@@ -101,6 +104,7 @@ export default function Employees({getAppState, setAppState, storeId}) {
               <TableHead>
                 <TableRow>
                   <StyledTableCell>Id</StyledTableCell>
+                  <StyledTableCell align="left">name</StyledTableCell>
                   <StyledTableCell align="left">Title</StyledTableCell>
                   <StyledTableCell align="left">Manage</StyledTableCell>
                 </TableRow>

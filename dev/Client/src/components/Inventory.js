@@ -40,11 +40,10 @@ const editProduct = (product) =>
   alert(`edit product ${product.productId}`)
 }
 
-export default function Inventory({getAppState, setAppState, inventory}) {
+export default function Inventory({getAppState, setAppState}) {
   const classes = useStyles();
-  console.log(inventory)
-  return (
-    
+  const {inventory} = getAppState(); 
+  return (    
     <div>
       <Grid container>
         <Grid item xs={0} md={3}/>
