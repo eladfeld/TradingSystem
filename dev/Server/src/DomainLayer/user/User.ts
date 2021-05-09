@@ -63,7 +63,14 @@ export class User implements iSubject
 
     getValue =  (field: string): number => undefined
 
-
+    //---------------functions for tests-------------------
+    public quantityInBasket(storeId : number , productId : number) : number
+    {
+        let quantity = this.shoppingCart.quantityInBasket(storeId,productId)
+        if (quantity === undefined)
+            return 0;
+        return quantity;
+    }
 
 }
 

@@ -1,4 +1,4 @@
-import { ID } from "./Common";
+import { ID, TreeRoot } from "./Common";
 
 export class StoreInfo
 {
@@ -6,12 +6,14 @@ export class StoreInfo
     private storeName: string;
     private storeId: number;
     private storeProducts: StoreProductInfo[];
+    private categories: StoreCategoryInfo[];
 
-    public constructor(storeName: string, storeId: number, storeProducts: StoreProductInfo[])
+    public constructor(storeName: string, storeId: number, storeProducts: StoreProductInfo[], categories: TreeRoot<string>)
     {
         this.storeName = storeName;
         this.storeId = storeId;
         this.storeProducts = storeProducts;
+        this.categories = [new StoreCategoryInfo('Food', 'Apple')]
     }
 
     public getStoreProducts()
@@ -27,6 +29,11 @@ export class StoreInfo
     public getStoreId()
     {
         return this.storeId;
+    }
+
+    public getCategories()
+    {
+        return this.categories;
     }
 
     public toString(): string {
@@ -95,6 +102,21 @@ export class StoreProductInfo
 
     public toString(): string {
         return `product name: ${this.productName}\tprice: ${this.price}\tproduct rating:\t${this.productRating}\tnumber of raters: ${this.numOfRaters}`
+    }
+
+}
+
+
+export class StoreCategoryInfo
+{
+
+    private sub_cat: string;
+    private main_cat: string;
+
+    public constructor(main_cat: string, sub_cat:string)
+    {
+        this.sub_cat = sub_cat;
+        this.main_cat = main_cat;
     }
 
 }

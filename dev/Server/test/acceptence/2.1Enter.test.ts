@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import {assert, expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
@@ -14,16 +14,16 @@ describe('2.1: enter system test' , function() {
     });
     
     it('guest user enter system' , function() {
-        let res: Promise<number> = service.enter()
+        let res: Promise<string> = service.enter()
         res.then( id => {
-            expect(id).to.greaterThanOrEqual(0);
+            assert.ok(1);
         })
     })
 
     it('enter 3 users' , function() {
-        let res1: Promise<number> = service.enter()
-        let res2: Promise<number> = service.enter()
-        let res3: Promise<number> = service.enter()
+        let res1: Promise<string> = service.enter()
+        let res2: Promise<string> = service.enter()
+        let res3: Promise<string> = service.enter()
         Promise.all([res1,res2,res3]).then ( ([r1, r2, r3])=> {
             expect(r1 !== r2 && r1!==r3 && r2!==r3);
         })
@@ -31,20 +31,20 @@ describe('2.1: enter system test' , function() {
 
     describe('exit system test' , function() {
         it('enter 3 users and exit 1' , function() {
-            let res1: Promise<number> = service.enter()
-            let res2: Promise<number> = service.enter()
-            let res3: Promise<number> = service.enter()
+            let res1: Promise<string> = service.enter()
+            let res2: Promise<string> = service.enter()
+            let res3: Promise<string> = service.enter()
             Promise.all([res1,res2,res3]).then( ([r1,r2,r3]) =>
             {
                 service.exit(r2);
-                expect(service.get_logged_guest_users().length).to.equal(2);
+                expect(service.get_logged_guest_users().size).to.equal(2);
             })
         })
 
         it('fail exit' , function() {
             service.enter();
-            service.exit(5);
-            expect(service.get_logged_guest_users().length).to.equal(1);
+            service.exit("5");
+            expect(service.get_logged_guest_users().size).to.equal(1);
             
         })
 

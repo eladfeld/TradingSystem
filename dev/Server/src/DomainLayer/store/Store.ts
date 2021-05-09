@@ -175,7 +175,7 @@ export class Store
         return this.inventory.setProductQuantity(productId, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket): Result<boolean> {
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket , onFail : ()=>void): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -196,7 +196,10 @@ export class Store
         }
         let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
 
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, this.cancelReservedShoppingBasket(reservedProducts));
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, () => {
+            onFail();
+            this.cancelReservedShoppingBasket(reservedProducts)}
+         );
         return makeOk(true);
     }
 
@@ -317,7 +320,7 @@ export class Store
     }
 
     public getStoreInfo(): StoreInfo {
-        return (new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo()))
+        return (new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo(), this.categiries))
     }
 
     public addAppointment(appointment : Appointment) : void
@@ -337,6 +340,10 @@ export class Store
 
     public searchByName(productName:string): StoreProductInfo[]{
         return this.inventory.getProductInfoByName(productName);
+    }
+
+    public getProductsInfo(): StoreProductInfo[]{
+        return this.inventory.getProductInfoByFilter((_) => true);
     }
 
     public searchByCategory(category: string): StoreProductInfo[]{
@@ -420,9 +427,13 @@ export class Store
         staff['subscribers']=[]
         this.appointments.forEach((appointment) => {
             let subscriber = appointment.getAppointee()
-            staff['subscribers'].push({ 'id':subscriber.getUserId() ,
-                                        'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
-                                        })
+            staff['subscribers'].push(
+            {   'id':subscriber.getUserId() ,
+                'username': subscriber.getUsername(),
+                'permission': subscriber.getPermission(this.storeId),
+                'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
+            }
+                                        )
         })
         return makeOk(JSON.stringify(staff))
     }
@@ -505,6 +516,10 @@ export class Store
 
         this.categiries.createChildNode(category);
         return makeOk('category was added')
+    }
+
+    public getProductQuantity(productId : number) : number{
+        return this.inventory.getProductQuantity(productId);
     }
 
 }

@@ -1,9 +1,9 @@
 import {expect} from 'chai';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Login } from '../../../src/DomainLayer/user/Login';
-import { SystemFacade } from '../../../src/DomainLayer/SystemFacade';
-import { isFailure, isOk } from '../../../src/Result';
-import { Service } from '../../../src/ServiceLayer/Service';
+import { Store } from '../../src/DomainLayer/store/Store';
+import { Login } from '../../src/DomainLayer/user/Login';
+import { isFailure, isOk } from '../../src/Result';
+import { Service } from '../../src/ServiceLayer/Service';
+import { Register } from '../../src/DomainLayer/user/Register';
 
 
 describe('Store owner manage store inventory' , () => {
@@ -30,7 +30,7 @@ describe('Store owner manage store inventory' , () => {
 
     it('Owner adds negative quantity of products to inventory', () => {
         let service: Service = Service.get_instance()
-        service.register("shir", "123", 13)
+        Register.register("shir", "123", 13)
         let res = Login.login("shir","123")
         if(isOk(res)){
             let store= new Store(res.value.getUserId(), 'nike', 123, 'Herzelyia leyad bbb')

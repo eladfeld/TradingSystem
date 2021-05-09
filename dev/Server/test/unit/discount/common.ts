@@ -1,4 +1,3 @@
-import { exception } from "console";
 import iCategorizer from "../../../src/DomainLayer/discount/Categorizer";
 import iBasket from "../../../src/DomainLayer/discount/iBasket";
 import { iProduct, MyProduct } from "../../../src/DomainLayer/discount/iProduct";

@@ -1,10 +1,11 @@
 import { expect , assert} from 'chai';
+import { exception } from 'console';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
-import { enter_login, enter_register_login, open_store } from './common';
+import { enter_login, register_login, open_store } from './common';
 
 describe('2.5: store info test' , function() {
 
@@ -17,44 +18,50 @@ describe('2.5: store info test' , function() {
     });
 
     it('store info test good',async function () {
-        let avi =await enter_register_login(service, "avi", "123456789");
-        let store1 =await service.openStore(avi.getUserId(), "aluf hasport", 123456, "Tel Aviv");
-        let store2 =await service.openStore(avi.getUserId(), "mega", 123456, "Tel Aviv");
+        let sessionId = await service.enter();
+        let avi =await register_login(service,sessionId, "avi", "123456789");
+        let store1 =await service.openStore(sessionId, "aluf hasport", 123456, "Tel Aviv");
+        let store2 =await service.openStore(sessionId, "mega", 123456, "Tel Aviv");
         store1.addCategoryToRoot('Food')
         store2.addCategoryToRoot('Food')
-        service.addNewProduct(avi.getUserId(), store1.getStoreId(), "Apple", ['Food'], 26, 10);
-        service.addNewProduct(avi.getUserId(), store2.getStoreId(), "banana", ['Food'], 26, 20);
-        service.getStoreInfo(avi.getUserId(), store1.getStoreId())
-        .then( _ => assert.ok)
-        .catch( _ => assert.fail)
+        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10);
+        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20);
+        service.getStoreInfo(sessionId, store1.getStoreId())
+        .then( _ => assert.ok(1))
+        .catch( _ => assert.fail(""))
     })
 
     it('try to watch store without permission',async function () {
-
-        let avi: Subscriber =await enter_register_login(service, "avi", "123456789");
-        let store1 =await service.openStore(avi.getUserId(), "aluf hasport", 123456, "Tel Aviv");
-        let store2 =await service.openStore(avi.getUserId(), "mega", 123456, "Tel Aviv");
+        let sessionId = await service.enter();
+        let avi: Subscriber =await register_login(service,sessionId, "avi", "123456789");
+        let store1 =await service.openStore(sessionId, "aluf hasport", 123456, "Tel Aviv");
+        let store2 =await service.openStore(sessionId, "mega", 123456, "Tel Aviv");
         store1.addCategoryToRoot('Food')
         store2.addCategoryToRoot('Food')
-        service.addNewProduct(avi.getUserId(), store1.getStoreId(), "Apple", ['Food'], 26, 10);
-        service.addNewProduct(avi.getUserId(), store2.getStoreId(), "banana", ['Food'], 26, 20);
-        service.getStoreInfo(avi.getUserId() + 1, store1.getStoreId())
-        .then( _ => assert.fail)
-        .catch( _ => assert.ok)
+        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10);
+        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20);
+        service.getStoreInfo(sessionId + 1, store1.getStoreId())
+        .then( _ => assert.fail())
+        .catch( _ => assert.ok(1))
     })
 
     it('avi opens store , system manager watching it' ,async function() {
         //----------------avi opens store---------------------------------
-        let avi =await enter_register_login(service,"avi","123456789");
-        var store1 =await open_store(service,avi, "aluf hasport" , 123456 , "Tel Aviv");
-        service.addNewProduct(avi.getUserId() , store1.getStoreId() , "Apple" , ['Food'] , 26 , 10);
+        let sessionId = await service.enter();
+        let avi =await register_login(service,sessionId,"avi","123456789");
+        var store1 =await open_store(service,sessionId,avi, "aluf hasport" , 123456 , "Tel Aviv");
         //---------------------------------------------------------------
 
         //-----------------system manager watches-------------------------
+
         let sys_manager =await enter_login(service, "michael", "1234")
-        service.getStoreInfo(sys_manager.getUserId(), store1.getStoreId())
-        .then( _ => assert.ok)
-        .catch( _ => assert.fail)
+        try {
+            let info = await service.getStoreInfo(sessionId, store1.getStoreId())
+        }
+        catch {
+            assert.fail()
+        }
+        assert.ok(1)
         //---------------------------------------------------------------
     })
 

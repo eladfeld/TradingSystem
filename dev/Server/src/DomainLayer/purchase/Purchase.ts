@@ -6,6 +6,8 @@ import DbDummy from './DbDummy';
 import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import PaymentInfo from './PaymentInfo';
+import { TIMEOUT } from 'dns';
+import { Publisher } from '../notifications/Publisher';
 import { userInfo } from 'os';
 
 export const stringUtil = {
@@ -17,7 +19,7 @@ export const stringUtil = {
 };
 Object.freeze(stringUtil);
 
-export const PAYMENT_TIMEOUT_MILLISEC: number = 5000;//300000;
+export const PAYMENT_TIMEOUT_MILLISEC: number = 100000;
 
 
 class Purchase {
@@ -117,6 +119,8 @@ class Purchase {
         transaction.setStatus(TransactionStatus.COMPLETE);
         this.dbDummy.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
+
+        Publisher.get_instance().notify_store_update(storeId, `hello world`);
         return makeOk(true);
     }
 
@@ -182,6 +186,12 @@ class Purchase {
         return this.dbDummy.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
+
+    public clear()
+    {
+        this.cartCheckoutTimers = new Map();
+        this.dbDummy = new DbDummy();
+    }
 }
 const INSTANCE :Purchase = new Purchase();
 export default INSTANCE;

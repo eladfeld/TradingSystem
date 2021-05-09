@@ -16,7 +16,7 @@ describe('2.3: register test' , function() {
 
     it('guest user register' , function() {
         let register = service.register("avi", "123456789",13)
-        register.then ( _ => {assert.ok})
+        register.then ( _ => {assert.ok(1)})
         .catch( _ => assert.fail)
     })
 

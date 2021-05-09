@@ -1,9 +1,11 @@
 import { isOk, Result } from "../../Result";
+import { Publisher } from "../notifications/Publisher";
 import { buyingOption } from "../store/BuyingOption";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
+import { SubscriberHistory } from "./SubscriberHistory";
 import {  User } from "./User";
 
 
@@ -14,7 +16,8 @@ export class Subscriber extends User
     private hashPassword: string;
     private age: number
     private appointments: Appointment[];
-    private pending_messages: {}[];
+    private history: SubscriberHistory;
+    private pending_messages: string[];
 
     public constructor(username: string, age: number ){
         super();
@@ -22,6 +25,7 @@ export class Subscriber extends User
         this.age = age;
         this.appointments = [];
         this.pending_messages=[]
+        this.history = new SubscriberHistory(this.userId)
     }
 
     static buildSubscriber(username: string, hashpassword: string, age: number): Subscriber {
@@ -100,11 +104,16 @@ export class Subscriber extends User
         return false;
     }
 
-    public addMessage(message:{}) : void
+    public addMessage(message:string) : void
     {
-        console.log("added message");
         this.pending_messages.push(message);
     }
+
+    // public GetShoppingCart(): Result<string>
+    // {
+    //     Publisher.get_instance().send_message(this, "hello world");
+    //     return super.GetShoppingCart();
+    // }
 
     public getValue = (field: string): number => this.age;
     public isPendingMessages() : boolean
@@ -114,11 +123,35 @@ export class Subscriber extends User
         return true;
     }
 
-    public takeMessages(): {}[]
+    public takeMessages(): string[]
     {
         let messages = this.pending_messages;
         this.pending_messages = [];
         return messages;
+    }
+
+    public getStores() : {}
+    {
+        let stores: any =[] 
+        this.appointments.forEach( appointment =>{
+            stores.push({storeId: appointment.getStore().getStoreId(), storeName: appointment.getStore().getStoreName() , permissions: appointment.getPermissions()})
+        })
+        return JSON.stringify({stores:stores})
+    }
+
+    public getPurchaseHistory()
+    {
+        return this.history.getPurchaseHistory()
+    }
+    
+    public getPermission(storeId: number): number
+    {   
+        let appoint: Appointment = this.appointments.find(apppintment => apppintment.getStore().getStoreId() === storeId );
+        if(appoint !== undefined)
+        {
+            return appoint.getPermissions().getPermissions();
+        }
+        return 0;
     }
 
     
