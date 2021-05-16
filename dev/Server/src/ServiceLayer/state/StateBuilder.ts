@@ -7,7 +7,17 @@ type categoryState = {name:string, categories:categoryState[]};
 type storeItemState = {name:string, categories:string[], price: number, quantity:number};
 type ownerState = {name:string, appointer:string};
 type managerState = {name:string, appointer:string, permissions:number};
-
+type simpleOperand = number | string;
+type predState = simplePredState | compoundPredState;
+type simplePredState = {type:"simple",operand1:simpleOperand, operator:string, operand2:simpleOperand};
+type compoundPredState = {type:"compound", operator:string, operands: predState[]};
+type transactionState = {store:string, user:string, basket:itemState[]};
+type policyState = {name:string, rule:predState};
+type unconditionalDiscountState = {type:"uncoditional",category:string, ratio:number};
+type conditionalDiscountState = {type:"coditional",category:string, ratio:number, predicate:predState};
+type simpleDiscountState = unconditionalDiscountState | conditionalDiscountState;
+type discountState = simpleDiscountState | comboDiscountState;
+type comboDiscountState = {type:"combo", policy:string, discounts:discountState[]};
 
 
 export default class StateBuilder{
@@ -41,5 +51,36 @@ export default class StateBuilder{
 
     manager = (name:string, appointer:string, permissions:number):managerState =>{
         return {name, appointer, permissions};
+    }
+
+    simplePred = (operand1:simpleOperand, operator:string, operand2:simpleOperand):simplePredState =>{
+        return{type:"simple",operand1, operator, operand2};
+    }
+
+    compoundPred = (operator:string, operands:predState[]):compoundPredState =>{
+        return {type:"compound", operator, operands};
+    }
+
+    policy = (name:string, rule:predState):policyState => {
+        return {name, rule};
+    }
+
+    unconditionalDiscount = (ratio:number, category:string):unconditionalDiscountState => {
+       return  {type:"uncoditional",category, ratio};
+    }
+
+    conditionalDiscount = (ratio:number, category:string, predicate:predState): conditionalDiscountState => {
+        return {type:"coditional",category, ratio, predicate};
+    }
+
+    comboDiscount = (policy:string, discounts:discountState[]):comboDiscountState => {
+        return {type:"combo", policy, discounts};
+    }
+
+
+
+
+    transaction = (store:string, user:string, basket:itemState[]) =>{
+        return {store, user, basket};
     }
 }

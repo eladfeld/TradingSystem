@@ -1,6 +1,5 @@
 import StateBuilder from './StateBuilder';
 
-const empty : any[] = [];
 const sb: StateBuilder = new StateBuilder();
 
 const state = {
@@ -31,69 +30,26 @@ const state = {
                 ]
             },
             buying_policies:[
-                {
-                    name:"only adults can drink",
-                    rule:{
-                        type:"compound",
-                        operator:"=>",
-                        operands:[
-                            {
-                                type:"simple",
-                                operand1:"b_alcohol_quantity",
-                                operator:">",
-                                operand2:0 
-                            },
-                            {
-                                type:"simple",
-                                operand1:"u_age",
-                                operator:">",
-                                operand2:18                                 
-                            }
-                        ]
-                    }
-                },
-                {
-                    name:"only babies can smoke",
-                    rule:{
-                        type:"compound",
-                        operator:"=>",
-                        operands:[
-                            {
-                                type:"simple",
-                                operand1:"b_tobacco_quantity",
-                                operator:">",
-                                operand2:0 
-                            },
-                            {
-                                type:"simple",
-                                operand1:"u_age",
-                                operator:"<",
-                                operand2:3                                  
-                            }
-                        ]
-                    }
-                }
-            
+                sb.policy(
+                    "only adults can drink",
+                    sb.compoundPred("=>",[
+                        sb.simplePred("b_alcohol_quantity",">",0),
+                        sb.simplePred("u_age",">",18)                           
+                ])),
+                sb.policy(
+                    "only babies can smoke",
+                    sb.compoundPred("=>",[
+                        sb.simplePred("b_tobacco_quantity",">",0),
+                        sb.simplePred("u_age","<",3)                            
+                ]))           
             ],
             discounts:[
                 {
                     name:"15% apples and 10% off food",
-                    discount: {
-                        type: "combo",
-                        policy: "add",
-                        discounts:[
-                            {
-                                type: "unconditional",
-                                category: "product:apple",
-                                ratio: 0.15
-                            },
-                            {
-                                type: "unconditional",
-                                category: "food",
-                                ratio: 0.10
-                            }
-                        ]
-                    }
+                    discount: sb.comboDiscount("add",[
+                        sb.unconditionalDiscount(0.15, "product:apple"),
+                        sb.unconditionalDiscount(0.10, "food")          
+                    ])
                 }
             ]  
         }
@@ -111,17 +67,9 @@ const state = {
         ])
     ],
     history:[
-        {
-            store:"walmart",
-            user:"tupac",
-            basket:[
-                {
-                    name:"playstation",
-                    quantity:1
-                }
-            ],
-            total:249.99
-        }
+        sb.transaction("Walmart", "tupac", [
+            sb.item("playstation", 1)
+        ])
     ]
 };
 export default state;
