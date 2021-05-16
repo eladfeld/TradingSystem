@@ -12,7 +12,6 @@
         b) purchase
     4) fill carts to state
     5) log out necesary users
-
 */
 
 /*
@@ -62,19 +61,12 @@ class StateInitializer{
 
     public initAndLoginUsers = (service: Service) =>{
         //init subscribers
-        state.users.subscribers.forEach(async subState => {
+        state.subscribers.forEach(async subState => {
             const enterResp = JSON.parse(await service.enter());
             const userId: number = enterResp.data.userId;
             this.users.set(subState.name, userId);
             const registerResp = JSON.parse(await service.register(subState.name, subState.password, userId));
             const subscriber = await service.login(`${userId}`,subState.name,subState.password);
-            //TODO: check if responses are bad and throw exception if bad
-        });
-
-        //init guests
-        state.users.guests.forEach(async guestState => {
-            const enterResp = JSON.parse(await service.enter());
-            const userId: number = enterResp.data.userId;
             //TODO: check if responses are bad and throw exception if bad
         });
     }
@@ -127,7 +119,7 @@ class StateInitializer{
     }
 
     private fillCarts = (service: Service) => {
-        state.users.subscribers.forEach(subState =>{
+        state.subscribers.forEach(subState =>{
             const subId = this.users.get(subState.name);
             subState.cart.forEach(basketState =>{
                 const storeName = basketState.store;
@@ -141,7 +133,7 @@ class StateInitializer{
     }
 
     private logoutUsers = (service: Service) => {
-        state.users.subscribers.forEach(subState => {
+        state.subscribers.forEach(subState => {
             if(!subState.logged_in){
                 service.logout(`${this.users.get(subState.name)}`);
             }

@@ -116,35 +116,28 @@ const state = {
             ]    
         }
     ],
-    users:{
-        subscribers:[
-            {
-                name:"john",
-                password:"pwd",
-                logged_in:true,
-                cart:[
-                    {
-                        store:"walmart",
-                        items:[
-                            {
-                                name:"apple",
-                                quantity:10
-                            },
-                            {
-                                name:"playstation",
-                                quantity:1
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
-        guests:[
-            {
-                cart: empty
-            }
-        ]
-    },
+    subscribers:[
+        {
+            name:"john",
+            password:"pwd",
+            logged_in:true,
+            cart:[
+                {
+                    store:"walmart",
+                    items:[
+                        {
+                            name:"apple",
+                            quantity:10
+                        },
+                        {
+                            name:"playstation",
+                            quantity:1
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
     history:[
         {
             store:"walmart",
