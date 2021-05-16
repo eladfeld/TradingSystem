@@ -27,7 +27,7 @@ const state = {
             ],
             inventory:[
                 {
-                    name:"play station",
+                    name:"playstation",
                     categories:["electronics"],
                     price: 249.99,
                     quantity: 50
@@ -69,18 +69,20 @@ const state = {
                     rule:{
                         type:"compound",
                         operator:"=>",
-                        operand1:{
-                            type:"simple",
-                            operand1:"b_alcohol_quantity",
-                            operator:">",
-                            operand2:0 
-                        },
-                        perand2:{
-                            type:"simple",
-                            operand1:"u_age",
-                            operator:">",
-                            operand2:18                                 
-                        }
+                        operands:[
+                            {
+                                type:"simple",
+                                operand1:"b_alcohol_quantity",
+                                operator:">",
+                                operand2:0 
+                            },
+                            {
+                                type:"simple",
+                                operand1:"u_age",
+                                operator:">",
+                                operand2:18                                 
+                            }
+                        ]
                     }
                 },
                 {
@@ -88,42 +90,85 @@ const state = {
                     rule:{
                         type:"compound",
                         operator:"=>",
-                        operand1:{
-                            type:"simple",
-                            operand1:"b_tobacco_quantity",
-                            operator:">",
-                            operand2:0 
-                        },
-                        operand2:{
-                            type:"simple",
-                            operand1:"u_age",
-                            operator:"<",
-                            operand2:3                                  
-                        }
+                        operands:[
+                            {
+                                type:"simple",
+                                operand1:"b_tobacco_quantity",
+                                operator:">",
+                                operand2:0 
+                            },
+                            {
+                                type:"simple",
+                                operand1:"u_age",
+                                operator:"<",
+                                operand2:3                                  
+                            }
+                        ]
                     }
                 }
             
             ],
             discounts:[
                 {
-                    name:"10% apples",
-                    discount:{
-                        type:"unconditional",
-                        ratio: 0.10,
-                        category: 123
+                    name:"15% apples and 10% off food",
+                    discount: {
+                        type: "combo",
+                        policy: "add",
+                        discounts:[
+                            {
+                                type: "unconditional",
+                                category: "product:apple",
+                                ratio: 0.15
+                            },
+                            {
+                                type: "unconditional",
+                                category: "food",
+                                ratio: 0.10
+                            }
+                        ]
                     }
                 }
-            ]    
+            ]  
         }
     ],
     subscribers:[
         {
+            name:"joe",
+            password:"pwd",
+            logged_in:true,
+            cart:[]
+        },
+        {
             name:"john",
+            password:"pwd",
+            logged_in:true,
+            cart:[]
+        },
+        {
+            name:"josh",
+            password:"pwd",
+            logged_in:true,
+            cart:[]
+        },
+        {
+            name:"jack",
+            password:"pwd",
+            logged_in:true,
+            cart:[]
+        },
+        {
+            name:"jim",
+            password:"pwd",
+            logged_in:true,
+            cart:[]
+        },
+        {
+            name:"tupac",
             password:"pwd",
             logged_in:true,
             cart:[
                 {
-                    store:"walmart",
+                    store:"Walmart",
                     items:[
                         {
                             name:"apple",

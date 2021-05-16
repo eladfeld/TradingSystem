@@ -1,3 +1,4 @@
+import { SHOULD_INIT_STATE } from "../config";
 import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
 import { Publisher } from "../DomainLayer/notifications/Publisher";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
@@ -7,6 +8,7 @@ import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { User } from "../DomainLayer/user/User";
 import { isOk, makeFailure, makeOk, Result} from "../Result";
+import StateInitializer from './state/StateInitializer';
 
 export class Service
 {
@@ -17,7 +19,13 @@ export class Service
 
     private constructor()
     {
-        this.facade = new FakeSystemFacade().getFacade();
+        this.facade = new SystemFacade();
+        if(SHOULD_INIT_STATE){
+            setTimeout(async() =>{
+                const res = await new StateInitializer().initState();
+                console.log(`init state was succesful: ${res}`)
+            }, 0);
+        }
     }
 
     public get_word_list(word: string): string[]
@@ -41,7 +49,7 @@ export class Service
         return Service.singletone;
     }
 
-    //user enter the system
+    //returns a session id string
     public async enter(): Promise<string>
     {
         return this.facade.enter();
