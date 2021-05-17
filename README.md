@@ -5,16 +5,17 @@ Workshop on Software Engineering Project
 
 Variable | Explanation
 ---------|-------------
-Checkout Timeout | max time between checkout and order completion
-Cache Size | size of the cache in bytes
-Should Init State | true if loading an initial state from state.ts
+CHECKOUT_TIMEOUT | max time between checkout and order completion
+CACHE_SIZE | size of the cache in bytes
+SHOULD_INIT_STATE | true if loading an initial state from state.ts
 
 
 # Initializing State
 
 You can initialize the system to a specific state. in the state.ts file, define the subscribers, stores, and transactions
 that the state will contain on startup. Toggle this feature with the SHOULD_INIT_STATE parameter in config.ts. The state
-will be acheived only by legal interactions with the system at the highest level (as if a user performed the necesary actions one by one). If the desired initial state can not be successfully acheived, the system will shut down.
+will be acheived only by legal interactions with the system at the highest level (as if a user performed the necesary actions one by one). If the desired initial state can not be successfully acheived, the system will shut down. 
+StateBuilder.ts may come in handy for creating states in a tidy and compact manner.
 
 ## Unsupported Initial States
 - states that depend on closing a store
