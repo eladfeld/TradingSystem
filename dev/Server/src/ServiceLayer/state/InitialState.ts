@@ -1,2 +1,2 @@
-import state from './InitialStateExample3';
+import state from './InitialStateExample4';
 export default state;

@@ -1,16 +1,19 @@
-const categories = {
+import StateBuilder, {storeItemState, categoryState} from "./StateBuilder";
+
+
+
+
+export const categories = {
     ELECTRONICS: "Electronics",
     FOOD: "Food",
-    CLOTHING: "Clothing",
-    PETS: "Pets",
-    SPORTS: "Sports"
+    CLOTHING: "Clothing"
 }
 
 
 /*
 ********************************* Electronics ****************************************
 */
-const electronicsCategories = {
+export const electronicsCategories = {
     TVS: "TVs",
     COMPUTERS: "Computers",
     CELL_PHONES: "Cell Phones",
@@ -19,7 +22,7 @@ const electronicsCategories = {
     ACCESSORIES: "Accessories"
 }
 
-const tvs = [
+export const tvs = [
     'SAMSUNG 65" Class 4K Ultra HD (2160P) HDR Smart QLED TV QN65Q60T 2020',
     'Samsung QN50Q60TA 50" Ultra High Definition 4K Quantum HDR Smart QLED TV with a 1 Year Extended Warranty (2020)',
     'Sceptre 32" Class HD (720p) Android Smart LED TV with Google Assistant (A328BV-SR)',
@@ -44,12 +47,12 @@ const tvs = [
     'LG 75" Class 4K UHD 2160P Smart TV with HDR - 75UN7070PUC 2020 Model'
 ]
 
-const computerCategories = {
+export const computerCategories = {
     DESKTOPS: "Desktops",
     LAPTOPS: "Laptops"
 }
 
-const desktops = [
+export const desktops = [
     'HP Desktop PC System Windows 10 Dual Core Processor 4GB Ram 250GB Hard Drive with a 19" LCD Monitor-Refurbished Computer',
     'Dell Desktop Computer OptiPlex 990 SFF Intel Core i7 8GB RAM 512GB (New SSD) Wi-Fi DVD 19" LCD Monitor - Refurbished Windows 10 PC',
     `Dell OptiPlex Desktop Computer Intel Core i5 3.1GHz 8GB RAM 1TB HD DVDRW Windows 10 Dual 22" LCD's Wi-Fi Refurbished PC`,
@@ -84,7 +87,7 @@ const laptops = [
     `Dell Chromebook - 11.6" - Celeron N2840 - 4 GB RAM - 16 GB SSD - English (Refurbished)`
 ]
 
-const cellphones = [
+export const cellphones = [
     "Samsung Galaxy S21 Ultra",
     "iPhone 12 Pro",
     "iPhone 12 Pro Max",
@@ -106,7 +109,7 @@ const cellphones = [
     "Motorola One 5G"
 ]
 
-const printers = [
+export const printers = [
     "HP Business InkJet 1000",	
     "HP Business InkJet 1100",	
     "HP Business InkJet 1100d",	
@@ -141,13 +144,13 @@ const printers = [
     "HP Business InkJet 3000dtn"
 ]
 
-const videoGames = [
+export const videoGames = [
     "Minecraft", "Grand Theft Auto V", "tetris","Wii Sports","Super Mario Bros", "Pokemon Red", "Pokemon Blue",
     "Mario Cart","Pac-Man","Duck Hunt","Call of Duty","Grand Theft Auto IV","FIFA 18","Sonic the Hedgehog",
     "The Legend of Zelda", "Super Smash Bros","The Sims 4", "Spiderman"
 ]
 
-const accessories = [
+export const accessories = [
     `Logitech G733 Lightspeed Wireless PC Gaming Headset - Black`,
     `Logitech G305 LIGHTSPEED Wireless Gaming Mouse - Black`,
     `APC UPS, 1500VA UPS Battery Backup & Surge Protector with AVR, LCD Uninterruptible Power Supply, Back-UPS Pro Series (BX1500M)`,
@@ -168,15 +171,15 @@ const accessories = [
 ********************************* Food ****************************************
 */
 
-const foodCategories = [
-    "Snacks",
-    "Beverages",
-    "Cereal",
-    "Fruit",
-    "vegetables"
-]
+export const foodCategories = {
+    SNACKS:"Snacks",
+    BEVERAGES:"Beverages",
+    CEREAL:"Cereal",
+    FRUIT:"Fruit",
+    VEGETABLES:"vegetables"
+}
 
-const snacks =[
+export const snacks =[
     "Slushie",
     "Fun Dip",
     "Chips Ahoy!",
@@ -200,7 +203,7 @@ const snacks =[
     "Combos"
 ]
 
-const beverages = [
+export const beverages = [
     'Mountain Dew Code Red',
     'Fresca',
     "Stewart'S Black Cherry Wishniak Soda",
@@ -224,7 +227,7 @@ const beverages = [
     'Big Red Soda'
 ]
 
-const cereals = [
+export const cereals = [
     "Frosted Flakes",
     "Cranberry Almond Crunch Cereal",
     "Coco Pops",
@@ -248,7 +251,7 @@ const cereals = [
     "All-Bran Bran Flakes"
 ]
 
-const fruit = [
+export const fruit = [
     "Abiu",
     "Açaí",
     "Acerola",
@@ -377,7 +380,7 @@ const fruit = [
     "Yuzu"
 ]
 
-const vegetables = [
+export const vegetables = [
     "Artichoke",
     "Aubergine (Eggplant)",
     "Amrud",
@@ -433,3 +436,113 @@ const vegetables = [
 /*
 ********************************* Clothing ****************************************
 */
+
+export const clothes = [
+    "Dress",
+    "Swimwear",
+    "Pajamas",
+    "Slippers",
+    "Robe",
+    "Blouse",
+    "Sunglasses",
+    "Cummerbund",
+    "Swimming Shorts",
+    "Polo Shirt",
+    "Lingerie",
+    "Shawl",
+    "Scarf",
+    "Skirt",
+    "Boxers",
+    "Top",
+    "Jacket",
+    "Tights",
+    "Suit",
+    "Shoes",
+    "Thong",
+    "Shorts",
+    "Tie",
+    "Socks",
+    "Briefs",
+    "Blazer",
+    "Poncho",
+    "Cargos",
+    "Boots",
+    "Tracksuit",
+    "Gown",
+    "Sweatshirt",
+    "Hat",
+    "Sarong",
+    "Shirt",
+    "Cardigan",
+    "Bikini",
+    "Dinner Jacket",
+    "Coat",
+    "Cufflinks",
+    "Hoody",
+    "Waistcoat",
+    "Bra",
+    "Overalls",
+    "Underwear",
+    "Tankini",
+    "Stockings",
+    "Jogging Suit",
+    "Belt",
+    "Jeans",
+    "Corset",
+    "Camisole",
+    "T-Shirt",
+    "Gloves",
+    "Fleece",
+    "Sandals",
+    "Nightgown",
+    "Knickers",
+    "Cravat",
+    "Bow Tie",
+    "Kilt",
+]
+
+
+const sb: StateBuilder = new StateBuilder();
+const getInventory = () => {
+    const items:storeItemState[] = [];
+    tvs.forEach(tv => items.push(sb.storeItem(tv,[electronicsCategories.TVS], 200, 20)));
+    desktops.forEach(desktop => items.push(sb.storeItem(desktop, [computerCategories.DESKTOPS], 1200, 25)));
+    laptops.forEach(laptop => items.push(sb.storeItem(laptop,[computerCategories.LAPTOPS],800,40)));
+    cellphones.forEach(phone => items.push(sb.storeItem(phone, [electronicsCategories.CELL_PHONES], 200, 15)));
+    printers.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.PRINTERS], 80, 10)));
+    videoGames.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.VIDEO_GAMES], 15, 5)));
+    accessories.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.ACCESSORIES], 8, 65)));
+
+    snacks.forEach(item => items.push(sb.storeItem(item, [foodCategories.SNACKS], 2, 83)));
+    beverages.forEach(item => items.push(sb.storeItem(item, [foodCategories.BEVERAGES], 3, 100)));
+    cereals.forEach(item => items.push(sb.storeItem(item, [foodCategories.CEREAL], 4, 48)));
+    fruit.forEach(item => items.push(sb.storeItem(item, [foodCategories.FRUIT], 1, 112)));
+    vegetables.forEach(item => items.push(sb.storeItem(item, [foodCategories.VEGETABLES], 1, 87)));
+
+    clothes.forEach(item => items.push(sb.storeItem(item, [categories.CLOTHING], 20, 12)));
+
+    return items;    
+}
+
+const getCatefories = ():categoryState[] => {
+   return [
+       sb.category(categories.CLOTHING),
+       sb.category(categories.FOOD,[
+           sb.category(foodCategories.BEVERAGES),sb.category(foodCategories.CEREAL),
+           sb.category(foodCategories.FRUIT),sb.category(foodCategories.VEGETABLES),
+           sb.category(foodCategories.SNACKS)
+       ]),
+       sb.category(categories.ELECTRONICS,[
+           sb.category(electronicsCategories.COMPUTERS,[
+               sb.category(computerCategories.DESKTOPS),sb.category(computerCategories.LAPTOPS)
+           ]),
+           sb.category(electronicsCategories.TVS),
+           sb.category(electronicsCategories.CELL_PHONES),
+           sb.category(electronicsCategories.PRINTERS),
+           sb.category(electronicsCategories.VIDEO_GAMES),
+           sb.category(electronicsCategories.ACCESSORIES),
+       ])
+   ]
+}
+export const INVENTORY :storeItemState[] = getInventory();
+export const CATEGORIES :categoryState[] = getCatefories();

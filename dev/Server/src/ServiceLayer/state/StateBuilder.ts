@@ -1,23 +1,23 @@
 import { type } from "os";
 
-type subscriberState = {name: string, password:string,logged_in:boolean,cart:basketState[]};
-type itemState = {name:string, quantity:number};
-type basketState = {store:string, items:itemState[]};
-type categoryState = {name:string, categories:categoryState[]};
-type storeItemState = {name:string, categories:string[], price: number, quantity:number};
-type ownerState = {name:string, appointer:string};
-type managerState = {name:string, appointer:string, permissions:number};
-type simpleOperand = number | string;
-type predState = simplePredState | compoundPredState;
-type simplePredState = {type:"simple",operand1:simpleOperand, operator:string, operand2:simpleOperand};
-type compoundPredState = {type:"compound", operator:string, operands: predState[]};
-type transactionState = {store:string, user:string, basket:itemState[]};
-type policyState = {name:string, rule:predState};
-type unconditionalDiscountState = {type:"uncoditional",category:string, ratio:number};
-type conditionalDiscountState = {type:"coditional",category:string, ratio:number, predicate:predState};
-type simpleDiscountState = unconditionalDiscountState | conditionalDiscountState;
-type discountState = simpleDiscountState | comboDiscountState;
-type comboDiscountState = {type:"combo", policy:string, discounts:discountState[]};
+export type subscriberState = {name: string, password:string,logged_in:boolean,cart:basketState[]};
+export type itemState = {name:string, quantity:number};
+export type basketState = {store:string, items:itemState[]};
+export type categoryState = {name:string, categories:categoryState[]};
+export type storeItemState = {name:string, categories:string[], price: number, quantity:number};
+export type ownerState = {name:string, appointer:string};
+export type managerState = {name:string, appointer:string, permissions:number};
+export type simpleOperand = number | string;
+export type predState = simplePredState | compoundPredState;
+export type simplePredState = {type:"simple",operand1:simpleOperand, operator:string, operand2:simpleOperand};
+export type compoundPredState = {type:"compound", operator:string, operands: predState[]};
+export type transactionState = {store:string, user:string, basket:itemState[]};
+export type policyState = {name:string, rule:predState};
+export type unconditionalDiscountState = {type:"uncoditional",category:string, ratio:number};
+export type conditionalDiscountState = {type:"coditional",category:string, ratio:number, predicate:predState};
+export type simpleDiscountState = unconditionalDiscountState | conditionalDiscountState;
+export type discountState = simpleDiscountState | comboDiscountState;
+export type comboDiscountState = {type:"combo", policy:string, discounts:discountState[]};
 
 
 export default class StateBuilder{
