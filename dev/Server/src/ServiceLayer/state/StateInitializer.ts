@@ -15,7 +15,8 @@
 */
 
 
-import state from './InitialState';
+//import state from './InitialState';
+import { INITIAL_STATE } from '../../config';
 import { Service } from '../Service';
 
 const BANK_ACCOUNT = 0;
@@ -23,6 +24,8 @@ const ADDRESS = "313 8 Mile Road, Detroit";
 const ROOT_CATEGORY:any = null;
 const AGE = 25;
 const DEFAULT_PASSWORD = "123";
+
+const state = INITIAL_STATE;
 
 export default class StateInitializer{
 
@@ -119,10 +122,9 @@ export default class StateInitializer{
 
             //add buying policy
             //convert fields
-            // storeState.buying_policies.forEach(policyState =>{
-            //     this.convertPredicate(storeName, policyState.rule);
-            // });
-
+            storeState.buying_policies.forEach(policyState =>{
+                this.convertPredicate(storeName, policyState.rule);
+            });
             //add discounts
             //TODO: Implement
         }
@@ -148,21 +150,12 @@ export default class StateInitializer{
                 }
             }
         }
-        // state.subscribers.forEach(subState =>{
-        //     const subId = this.users.get(subState.name);
-        //     subState.cart.forEach(basketState =>{
-        //         const storeName = basketState.store;
-        //         const storeId = this.stores.get(storeName);
-        //         basketState.items.forEach(productState =>{
-        //             const productId = this.products.get(storeName).get(productState.name);
-        //             service.addProductTocart(`${subId}`, storeId, productId,productState.quantity );
-        //         })
-        //     })
-        // });
     }
 
-    private convertOperand = (storeName: string, op: string):string =>{
-        const parts = op.split("_");
+    private convertOperand = (storeName: string, op: string|number):string|number =>{
+        if(typeof op === 'number') return op;
+        
+        const parts:string[] = op.split("_");
         for(var i=0; i<parts.length; i++){
             if(parts[i].startsWith("product:",0)){
                 const pair = parts[i].split(":");
@@ -174,13 +167,14 @@ export default class StateInitializer{
         return parts.join("_");
     }
 
-    private convertPredicate = (storeName: string, pred: any) =>{
+    private convertPredicate = (storeName: string, pred: any) =>{        
         if(pred.type === "simple"){
             pred.operand1 = this.convertOperand(storeName, pred.operand1);
             pred.operand2 = this.convertOperand(storeName, pred.operand2);
+            
         }else{
-            pred.operands.array.forEach((operand:any) => {
-                this.convertPredicate(storeName, operand);
+            pred.operands.forEach((operand:any) => {
+                operand =  this.convertPredicate(storeName, operand);
             });
         }
     }
