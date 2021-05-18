@@ -10,6 +10,7 @@ import fs  from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import Controller from './Controller';
+import { Publisher } from '../DomainLayer/notifications/Publisher';
 
 
 const router = express();
@@ -84,7 +85,6 @@ wss.on("connection", WsConn => {
         if(userId > 0)
         {
             wssConnections.set(userId, WsConn);
-            Controller.setServFunc(messageSender);
         }
     })
     
@@ -92,7 +92,6 @@ wss.on("connection", WsConn => {
 
 
 const wssConnections: Map<number, WebSocket> = new Map();
-
 
 const messageSender =(userId: number, message: string):Promise<string> =>
 {
@@ -107,3 +106,5 @@ const messageSender =(userId: number, message: string):Promise<string> =>
     }
     return new Promise((res, rej ) =>rej("user not logged in"));
 }
+
+Publisher.get_instance().set_send_func(messageSender)
