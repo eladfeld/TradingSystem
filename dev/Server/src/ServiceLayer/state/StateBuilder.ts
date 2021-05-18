@@ -18,6 +18,8 @@ export type conditionalDiscountState = {type:"coditional",category:string, ratio
 export type simpleDiscountState = unconditionalDiscountState | conditionalDiscountState;
 export type discountState = simpleDiscountState | comboDiscountState;
 export type comboDiscountState = {type:"combo", policy:string, discounts:discountState[]};
+export type discountWithNameState = {name: string, discount: discountState};
+
 
 
 export default class StateBuilder{
@@ -78,9 +80,11 @@ export default class StateBuilder{
     }
 
 
-
-
     transaction = (store:string, user:string, basket:itemState[]) =>{
         return {store, user, basket};
+    }
+
+    discountWithName = (name: string, discount: discountState) => {
+        return {name, discount};
     }
 }

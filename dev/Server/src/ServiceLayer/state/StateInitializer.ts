@@ -17,13 +17,17 @@
 
 //import state from './InitialState';
 import { INITIAL_STATE } from '../../config';
+import ConditionalDiscount from '../../DomainLayer/discount/ConditionalDiscount';
+import PaymentInfo from '../../DomainLayer/purchase/PaymentInfo';
 import { Service } from '../Service';
+import { basketState, discountState } from './StateBuilder';
 
 const BANK_ACCOUNT = 0;
 const ADDRESS = "313 8 Mile Road, Detroit";
 const ROOT_CATEGORY:any = null;
 const AGE = 25;
 const DEFAULT_PASSWORD = "123";
+const PAYMENT_INFO = new PaymentInfo(123,456,7890);
 
 const state = INITIAL_STATE;
 
@@ -46,17 +50,15 @@ export default class StateInitializer{
             const service: Service = Service.get_instance();
             await this.initAndLoginUsers(service);
             await this.openStores(service);
-            // this.performTransactions(service);
+            await this.performTransactions(service);
             await this.fillCarts(service);
-            // this.logoutUsers(service);
+            //await this.logoutUsers(service);
+            return true;
             
         } catch (error) {
             console.log(error);
             return false;
         }
-
-        return true;
-
     }
 
     private initAndLoginUsers = async (service: Service) =>{
@@ -99,8 +101,13 @@ export default class StateInitializer{
             for(var i=0; i<items.length; i++){
                 const itemState = items[i];
                 const quantityState = itemState.quantity;
-                const quantityPurchased = this.getNumberOfPurchasedItem();
-                const itemId = await service.addNewProduct(founderSessionId, storeId, itemState.name, itemState.categories, itemState.price, quantityState+quantityPurchased);
+                const quantityPurchased = this.getQuantityInHistory(storeName, itemState.name);
+                const quantityInCarts = this.getQuantityInCarts(storeName, itemState.name);
+                const totalQuantity = quantityState + quantityPurchased + quantityInCarts;
+                if(quantityPurchased !== 0){
+                    console.log(`${itemState.name}: ${totalQuantity} in total, ${quantityState}, ${quantityPurchased}, ${quantityInCarts}`);
+                }
+                const itemId = await service.addNewProduct(founderSessionId, storeId, itemState.name, itemState.categories, itemState.price, totalQuantity);
                 this.products.get(storeName).set(itemState.name, itemId);
             }
 
@@ -127,11 +134,34 @@ export default class StateInitializer{
             });
             //add discounts
             //TODO: Implement
+            storeState.discounts.forEach(discount => {
+                this.convertDiscount(storeName, discount.discount);
+            })
         }
 }
 
-    private performTransactions = (service: Service) =>{
-        //TODO: Implement
+    private performTransactions = async (service: Service) =>{
+        for(var tIdx=0; tIdx<state.history.length; tIdx++){
+            const {basket, store, user} = state.history[tIdx];
+            const sessionId = this.sessions.get(user);
+            const storeId = this.stores.get(store);
+            for(var itemIdx=0; itemIdx<basket.length; itemIdx++){
+                const {name, quantity} = basket[itemIdx];
+                const productId = this.products.get(store).get(name);
+                await service.addProductTocart(sessionId, storeId, productId,quantity );
+            }
+            await service.checkoutBasket(sessionId, storeId, ADDRESS);
+            await service.completeOrder(sessionId, storeId, PAYMENT_INFO, ADDRESS);
+        }
+    }
+
+    private basketToString = (b: basketState)=>{
+        var s = `${b.store} basket: [`;
+        b.items.forEach(item =>{
+            s += `${item.name}-${item.quantity}, `;
+        })
+        s += ']';
+        return s;
     }
 
     private fillCarts = async(service: Service) => {
@@ -149,6 +179,15 @@ export default class StateInitializer{
                     await service.addProductTocart(subSessionId, storeId, productId,productState.quantity );
                 }
             }
+        }
+    }
+
+    private convertDiscount = (storeName: string, discount: discountState) =>{
+        if(discount.type==="coditional"){
+            this.convertPredicate(storeName, discount.predicate);
+        }
+        else if(discount.type==="combo"){
+            discount.discounts.forEach(d => this.convertDiscount(storeName, d));
         }
     }
 
@@ -179,12 +218,14 @@ export default class StateInitializer{
         }
     }
 
-    private logoutUsers = (service: Service) => {
-        state.subscribers.forEach(subState => {
+    private logoutUsers = async(service: Service) => {
+        for(var subIdx=0; subIdx<state.subscribers.length; subIdx++){
+            const subState = state.subscribers[subIdx];
             if(!subState.logged_in){
-                service.logout(`${this.users.get(subState.name)}`);
+                const sessionId = this.sessions.get(subState.name);
+                await service.logout(sessionId);
             }
-        })
+        }
     }
 
     private initCategory = async (service: Service,founderId:string, storeId: number, cat:any, father:string) => {
@@ -196,22 +237,35 @@ export default class StateInitializer{
         }
     }
 
-    private getNumberOfPurchasedItem = ():number =>{
-        return 0;
-    }
-
-
-    private syncForEach = <T,S>(arr:T[], f:(t:T)=>Promise<S>, g:(s:S)=>void, cont:()=>void):void =>{
-        this.syncForEachRec(arr, f, g, 0, cont);
-    }
-    private syncForEachRec = <T,S>(arr:T[], f:(t:T)=>Promise<S>, g:(s:S)=>void, idx: number, cont:()=>void):void =>{
-        if(idx === arr.length){
-            cont();
+    private getQuantityInHistory = (storeName: string, itemName: string):number =>{
+        var acc: number = 0;
+        for(var tIdx=0; tIdx<state.history.length; tIdx++){
+            if(state.history[tIdx].store === storeName){
+                var quantity: number = 0;
+                try{
+                    quantity = state.history[tIdx].basket
+                                .find((itemState,i,arr) => itemState.name===itemName).quantity;
+                }catch{
+                    quantity = 0;
+                }
+                acc += quantity;
+            }
         }
-        f(arr[idx]).then(s =>{
-            g(s);
-            this.syncForEachRec(arr, f, g, idx+1, cont);
-        })
+        return acc;
     }
-
+    private getQuantityInCarts = (storeName: string, itemName: string):number =>{
+        var acc: number = 0;
+        for(var subIdx=0; subIdx<state.subscribers.length; subIdx++){
+            var quantity: number = 0;
+            try{
+                quantity = state.subscribers[subIdx].cart
+                        .find((basketState,i,arr) => basketState.store===storeName).items
+                        .find((itemState,i,arr) => itemState.name===itemName).quantity;
+            }catch{
+                quantity = 0;
+            }
+            acc += quantity;
+        }
+        return acc;
+    }
 }

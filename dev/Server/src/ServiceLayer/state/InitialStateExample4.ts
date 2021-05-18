@@ -37,13 +37,14 @@ const state = {
                 ]))           
             ],
             discounts:[
-                {
-                    name:"15% apples and 10% off food",
-                    discount: sb.comboDiscount("add",[
+                sb.discountWithName(
+                    "15% apples and 10% off food",
+                    sb.comboDiscount("add",[
                         sb.unconditionalDiscount(0.15, "product:apple"),
                         sb.unconditionalDiscount(0.10, "food")          
-                    ])
-                }
+                    ])),
+                sb.discountWithName("10% off food", sb.unconditionalDiscount(0.10,"food")),
+                sb.discountWithName("fake discount", sb.conditionalDiscount(0.10, "food", sb.simplePred(1,">",2)))
             ]  
         }
     ],
@@ -54,17 +55,17 @@ const state = {
         sb.subscriber("jack"),
         sb.subscriber("jim"),
         sb.subscriber("tupac","123",true, [
-            // sb.basket("Walmart",
-            //     [sb.item("Minecraft", 10), sb.item("tetris", 1)]
-            // )
+            sb.basket("Walmart",
+                [sb.item("Minecraft", 10), sb.item("tetris", 1)]
+            )
         ])
     ],
-    history: empty
-    // [
-    //     sb.transaction("Walmart", "tupac", [
-    //         sb.item("tetris", 1)
-    //     ])
-    // ]
+    history:
+    [
+        sb.transaction("Walmart", "tupac", [
+            sb.item("tetris", 1)
+        ])
+    ]
 };
 export default state;
 
