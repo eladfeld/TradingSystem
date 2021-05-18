@@ -25,11 +25,12 @@ const Authentication=({getAppState, setAppState})=>{
         const res = await axios.post(`${SERVER_BASE_URL}login`, {userId, username, password} )
         if(res.data.userId !== undefined)
         {
-            const ws  = new WebSocket('ws://localhost:8082');
+            const ws  = new WebSocket('wss://localhost:3333');
 
             ws.addEventListener("open", ()=> 
             {
                 ws.send(res.data.userId);
+                setAppState({wsConn: ws})
             })
 
             ws.addEventListener("message", e => alert(e.data))

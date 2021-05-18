@@ -54,15 +54,19 @@ export default function MyTransaction({getAppState, setAppState}) {
                     <TableRow>
                         <StyledTableCell>Product</StyledTableCell>
                         <StyledTableCell align="left">Quantity</StyledTableCell>
+                        <StyledTableCell align="left">Price</StyledTableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
                     {myTansactionToView.items.map((item) => (
                         <StyledTableRow key={`t${myTansactionToView.transactionId}-p${item.productId}`}>
                         <StyledTableCell component="th" scope="row">
-                            {item.productId}
+                            {item.name}
                         </StyledTableCell>
                         <StyledTableCell align="left">{item.Quantity}</StyledTableCell>
+                        <StyledTableCell component="th" scope="row">
+                            {`${item.price}$`}
+                        </StyledTableCell>
                         </StyledTableRow>
                     ))}
                     </TableBody>

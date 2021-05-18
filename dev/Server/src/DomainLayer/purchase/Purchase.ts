@@ -70,8 +70,8 @@ class Purchase {
 
     //initiates a transaction between the store and the user that will be completed within 5 minutes, otherwise cancelled.
     public checkout = (storeId: number, total: number, userId: number, 
-        products: Map<number, number>, onFail:()=>void):Result<boolean>=>{
-        const transaction: Transaction = new Transaction(userId, storeId, products, total);
+        products: Map<number, number>, storeName: string ,onFail:()=>void):Result<boolean>=>{
+        const transaction: Transaction = new Transaction(userId, storeId, products, total,storeName);
         const [oldTimerId, oldOnFail] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId !== undefined){
             //a checkout is already in progress, cancel the old timer/order
@@ -120,7 +120,7 @@ class Purchase {
         this.dbDummy.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
 
-        Publisher.get_instance().notify_store_update(storeId, `hello world`);
+        Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
         return makeOk(true);
     }
 

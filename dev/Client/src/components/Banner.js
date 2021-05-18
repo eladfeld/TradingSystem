@@ -192,6 +192,8 @@ export default function Banner({getAppState, setAppState}) {
   const handleLogoutClick  = async () => {
     //handleMenuClose();
     await axios.post(BASE_URL+'logout',{userId});
+    const wsConn = getAppState().wsConn;
+    wsConn.close();
     history.push('/');
     setAppState(initialAppState);
   };
