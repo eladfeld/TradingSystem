@@ -6,7 +6,8 @@ export const initialAppState = {
     myTransactions: undefined,
     stores: [],
     storeInventory: undefined,
-    staffToView: undefined
+    staffToView: undefined,
+    wsConn: undefined
 };
 
 export const unknownStatusMessage = (res) =>{

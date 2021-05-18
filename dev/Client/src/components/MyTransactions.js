@@ -66,11 +66,11 @@ export default function MyTransactions({getAppState, setAppState}) {
                 {myTransactions.map((t) => (
                   <StyledTableRow key={t.transactionId} onClick={(e) => onTransactionClick(t)}>
                     <StyledTableCell component="th" scope="row">
-                      {t.storeId}
+                      {t.storeName}
                     </StyledTableCell>
                     <StyledTableCell align="left">{new Date(t.time).toUTCString()}</StyledTableCell>
                     <StyledTableCell align="left">{0}</StyledTableCell>
-                    <StyledTableCell align="left">{t.total}</StyledTableCell>
+                    <StyledTableCell align="left">{`${t.total}$`}</StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>

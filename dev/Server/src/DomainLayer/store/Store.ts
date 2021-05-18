@@ -19,6 +19,7 @@ import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
 import PaymentInfo from "../purchase/PaymentInfo";
 import ShippingInfo from "../purchase/ShippingInfo";
+import { StoreProduct } from "./StoreProduct";
 
 
 export class Store
@@ -196,7 +197,7 @@ export class Store
         }
         let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
 
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, () => {
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, this.storeName, () => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
          );
@@ -243,7 +244,7 @@ export class Store
         productMap.set(productPrice, quantity);
         let fixedPrice = this.applyDiscountPolicy(productMap);
 
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.cancelReservedShoppingBasket(productMap));
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.storeName, this.cancelReservedShoppingBasket(productMap));
         return makeOk("Checkout passed to purchase");
     }
 
@@ -520,6 +521,10 @@ export class Store
 
     public getProductQuantity(productId : number) : number{
         return this.inventory.getProductQuantity(productId);
+    }
+
+    public getProductbyId( productId : number) : StoreProduct{
+        return this.inventory.getProductById(productId)
     }
 
 }
