@@ -109,11 +109,6 @@ export class Subscriber extends User
         this.pending_messages.push(message);
     }
 
-    // public GetShoppingCart(): Result<string>
-    // {
-    //     Publisher.get_instance().send_message(this, "hello world");
-    //     return super.GetShoppingCart();
-    // }
 
     public getValue = (field: string): number => this.age;
     public isPendingMessages() : boolean

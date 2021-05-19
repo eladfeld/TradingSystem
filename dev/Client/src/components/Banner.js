@@ -193,7 +193,8 @@ export default function Banner({getAppState, setAppState}) {
     //handleMenuClose();
     await axios.post(BASE_URL+'logout',{userId});
     const wsConn = getAppState().wsConn;
-    wsConn.close();
+    if (wsConn !== undefined)
+      wsConn.close();
     history.push('/');
     setAppState(initialAppState);
   };

@@ -4,6 +4,10 @@ import Controller from './Controller';
 const router = express.Router();
 
 router.get('/enter', Controller.enter);
+router.get('/getAllCategories', Controller.getAllCategories)
+router.get('/getProductNames', Controller.getProductNames)
+router.get('/getKeywords', Controller.getkeywords)
+router.get('/getStoreNames', Controller.getStoreNames)
 router.post('/register', Controller.register)
 router.post('/login', Controller.login)
 router.post('/exit', Controller.exit)

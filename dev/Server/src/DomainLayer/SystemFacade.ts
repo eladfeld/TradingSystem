@@ -18,6 +18,8 @@ import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
 import { Publisher } from "./notifications/Publisher";
 import { createHash } from 'crypto';
+import { SpellChecker } from "./apis/spellchecker";
+import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 export class SystemFacade
 {
 
@@ -564,6 +566,7 @@ export class SystemFacade
             let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
             MakeAppointment.appoint_founder(subscriber, store);
             Publisher.get_instance().register_store(store.getStoreId(),subscriber);
+            SpellCheckerAdapter.get_instance().add_storeName(storeName);
             return new Promise( (resolve,reject) => { resolve(store)});
         }
         return  new Promise( (resolve,reject) => { reject("user not found")});
@@ -620,7 +623,7 @@ export class SystemFacade
             if(isOk(res))
             {
                 let value = res.value;
-
+                SpellCheckerAdapter.get_instance().add_productName(productName);
                 return new Promise((resolve, reject) =>
                 {
                     resolve(value);
