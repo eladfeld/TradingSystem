@@ -1,4 +1,5 @@
 import { isFailure, makeOk, Result } from "../../../Result";
+import iSubject from "../../discount/logic/iSubject";
 import PredicateParser from "../../discount/logic/parser";
 import { iPredicate } from "../../discount/logic/Predicate";
 import BuyingSubject from "./BuyingSubject";
@@ -16,6 +17,7 @@ export class Rule{
 export default class BuyingPolicy{
     private nextId: number = 1;                 //an id (unique to the store) for each rule in the policy
     private rules: Map<number,Rule>;            //the rules for buying at the store
+    public static SUCCESS: string = "buying policy is respected";
 
     constructor(){
         this.rules = new Map();
@@ -33,7 +35,7 @@ export default class BuyingPolicy{
             if(isFailure(res)) return res;
             if(!res.value) return makeOk(rule.description);
         }
-        return makeOk("success");
+        return makeOk(BuyingPolicy.SUCCESS);
     }
 
     public addPolicy = (predicate: any, policyInWords: string ):Result<string> =>{

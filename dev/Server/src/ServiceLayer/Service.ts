@@ -1,4 +1,6 @@
 import { SHOULD_INIT_STATE } from "../config";
+import { tDiscount } from "../DomainLayer/discount/Discount";
+import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
 import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
 import { Publisher } from "../DomainLayer/notifications/Publisher";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
@@ -211,13 +213,22 @@ export class Service
         return this.facade.getUserStores(sessionId);
     }
 
-    public addDiscountPolicy(buyingPolicy: any)
+    public addDiscountPolicy(discount: any):Promise<string>
     {
-        throw new Error('Method not implemented.');
+        return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
+        //return this.facade.addDiscountPolicy(sessionId, storeId, name, discount);
+    }
+    public addDiscountPolicy2(sessionId: string, storeId: number, name: string, discount: tDiscount):Promise<string>
+    {
+        return this.facade.addDiscountPolicy(sessionId, storeId, name, discount);
     }
 
     public addBuyingPolicy(buyingPolicy: any) {
-        throw new Error('Method not implemented.');
+        return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
+    }
+    public addBuyingPolicy2(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate) {
+        // return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
+        return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }
 
     public removeBuyingPolicy(discountNumber: number) {

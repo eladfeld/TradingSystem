@@ -1,16 +1,15 @@
 import { isFailure, makeFailure, makeOk, Result, ResultsToResult } from "../../../Result";
 import { getCompositeOperator, getSimpleOperator } from "./LogicalOperators";
-import { CompositePredicate, Field, iPredicate, iValue, SimplePredicate, Value } from "./Predicate";
+import { CompositePredicate, Field, iPredicate, iValue, SimplePredicate, tPredicate, Value } from "./Predicate";
 
 class Parser{
     constructor(){
         
     }
     //TODO: update iSubject to have string[] getWords() for field checks
-    public parse = (json: any):Result<iPredicate> =>{
+    public parse = (json: tPredicate):Result<iPredicate> =>{
         try{
-            var type: string = json.type;
-            switch (type) {
+            switch (json.type) {
                 case "simple":
                     var rater: string = json.operator;
                     if(rater === undefined) return makeFailure("operator is undefined in simple predicate");
@@ -29,13 +28,11 @@ class Parser{
                     if(randsArr.length < 2) return makeFailure("composite predicates must have at least 2 operands");
                     const randsRes: Result<iPredicate[]> =  ResultsToResult(randsArr.map(p => this.parse(p)));
                     if(isFailure(randsRes)) return randsRes;
-                    if(getCompositeOperator(rater) === undefined) return makeFailure(`invalid composite operator ${rater} in composite predicate:\n ${json}`);
-                   
+                    if(getCompositeOperator(rater) === undefined) return makeFailure(`invalid composite operator ${rater} in composite predicate:\n ${json}`);                   
                     return makeOk(new CompositePredicate(randsRes.value, getCompositeOperator(rater)));
                 default:
                     return makeFailure("buying policy type must be simple or composite");
-            }
-            
+            }            
         }catch(e){
             console.log(e);
         }

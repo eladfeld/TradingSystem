@@ -6,7 +6,8 @@ import StateBuilder, {storeItemState, categoryState} from "./StateBuilder";
 export const categories = {
     ELECTRONICS: "Electronics",
     FOOD: "Food",
-    CLOTHING: "Clothing"
+    CLOTHING: "Clothing",
+    ADULT: "Adult"
 }
 
 
@@ -502,9 +503,16 @@ export const clothes = [
 ]
 
 
+export const GOLDSTAR = "Goldstar";
+export const CAMEL_RED = "Camel Red";
+
 const sb: StateBuilder = new StateBuilder();
 const getInventory = () => {
     const items:storeItemState[] = [];
+
+    items.push(sb.storeItem(GOLDSTAR,[foodCategories.BEVERAGES], 5, 100));
+    items.push(sb.storeItem(CAMEL_RED, [], 15, 100));
+
     tvs.forEach(tv => items.push(sb.storeItem(tv,[electronicsCategories.TVS], 200, 20)));
     desktops.forEach(desktop => items.push(sb.storeItem(desktop, [computerCategories.DESKTOPS], 1200, 25)));
     laptops.forEach(laptop => items.push(sb.storeItem(laptop,[computerCategories.LAPTOPS],800,40)));
@@ -520,6 +528,7 @@ const getInventory = () => {
     vegetables.forEach(item => items.push(sb.storeItem(item, [foodCategories.VEGETABLES], 1, 87)));
 
     clothes.forEach(item => items.push(sb.storeItem(item, [categories.CLOTHING], 20, 12)));
+
 
     return items;    
 }

@@ -1,3 +1,4 @@
+import { iProduct } from "../discount/iProduct";
 import { ID, TreeRoot } from "./Common";
 
 export class StoreInfo
@@ -42,7 +43,7 @@ export class StoreInfo
 
 }
 
-export class StoreProductInfo
+export class StoreProductInfo implements iProduct
 {
 
     private productName: string;
@@ -63,6 +64,9 @@ export class StoreProductInfo
         this.productRating = productRating;
         this.numOfRaters = numOfRaters;
 
+    }
+    getCategories = ():string[] => {//TODO: Implement
+        return [];
     }
 
     public getProductId()

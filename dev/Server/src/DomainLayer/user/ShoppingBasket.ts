@@ -6,8 +6,11 @@ import { ProductDB } from "../store/ProductDB";
 import { Store } from "../store/Store";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
+import iBasket from "../discount/iBasket";
+import { iProduct, MyProduct } from "../discount/iProduct";
+import BuyingSubject from "../policy/buying/BuyingSubject";
 
-export class ShoppingBasket implements iSubject
+export class ShoppingBasket implements iBasket
 {
 
     private store : Store ;
@@ -17,6 +20,17 @@ export class ShoppingBasket implements iSubject
     {
         this.products = new Map();
         this.store = store;
+    }
+
+    public getItems = () : iProduct[] =>{
+        const output: iProduct[] = [];
+        const allProducts = this.store.getProductsInfo();
+        for(const [productId, quantity] of this.products){
+            const prod = allProducts.find(p => p.getProductId() === productId);
+            const myProduct = new MyProduct(productId,prod.getPrice(), quantity, prod.getName(),prod.getCategories());
+            output.push(myProduct);       
+        }
+        return output
     }
 
     getStoreId(): number
@@ -57,7 +71,7 @@ export class ShoppingBasket implements iSubject
         return makeOk("product added to cart");
     }
 
-    public checkout(userId:number, user: iSubject,  supply_address: string): Result<boolean>
+    public checkout(userId:number, user: iSubject,  supply_address: string, userSubject: iSubject): Result<boolean>
     {
         // this function restores the basket in case the purchase failed
         let products = this.getProducts()
@@ -66,8 +80,8 @@ export class ShoppingBasket implements iSubject
                 this.addProduct(productId,quantity)
             )
         }
-
-        let result =  this.store.sellShoppingBasket(userId, supply_address, this , onfail);
+        let buyingSubject = new BuyingSubject(userSubject, this);
+        let result =  this.store.sellShoppingBasket(userId, supply_address, this, buyingSubject , onfail);
         if (isOk(result))
         {
             this.products.forEach( (qauntity,productId,_) =>
@@ -102,7 +116,23 @@ export class ShoppingBasket implements iSubject
         return basket;
     }
 
-    getValue: (field: string) => number;
+    public getValue = (field: string):number => {
+        //console.log(`field: ${field}`);
+        const strs: string[] = field.split("_");
+        if(strs.length === 2){
+            const id: number = parseInt(strs[0]);
+            switch(strs[1]){
+                case "price":
+                    return this.store.getProductsInfo().find(p => p.getProductId() === id).getPrice();
+                case "quantity":
+                    const quantity = this.products.get(id);
+                    return quantity? quantity : 0;
+                default:
+                    return undefined;
+            }
+        }
+        return undefined;
+    };
 
 
     //------------------------------------functions for tests-------------------------------------

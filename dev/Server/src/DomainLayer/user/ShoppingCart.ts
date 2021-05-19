@@ -15,7 +15,7 @@ export class ShoppingCart
         this.baskets = new Map();
     }
 
-    public checkoutBasket(userId: number, user: iSubject, storeId : number, supply_address: string) : Result<boolean>
+    public checkoutBasket(userId: number, user: iSubject, storeId : number, supply_address: string, userSubject: iSubject) : Result<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
@@ -23,7 +23,7 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return makeFailure("no such shopping basket");
         }
-        return basket.checkout(userId, user, supply_address);
+        return basket.checkout(userId, user, supply_address, userSubject);
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Result<string>

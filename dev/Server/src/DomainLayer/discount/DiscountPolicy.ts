@@ -23,6 +23,8 @@ export default class DiscountPolicy implements iDiscount{
             if(isFailure(discountRes)) return discountRes;
             acc += discountRes.value;
         }
+        console.log(`discount of $${acc}`);
+        
         return makeOk(acc);
     }
 

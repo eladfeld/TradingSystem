@@ -19,6 +19,7 @@
 import { INITIAL_STATE } from '../../config';
 import ConditionalDiscount from '../../DomainLayer/discount/ConditionalDiscount';
 import PaymentInfo from '../../DomainLayer/purchase/PaymentInfo';
+import { StoreCategoryInfo } from '../../DomainLayer/store/StoreInfo';
 import { Service } from '../Service';
 import { basketState, discountState } from './StateBuilder';
 
@@ -96,7 +97,7 @@ export default class StateInitializer{
                 await this.initCategory(service, founderSessionId, storeId, cats[i], ROOT_CATEGORY);
             }
 
-            //init inventory (state inventory + inventory to be purchased)
+            //init inventory (state inventory + inventory purchased + inventory in baskets)
             const items = storeState.inventory;
             for(var i=0; i<items.length; i++){
                 const itemState = items[i];
@@ -132,11 +133,21 @@ export default class StateInitializer{
             storeState.buying_policies.forEach(policyState =>{
                 this.convertPredicate(storeName, policyState.rule);
             });
+            for(var pIdx=0; pIdx<storeState.buying_policies.length; pIdx++){
+                const policy = storeState.buying_policies[pIdx];
+                await service.addBuyingPolicy2(founderSessionId, storeId, policy.name, policy.rule); 
+            }
+
             //add discounts
             //TODO: Implement
             storeState.discounts.forEach(discount => {
                 this.convertDiscount(storeName, discount.discount);
             })
+            for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
+                const discount = storeState.discounts[dIdx];
+                await service.addDiscountPolicy2(founderSessionId, storeId,discount.name, discount.discount); 
+            }
+
         }
 }
 
@@ -165,7 +176,6 @@ export default class StateInitializer{
     }
 
     private fillCarts = async(service: Service) => {
-
         for(var subIdx=0; subIdx<state.subscribers.length; subIdx++){
             const subState = state.subscribers[subIdx];
             const subSessionId = this.sessions.get(subState.name);
@@ -183,7 +193,7 @@ export default class StateInitializer{
     }
 
     private convertDiscount = (storeName: string, discount: discountState) =>{
-        if(discount.type==="coditional"){
+        if(discount.type==="conditional"){
             this.convertPredicate(storeName, discount.predicate);
         }
         else if(discount.type==="combo"){
@@ -210,6 +220,7 @@ export default class StateInitializer{
         if(pred.type === "simple"){
             pred.operand1 = this.convertOperand(storeName, pred.operand1);
             pred.operand2 = this.convertOperand(storeName, pred.operand2);
+            // console.log(`op1: ${pred.operand1} op2: ${pred.operand2}`);
             
         }else{
             pred.operands.forEach((operand:any) => {

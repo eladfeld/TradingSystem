@@ -1,5 +1,5 @@
 export interface iProduct{
-    getId: () => number;
+    getProductId: () => number;
     getPrice: () => number;
     getQuantity: () => number;
     getName: () => string;//not necesary at the moment
@@ -22,7 +22,7 @@ export class MyProduct implements iProduct{
         this.categories = categories;
     }
 
-    public getId =(): number => this.id;
+    public getProductId =(): number => this.id;
     public getPrice =(): number => this.price;
     public getQuantity =(): number => this.quantity;
     public getName =(): string => this.name;

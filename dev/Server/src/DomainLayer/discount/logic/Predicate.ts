@@ -83,3 +83,8 @@ export class Value implements iValue{
     public toString = ():string =>`${this.value}`;
 
 }
+
+export type tSimpleOperand = number | string;
+export type tPredicate = tSimplePredicate | tCompositePredicate;
+export type tSimplePredicate = {type:"simple",operand1:tSimpleOperand, operator:string, operand2:tSimpleOperand};
+export type tCompositePredicate = {type:"composite", operator:string, operands: tPredicate[]};

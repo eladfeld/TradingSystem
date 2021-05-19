@@ -1,10 +1,10 @@
-import { CATEGORIES, INVENTORY } from './InitialStateConstants';
-import StateBuilder, { transactionState } from './StateBuilder';
+import { CAMEL_RED, CATEGORIES, GOLDSTAR, INVENTORY } from './InitialStateConstants';
+import StateBuilder, { systemState, transactionState } from './StateBuilder';
 
 const empty: transactionState[] = [];
 const sb: StateBuilder = new StateBuilder();
 
-const state = {
+const state:systemState = {
 
     stores:[
         {
@@ -26,25 +26,31 @@ const state = {
                 sb.policy(
                     "only adults can drink",
                     sb.compoundPred("=>",[
-                        sb.simplePred("b_alcohol_quantity",">",0),
+                        sb.simplePred(`b_product:${GOLDSTAR}_quantity`,">",0),
                         sb.simplePred("u_age",">",18)                           
                 ])),
                 sb.policy(
                     "only babies can smoke",
                     sb.compoundPred("=>",[
-                        sb.simplePred("b_tobacco_quantity",">",0),
+                        sb.simplePred(`b_product:${CAMEL_RED}_quantity`,">",0),
                         sb.simplePred("u_age","<",3)                            
-                ]))           
+                ])),
+                sb.policy(
+                    "cant buy Big Red Soda",
+                        sb.simplePred("b_product:Big Red Soda_quantity","<",1),                          
+                )
             ],
             discounts:[
-                sb.discountWithName(
-                    "15% apples and 10% off food",
-                    sb.comboDiscount("add",[
-                        sb.unconditionalDiscount(0.15, "product:apple"),
-                        sb.unconditionalDiscount(0.10, "food")          
-                    ])),
-                sb.discountWithName("10% off food", sb.unconditionalDiscount(0.10,"food")),
-                sb.discountWithName("fake discount", sb.conditionalDiscount(0.10, "food", sb.simplePred(1,">",2)))
+                sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,"product:tetris")),
+                sb.discountWithName("20% off food", sb.unconditionalDiscount(0.10,"Food"))
+                // sb.discountWithName(
+                //     "15% apples and 10% off food",
+                //     sb.comboDiscount("add",[
+                //         sb.unconditionalDiscount(0.15, "product:apple"),
+                //         sb.unconditionalDiscount(0.10, "food")          
+                //     ])),
+                // sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,"tetris")),
+                // sb.discountWithName("fake discount", sb.conditionalDiscount(0.10, "food", sb.simplePred(1,">",2)))
             ]  
         }
     ],
@@ -56,7 +62,7 @@ const state = {
         sb.subscriber("jim"),
         sb.subscriber("tupac","123",true, [
             sb.basket("Walmart",
-                [sb.item("Minecraft", 10), sb.item("tetris", 1)]
+                [sb.item("Minecraft", 10), sb.item("tetris", 1), sb.item(GOLDSTAR,6), sb.item(CAMEL_RED,1)]
             )
         ])
     ],
