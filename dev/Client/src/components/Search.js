@@ -304,7 +304,7 @@ export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
                 options = {category_options}
                 onRequestOptions = {(text) => { changeCategory(text)}}
                 onSelect = {(text) => changeCategory(text)}
-                onChange = { (text) => { changeCategory(text)}}
+                onChange = { (text) =>  changeCategory(text)}
             />
             <Grid item align='right'>
                 <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => searchByCategory(category)} >

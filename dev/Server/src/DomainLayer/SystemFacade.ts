@@ -345,6 +345,7 @@ export class SystemFacade
             let res: Result<string> = store.addCategoryToRoot(category)
             if(isOk(res))
             {
+                SpellCheckerAdapter.get_instance().add_category(category);
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
@@ -379,6 +380,7 @@ export class SystemFacade
             let res: Result<string> = store.addCategory(categoryFather, category)
             if(isOk(res))
             {
+                SpellCheckerAdapter.get_instance().add_category(category);
                 let value = res.value;
                 return new Promise((resolve, reject) =>
                 {

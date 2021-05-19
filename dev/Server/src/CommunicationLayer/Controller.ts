@@ -118,7 +118,7 @@ const getPruductInfoByName = (req: Request, res: Response, next: NextFunction) =
 const getPruductInfoByCategory = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
-    let productCategory: string = req.body.productCategory;
+    let productCategory: string = req.body.category;
     service.getPruductInfoByCategory(sessionId, productCategory)
     .then(product => res.status(OKSTATUS).json(product))
     .catch(message => res.status(FAILSTATUS).json(message))

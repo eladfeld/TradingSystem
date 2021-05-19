@@ -39,45 +39,48 @@ export default class FakeSystemFacade extends SystemFacade {
                                                                         this.facade.openStore(joe_sessionId, 'joes_store', BANK_ACCT, ADRS)
                                                                             .then(joesStore => {
                                                                                 const joesStoreId: number = joesStore.getStoreId();
-                                                                                this.facade.addNewProduct(joe_sessionId, joesStoreId, 'apple', [], 1, 100)
-                                                                                    .then(appleId => {
-                                                                                        this.facade.addNewProduct(joe_sessionId, joesStoreId, 'banana', [], 2, 100)
-                                                                                            .then(bananaId => {
-                                                                                                this.facade.addNewProduct(joe_sessionId, joesStoreId, 'orange', [], 3, 100)
-                                                                                                    .then(orangeId => {
-                                                                                                        this.RegisterAndLogin('john', john_session_id, (jonhSubscriber: Subscriber) => {
-                                                                                                            this.RegisterAndLogin('josh', josh_session_id, (joshSubscriber) => {
-                                                                                                                this.facade.appointStoreOwner(joe_sessionId, joesStoreId, jonhSubscriber.getUsername())
-                                                                                                                    .then(s => {
-                                                                                                                        this.facade.appointStoreOwner(joe_sessionId, joesStoreId, joshSubscriber.getUsername())
-                                                                                                                            .then(s => {
-                                                                                                                                this.RegisterAndLogin('jack', jack_session_id, (jackSubscriber) => {
-                                                                                                                                    this.RegisterAndLogin('jim', jim_session_id, (jimSubscriber) => {
-                                                                                                                                        this.facade.appointStoreManager(joe_sessionId, joesStoreId, jackSubscriber.getUsername())
-                                                                                                                                            .then(s => {
-                                                                                                                                                this.facade.appointStoreManager(joe_sessionId, joesStoreId, jimSubscriber.getUsername())
-                                                                                                                                                    .then(s => {
+                                                                                this.facade.addCategoryToRoot(joe_sessionId, joesStoreId, "FRUITS")
+                                                                                .then( _ => {
+                                                                                    this.facade.addNewProduct(joe_sessionId, joesStoreId, 'apple', ["FRUITS"], 1, 100)
+                                                                                        .then(appleId => {
+                                                                                            this.facade.addNewProduct(joe_sessionId, joesStoreId, 'banana', ["FRUITS"], 2, 100)
+                                                                                                .then(bananaId => {
+                                                                                                    this.facade.addNewProduct(joe_sessionId, joesStoreId, 'orange', ["FRUITS"], 3, 100)
+                                                                                                        .then(orangeId => {
+                                                                                                            this.RegisterAndLogin('john', john_session_id, (jonhSubscriber: Subscriber) => {
+                                                                                                                this.RegisterAndLogin('josh', josh_session_id, (joshSubscriber) => {
+                                                                                                                    this.facade.appointStoreOwner(joe_sessionId, joesStoreId, jonhSubscriber.getUsername())
+                                                                                                                        .then(s => {
+                                                                                                                            this.facade.appointStoreOwner(joe_sessionId, joesStoreId, joshSubscriber.getUsername())
+                                                                                                                                .then(s => {
+                                                                                                                                    this.RegisterAndLogin('jack', jack_session_id, (jackSubscriber) => {
+                                                                                                                                        this.RegisterAndLogin('jim', jim_session_id, (jimSubscriber) => {
+                                                                                                                                            this.facade.appointStoreManager(joe_sessionId, joesStoreId, jackSubscriber.getUsername())
+                                                                                                                                                .then(s => {
+                                                                                                                                                    this.facade.appointStoreManager(joe_sessionId, joesStoreId, jimSubscriber.getUsername())
+                                                                                                                                                        .then(s => {
 
-                                                                                                                                                        this.RegisterAndLogin('tupac', topac_session_id, (tupacSubscriber) => {
-                                                                                                                                                            const tupacId = tupacSubscriber.getUserId();
-                                                                                                                                                            this.facade.addProductTocart(topac_session_id, joesStoreId, appleId, 10)
-                                                                                                                                                                .then(s => {
-                                                                                                                                                                    this.facade.addProductTocart(topac_session_id, joesStoreId, bananaId, 20)
-                                                                                                                                                                        .then((s) => {
-                                                                                                                                                                            this.facade.addProductTocart(topac_session_id, joesStoreId, orangeId, 25)
-                                                                                                                                                                                .then(s => console.log('system initialized'))
-                                                                                                                                                                        })
-                                                                                                                                                                })
+                                                                                                                                                            this.RegisterAndLogin('tupac', topac_session_id, (tupacSubscriber) => {
+                                                                                                                                                                const tupacId = tupacSubscriber.getUserId();
+                                                                                                                                                                this.facade.addProductTocart(topac_session_id, joesStoreId, appleId, 10)
+                                                                                                                                                                    .then(s => {
+                                                                                                                                                                        this.facade.addProductTocart(topac_session_id, joesStoreId, bananaId, 20)
+                                                                                                                                                                            .then((s) => {
+                                                                                                                                                                                this.facade.addProductTocart(topac_session_id, joesStoreId, orangeId, 25)
+                                                                                                                                                                                    .then(s => console.log('system initialized'))
+                                                                                                                                                                            })
+                                                                                                                                                                    })
+                                                                                                                                                            })
                                                                                                                                                         })
-                                                                                                                                                    })
-                                                                                                                                            })
+                                                                                                                                                })
+                                                                                                                                        })
                                                                                                                                     })
                                                                                                                                 })
-                                                                                                                            })
-                                                                                                                    })
+                                                                                                                        })
+                                                                                                                })
                                                                                                             })
                                                                                                         })
-                                                                                                    })
+                                                                                                }) 
                                                                                             })
                                                                                     })
                                                                             })

@@ -20,7 +20,6 @@ export class Publisher
 
     public static get_instance()
     {
-        Logger.log("Publisher.get instance")
         if (Publisher.singleton === undefined)
         {
             Publisher.singleton = new Publisher();
@@ -92,7 +91,7 @@ export class Publisher
     //when user is logging in we need to send him his pending messages
     public send_pending_messages(subscriber : Subscriber) : Promise<void>[]
     {
-        Logger.log(`Publisher.send_pending_messages  subscriber:${subscriber.getUserId()} `)
+        Logger.log(`Publisher.send_pending_messages  subscriber:${subscriber.getUsername()} `)
         let messages = subscriber.takeMessages();
         let promises : Promise<void>[] = [];
         messages.forEach(message => {
