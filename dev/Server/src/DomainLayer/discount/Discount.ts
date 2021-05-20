@@ -3,7 +3,7 @@ import iCategorizer from "./Categorizer";
 import iBasket from "./iBasket";
 // import iCategory from "./iCategory";
 import iDiscount from "./iDiscount";
-import { tPredicate } from "./logic/Predicate";
+import { tPredicate, tSimpleOperand } from "./logic/Predicate";
 
 export default abstract class Discount implements iDiscount{
     public static WHOLE_STORE: number = 0;
@@ -28,8 +28,8 @@ export default abstract class Discount implements iDiscount{
     }
 }
 
-export type tUnconditionalDiscount = {type:"unconditional",category:string, ratio:number};
-export type tConditionalDiscount = {type:"conditional",category:string, ratio:number, predicate:tPredicate};
+export type tUnconditionalDiscount = {type:"unconditional",category:tSimpleOperand, ratio:number};
+export type tConditionalDiscount = {type:"conditional",category:tSimpleOperand, ratio:number, predicate:tPredicate};
 export type tSimpleDiscount = tUnconditionalDiscount | tConditionalDiscount;
 export type tDiscount = tSimpleDiscount | tComboDiscount;
 export type tComboDiscount = {type:"combo", policy:string, discounts:tDiscount[]};

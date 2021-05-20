@@ -21,7 +21,7 @@ import ConditionalDiscount from '../../DomainLayer/discount/ConditionalDiscount'
 import PaymentInfo from '../../DomainLayer/purchase/PaymentInfo';
 import { StoreCategoryInfo } from '../../DomainLayer/store/StoreInfo';
 import { Service } from '../Service';
-import { basketState, discountState } from './StateBuilder';
+import { basketState, discountState, predState, PRODUCT_PREF } from './StateBuilder';
 
 const BANK_ACCOUNT = 0;
 const ADDRESS = "313 8 Mile Road, Detroit";
@@ -141,7 +141,9 @@ export default class StateInitializer{
             //add discounts
             //TODO: Implement
             storeState.discounts.forEach(discount => {
+                console.log('before: ', discount.discount)
                 this.convertDiscount(storeName, discount.discount);
+                console.log('after: ', discount.discount)
             })
             for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
                 const discount = storeState.discounts[dIdx];
@@ -193,12 +195,22 @@ export default class StateInitializer{
     }
 
     private convertDiscount = (storeName: string, discount: discountState) =>{
-        if(discount.type==="conditional"){
+        if(discount.type==="unconditional"){
+            var fixedOp = this.convertOperand(storeName, discount.category);
+            if((typeof fixedOp === 'string') && (!isNaN(parseInt(fixedOp)))) fixedOp = Number(fixedOp);
+            discount.category = fixedOp;
+        }
+        else if(discount.type==="conditional"){
+            var fixedOp = this.convertOperand(storeName, discount.category);
+            if((typeof fixedOp === 'string') && (!isNaN(parseInt(fixedOp)))) fixedOp = Number(fixedOp);
+            discount.category = fixedOp;
+
             this.convertPredicate(storeName, discount.predicate);
         }
         else if(discount.type==="combo"){
             discount.discounts.forEach(d => this.convertDiscount(storeName, d));
         }
+
     }
 
     private convertOperand = (storeName: string, op: string|number):string|number =>{
@@ -206,7 +218,7 @@ export default class StateInitializer{
         
         const parts:string[] = op.split("_");
         for(var i=0; i<parts.length; i++){
-            if(parts[i].startsWith("product:",0)){
+            if(parts[i].startsWith(PRODUCT_PREF,0)){
                 const pair = parts[i].split(":");
                 const productName = pair[1];
                 const productId = this.products.get(storeName).get(productName);
@@ -216,7 +228,7 @@ export default class StateInitializer{
         return parts.join("_");
     }
 
-    private convertPredicate = (storeName: string, pred: any) =>{        
+    private convertPredicate = (storeName: string, pred: predState) =>{        
         if(pred.type === "simple"){
             pred.operand1 = this.convertOperand(storeName, pred.operand1);
             pred.operand2 = this.convertOperand(storeName, pred.operand2);
@@ -242,6 +254,8 @@ export default class StateInitializer{
     private initCategory = async (service: Service,founderId:string, storeId: number, cat:any, father:string) => {
         if(father == ROOT_CATEGORY) await service.addCategoryToRoot(founderId, storeId, cat.name);
         else await service.addCategory(founderId, storeId, father, cat.name );
+        //console.log(`added category: ${cat.name}`);
+        
         for(var i=0; i<cat.categories.length; i++){
             const subCat = cat.categories[i];
             await this.initCategory(service, founderId, storeId, subCat, cat.name)

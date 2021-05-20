@@ -6,7 +6,7 @@ import ConditionalDiscount from "./ConditionalDiscount";
 import { tDiscount } from "./Discount";
 import iDiscount from "./iDiscount";
 import PredicateParser from "./logic/parser";
-import { iPredicate } from "./logic/Predicate";
+import { iPredicate, tSimpleOperand } from "./logic/Predicate";
 import UnconditionalDiscount from "./UnconditionalDiscount";
 
 
@@ -44,13 +44,13 @@ class Parser{
 
         switch (d.type) {
             case "unconditional":   
-                var category: string = d.category;
+                var category: tSimpleOperand = d.category;
                 var ratio: number = d.ratio;
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
                 //if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
                 return makeOk(new UnconditionalDiscount(ratio, category));//TODO: support category
             case "conditional":   
-                var category: string = d.category;
+                var category: tSimpleOperand = d.category;
                 var ratio: number = d.ratio;
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
                 //if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)

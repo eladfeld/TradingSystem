@@ -1,5 +1,5 @@
 import { CAMEL_RED, CATEGORIES, GOLDSTAR, INVENTORY } from './InitialStateConstants';
-import StateBuilder, { systemState, transactionState } from './StateBuilder';
+import StateBuilder, { PRODUCT_PREF, systemState, transactionState } from './StateBuilder';
 
 const empty: transactionState[] = [];
 const sb: StateBuilder = new StateBuilder();
@@ -26,22 +26,22 @@ const state:systemState = {
                 sb.policy(
                     "only adults can drink",
                     sb.compoundPred("=>",[
-                        sb.simplePred(`b_product:${GOLDSTAR}_quantity`,">",0),
+                        sb.simplePred(`b_${PRODUCT_PREF}${GOLDSTAR}_quantity`,">",0),
                         sb.simplePred("u_age",">",18)                           
                 ])),
                 sb.policy(
                     "only babies can smoke",
                     sb.compoundPred("=>",[
-                        sb.simplePred(`b_product:${CAMEL_RED}_quantity`,">",0),
+                        sb.simplePred(`b_${PRODUCT_PREF}${CAMEL_RED}_quantity`,">",0),
                         sb.simplePred("u_age","<",3)                            
                 ])),
                 sb.policy(
                     "cant buy Big Red Soda",
-                        sb.simplePred("b_product:Big Red Soda_quantity","<",1),                          
+                        sb.simplePred(`b_${PRODUCT_PREF}Big Red Soda_quantity`,"<",1),                          
                 )
             ],
             discounts:[
-                sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,"product:tetris")),
+                sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,`${PRODUCT_PREF}tetris`)),
                 sb.discountWithName("20% off food", sb.unconditionalDiscount(0.10,"Food"))
                 // sb.discountWithName(
                 //     "15% apples and 10% off food",

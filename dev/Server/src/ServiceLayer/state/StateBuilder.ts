@@ -30,6 +30,7 @@ export type systemState = {stores:storeState[], subscribers:subscriberState[], h
 
 export type transactionState = {store:string, user:string, basket:itemState[]};
 
+export const PRODUCT_PREF = "product:";
 
 export default class StateBuilder{
     constructor(){

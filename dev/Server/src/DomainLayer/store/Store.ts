@@ -1,7 +1,7 @@
 import DiscountPolicy from "../discount/DiscountPolicy";
 import BuyingPolicy from "../policy/buying/BuyingPolicy";
 import { Inventory } from "./Inventory";
-import { TreeRoot, ID, Rating } from './Common'
+import { TreeRoot, ID, Rating, TreeNode } from './Common'
 import { Appointment } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreDB } from "./StoreDB";
@@ -22,9 +22,11 @@ import ShippingInfo from "../purchase/ShippingInfo";
 import { tPredicate } from "../discount/logic/Predicate";
 import { tDiscount } from "../discount/Discount";
 import BuyingSubject from "../policy/buying/BuyingSubject";
+import iCategorizer from "../discount/Categorizer";
+import { StoreProduct } from "./StoreProduct";
 
 
-export class Store
+export class Store implements iCategorizer
 {
 
 
@@ -81,6 +83,21 @@ export class Store
         this.categiries = new TreeRoot<string>('root category');
 
         StoreDB.addStore(this);
+    }
+    public getProducts = (categoryName: string):number[] => {
+        const category:TreeNode<string> = this.categiries.getChildNode(categoryName);
+        if(!category){
+            console.log(`category ${categoryName} does not exist`);
+            return [];
+        }
+        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {
+            for(const cat in prod.getCategories()){
+                if(category.hasChildNode(cat))
+                    return true;
+            }
+            return false;
+        });
+        return products.map((prod:StoreProductInfo) => prod.getProductId());
     }
     public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
@@ -212,7 +229,9 @@ export class Store
             }
         }
         //let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
-        //price -= this.discountPolicy.getDiscount(reservedProducts);
+        const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
+        if(isFailure(discountRes)) return discountRes;
+        price -= discountRes.value;
         Purchase.checkout(this.storeId, price, buyerId, reservedProducts, () => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
