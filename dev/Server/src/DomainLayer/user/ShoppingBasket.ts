@@ -117,7 +117,6 @@ export class ShoppingBasket implements iBasket
     }
 
     public getValue = (field: string):number => {
-        //console.log(`field: ${field}`);
         const strs: string[] = field.split("_");
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);

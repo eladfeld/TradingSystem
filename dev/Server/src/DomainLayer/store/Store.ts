@@ -87,17 +87,19 @@ export class Store implements iCategorizer
     public getProducts = (categoryName: string):number[] => {
         const category:TreeNode<string> = this.categiries.getChildNode(categoryName);
         if(!category){
-            console.log(`category ${categoryName} does not exist`);
             return [];
         }
-        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {
-            for(const cat in prod.getCategories()){
-                if(category.hasChildNode(cat))
+        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {     
+            for(var i=0; i<prod.getCategories().length; i++){
+                const cat = prod.getCategories()[i];
+                if(category.value===cat || category.hasChildNode(cat)){
                     return true;
+                }
             }
             return false;
         });
-        return products.map((prod:StoreProductInfo) => prod.getProductId());
+        const prodIds:number[] = products.map((prod:StoreProductInfo) => prod.getProductId());
+        return prodIds;
     }
     public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
@@ -548,6 +550,7 @@ export class Store implements iCategorizer
 
         let fatherNode = this.categiries.getChildNode(categoryFather)
         fatherNode.createChildNode(category)
+        
         return makeOk('category was added')
     }
 

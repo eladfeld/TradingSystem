@@ -51,10 +51,11 @@ export class StoreProductInfo implements iProduct
     private price: number;
     private storeId: number;
     private quantity: number;
-    private productRating: number
-    private numOfRaters: number
+    private productRating: number;
+    private numOfRaters: number;
+    private categories: string[];
 
-    public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number)
+    public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number, categories: string[])
     {
         this.productName = productName;
         this.productId = productId;
@@ -63,10 +64,11 @@ export class StoreProductInfo implements iProduct
         this.quantity = quantity;
         this.productRating = productRating;
         this.numOfRaters = numOfRaters;
-
+        this.categories = categories;
     }
-    getCategories = ():string[] => {//TODO: Implement
-        return [];
+
+    getCategories = ():string[] => {
+        return this.categories;
     }
 
     public getProductId()

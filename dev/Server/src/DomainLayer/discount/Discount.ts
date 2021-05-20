@@ -20,7 +20,8 @@ export default abstract class Discount implements iDiscount{
     public getCategory = () => this.category;
     public getProductsInCategory = (categorizer: iCategorizer):number[] => {
         const c: string|number = this.category;
-        return (typeof c === 'number') ? [c] : categorizer.getProducts(c);
+        const output = (typeof c === 'number') ? [c] : categorizer.getProducts(c);
+        return output;
     }
 
     public isWholeStore = (products: number[]): boolean =>{

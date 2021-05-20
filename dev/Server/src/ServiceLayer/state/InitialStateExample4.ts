@@ -42,15 +42,16 @@ const state:systemState = {
             ],
             discounts:[
                 sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,`${PRODUCT_PREF}tetris`)),
-                sb.discountWithName("20% off food", sb.unconditionalDiscount(0.10,"Food"))
+                sb.discountWithName("20% off food", sb.unconditionalDiscount(0.20,"Food")),
+                sb.discountWithName("20% off snacks", sb.unconditionalDiscount(0.20,"Snacks"))
                 // sb.discountWithName(
                 //     "15% apples and 10% off food",
                 //     sb.comboDiscount("add",[
-                //         sb.unconditionalDiscount(0.15, "product:apple"),
+                //         sb.unconditionalDiscount(0.15, `${PRODUCT_PREF}apple`),
                 //         sb.unconditionalDiscount(0.10, "food")          
                 //     ])),
                 // sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,"tetris")),
-                // sb.discountWithName("fake discount", sb.conditionalDiscount(0.10, "food", sb.simplePred(1,">",2)))
+                // sb.discountWithName("fake discount", sb.conditionalDiscount(0.10, "Food", sb.simplePred(1,">",2)))
             ]  
         }
     ],
@@ -69,7 +70,7 @@ const state:systemState = {
     history:
     [
         sb.transaction("Walmart", "tupac", [
-            sb.item("tetris", 1)
+            sb.item("Combos", 50)
         ])
     ]
 };

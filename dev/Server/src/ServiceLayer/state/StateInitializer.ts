@@ -105,9 +105,6 @@ export default class StateInitializer{
                 const quantityPurchased = this.getQuantityInHistory(storeName, itemState.name);
                 const quantityInCarts = this.getQuantityInCarts(storeName, itemState.name);
                 const totalQuantity = quantityState + quantityPurchased + quantityInCarts;
-                if(quantityPurchased !== 0){
-                    console.log(`${itemState.name}: ${totalQuantity} in total, ${quantityState}, ${quantityPurchased}, ${quantityInCarts}`);
-                }
                 const itemId = await service.addNewProduct(founderSessionId, storeId, itemState.name, itemState.categories, itemState.price, totalQuantity);
                 this.products.get(storeName).set(itemState.name, itemId);
             }
@@ -141,9 +138,7 @@ export default class StateInitializer{
             //add discounts
             //TODO: Implement
             storeState.discounts.forEach(discount => {
-                console.log('before: ', discount.discount)
                 this.convertDiscount(storeName, discount.discount);
-                console.log('after: ', discount.discount)
             })
             for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
                 const discount = storeState.discounts[dIdx];
@@ -231,9 +226,7 @@ export default class StateInitializer{
     private convertPredicate = (storeName: string, pred: predState) =>{        
         if(pred.type === "simple"){
             pred.operand1 = this.convertOperand(storeName, pred.operand1);
-            pred.operand2 = this.convertOperand(storeName, pred.operand2);
-            // console.log(`op1: ${pred.operand1} op2: ${pred.operand2}`);
-            
+            pred.operand2 = this.convertOperand(storeName, pred.operand2);            
         }else{
             pred.operands.forEach((operand:any) => {
                 operand =  this.convertPredicate(storeName, operand);
@@ -254,7 +247,6 @@ export default class StateInitializer{
     private initCategory = async (service: Service,founderId:string, storeId: number, cat:any, father:string) => {
         if(father == ROOT_CATEGORY) await service.addCategoryToRoot(founderId, storeId, cat.name);
         else await service.addCategory(founderId, storeId, father, cat.name );
-        //console.log(`added category: ${cat.name}`);
         
         for(var i=0; i<cat.categories.length; i++){
             const subCat = cat.categories[i];
