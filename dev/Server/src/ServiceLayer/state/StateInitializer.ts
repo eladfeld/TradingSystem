@@ -132,7 +132,7 @@ export default class StateInitializer{
             });
             for(var pIdx=0; pIdx<storeState.buying_policies.length; pIdx++){
                 const policy = storeState.buying_policies[pIdx];
-                await service.addBuyingPolicy2(founderSessionId, storeId, policy.name, policy.rule); 
+                await service.addBuyingPolicy(founderSessionId, storeId, policy.name, policy.rule); 
             }
 
             //add discounts
@@ -142,7 +142,7 @@ export default class StateInitializer{
             })
             for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
                 const discount = storeState.discounts[dIdx];
-                await service.addDiscountPolicy2(founderSessionId, storeId,discount.name, discount.discount); 
+                await service.addDiscountPolicy(founderSessionId, storeId,discount.name, discount.discount); 
             }
 
         }

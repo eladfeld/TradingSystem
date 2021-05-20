@@ -213,20 +213,12 @@ export class Service
         return this.facade.getUserStores(sessionId);
     }
 
-    public addDiscountPolicy(discount: any):Promise<string>
-    {
-        return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
-        //return this.facade.addDiscountPolicy(sessionId, storeId, name, discount);
-    }
-    public addDiscountPolicy2(sessionId: string, storeId: number, name: string, discount: tDiscount):Promise<string>
+    public addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount):Promise<string>
     {
         return this.facade.addDiscountPolicy(sessionId, storeId, name, discount);
     }
 
-    public addBuyingPolicy(buyingPolicy: any) {
-        return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
-    }
-    public addBuyingPolicy2(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate) {
+    public addBuyingPolicy(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
         // return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
         return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }

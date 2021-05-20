@@ -46,7 +46,7 @@ shopping cart. items in the shopping cart must be declared in the respective sto
             logged_in:true,
             cart:[
                 {
-                    store:"walmart",
+                    store:"Walmart",
                     items:[
                         {
                             name:"apple",

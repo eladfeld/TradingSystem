@@ -658,7 +658,7 @@ export class SystemFacade
         }
     }
 
-    addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate) {
+    addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
         Logger.log(`addBuyingPolicy : sessionId:${sessionId} , storeId:${storeId}, policyName:${policyName}`);
         if(policyName === '' || policyName === undefined || policyName === null){
             return new Promise((resolve,reject) => { reject("invalid policy name")});
