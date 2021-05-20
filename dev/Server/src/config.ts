@@ -1,4 +1,4 @@
-import state from "./ServiceLayer/state/InitialStateExample4";
+import state from "./ServiceLayer/state/MyInitialState";
 
 //program constants
 export const CHECKOUT_TIMEOUT = 3000000;//5 minutes

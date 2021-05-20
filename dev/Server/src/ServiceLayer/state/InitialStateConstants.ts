@@ -1,13 +1,11 @@
 import StateBuilder, {storeItemState, categoryState} from "./StateBuilder";
 
-
-
-
 export const categories = {
     ELECTRONICS: "Electronics",
     FOOD: "Food",
     CLOTHING: "Clothing",
-    ADULT: "Adult"
+    ALCOHOL: "Alcohol",
+    SMOKE: "Smoking"
 }
 
 
@@ -145,11 +143,13 @@ export const printers = [
     "HP Business InkJet 3000dtn"
 ]
 
-export const videoGames = [
-    "Minecraft", "Grand Theft Auto V", "tetris","Wii Sports","Super Mario Bros", "Pokemon Red", "Pokemon Blue",
-    "Mario Cart","Pac-Man","Duck Hunt","Call of Duty","Grand Theft Auto IV","FIFA 18","Sonic the Hedgehog",
-    "The Legend of Zelda", "Super Smash Bros","The Sims 4", "Spiderman"
-]
+export const videoGames = {
+    minecraft:"Minecraft", gta5:"Grand Theft Auto V", tetris:"tetris",
+    wiiSports:"Wii Sports",siperMarioBros:"Super Mario Bros", pokemonRed:"Pokemon Red",
+    pokemonBlue:"Pokemon Blue", marioCart:"Mario Cart",pacman:"Pac-Man",duckHunt:"Duck Hunt",
+    callOfDuty:"Call of Duty",gta4:"Grand Theft Auto IV",fifa18:"FIFA 18",sonic:"Sonic the Hedgehog",
+    zelda:"The Legend of Zelda", superSmashBros:"Super Smash Bros",sims4:"The Sims 4", spiderman:"Spiderman"
+}
 
 export const accessories = [
     `Logitech G733 Lightspeed Wireless PC Gaming Headset - Black`,
@@ -180,259 +180,259 @@ export const foodCategories = {
     VEGETABLES:"vegetables"
 }
 
-export const snacks =[
-    "Slushie",
-    "Fun Dip",
-    "Chips Ahoy!",
-    "Caramel",
-    "Almond Joy",
-    "Bananas",
-    "Smarties",
-    "Pudding",
-    "Frozen Yogurt",
-    "Milk Chocolate M&Ms",
-    "Jujubes",
-    "Cheese Danish",
-    "Pretzels",
-    "Frosted Animal Cracker",
-    "Whatchamacallit",
-    "Trail Mix",
-    "Gummy Bears",
-    "Ritz Bits Cheese",
-    "Mints",
-    "Peanuts",
-    "Combos"
-]
+export const snacks ={
+    Slushie:"Slushie",
+    Fun_Dip:"Fun Dip",
+    Chips_Ahoy:"Chips Ahoy!",
+    Caramel:"Caramel",
+    Almond_Joy:"Almond Joy",
+    Bananas:"Bananas",
+    Smarties:"Smarties",
+    Pudding:"Pudding",
+    Frozen_Yogurt:"Frozen Yogurt",
+    Milk_Chocolate_MMs:"Milk Chocolate M&Ms",
+    Jujubes:"Jujubes",
+    Cheese_Danish:"Cheese Danish",
+    Pretzels:"Pretzels",
+    Frosted_Animal_Cracker:"Frosted Animal Cracker",
+    Whatchamacallit:"Whatchamacallit",
+    Trail_Mix:"Trail Mix",
+    Gummy_Bears:"Gummy Bears",
+    Ritz_Bits_Cheese:"Ritz Bits Cheese",
+    Mints:"Mints",
+    Peanuts:"Peanuts",
+    Combos:"Combos"
+}
 
-export const beverages = [
-    'Mountain Dew Code Red',
-    'Fresca',
-    "Stewart'S Black Cherry Wishniak Soda",
-    'A&W Cream Soda',
-    'Wild Cherry Pepsi',
-    'Canada Dry',
-    'Fanta',
-    'Mr. Pibb',
-    'Mug Root Beer',
-    'Jolt Cola',
-    'Moxie',
-    'Mist Twist',
-    '7Up',
-    'Mountain Dew Baja Blast',
-    'Ale 8',
-    'Mountain Dew Livewire',
-    'Coca-Cola',
-    'Grape Crush',
-    'Sioux City',
-    'Vanilla Coke',
-    'Big Red Soda'
-]
+export const beverages = {
+    Mountain_Dew_Code_Red:'Mountain Dew Code Red',
+    Fresca:'Fresca',
+    Stewarts_Black_Cherry_Wishniak_Soda:"Stewart'S Black Cherry Wishniak Soda",
+    AW_Cream_Soda:'A&W Cream Soda',
+    Wild_Cherry_Pepsi:'Wild Cherry Pepsi',
+    Canada_Dry:'Canada Dry',
+    Fanta:'Fanta',
+    Mr_Pibb:'Mr. Pibb',
+    Mug_Root_Beer:'Mug Root Beer',
+    Jolt_Cola:'Jolt Cola',
+    Moxie:'Moxie',
+    Mist_Twist:'Mist Twist',
+    sevenUp:'7Up',
+    Mountain_Dew_Baja_Blast:'Mountain Dew Baja Blast',
+    Ale_8:'Ale 8',
+    Mountain_Dew_Livewire:'Mountain Dew Livewire',
+    Coca_Cola:'Coca-Cola',
+    Grape_Crush:'Grape Crush',
+    Sioux_City:'Sioux City',
+    Vanilla_Coke:'Vanilla Coke',
+    Big_Red_Soda:'Big Red Soda'
+}
 
-export const cereals = [
-    "Frosted Flakes",
-    "Cranberry Almond Crunch Cereal",
-    "Coco Pops",
-    "Chocolate Cheerios",
-    "Chex",
-    "Wheat Chex",
-    "General Mills Lucky Charms Cereal",
-    "Apple Cinnamon Cheerios",
-    "Sugar Puffs",
-    "General Mills Cinnamon Chex",
-    "Nestle Golden Grahams Cereal",
-    "Golden Nuggets",
-    "Honey Nut Cheerios",
-    'Cap"N Crunch',
-    "Frosted Cheerios",
-    "Christmas Crunch",
-    "Frosted Mini Chex",
-    "Ready Brek Original Flavour",
-    "Cinnamon Toast Crunch",
-    "Cocoa Puffs",
-    "All-Bran Bran Flakes"
-]
+export const cereals = {
+    Frosted_Flakes:"Frosted Flakes",
+    Cranberry_Almond_Crunch_Cereal:"Cranberry Almond Crunch Cereal",
+    Coco_Pops:"Coco Pops",
+    Chocolate_Cheerios:"Chocolate Cheerios",
+    Chex:"Chex",
+    Wheat_Chex:"Wheat Chex",
+    General_Mills_Lucky_Charms_Cereal:"General Mills Lucky Charms Cereal",
+    Apple_Cinnamon_Cheerios:"Apple Cinnamon Cheerios",
+    Sugar_Puffs:"Sugar Puffs",
+    General_Mills_Cinnamon_Chex:"General Mills Cinnamon Chex",
+    Nestle_Golden_Grahams_Cereal:"Nestle Golden Grahams Cereal",
+    Golden_Nuggets:"Golden Nuggets",
+    Honey_Nut_Cheerios:"Honey Nut Cheerios",
+    Captain_Crunch:'Cap"N Crunch',
+    Frosted_Cheerios:"Frosted Cheerios",
+    Christmas_Crunch:"Christmas Crunch",
+    Frosted_Mini_Chex:"Frosted Mini Chex",
+    Ready_Brek_Original_Flavour:"Ready Brek Original Flavour",
+    Cinnamon_Toast_Crunch:"Cinnamon Toast Crunch",
+    Cocoa_Puffs:"Cocoa Puffs",
+    All_Bran_Bran_Flake:"All-Bran Bran Flakes"
+}
 
-export const fruit = [
-    "Abiu",
-    "Açaí",
-    "Acerola",
-    "Ackee",
-    "African cucumber",
-    "Apple",
-    "Apricot",
-    "Avocado",
-    "Banana",
-    "Bilberry",
-    "Blackberry",
-    "Blackcurrant",
-    "Black sapote",
-    "Blueberry",
-    "Boysenberry",
-    "Breadfruit",
-    "Buddha's hand (fingered citron)",
-    "Cactus pear",
-    "Canistel",
-    "Cempedak",
-    "Crab apple",
-    "Cherimoya (Custard Apple)",
-    "Cherry",
-    "Chico fruit",
-    "Cloudberry",
-    "Coco De Mer",
-    "Coconut",
-    "Cranberry",
-    "Currant",
-    "Damson",
-    "Date",
-    "Dragonfruit (or Pitaya)",
-    "Durian",
-    "Egg Fruit",
-    "Elderberry",
-    "Feijoa",
-    "Fig",
-    "Goji berry",
-    "Gooseberry",
-    "Grape",
-    "Raisin",
-    "Grapefruit",
-    "Grewia asiatica (phalsa or falsa)",
-    "Guava",
-    "Hala Fruit",
-    "Honeyberry",
-    "Huckleberry",
-    "Jabuticaba",
-    "Jackfruit",
-    "Jambul",
-    "Japanese plum",
-    "Jostaberry",
-    "Jujube",
-    "Juniper berry",
-    "Kaffir Lime",
-    "Kiwano (horned melon)",
-    "Kiwifruit",
-    "Kumquat",
-    "Lemon",
-    "Lime",
-    "Loganberry",
-    "Longan",
-    "Loquat",
-    "Lulo",
-    "Lychee",
-    "Magellan Barberry",
-    "Mamey Apple",
-    "Mamey Sapote",
-    "Mango",
-    "Mangosteen",
-    "Marionberry",
-    "Melon",
-    "Cantaloupe",
-    "Galia melon",
-    "Honeydew",
-    "Mouse Melon",
-    "Watermelon",
-    "Miracle fruit",
-    "Monstera deliciosa",
-    "Mulberry",
-    "Nance",
-    "Nectarine",
-    "Orange",
-    "Blood orange",
-    "Clementine",
-    "Mandarine",
-    "Tangerine",
-    "Papaya",
-    "Passionfruit",
-    "Peach",
-    "Pear",
-    "Persimmon",
-    "Plantain",
-    "Plum",
-    "Prune (dried plum)",
-    "Pineapple",
-    "Pineberry",
-    "Plumcot (or Pluot)",
-    "Pomegranate",
-    "Pomelo",
-    "Purple mangosteen",
-    "Quince",
-    "Raspberry",
-    "Salmonberry",
-    "Rambutan (or Mamin Chino)",
-    "Redcurrant",
-    "Rose apple",
-    "Salal berry",
-    "Salak",
-    "Satsuma",
-    "Shine Muscat or Vitis Vinifera",
-    "Sloe or Hawthorn Berry",
-    "Soursop",
-    "Star apple",
-    "Star fruit",
-    "Strawberry",
-    "Surinam cherry",
-    "Tamarillo",
-    "Tamarind",
-    "Tangelo",
-    "Tayberry",
-    "Tomato",
-    "Ugli fruit",
-    "White currant",
-    "White sapote",
-    "Yuzu"
-]
+export const fruit = {
+    Abiu:"Abiu",
+    Açaí:"Açaí",
+    Acerola:"Acerola",
+    Ackee:"Ackee",
+    African_cucumber:"African cucumber",
+    Apple:"Apple",
+    Apricot:"Apricot",
+    Avocado:"Avocado",
+    Banana:"Banana",
+    Bilberry:"Bilberry",
+    Blackberry:"Blackberry",
+    Blackcurrant:"Blackcurrant",
+    Black_sapote:"Black sapote",
+    Blueberry:"Blueberry",
+    Boysenberry:"Boysenberry",
+    Breadfruit:"Breadfruit",
+    Buddhas_hand:"Buddha's hand (fingered citron)",
+    Cactus_pear:"Cactus pear",
+    Canistel:"Canistel",
+    Cempedak:"Cempedak",
+    Crab_apple:"Crab apple",
+    Cherimoya:"Cherimoya (Custard Apple)",
+    Cherry:"Cherry",
+    Chico_fruit:"Chico fruit",
+    Cloudberry:"Cloudberry",
+    Coco_De_Mer:"Coco De Mer",
+    Coconut:"Coconut",
+    Cranberry:"Cranberry",
+    Currant:"Currant",
+    Damson:"Damson",
+    Date:"Date",
+    Dragonfruit:"Dragonfruit (or Pitaya)",
+    Durian:"Durian",
+    Egg_Fruit:"Egg Fruit",
+    Elderberry:"Elderberry",
+    Feijoa:"Feijoa",
+    Fig:"Fig",
+    Goji_berry:"Goji berry",
+    Gooseberry:"Gooseberry",
+    Grape:"Grape",
+    Raisin:"Raisin",
+    Grapefruit:"Grapefruit",
+    Grewia_asiatica:"Grewia asiatica (phalsa or falsa)",
+    Guava:"Guava",
+    Hala_Fruit:"Hala Fruit",
+    Honeyberry:"Honeyberry",
+    Huckleberry:"Huckleberry",
+    Jabuticaba:"Jabuticaba",
+    Jackfruit:"Jackfruit",
+    Jambul:"Jambul",
+    Japanese_plum:"Japanese plum",
+    Jostaberry:"Jostaberry",
+    Jujube:"Jujube",
+    Juniper_berry:"Juniper berry",
+    Kaffir_Lime:"Kaffir Lime",
+    Kiwan_:"Kiwano (horned melon)",
+    Kiwifruit:"Kiwifruit",
+    Kumquat:"Kumquat",
+    Lemon:"Lemon",
+    Lime:"Lime",
+    Loganberry:"Loganberry",
+    Longan:"Longan",
+    Loquat:"Loquat",
+    Lulo:"Lulo",
+    Lychee:"Lychee",
+    Magellan_Barberry:"Magellan Barberry",
+    Mamey_Apple:"Mamey Apple",
+    Mamey_Sapote:"Mamey Sapote",
+    Mango:"Mango",
+    Mangosteen:"Mangosteen",
+    Marionberry:"Marionberry",
+    Melon:"Melon",
+    Cantaloupe:"Cantaloupe",
+    Galia_melon:"Galia melon",
+    Honeydew:"Honeydew",
+    Mouse_Melon:"Mouse Melon",
+    Watermelon:"Watermelon",
+    Miracle_fruit:"Miracle fruit",
+    Monstera_deliciosa:"Monstera deliciosa",
+    Mulberry:"Mulberry",
+    Nance:"Nance",
+    Nectarine:"Nectarine",
+    Orange:"Orange",
+    Blood_orange:"Blood orange",
+    Clementine:"Clementine",
+    Mandarine:"Mandarine",
+    Tangerine:"Tangerine",
+    Papaya:"Papaya",
+    Passionfruit:"Passionfruit",
+    Peach:"Peach",
+    Pear:"Pear",
+    Persimmon:"Persimmon",
+    Plantain:"Plantain",
+    Plum:"Plum",
+    Prune:"Prune (dried plum)",
+    Pineapple:"Pineapple",
+    Pineberry:"Pineberry",
+    Plumcot:"Plumcot (or Pluot)",
+    Pomegranate:"Pomegranate",
+    Pomelo:"Pomelo",
+    Purple_mangosteen:"Purple mangosteen",
+    Quince:"Quince",
+    Raspberry:"Raspberry",
+    Salmonberry:"Salmonberry",
+    Rambutan:"Rambutan (or Mamin Chino)",
+    Redcurrant:"Redcurrant",
+    Rose_apple:"Rose apple",
+    Salal_berry:"Salal berry",
+    Salak:"Salak",
+    Satsuma:"Satsuma",
+    Shine_Muscat_or_Viti_Vinifera:"Shine Muscat or Vitis Vinifera",
+    Sloe_or_Hawthorn_Berry:"Sloe or Hawthorn Berry",
+    Soursop:"Soursop",
+    Star_apple:"Star apple",
+    Star_fruit:"Star fruit",
+    Strawberry:"Strawberry",
+    Surinam_cherry:"Surinam cherry",
+    Tamarillo:"Tamarillo",
+    Tamarind:"Tamarind",
+    Tangelo:"Tangelo",
+    Tayberry:"Tayberry",
+    Tomato:"Tomato",
+    Ugli_fruit:"Ugli fruit",
+    White_currant:"White currant",
+    White_sapote:"White sapote",
+    Yuz:"Yuzu"
+}
 
-export const vegetables = [
-    "Artichoke",
-    "Aubergine (Eggplant)",
-    "Amrud",
-    "Asparagus",
-    "Legumes",
-    "Alfalfa Sprouts",
-    "Azuki Beans (or Adzuki)",
-    "Bean Sprouts",
-    "Black Beans",
-    "Black-Eyed Peas",
-    "Borlotti Bean",
-    "Broad Beans",
-    "Chickpeas, Garbanzos, or Ceci Beans",
-    "Green Beans",
-    "Kidney Beans",
-    "Lentils",
-    "Lima Beans or Butter Bean",
-    "Mung Beans",
-    "Navy Beans",
-    "Pinto Beans",
-    "Runner Beans",
-    "Split Peas",
-    "Soy Beans",
-    "Peas",
-    "Mangetout or Snap Peas",
-    "Broccoflower (Hybrid)",
-    "Broccoli (Calabrese)",
-    "Brussels Sprouts",
-    "Cabbage",
-    "Kohlrabi",
-    "Cauliflower",
-    "Celery",
-    "Endive",
-    "Fiddleheads",
-    "Frisee",
-    "Fennel",
-    "Greens",
-    "Beet Greens (Chard)",
-    "Bok Choy",
-    "Chard (Beet Greens)",
-    "Collard Greens",
-    "Kale",
-    "Mustard Greens",
-    "Spinach",
-    "Quinoa",
-    "Herbs And Spices",
-    "Anise",
-    "Basil",
-    "Caraway",
-    "Cilantro (Coriander)"
-]
+export const vegetables = {
+    Artichoke:"Artichoke",
+    Eggplant:"Aubergine (Eggplant)",
+    Amrud:"Amrud",
+    Asparagus:"Asparagus",
+    Legumes:"Legumes",
+    Alfalfa_Sprouts:"Alfalfa Sprouts",
+    Azuki_Beans:"Azuki Beans (or Adzuki)",
+    Bean_Sprouts:"Bean Sprouts",
+    Black_Beans:"Black Beans",
+    Black_Eyed_Peas:"Black-Eyed Peas",
+    Borlotti_Bean:"Borlotti Bean",
+    Broad_Beans:"Broad Beans",
+    Chickpeas:"Chickpeas, Garbanzos, or Ceci Beans",
+    Green_Beans:"Green Beans",
+    Kidney_Beans:"Kidney Beans",
+    Lentils:"Lentils",
+    Lima_Beans_or_Butter_Bean:"Lima Beans or Butter Bean",
+    Mung_Beans:"Mung Beans",
+    Navy_Beans:"Navy Beans",
+    Pinto_Beans:"Pinto Beans",
+    Runner_Beans:"Runner Beans",
+    Split_Peas:"Split Peas",
+    Soy_Beans:"Soy Beans",
+    Peas:"Peas",
+    Mangetout_or_nap_Peas:"Mangetout or Snap Peas",
+    Broccoflower:"Broccoflower (Hybrid)",
+    Broccoli:"Broccoli (Calabrese)",
+    Brussels_Sprouts:"Brussels Sprouts",
+    Cabbage:"Cabbage",
+    Kohlrabi:"Kohlrabi",
+    Cauliflower:"Cauliflower",
+    Celery:"Celery",
+    Endive:"Endive",
+    Fiddleheads:"Fiddleheads",
+    Frisee:"Frisee",
+    Fennel:"Fennel",
+    Greens:"Greens",
+    Beet_Greens:"Beet Greens (Chard)",
+    Bok_Choy:"Bok Choy",
+    Chard:"Chard (Beet Greens)",
+    Collard_Greens:"Collard Greens",
+    Kale:"Kale",
+    Mustard_Greens:"Mustard Greens",
+    Spinach:"Spinach",
+    Quinoa:"Quinoa",
+    Herbs_And_Spices:"Herbs And Spices",
+    Anise:"Anise",
+    Basil:"Basil",
+    Caraway:"Caraway",
+    Cilantro :"Cilantro (Coriander)"
+}
 
 /*
 ********************************* Clothing ****************************************
@@ -502,39 +502,61 @@ export const clothes = [
     "Kilt",
 ]
 
+export const alcohols = {
+    corona:"Corona", goldstar:"Goldstar", goldstarUnfiltered:"Goldstar Unfiltered", heineken:"Heineken",
+    greyGoose:"Grey Goose", vanGogh:"Van Gogh"
+}
 
-export const GOLDSTAR = "Goldstar";
-export const CAMEL_RED = "Camel Red";
+export const smoking = {
+    camel: "Camel Red 100's Cigarettes",
+    marlboro: "Marlboro Light Cigarettes",
+    pallMall: "Pall Mall Blue Cigarettes",
+    rizla: "Rizla Ultra Thin Rolling Papers",
+    bali: "Bali Shag Blue Rolling Tobacco",
+    filters: "cigarete filters"
+}
+
 
 const sb: StateBuilder = new StateBuilder();
+
+const pushItems = (category:string, productNames:any, itemsAcc:storeItemState[]):void => {
+    Object.values(productNames).forEach((name) => {
+        itemsAcc.push(sb.storeItem(String(name),[category],10, 100));
+    });   
+}
+
 const getInventory = () => {
     const items:storeItemState[] = [];
 
-    items.push(sb.storeItem(GOLDSTAR,[foodCategories.BEVERAGES], 5, 100));
-    items.push(sb.storeItem(CAMEL_RED, [], 15, 100));
+    //items.push(sb.storeItem(GOLDSTAR,[foodCategories.BEVERAGES], 10, 100));
 
-    tvs.forEach(tv => items.push(sb.storeItem(tv,[electronicsCategories.TVS], 200, 20)));
-    desktops.forEach(desktop => items.push(sb.storeItem(desktop, [computerCategories.DESKTOPS], 1200, 25)));
-    laptops.forEach(laptop => items.push(sb.storeItem(laptop,[computerCategories.LAPTOPS],800,40)));
-    cellphones.forEach(phone => items.push(sb.storeItem(phone, [electronicsCategories.CELL_PHONES], 200, 15)));
-    printers.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.PRINTERS], 80, 10)));
-    videoGames.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.VIDEO_GAMES], 15, 5)));
-    accessories.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.ACCESSORIES], 8, 65)));
+    pushItems(categories.ALCOHOL, alcohols, items);
+    pushItems(categories.SMOKE, smoking, items);
 
-    snacks.forEach(item => items.push(sb.storeItem(item, [foodCategories.SNACKS], 2, 83)));
-    beverages.forEach(item => items.push(sb.storeItem(item, [foodCategories.BEVERAGES], 3, 100)));
-    cereals.forEach(item => items.push(sb.storeItem(item, [foodCategories.CEREAL], 4, 48)));
-    fruit.forEach(item => items.push(sb.storeItem(item, [foodCategories.FRUIT], 1, 112)));
-    vegetables.forEach(item => items.push(sb.storeItem(item, [foodCategories.VEGETABLES], 1, 87)));
+    pushItems(electronicsCategories.VIDEO_GAMES, videoGames, items);
+   
+    tvs.forEach(tv => items.push(sb.storeItem(tv,[electronicsCategories.TVS], 10, 20)));
+    desktops.forEach(desktop => items.push(sb.storeItem(desktop, [computerCategories.DESKTOPS], 10, 25)));
+    laptops.forEach(laptop => items.push(sb.storeItem(laptop,[computerCategories.LAPTOPS],10,40)));
+    cellphones.forEach(phone => items.push(sb.storeItem(phone, [electronicsCategories.CELL_PHONES], 10, 15)));
+    printers.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.PRINTERS], 10, 10)));
+    accessories.forEach(item => items.push(sb.storeItem(item, [electronicsCategories.ACCESSORIES], 10, 65)));
 
-    clothes.forEach(item => items.push(sb.storeItem(item, [categories.CLOTHING], 20, 12)));
+    pushItems(foodCategories.SNACKS, snacks, items);
+    pushItems(foodCategories.BEVERAGES, beverages, items);
+    pushItems(foodCategories.CEREAL, cereals, items);
+    pushItems(foodCategories.FRUIT, fruit, items);
+    pushItems(foodCategories.VEGETABLES, vegetables, items);
 
+    clothes.forEach(item => items.push(sb.storeItem(item, [categories.CLOTHING], 10, 12)));
 
     return items;    
 }
 
 const getCatefories = ():categoryState[] => {
    return [
+       sb.category(categories.ALCOHOL),
+       sb.category(categories.SMOKE),
        sb.category(categories.CLOTHING),
        sb.category(categories.FOOD,[
            sb.category(foodCategories.BEVERAGES),sb.category(foodCategories.CEREAL),
