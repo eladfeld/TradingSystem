@@ -15,7 +15,7 @@ SHOULD_INIT_STATE | true if loading an initial state from state.ts
 You can initialize the system to a specific state. in the state.ts file, define the subscribers, stores, and transactions
 that the state will contain on startup. Toggle this feature with the SHOULD_INIT_STATE parameter in config.ts. The state
 will be acheived only by legal interactions with the system at the highest level (as if a user performed the necesary actions one by one). If the desired initial state can not be successfully acheived, the system will shut down. 
-StateBuilder.ts may come in handy for creating states in a tidy and compact manner.
+StateBuilder.ts may come in handy for creating states in a tidy and compact manner. It will also enforce proper typing. refer to the type interfaces in  [StateBuilder.ts](dev/Server/src/ServiceLayer/state/StateBuilder.ts)
 
 ## Unsupported Initial States
 - states that depend on closing a store
@@ -231,4 +231,12 @@ A stores discount may pertain to products, categories, or the entire store. Disc
 
 ## Initial Transactions History
 
-Currently not supported
+```
+history:[
+    {
+        store:"Walmart, 
+        user:"tupac", 
+        basket:[{name:"apple", quantity:5},{name:"banana", quantity:2}] 
+    }
+]
+```
