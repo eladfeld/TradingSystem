@@ -157,4 +157,6 @@ name | meaning
 "add" | discounts may be used together and will all be applied
 "max" | discounts may not be used together and only the best of them will be applied
 
+Additional discount combination policies may be added in the [ComboPolicies.ts](dev/Server/src/DomainLayer/discout/ComboPolicies.ts)
+
 supported queries for discount predicates, include only those supported by the buying policy regarding the basket subject. the syntax is the same, but without the "b_" prefix.
