@@ -10,6 +10,7 @@ import fs  from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import Controller from './Controller';
+import { Publisher } from '../DomainLayer/notifications/Publisher';
 
 
 const router = express();
@@ -55,27 +56,30 @@ const httpServer = http.createServer(router);
 
 // httpServer.listen(Config.server.port, () => console.log(`Server is running on ${Config.server.hostname}:${Config.server.port}`));
 
-const httpsServer = https.createServer({
+const options = {
     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
     cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-},
-router);
-
-httpsServer.listen(Config.server.port, () => console.log(`https Server is running on ${Config.server.hostname}:${Config.server.port}`))
+  };
 
 
-// Websocket configs:
-
-
-const wss = new WebSocket.Server({port: 8082})
-
+let server = https.createServer(options,router);
+server.listen(Config.server.port, ()=> console.log(`https Server is running on ${Config.server.hostname}:${Config.server.port}`));
+const wss = new WebSocket.Server({server});
 
 wss.on("connection", WsConn => {
     console.log("new Client connected!")
 
     WsConn.on("close", ()=>{
         console.log("Client has disconnected!")
+        wssConnections.forEach ( (value,key) => {
+            if (value == WsConn)
+            {
+                wssConnections.delete(key)
+                console.log("deleted connection");
+            }
+        })
     })
+    
     WsConn.on("message", data => 
     {
         console.log(data);
@@ -84,7 +88,6 @@ wss.on("connection", WsConn => {
         if(userId > 0)
         {
             wssConnections.set(userId, WsConn);
-            Controller.setServFunc(messageSender);
         }
     })
     
@@ -93,8 +96,7 @@ wss.on("connection", WsConn => {
 
 const wssConnections: Map<number, WebSocket> = new Map();
 
-
-const messageSender =(userId: number, message: string):Promise<string> =>
+const messageSender = async (userId: number, message: string):Promise<string> =>
 {
     console.log("message sent :)");
     let ws = wssConnections.get(userId);
@@ -105,5 +107,8 @@ const messageSender =(userId: number, message: string):Promise<string> =>
             res( "fine")
         })
     }
+    console.log("mesage didnt sent!");
     return new Promise((res, rej ) =>rej("user not logged in"));
 }
+
+Publisher.get_instance().set_send_func(messageSender)

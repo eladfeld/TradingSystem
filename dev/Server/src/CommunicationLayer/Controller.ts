@@ -439,7 +439,6 @@ const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =
 }
 
 
-getUserStores
 const getSubscriberId = (sessionId: string): number =>
 {
     return service.getSubscriberId(sessionId);

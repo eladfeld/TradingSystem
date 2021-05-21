@@ -23,6 +23,7 @@ import { tPredicate } from "../discount/logic/Predicate";
 import { tDiscount } from "../discount/Discount";
 import BuyingSubject from "../policy/buying/BuyingSubject";
 import iCategorizer from "../discount/Categorizer";
+
 import { StoreProduct } from "./StoreProduct";
 
 
@@ -281,7 +282,7 @@ export class Store implements iCategorizer
         productMap.set(productPrice, quantity);
         let fixedPrice = this.applyDiscountPolicy(productMap);
 
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.cancelReservedShoppingBasket(productMap));
+        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.storeName, this.cancelReservedShoppingBasket(productMap));
         return makeOk("Checkout passed to purchase");
     }
 
@@ -565,6 +566,10 @@ export class Store implements iCategorizer
 
     public getProductQuantity(productId : number) : number{
         return this.inventory.getProductQuantity(productId);
+    }
+
+    public getProductbyId( productId : number) : StoreProduct{
+        return this.inventory.getProductById(productId)
     }
 
 }

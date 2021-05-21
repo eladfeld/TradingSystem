@@ -156,4 +156,9 @@ export class Inventory
         }
         return product.getPrice()
     }
+
+    public getProductById(productId : number) : StoreProduct
+    {
+        return this.products.get(productId);
+    }
 }

@@ -12,6 +12,7 @@ import { isFailure, Result } from '../../../src/Result';
 //checkout should have
 var userId: number = -100;
 var storeId: number = -7632;
+var storeName: string = "Mega Bair";
 const prod1Id: number=3000;
 const prod2Id: number=4000;
 const prod1Quantity: number=3;
@@ -35,7 +36,7 @@ describe('purchase tests' , function() {
         updateValues();
         PaymentSystem.willSucceed();
         SupplySystem.willSucceed();
-        Purchase.checkout(storeId, total1a, userId, basket1a, cb);
+        Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(1);
         expect(Purchase.hasTransactionInProgress(userId,storeId)).to.equal(true);
         const transaction: Transaction = Purchase.getTransactionInProgress(userId, storeId);
@@ -69,7 +70,7 @@ describe('purchase tests' , function() {
     it('checkout, then complete order within time' , function(done){
         updateValues();
 
-        const res: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, cb);
+        const res: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         const res2: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 12345678 );
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId).sort((t1,t2)=>t2.getStatus()-t1.getStatus());
@@ -96,7 +97,7 @@ describe('purchase tests' , function() {
     it('attempt completing order after payment time passed' , function(done){
         updateValues();
 
-        Purchase.checkout(storeId, total1a, userId, basket1a, cb);
+        Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         setTimeout(() =>{
             const res: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
             expect(isFailure(res)).to.equal(true);

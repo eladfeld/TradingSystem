@@ -1,3 +1,5 @@
+import { StoreDB } from "../store/StoreDB";
+
 export const TransactionStatus = {
     IN_PROGRESS: 0,
     CANCELLED: 1,
@@ -12,6 +14,7 @@ class Transaction {
     private transcationId: number;//
     private userId: number;//
     private storeId: number;//
+    private storeName: string;
     private total: number;//
     private cardNumber: number;//
     private items: Map<number, number>; //productId => quantity
@@ -32,11 +35,14 @@ class Transaction {
         obj['status'] = this.status
         obj['time'] = this.time
         obj['shipmentId'] = this.shipmentId
-
+        obj['storeName'] = this.storeName
         var items = [];
         for(const [key, value] of this.items){
             items.push({ 
+                
                 'productId':key,
+                'name': StoreDB.getStoreByID(this.storeId).getProductbyId(key).getName(),
+                'price' : StoreDB.getStoreByID(this.storeId).getProductbyId(key).getPrice(),
                 'quantity':value,
             });
         }
@@ -44,7 +50,7 @@ class Transaction {
         return obj;
     }
 
-    constructor(userId: number, storeId: number, items: Map<number, number>, total:number ){
+    constructor(userId: number, storeId: number, items: Map<number, number>, total:number, storeName:string ){
         this.transcationId = Transaction.nextId++;
         this.userId = userId;
         this.storeId = storeId;
@@ -54,6 +60,7 @@ class Transaction {
         this.time = Date.now();
         this.cardNumber = null;
         this.shipmentId = -1;
+        this.storeName = storeName
     }
 
     setShipmentId = (shipmentId: number):void => {this.shipmentId = shipmentId;}
@@ -81,12 +88,16 @@ class Transaction {
         obj['status'] = this.status;
         obj['time'] = this.time;
         obj['shipmentId'] = this.shipmentId;
+        obj['storeName'] = this.storeName
 
         obj['items']=[];
         for(const [key, value] of this.items){
             obj['items'].push({ 
                 'productId':key,
+                'name': StoreDB.getStoreByID(this.storeId).getProductbyId(key).getName(),
+                'price' : StoreDB.getStoreByID(this.storeId).getProductbyId(key).getPrice(),
                 'Quantity':value,
+                
             });
         }
         return obj;

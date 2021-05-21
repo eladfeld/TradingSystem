@@ -130,17 +130,17 @@ export class SystemFacade
     public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         Logger.log(`login : sessionId:${sessionId} , username:${username}`);
-        if(username === '' || username === undefined || username === null){
+
+        if(username === '' || username === undefined || username === null)
             return new Promise((resolve,reject) => { reject("invalid username name")})
-        }
-        if(password === '' || password === undefined || password === null){
+        if(password === '' || password === undefined || password === null)
             return new Promise((resolve,reject) => { reject("invalid password")})
-        }
         if(this.logged_guest_users.get(sessionId) === undefined)
         {
             Logger.log(`login => user didn't enter the system`);
             return new Promise( (resolve,reject) => {reject("user didn't enter the system")});
         }
+
         let res: Result<Subscriber> =  Login.login(username, password);
         if (isFailure(res))
         {
@@ -148,8 +148,11 @@ export class SystemFacade
             Logger.log(`login => ${msg}`);
             return new Promise( (resolve,reject) => {reject(msg)});;
         }
+        
         let subscriber : Subscriber = res.value;
-        Publisher.get_instance().send_pending_messages(subscriber);
+        setTimeout( function () { 
+            Publisher.get_instance().send_pending_messages(subscriber)} , 1000) // just to let wss connection to establish
+        
         this.logged_guest_users.set(sessionId,subscriber)
         this.logged_subscribers.set(sessionId,subscriber);
         if(subscriber.isSystemManager())
