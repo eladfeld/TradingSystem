@@ -15,7 +15,7 @@ export default class ConditionalDiscount extends Discount{
     public getDiscount = (basket: iBasket, categorizer: Categorizer):Result<number> =>  {
         const productsInCategory: number[] = this.getProductsInCategory(categorizer);
         const discountsResults: Result<number>[] = basket.getItems().map((prod) => {
-            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getId())){
+            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getProductId())){
                 const predRes:Result<boolean> = this.predicate.isSatisfied(basket);
                 if(isFailure(predRes))return predRes;
                 if(predRes.value){

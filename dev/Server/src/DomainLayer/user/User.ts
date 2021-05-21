@@ -4,6 +4,7 @@ import { buyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
 import { ShoppingCart} from './ShoppingCart'
+import { Subscriber } from './Subscriber';
 
 export type PaymentMeans = undefined;
 export type SupplyInfo = undefined;
@@ -28,7 +29,7 @@ export class User implements iSubject
 
     public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address);
+        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address, this);
     }
 
     public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Result<string>
@@ -61,7 +62,12 @@ export class User implements iSubject
         return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
 
-    getValue =  (field: string): number => undefined
+    getValue =  (field: string): number => {
+        if(this instanceof Subscriber){
+            return this.getAge();
+        }
+        else return -1;
+    }
 
     //---------------functions for tests-------------------
     public quantityInBasket(storeId : number , productId : number) : number

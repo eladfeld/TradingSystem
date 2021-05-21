@@ -1,3 +1,4 @@
+import { iProduct } from "../discount/iProduct";
 import { ID, TreeRoot } from "./Common";
 
 export class StoreInfo
@@ -42,7 +43,7 @@ export class StoreInfo
 
 }
 
-export class StoreProductInfo
+export class StoreProductInfo implements iProduct
 {
 
     private productName: string;
@@ -50,10 +51,11 @@ export class StoreProductInfo
     private price: number;
     private storeId: number;
     private quantity: number;
-    private productRating: number
-    private numOfRaters: number
+    private productRating: number;
+    private numOfRaters: number;
+    private categories: string[];
 
-    public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number)
+    public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number, categories: string[])
     {
         this.productName = productName;
         this.productId = productId;
@@ -62,7 +64,11 @@ export class StoreProductInfo
         this.quantity = quantity;
         this.productRating = productRating;
         this.numOfRaters = numOfRaters;
+        this.categories = categories;
+    }
 
+    getCategories = ():string[] => {
+        return this.categories;
     }
 
     public getProductId()

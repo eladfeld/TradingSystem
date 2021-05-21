@@ -18,6 +18,8 @@ import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
 import { Publisher } from "./notifications/Publisher";
 import { createHash } from 'crypto';
+import { tPredicate } from "./discount/logic/Predicate";
+import { tDiscount } from "./discount/Discount";
 export class SystemFacade
 {
 
@@ -636,6 +638,55 @@ export class SystemFacade
                     reject(error);
                 })
             }
+        }
+        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+    }
+
+    private resultToPromise = (res: Result<any>):Promise<string> => {
+        if(isOk(res))
+        {
+            let value = res.value;
+            return new Promise((resolve, reject) =>
+            {
+                resolve(value);
+            })
+        }
+        else
+        {
+            let error = res.message;
+            return new Promise((resulve, reject) =>
+            {
+                reject(error);
+            })
+        }
+    }
+
+    addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
+        Logger.log(`addBuyingPolicy : sessionId:${sessionId} , storeId:${storeId}, policyName:${policyName}`);
+        if(policyName === '' || policyName === undefined || policyName === null){
+            return new Promise((resolve,reject) => { reject("invalid policy name")});
+        }
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            let res: Result<string> =  store.addBuyingPolicy(subscriber, policyName, buyingPolicy);
+            return this.resultToPromise(res);
+        }
+        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+    }
+
+    addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount): Promise<string> {
+        Logger.log(`addDiscountPolicy : sessionId:${sessionId} , storeId:${storeId}, discountName:${name}`);
+        if(name === '' || name === undefined || name === null){
+            return new Promise((resolve,reject) => { reject("invalid discount name")});
+        }
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            let res: Result<string> =  store.addDiscount(subscriber, name, discount);
+            return this.resultToPromise(res);
         }
         return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
     }

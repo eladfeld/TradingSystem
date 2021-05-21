@@ -23,6 +23,7 @@ export default class DiscountPolicy implements iDiscount{
             if(isFailure(discountRes)) return discountRes;
             acc += discountRes.value;
         }
+        
         return makeOk(acc);
     }
 

@@ -154,9 +154,7 @@ export class Subscriber extends User
         return 0;
     }
 
-    
-
-
+    public getAge = ():number => this.age;
 
     //-----------------------------functions for tests---------------------------------------------
     public getAppointments() : Appointment[]

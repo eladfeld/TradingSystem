@@ -11,7 +11,7 @@ export default class UnconditionalDiscount extends Discount{
     public getDiscount = (basket: iBasket, categorizer: iCategorizer): Result<number> => {
         const productsInCategory: number[] = this.getProductsInCategory(categorizer);
         const discounts: number[] = basket.getItems().map((prod) => {
-            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getId())){
+            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getProductId())){
                 return prod.getQuantity()*this.ratio*prod.getPrice();
             }else return 0;
         });
