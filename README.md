@@ -108,7 +108,7 @@ Bit | Permission
 A stores buying policies is a list of predicates that must be satisfied in order for a purchase to be approved. The predicates may pertain to the shopping basket's content, the user, or global information (i.e. date, time). Simple predicates have and operator and 2 operands representing a boolean resulting calculation between 2 numbers.
 currently supported  simple predicate operators include ``` ["=" , "!=" , "<" , "<=" , ">=" , ">" ]```
 currently supported composite prediate operators include ``` [ "and" , "or", "xor" , "=>" , "iff"]  ```
-in order to support additional operators, add them to [LogicalOperators.ts](dev/Server/src/DomainLayer/discout/logic/LogicalOperators.ts)
+in order to support additional operators, add them to [LogicalOperators.ts](dev/Server/src/DomainLayer/discount/logic/LogicalOperators.ts)
 The operand string values you provide to simple predicates must be relevent to the subject which the predicate is intended to query. for a buying policy, the strings must obey the following formats:
 query | meaning
 -----|-----
@@ -116,6 +116,7 @@ time | the current time
 date | the current date
 u_age| the age of the buying user
 b_{SUBJECT}_{FIELD} | the value of the field for the subject in the basket. {SUBJECT} can be the productId (or "product:{productName}" in initial state file) or the category name. {FIELD} must be "quantity" or "price". additional queries may be supported by updating the ```getValue()``` function in the subject class.
+
 Simple predicate examples:
 ```
 basketHasAlcoholPredicate = {

@@ -120,14 +120,29 @@ export class ShoppingBasket implements iBasket
         const strs: string[] = field.split("_");
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);
-            switch(strs[1]){
-                case "price":
-                    return this.store.getProductsInfo().find(p => p.getProductId() === id).getPrice();
-                case "quantity":
-                    const quantity = this.products.get(id);
-                    return quantity? quantity : 0;
-                default:
-                    return undefined;
+            if(!isNaN(id)){//product
+                switch(strs[1]){
+                    case "price":
+                        return this.store.getProductsInfo().find(p => p.getProductId() === id).getPrice();
+                    case "quantity":
+                        const quantity = this.products.get(id);
+                        return quantity? quantity : 0;
+                    default:
+                        return undefined;
+                }
+            }
+            else{//category
+                const prodsInCategory = this.store.getProducts(strs[0]);                
+                switch(strs[1]){
+                    case "quantity":
+                        var acc = 0;
+                        this.products.forEach( (q:number,id:number,m) => {
+                            if(!isNaN(prodsInCategory.find((pid:number) => pid===id))) acc += q;
+                        });
+                        return acc;
+                    default:
+                        return undefined;
+                }
             }
         }
         return undefined;

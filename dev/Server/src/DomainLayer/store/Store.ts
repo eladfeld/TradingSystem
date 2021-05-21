@@ -25,6 +25,7 @@ import BuyingSubject from "../policy/buying/BuyingSubject";
 import iCategorizer from "../discount/Categorizer";
 
 import { StoreProduct } from "./StoreProduct";
+import UniversalPolicy from "../policy/buying/UniversalPolicy";
 
 
 export class Store implements iCategorizer
@@ -213,7 +214,12 @@ export class Store implements iCategorizer
         }
         const policyRes = this.buyingPolicy.isSatisfied(buyingSubject);//TODO: FIX
         if(isFailure(policyRes))return policyRes;
-        else if(policyRes.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes.value);
+        if(policyRes.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes.value);
+
+        const policyRes2 = UniversalPolicy.isSatisfied(buyingSubject);
+        if(isFailure(policyRes2))return policyRes2;
+        else if(policyRes2.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes2.value);
+
         let productList = shoppingBasket.getProducts();
         let reservedProducts = new Map <number, number> ();
         let pricesToQuantity = new Map <number, number> ();
@@ -235,7 +241,7 @@ export class Store implements iCategorizer
         const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
         if(isFailure(discountRes)) return discountRes;
         price -= discountRes.value;
-        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, () => {
+        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
          );

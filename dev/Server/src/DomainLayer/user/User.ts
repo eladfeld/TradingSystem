@@ -66,7 +66,9 @@ export class User implements iSubject
         if(this instanceof Subscriber){
             return this.getAge();
         }
-        else return -1;
+        else {
+            return -1;
+        }
     }
 
     //---------------functions for tests-------------------
