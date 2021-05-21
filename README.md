@@ -1,5 +1,5 @@
 # TradingSystem
-A system allowing subscribers to buy and sell items. A full overview of the system's functionality can be found in the documentation [here](documentation/assets/requirements)
+A system allowing subscribers to buy and sell items. A full overview of the system's functionality can be found in the documentation [here](documentation/assets/requirements.pdf)
 
 # Configuration File
 
