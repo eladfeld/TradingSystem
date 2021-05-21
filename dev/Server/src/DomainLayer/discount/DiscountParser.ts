@@ -47,13 +47,13 @@ class Parser{
                 var category: tSimpleOperand = d.category;
                 var ratio: number = d.ratio;
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
-                //if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
+                if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
                 return makeOk(new UnconditionalDiscount(ratio, category));//TODO: support category
             case "conditional":   
                 var category: tSimpleOperand = d.category;
                 var ratio: number = d.ratio;
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
-                //if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
+                if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
                 if(d.predicate===undefined) return makeFailure(`conditional discount does not have a predicate in ${d}`);
                 const predRes: Result<iPredicate> = PredicateParser.parse(d.predicate);
                 if(isFailure(predRes))return predRes;
@@ -62,7 +62,7 @@ class Parser{
                 const policyField: string = d.policy; 
                 const children: tDiscount[] = d.discounts;
                 if(policyField===undefined || children===undefined)return makeFailure(`policy or children discounts not defined in ${d}`);
-                //if((typeof policyField !== 'string') || !Array.isArray(children)) return makeFailure(`policy is not a string or child discounts not a list in:\n ${d}`);
+                if((typeof policyField !== 'string') || !Array.isArray(children)) return makeFailure(`policy is not a string or child discounts not a list in:\n ${d}`);
                 const policy: iComboPolicy = getComboPolicy(d.policy);
                 if(policy === undefined) return makeFailure(`${policyField} is not a valid combo policy`) ;
                 if(children.length < 2) return makeFailure(`combo discount does not at least 2 child discounts in ${d}`);

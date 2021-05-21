@@ -3,12 +3,13 @@ import { Store } from '../../src/DomainLayer/store/Store';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { Login } from '../../src/DomainLayer/user/Login';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade';
-import { isFailure, isOk } from '../../src/Result';
+import { isFailure, isOk, Result } from '../../src/Result';
 import { StoreProductInfo } from '../../src/DomainLayer/store/StoreInfo';
 import { Service } from '../../src/ServiceLayer/Service';
 import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
-import { BuyingPolicy } from '../../src/DomainLayer/store/BuyingPolicy';
-
+import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
+import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
+import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
 
 describe('view store products' , () => {
 
@@ -86,22 +87,25 @@ describe('search product in store' , () => {
     })
 
     describe('buying against policy' , () => {
-
         it('buying against policy', () => {
             Service.get_instance()
             let manager = Login.login('michael', '1234')
             if(isOk(manager)){
                 let subsriber = new Subscriber('something', 13)
                 const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
-                store1.addCategoryToRoot('Shirt')
+                store1.addCategoryToRoot('alcohol')
                 const user1Id: number = 100;
                 const user1Adrs: string = "8 Mile Road, Detroit";
-                let res = store1.addNewProduct(manager.value, 'Dri-Fit Shirt', ['Shirt'], 80, 20)
+                let res = store1.addNewProduct(manager.value, 'Jack Daniels', ['alcohol'], 80, 20)
                 if (isOk(res)){
                     const basket1a: ShoppingBasket = new ShoppingBasket (store1);
-                    basket1a.addProduct(res.value, 1)
-                    store1.setBuyingPolicy(new BuyingPolicy("Min 100$ for purchase"))
-                    let sellRes = store1.sellShoppingBasket(user1Id, user1Adrs, basket1a, ()=>{})
+                    basket1a.addProduct(res.value, 1);
+                    const policy:tPredicate = {type:"simple",operand1:0,operator:"<",operand2:1};
+                    const policyRes = store1.addBuyingPolicy(subsriber,"no one buys anything", policy);
+                    expect(isOk(policyRes)).to.equal(true);
+                    const buyingSubject = new BuyingSubject(subsriber, basket1a);
+
+                    let sellRes = store1.sellShoppingBasket(user1Id, user1Adrs,basket1a, buyingSubject, ()=>{})
                     // expect(isFailure(sellRes)).to.equal(true)
                 }
 

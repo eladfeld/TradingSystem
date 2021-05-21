@@ -2,6 +2,7 @@ import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
 import iSubject from "./iSubject";
 
 export interface iPredicate{
+    //isValid: (f:(field: tSimpleOperand)=>boolean)=>boolean;
     isSatisfied: (subject: iSubject)=>Result<boolean>;
 }
 export interface iValue{
