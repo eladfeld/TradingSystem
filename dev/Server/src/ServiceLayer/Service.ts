@@ -219,7 +219,6 @@ export class Service
     }
 
     public addBuyingPolicy(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
-        // return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
         return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }
 
