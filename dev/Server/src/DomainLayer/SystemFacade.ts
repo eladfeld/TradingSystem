@@ -22,7 +22,6 @@ import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 export class SystemFacade
 {
-
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
@@ -661,7 +660,7 @@ export class SystemFacade
         }
     }
 
-    addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
+    public addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
         Logger.log(`addBuyingPolicy : sessionId:${sessionId} , storeId:${storeId}, policyName:${policyName}`);
         if(policyName === '' || policyName === undefined || policyName === null){
             return new Promise((resolve,reject) => { reject("invalid policy name")});
@@ -676,7 +675,22 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
     }
 
-    addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount): Promise<string> {
+    public removeBuyingPolicy(sessionId: string, storeId: number, policyNumber: number):Promise<string> {
+        Logger.log(`removeBuyingPolicy : sessionId:${sessionId} , storeId:${storeId}, policyNumber:${policyNumber}`);
+        if(policyNumber < 0){
+            return new Promise((resolve,reject) => { reject("invalid policy number")});
+        }
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            let res: Result<string> =  store.removeBuyingPolicy(subscriber, policyNumber);
+            return this.resultToPromise(res);
+        }
+        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+    }
+
+    public addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount): Promise<string> {
         Logger.log(`addDiscountPolicy : sessionId:${sessionId} , storeId:${storeId}, discountName:${name}`);
         if(name === '' || name === undefined || name === null){
             return new Promise((resolve,reject) => { reject("invalid discount name")});
@@ -691,6 +705,20 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
     }
 
+    public removeDiscountPolicy(sessionId: string, storeId: number, policyNumber: number): Promise<string> {
+        Logger.log(`removeDiscountPolicy : sessionId:${sessionId} , storeId:${storeId}, policyNumber:${policyNumber}`);
+        if(policyNumber < 0){
+            return new Promise((resolve,reject) => { reject("invalid policy number")});
+        }
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let store: Store = StoreDB.getStoreByID(storeId);
+        if(subscriber !== undefined && store !== undefined)
+        {
+            let res: Result<string> =  store.removeDiscountPolicy(subscriber, policyNumber);
+            return this.resultToPromise(res);
+        }
+        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+    }
     public getSubscriberPurchaseHistory(sessionId: string, subscriberToSeeId: number): Promise<any>
     {
         Logger.log(`getSubscriberPurchaseHistory : sessionId:${sessionId} , subscriberId:${subscriberToSeeId}`);

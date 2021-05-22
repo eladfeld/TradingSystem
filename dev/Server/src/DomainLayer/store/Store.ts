@@ -31,8 +31,6 @@ import UniversalPolicy from "../policy/buying/UniversalPolicy";
 export class Store implements iCategorizer
 {
 
-
-
     public getStoreFounderId():number
     {
         return this.storeFounderId;
@@ -200,13 +198,19 @@ export class Store implements iCategorizer
         return this.inventory.setProductQuantity(productId, quantity);
     }
 
-    addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Result<string> {
+    public addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Result<string> {
         if(this.storeClosed) return makeFailure("Store is closed");
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
         return this.buyingPolicy.addPolicy(policy, policyName);        
     }
 
+    public removeBuyingPolicy(subscriber: Subscriber, policyNumber: number): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.buyingPolicy.removePolicy(policyNumber); 
+    }
 
     public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Result<boolean> {
         if(this.storeClosed){
@@ -483,11 +487,18 @@ export class Store implements iCategorizer
         return makeOk(JSON.stringify(staff))
     }
 
-    addDiscount(subscriber: Subscriber, name: string, discount: tDiscount): Result<string> {
+    public addDiscount(subscriber: Subscriber, name: string, discount: tDiscount): Result<string> {
         if(this.storeClosed) return makeFailure("Store is closed");
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted");
         return this.discountPolicy.addPolicy(discount);
+    }
+
+    public removeDiscountPolicy(subscriber: Subscriber, policyNumber: number): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.discountPolicy.removePolicy(policyNumber); 
     }
 
     public addDiscount3(discount: DiscountOption)

@@ -223,12 +223,12 @@ export class Service
         return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }
 
-    public removeBuyingPolicy(discountNumber: number) {
-        throw new Error('Method not implemented.');
+    public removeBuyingPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeBuyingPolicy(sessionId, storeId, policyNumber);
     }
 
-    public removeDiscountPolicy(discountPolicy: any) {
-        throw new Error('Method not implemented.');
+    public removeDiscountPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeDiscountPolicy(sessionId, storeId, policyNumber);
     }
 
     public getSubscriberId(sessionId: string): number
