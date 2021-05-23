@@ -1,7 +1,7 @@
-import { DiscountPolicy } from "./DiscountPolicy";
-import { BuyingPolicy } from "./BuyingPolicy";
+import DiscountPolicy from "../discount/DiscountPolicy";
+import BuyingPolicy from "../policy/buying/BuyingPolicy";
 import { Inventory } from "./Inventory";
-import { TreeRoot, ID, Rating } from './Common'
+import { TreeRoot, ID, Rating, TreeNode } from './Common'
 import { Appointment } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import { StoreDB } from "./StoreDB";
@@ -19,12 +19,17 @@ import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
 import PaymentInfo from "../purchase/PaymentInfo";
 import ShippingInfo from "../purchase/ShippingInfo";
+import { tPredicate } from "../discount/logic/Predicate";
+import { tDiscount } from "../discount/Discount";
+import BuyingSubject from "../policy/buying/BuyingSubject";
+import iCategorizer from "../discount/Categorizer";
+
 import { StoreProduct } from "./StoreProduct";
+import UniversalPolicy from "../policy/buying/UniversalPolicy";
 
 
-export class Store
+export class Store implements iCategorizer
 {
-
 
     public getStoreFounderId():number
     {
@@ -78,6 +83,23 @@ export class Store
         this.categiries = new TreeRoot<string>('root category');
 
         StoreDB.addStore(this);
+    }
+    public getProducts = (categoryName: string):number[] => {
+        const category:TreeNode<string> = this.categiries.getChildNode(categoryName);
+        if(!category){
+            return [];
+        }
+        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {     
+            for(var i=0; i<prod.getCategories().length; i++){
+                const cat = prod.getCategories()[i];
+                if(category.value===cat || category.hasChildNode(cat)){
+                    return true;
+                }
+            }
+            return false;
+        });
+        const prodIds:number[] = products.map((prod:StoreProductInfo) => prod.getProductId());
+        return prodIds;
     }
     public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
@@ -176,16 +198,40 @@ export class Store
         return this.inventory.setProductQuantity(productId, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket , onFail : ()=>void): Result<boolean> {
+    public addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.buyingPolicy.addPolicy(policy, policyName);        
+    }
+
+    public removeBuyingPolicy(subscriber: Subscriber, policyNumber: number): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.buyingPolicy.removePolicy(policyNumber); 
+    }
+
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
+        const policyRes = this.buyingPolicy.isSatisfied(buyingSubject);//TODO: FIX
+        if(isFailure(policyRes))return policyRes;
+        if(policyRes.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes.value);
+
+        const policyRes2 = UniversalPolicy.isSatisfied(buyingSubject);
+        if(isFailure(policyRes2))return policyRes2;
+        else if(policyRes2.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes2.value);
+
         let productList = shoppingBasket.getProducts();
         let reservedProducts = new Map <number, number> ();
         let pricesToQuantity = new Map <number, number> ();
+        var price: number = 0;
         for (let [id, quantity] of productList) {
             let sellResult = this.inventory.reserveProduct(id, quantity);
             let productPrice = this.inventory.getProductPrice(id);
+            price += (productPrice * quantity);
             if(isOk(sellResult) && sellResult.value && productPrice != -1){
                 reservedProducts.set(id,quantity);
                 pricesToQuantity.set(productPrice,quantity);
@@ -195,9 +241,11 @@ export class Store
                 return sellResult;
             }
         }
-        let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
-
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, this.storeName, () => {
+        //let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
+        const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
+        if(isFailure(discountRes)) return discountRes;
+        price -= discountRes.value;
+        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
          );
@@ -439,8 +487,21 @@ export class Store
         return makeOk(JSON.stringify(staff))
     }
 
+    public addDiscount(subscriber: Subscriber, name: string, discount: tDiscount): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted");
+        return this.discountPolicy.addPolicy(discount);
+    }
 
-    public addDiscount(discount: DiscountOption)
+    public removeDiscountPolicy(subscriber: Subscriber, policyNumber: number): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.discountPolicy.removePolicy(policyNumber); 
+    }
+
+    public addDiscount3(discount: DiscountOption)
     {
         this.discounts.push(discount)
     }
@@ -507,6 +568,7 @@ export class Store
 
         let fatherNode = this.categiries.getChildNode(categoryFather)
         fatherNode.createChildNode(category)
+        
         return makeOk('category was added')
     }
 

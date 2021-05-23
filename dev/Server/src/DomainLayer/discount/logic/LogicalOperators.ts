@@ -33,18 +33,21 @@ const and = (a: boolean, b:boolean): boolean => a && b;
 const or = (a: boolean, b:boolean): boolean => a || b;
 const xor = (a: boolean, b:boolean): boolean => (a||b) && !(a&&b);
 const iff = (a: boolean, b:boolean): boolean => (a&&b) || (!(a||b));
+const implies = (a: boolean, b:boolean): boolean => !a || b;
 
 export const CompositeOps = {
     AND: "and",
     OR: "or",
     XOR: "xor",
-    IFF: "iff"
+    IFF: "iff",
+    IMPLIES: "=>"
 };
 const compositeOpsMap: Map<string, (a: boolean, b: boolean)=>boolean> = new Map([
     [CompositeOps.AND, and],
     [CompositeOps.OR, or],
     [CompositeOps.XOR, xor],
-    [CompositeOps.IFF, iff]
+    [CompositeOps.IFF, iff],
+    [CompositeOps.IMPLIES, implies]
 ]);
 
 export const getCompositeOperator = (op:string): (a: boolean, b: boolean)=>boolean =>{

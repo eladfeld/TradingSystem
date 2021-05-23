@@ -1,3 +1,6 @@
+import { SHOULD_INIT_STATE } from "../config";
+import { tDiscount } from "../DomainLayer/discount/Discount";
+import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
 import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
 import { Publisher } from "../DomainLayer/notifications/Publisher";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
@@ -7,6 +10,7 @@ import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { User } from "../DomainLayer/user/User";
 import { isOk, makeFailure, makeOk, Result} from "../Result";
+import StateInitializer from './state/StateInitializer';
 
 export class Service
 {
@@ -16,7 +20,13 @@ export class Service
 
     private constructor()
     {
-        this.facade = new FakeSystemFacade().getFacade();
+        this.facade = new SystemFacade();
+        if(SHOULD_INIT_STATE){
+            setTimeout(async() =>{
+                const res = await new StateInitializer().initState();
+                console.log(`init state was succesful: ${res}`)
+            }, 0);
+        }
     }
 
     public get_word_list(word: string): string[]
@@ -33,7 +43,7 @@ export class Service
         return Service.singletone;
     }
 
-    //user enter the system
+    //returns a session id string
     public async enter(): Promise<string>
     {
         return this.facade.enter();
@@ -195,21 +205,21 @@ export class Service
         return this.facade.getUserStores(sessionId);
     }
 
-    public addDiscountPolicy(buyingPolicy: any)
+    public addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount):Promise<string>
     {
-        throw new Error('Method not implemented.');
+        return this.facade.addDiscountPolicy(sessionId, storeId, name, discount);
     }
 
-    public addBuyingPolicy(buyingPolicy: any) {
-        throw new Error('Method not implemented.');
+    public addBuyingPolicy(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
+        return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }
 
-    public removeBuyingPolicy(discountNumber: number) {
-        throw new Error('Method not implemented.');
+    public removeBuyingPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeBuyingPolicy(sessionId, storeId, policyNumber);
     }
 
-    public removeDiscountPolicy(discountPolicy: any) {
-        throw new Error('Method not implemented.');
+    public removeDiscountPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeDiscountPolicy(sessionId, storeId, policyNumber);
     }
 
     public getSubscriberId(sessionId: string): number

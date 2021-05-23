@@ -19,7 +19,7 @@ export class MyBasket implements iBasket{
         const strs: string[] = field.split("_");
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);
-            const item: iProduct = this.basket.find(i => i.getId());
+            const item: iProduct = this.basket.find(i => i.getProductId());
             switch(strs[1]){
                 case "price":
                     return item.getPrice();

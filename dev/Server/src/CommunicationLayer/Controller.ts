@@ -6,6 +6,8 @@ import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
 import { checkout } from './Router';
 import { SpellChecker } from '../DomainLayer/apis/spellchecker';
 import { SpellCheckerAdapter } from '../DomainLayer/SpellCheckerAdapter';
+import { tPredicate } from '../DomainLayer/discount/logic/Predicate';
+import { tDiscount } from '../DomainLayer/discount/Discount';
 
 const service: Service = Service.get_instance();
 const OKSTATUS: number = 200;
@@ -401,31 +403,49 @@ const getUserStores = (req: Request , res:Response , next : NextFunction) =>
 
 const addDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountPolicy: any = req.body;
-
-    service.removeDiscountPolicy(discountPolicy);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let discountName: string = req.body.discountName;
+    let discount    : tDiscount = req.body.discount;
+    let promise = service.addDiscountPolicy(sessionId, storeId, discountName, discount);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 const addBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let buyingPolicy: any = req.body;
-
-    service.addBuyingPolicy(buyingPolicy);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyName  : string = req.body.policyName;
+    let policy: tPredicate = req.body.policy;
+    let promise = service.addBuyingPolicy(sessionId, storeId, policyName, policy);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountNumber: number = req.body.policyId;
-
-    service.removeBuyingPolicy(discountNumber);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyNumber: number = req.body.policyId;
+    let promise = service.removeBuyingPolicy(sessionId, storeId, policyNumber );
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 
 const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountNumber: number = req.body.policyId;
-
-    service.removeDiscountPolicy(discountNumber);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyNumber: number = req.body.policyId;
+    let promise = service.removeDiscountPolicy(sessionId, storeId, policyNumber );
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 

@@ -1,4 +1,4 @@
-import { isFailure, makeOk, Result } from "../../Result";
+import { isFailure, makeFailure, makeOk, Result } from "../../Result";
 import Categorizer from "./Categorizer";
 import DiscountParser from "./DiscountParser";
 import iBasket from "./iBasket";
@@ -23,6 +23,7 @@ export default class DiscountPolicy implements iDiscount{
             if(isFailure(discountRes)) return discountRes;
             acc += discountRes.value;
         }
+        
         return makeOk(acc);
     }
 
@@ -34,8 +35,11 @@ export default class DiscountPolicy implements iDiscount{
         return makeOk("successfully added discount to the discount policy");
     }
 
-    public removePolicy = (id: number) =>{
+    public removePolicy = (id: number):Result<string> =>{
+        const policy = this.discounts.get(id);
+        if(policy === undefined)return makeFailure("polcy does not exist");
         this.discounts.delete(id);
+        return makeOk(`Discount Policy #${id} has been removed`);
     }
 
 }

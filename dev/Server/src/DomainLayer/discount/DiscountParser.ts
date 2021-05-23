@@ -3,9 +3,10 @@ import ComboDiscount from "./ComboDiscount";
 import getComboPolicy from "./ComboPolicies";
 import { iComboPolicy } from "./ComboPolicies";
 import ConditionalDiscount from "./ConditionalDiscount";
+import { tDiscount } from "./Discount";
 import iDiscount from "./iDiscount";
 import PredicateParser from "./logic/parser";
-import { iPredicate } from "./logic/Predicate";
+import { iPredicate, tSimpleOperand } from "./logic/Predicate";
 import UnconditionalDiscount from "./UnconditionalDiscount";
 
 
@@ -36,20 +37,20 @@ class Parser{
         
     }
     //TODO: update iSubject to have string[] getWords() for field checks
-    public parse = (d: any):Result<iDiscount> =>{
+    public parse = (d: tDiscount):Result<iDiscount> =>{
         const type: string = d.type;
         if(!type) return makeFailure(`type undefined in ${d}`);
         if(typeof type !== 'string') return makeFailure('type is not a string');
 
-        switch (type) {
+        switch (d.type) {
             case "unconditional":   
-                var category: any = d.category;
+                var category: tSimpleOperand = d.category;
                 var ratio: number = d.ratio;
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
                 if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
                 return makeOk(new UnconditionalDiscount(ratio, category));//TODO: support category
             case "conditional":   
-                var category: any = d.category;
+                var category: tSimpleOperand = d.category;
                 var ratio: number = d.ratio;
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
                 if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
@@ -59,7 +60,7 @@ class Parser{
                 return makeOk(new ConditionalDiscount(ratio, category, predRes.value));           
             case "combo":
                 const policyField: string = d.policy; 
-                const children: any[] = d.discounts;
+                const children: tDiscount[] = d.discounts;
                 if(policyField===undefined || children===undefined)return makeFailure(`policy or children discounts not defined in ${d}`);
                 if((typeof policyField !== 'string') || !Array.isArray(children)) return makeFailure(`policy is not a string or child discounts not a list in:\n ${d}`);
                 const policy: iComboPolicy = getComboPolicy(d.policy);
