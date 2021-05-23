@@ -1,4 +1,4 @@
-import { isFailure, makeOk, Result } from "../../../Result";
+import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
 import iSubject from "../../discount/logic/iSubject";
 import PredicateParser from "../../discount/logic/parser";
 import { iPredicate } from "../../discount/logic/Predicate";
@@ -45,8 +45,11 @@ export default class BuyingPolicy{
         return makeOk("successfully added condition to the buying policy");
     }
 
-    public removePolicy = (id: number) =>{
+    public removePolicy = (id: number):Result<string> =>{
+        const policy = this.rules.get(id);
+        if(policy === undefined)return makeFailure("polcy does not exist");
         this.rules.delete(id);
+        return makeOk(`Policy #${id}: ${policy.description} has been removed`);
     }
 
 }

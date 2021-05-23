@@ -23,12 +23,12 @@ const state:systemState = {
                 ]
             },
             buying_policies:[
-                sb.policy(
-                    "only adults can drink",
-                    sb.compoundPred("=>",[
-                        sb.simplePred(`b_${alcohols.goldstar}_quantity`,">",0),
-                        sb.simplePred("u_age",">",18)                           
-                ])),
+                // sb.policy(
+                //     "only adults can drink",
+                //     sb.compoundPred("=>",[
+                //         sb.simplePred(`b_${alcohols.goldstar}_quantity`,">",0),
+                //         sb.simplePred("u_age",">",18)                           
+                // ])),
                 sb.policy(
                     "only babies can smoke",
                     sb.compoundPred("=>",[
@@ -36,8 +36,8 @@ const state:systemState = {
                         sb.simplePred("u_age","<",3)                            
                 ])),
                 sb.policy(
-                    "cant buy Big Red Soda",
-                        sb.simplePred(`b_${PRODUCT_PREF}Big Red Soda_quantity`,"<",1),                          
+                    "cant buy exactly 5 Big Red Soda",
+                        sb.simplePred(`b_${PRODUCT_PREF}Big Red Soda_quantity`,"!=",5),                          
                 )
             ],
             discounts:[

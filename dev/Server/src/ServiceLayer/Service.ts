@@ -219,16 +219,15 @@ export class Service
     }
 
     public addBuyingPolicy(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
-        // return new Promise((resolve,reject) => { resolve("NOT REALLY IMPLEMENTED!")});
         return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }
 
-    public removeBuyingPolicy(discountNumber: number) {
-        throw new Error('Method not implemented.');
+    public removeBuyingPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeBuyingPolicy(sessionId, storeId, policyNumber);
     }
 
-    public removeDiscountPolicy(discountPolicy: any) {
-        throw new Error('Method not implemented.');
+    public removeDiscountPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeDiscountPolicy(sessionId, storeId, policyNumber);
     }
 
     public getSubscriberId(sessionId: string): number

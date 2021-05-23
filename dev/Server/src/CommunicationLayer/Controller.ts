@@ -425,17 +425,25 @@ const addBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 
 const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountNumber: number = req.body.policyId;
-
-    service.removeBuyingPolicy(discountNumber);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyNumber: number = req.body.policyId;
+    let promise = service.removeBuyingPolicy(sessionId, storeId, policyNumber );
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 
 const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountNumber: number = req.body.policyId;
-
-    service.removeDiscountPolicy(discountNumber);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyNumber: number = req.body.policyId;
+    let promise = service.removeDiscountPolicy(sessionId, storeId, policyNumber );
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 

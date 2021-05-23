@@ -25,12 +25,11 @@ import BuyingSubject from "../policy/buying/BuyingSubject";
 import iCategorizer from "../discount/Categorizer";
 
 import { StoreProduct } from "./StoreProduct";
+import UniversalPolicy from "../policy/buying/UniversalPolicy";
 
 
 export class Store implements iCategorizer
 {
-
-
 
     public getStoreFounderId():number
     {
@@ -199,13 +198,19 @@ export class Store implements iCategorizer
         return this.inventory.setProductQuantity(productId, quantity);
     }
 
-    addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Result<string> {
+    public addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Result<string> {
         if(this.storeClosed) return makeFailure("Store is closed");
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
         return this.buyingPolicy.addPolicy(policy, policyName);        
     }
 
+    public removeBuyingPolicy(subscriber: Subscriber, policyNumber: number): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.buyingPolicy.removePolicy(policyNumber); 
+    }
 
     public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Result<boolean> {
         if(this.storeClosed){
@@ -213,7 +218,12 @@ export class Store implements iCategorizer
         }
         const policyRes = this.buyingPolicy.isSatisfied(buyingSubject);//TODO: FIX
         if(isFailure(policyRes))return policyRes;
-        else if(policyRes.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes.value);
+        if(policyRes.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes.value);
+
+        const policyRes2 = UniversalPolicy.isSatisfied(buyingSubject);
+        if(isFailure(policyRes2))return policyRes2;
+        else if(policyRes2.value !== BuyingPolicy.SUCCESS) return makeFailure(policyRes2.value);
+
         let productList = shoppingBasket.getProducts();
         let reservedProducts = new Map <number, number> ();
         let pricesToQuantity = new Map <number, number> ();
@@ -235,7 +245,7 @@ export class Store implements iCategorizer
         const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
         if(isFailure(discountRes)) return discountRes;
         price -= discountRes.value;
-        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, () => {
+        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
          );
@@ -477,11 +487,18 @@ export class Store implements iCategorizer
         return makeOk(JSON.stringify(staff))
     }
 
-    addDiscount(subscriber: Subscriber, name: string, discount: tDiscount): Result<string> {
+    public addDiscount(subscriber: Subscriber, name: string, discount: tDiscount): Result<string> {
         if(this.storeClosed) return makeFailure("Store is closed");
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted");
         return this.discountPolicy.addPolicy(discount);
+    }
+
+    public removeDiscountPolicy(subscriber: Subscriber, policyNumber: number): Result<string> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return this.discountPolicy.removePolicy(policyNumber); 
     }
 
     public addDiscount3(discount: DiscountOption)
