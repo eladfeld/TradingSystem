@@ -103,6 +103,9 @@ export class SpellChecker
         return Math.max(l2, l1, c, r1, r2);
     }
     
+    get_valid_word_list(){
+        return this.valid_word_list;
+    }
 }
 
 

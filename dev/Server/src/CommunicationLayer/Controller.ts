@@ -4,6 +4,8 @@ import { isOk, Result } from '../Result';
 import { Subscriber } from '../DomainLayer/user/Subscriber';
 import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
 import { checkout } from './Router';
+import { SpellChecker } from '../DomainLayer/apis/spellchecker';
+import { SpellCheckerAdapter } from '../DomainLayer/SpellCheckerAdapter';
 import { tPredicate } from '../DomainLayer/discount/logic/Predicate';
 import { tDiscount } from '../DomainLayer/discount/Discount';
 
@@ -118,7 +120,7 @@ const getPruductInfoByName = (req: Request, res: Response, next: NextFunction) =
 const getPruductInfoByCategory = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
-    let productCategory: string = req.body.productCategory;
+    let productCategory: string = req.body.category;
     service.getPruductInfoByCategory(sessionId, productCategory)
     .then(product => res.status(OKSTATUS).json(product))
     .catch(message => res.status(FAILSTATUS).json(message))
@@ -452,11 +454,35 @@ const getSubscriberId = (sessionId: string): number =>
     return service.getSubscriberId(sessionId);
 }
 
-
-const setServFunc = (func: (userId:number, message:string) => Promise<string>) =>
+// this function is to give the clients autocomplete data with catagories
+const getAllCategories = (req : Request, res: Response , next: NextFunction) =>
 {
-    service.set_send_func(func);
+    let catagories = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_categories());
+    res.status(OKSTATUS).json(catagories);
 }
+
+// this function is to give the clients autocomplete data with products
+const getProductNames = (req : Request, res: Response , next: NextFunction) =>
+{
+    let products = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_product_names());
+    res.status(OKSTATUS).json(products);
+}
+
+// this function is to give the clients autocomplete data with keywords
+const getkeywords = (req : Request, res: Response , next: NextFunction) =>
+{
+    let keywords = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_keywords());
+    res.status(OKSTATUS).json(keywords);
+}
+
+// this function is to give the clients autocomplete data with stores
+const getStoreNames = (req : Request, res: Response , next: NextFunction) =>
+{
+    console.log("someone requested store names")
+    let stores = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_store_names());
+    res.status(OKSTATUS).json(stores);
+}
+
 
 export default {
     enter,
@@ -497,5 +523,8 @@ export default {
     getUserStores,
     getMyPurchaseHistory,
     getSubscriberId,
-    setServFunc,
+    getAllCategories,
+    getProductNames,
+    getkeywords,
+    getStoreNames
     };

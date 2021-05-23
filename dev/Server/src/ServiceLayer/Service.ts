@@ -17,7 +17,6 @@ export class Service
 
     private static singletone: Service = undefined;
     private facade: SystemFacade;
-    private send_message_func: (userId:number, message:string) => Promise<string>; //TODO:change this signature according to future changes in Communication layer
 
     private constructor()
     {
@@ -35,18 +34,11 @@ export class Service
         return ['asd', 'bdsa', 'casd', 'ddsa'];
     }
 
-    public set_send_func( send_func: (userId:number,message:string) => Promise<string>) : void
-    {
-        Service.singletone.send_message_func = send_func;
-        Publisher.get_instance().set_send_func(send_func);
-    }
-
     public static get_instance() : Service
     {
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
-            Service.singletone.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
         }
         return Service.singletone;
     }

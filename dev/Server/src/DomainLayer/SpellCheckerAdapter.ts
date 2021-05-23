@@ -3,44 +3,40 @@ import {SpellChecker} from './apis/spellchecker';
 
 export class SpellCheckerAdapter
 {
+    static instance : SpellCheckerAdapter = undefined; 
     productSpellCheck: SpellChecker;
     categorySpellChecker: SpellChecker;
     storeSpellChecker: SpellChecker;
     usernameSpellChcker: SpellChecker;
 
 //TODO: make sure to apply case insensative 
-    constructor()
+    private constructor()
     {
         this.productSpellCheck = new SpellChecker(
             [
-                'banana',
-                'ball',
-                'orange',
-                'car',
-                'pc',
-                'battle',
-                'calculator',
-                'shirt',
-                'pen',
-                'bici'
+                
             ],
             6
         );
 
         this.categorySpellChecker = new SpellChecker(
             [
-                'SHIRT',
-                'PANTS',
-                'SPORT',
-                'ELECTRIC',
-                'COMPUTER',
-                'SWEET'
+                
             ],
             6
         )
 
         this.storeSpellChecker = new SpellChecker([], 6)
         this.usernameSpellChcker = new SpellChecker([], 6)
+    }
+
+    static get_instance()
+    {
+        if (SpellCheckerAdapter.instance === undefined)
+        {
+            SpellCheckerAdapter.instance = new SpellCheckerAdapter()
+        }
+        return SpellCheckerAdapter.instance;
     }
 
     find_similar_product(productName: string)
@@ -53,8 +49,6 @@ export class SpellCheckerAdapter
         this.productSpellCheck.add_word_to_world_list(productName);
     }
 
-
-
     find_similar_category(category: string)
     {
         return this.categorySpellChecker.find_similar(category, 0.5)
@@ -62,6 +56,7 @@ export class SpellCheckerAdapter
 
     add_category(category: string)
     {
+        console.log("added category to spell chacker!");
         this.categorySpellChecker.add_word_to_world_list(category);
     }
 
@@ -87,6 +82,28 @@ export class SpellCheckerAdapter
     add_username(username: string)
     {
         this.usernameSpellChcker.add_word_to_world_list(username);
+    }
+
+    get_all_categories() : string[]
+    {
+        return this.categorySpellChecker.get_valid_word_list();
+    }
+
+    get_all_product_names() : string[]
+    {
+        return this.productSpellCheck.get_valid_word_list();
+    }
+
+    get_all_keywords() : string[]
+    {
+        let keywords= this.categorySpellChecker.get_valid_word_list().concat(this.productSpellCheck.get_valid_word_list())
+        return keywords;
+    }
+
+    get_all_store_names() : string[]
+    {
+        let keywords= this.storeSpellChecker.get_valid_word_list()
+        return keywords;
     }
 
 }

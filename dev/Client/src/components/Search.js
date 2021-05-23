@@ -11,6 +11,10 @@ import { IconContext } from 'react-icons';
 import * as AiIcons from 'react-icons/ai';
 import SearchIcon from '@material-ui/icons/Search';
 import DeleteIcon from '@material-ui/icons/Delete';
+import TextInput from 'react-autocomplete-input';
+import 'react-autocomplete-input/dist/bundle.css';
+
+
 import PaymentIcon from '@material-ui/icons/Payment';
 
 
@@ -186,7 +190,7 @@ export const Products=({getAppState, setAppState})=>{
                         <Grid container align='right' style={paperStyle}>
                             <Grid item xs={9} md={6} align='center'>
                                 <ListItemText primary={`name: ${product.productName}`} />
-                                <ListItemText primary={`price: ${product.price}`} />
+                                <ListItemText primary={`price: ${product.price}$`} />
                                 <ListItemText primary={`store: ${product.storeName}`} />
                             </Grid>
                             <Grid item xs={3} md={2} align='right'>
@@ -198,7 +202,7 @@ export const Products=({getAppState, setAppState})=>{
 
                         </Grid>
                     </ListItem>
-                    )
+                    
                 </ul>
                 </li>
             ))}
@@ -210,7 +214,16 @@ export const Products=({getAppState, setAppState})=>{
 export const SearchByName=({getAppState, setAppState, intersect})=>{
     const [productsByName, setProductsByName] = useState([])
     const [name, setName] = useState('')
+    const [products_options , setProductsOptions] = useState(undefined)
     const userId = getAppState().userId;
+
+    if (products_options === undefined)
+    {
+        const products = axios.get(`${SERVER_BASE_URL}getProductNames`);
+        products.then( res => {
+            setProductsOptions(JSON.parse(res.data));
+        })
+    }
 
     const searchByName = async (productName) =>
     {
@@ -228,10 +241,15 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
             <Grid align='center'>
                 <h2>Search by product name</h2>
             </Grid>
-            <TextField
+            <TextInput
                 placeholder='Enter product name'
-                onChange={(event) => setName(event.target.value)}
-            fullWidth/>
+                trigger = {['']}
+                spacer = {[""]}
+                options = {products_options}
+                onRequestOptions = {(text) => { setName(text)}}
+                onSelect = {(text) => setName(text)}
+                onChange = { (text) => { setName(text)}}
+            />
             <Grid item align='right'>
                 <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => searchByName(name)} >
                     search
@@ -245,12 +263,21 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
     )
 }
 
-export const SearchByCategory=({getAppState, setAppState, intersect})=>{
-    const [cat, setCat] = useState('')
+export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
+    const [category, changeCategory] = useState('')
     const [productsByCategory, setProductsByCategory] = useState([])
-
+    const [category_options , setCategoryOptions] = useState(undefined)
     const userId = getAppState().userId;
     const classes = useStyles();
+
+    
+    if (category_options === undefined)
+    {
+        const catagories = axios.get(`${SERVER_BASE_URL}getAllCategories`);
+        catagories.then( res => {
+            setCategoryOptions(JSON.parse(res.data));
+        })
+    }
 
     const searchByCategory = async (category) =>
     {
@@ -261,6 +288,7 @@ export const SearchByCategory=({getAppState, setAppState, intersect})=>{
             intersect(getAppState().products, productsByCategory)
         }
     }
+
     return(
         <div >
         <Banner getAppState={getAppState} setAppState={setAppState}/>
@@ -269,12 +297,17 @@ export const SearchByCategory=({getAppState, setAppState, intersect})=>{
             <Grid align='center'>
                 <h2>Search by product category</h2>
             </Grid>
-            <TextField
+            <TextInput
                 placeholder='Enter category'
-                onChange={(event) => setCat(event.target.value)}
-            fullWidth/>
+                trigger = {['']}
+                spacer = {[""]}
+                options = {category_options}
+                onRequestOptions = {(text) => { changeCategory(text)}}
+                onSelect = {(text) => changeCategory(text)}
+                onChange = { (text) =>  changeCategory(text)}
+            />
             <Grid item align='right'>
-                <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => searchByCategory(cat)} >
+                <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => searchByCategory(category)} >
                     search
                 </Button>
             </Grid>
@@ -288,10 +321,19 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     const [productsByKeyword, setProductsByKeyword] = useState([])
     const [productsByName, setProductsByName] = useState([])
     const [productsByCategory, setProductsByCategory] = useState([])
+    const [keyword_options , setKeywordOptions] = useState(undefined)
     const [key, setKey] = useState('')
 
     const classes = useStyles();
     const userId = getAppState().userId;
+
+    if (keyword_options === undefined)
+    {
+        const keywords = axios.get(`${SERVER_BASE_URL}getkeywords`);
+        keywords.then( res => {
+            setKeywordOptions(JSON.parse(res.data));
+        })
+    }
 
     const searchByName = async (productName) =>
     {
@@ -333,10 +375,15 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
             <Grid align='center'>
                 <h2>Search by keyword</h2>
             </Grid>
-            <TextField
+            <TextInput
                 placeholder='Enter keyword'
-                onChange={(event) => setKey(event.target.value)}
-            fullWidth/>
+                trigger = {['']}
+                spacer = {[""]}
+                options = {keyword_options}
+                onRequestOptions = {(text) => { setKey(text)}}
+                onSelect = {(text) => setKey(text)}
+                onChange = { (text) => { setKey(text)}}
+            />
             <Grid item align='right'>
             <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => enlist(key)} >
                 search
@@ -436,7 +483,17 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
 export const SearchByStore=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
     const [productsByStore, setProductsByStore] = useState([])
+    const [store_options , setStoreOptions] = useState(undefined)
     const userId = getAppState().userId;
+
+
+    if (store_options === undefined)
+    {
+        const stores = axios.get(`${SERVER_BASE_URL}getStoreNames`);
+        stores.then( res => {
+            setStoreOptions(JSON.parse(res.data));
+        })
+    }
 
     const SearchByStore = async (store) =>
     {
@@ -453,10 +510,15 @@ export const SearchByStore=({getAppState, setAppState, intersect})=>{
             <Grid align='center'>
                 <h2>Search Store</h2>
             </Grid>
-            <TextField
+            <TextInput
                 placeholder='Enter Store Name'
-                onChange={(event) => setKey(event.target.value)}
-            fullWidth/>
+                trigger = {['']}
+                spacer = {[""]}
+                options = {store_options}
+                onRequestOptions = {(text) => { setKey(text)}}
+                onSelect = {(text) => setKey(text)}
+                onChange = { (text) => { setKey(text)}}
+            />
             <Grid item align='right'>
             <Button variant="contained" color="primary" startIcon={<SearchIcon/>} onClick={() => SearchByStore(key)} >
                 search
