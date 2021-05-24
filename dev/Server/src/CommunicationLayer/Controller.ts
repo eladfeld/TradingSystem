@@ -215,10 +215,9 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let paymentInfoObj: any = req.body.paymentInfo;
-    let paymentInfo: PaymentInfo = new PaymentInfo(paymentInfoObj.cardNumber, paymentInfoObj.expiration, paymentInfoObj.cvv);
-    let userAddress: string = req.body.userAddress;
-    service.completeOrder(sessionId, storeId, paymentInfo, userAddress)
+    let paymentInfo: any = req.body.paymentInfo;
+    let shippingInfo: any = req.body.shippingInfo;
+    service.completeOrder(sessionId, storeId, paymentInfo, shippingInfo)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }

@@ -9,7 +9,7 @@ import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { buyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
-import Purchase from "../purchase/Purchase";
+import Purchase, { tPaymentInfo, tShippingInfo } from "../purchase/Purchase";
 import { discountOption, DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
@@ -548,11 +548,11 @@ export class Store implements iCategorizer
         this.buyingOptions = this.buyingOptions.filter(option => option !== buyingOption);
     }
 
-    public completeOrder(userId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
+    public async completeOrder(userId : number , paymentInfo : tPaymentInfo, shippingInfo: tShippingInfo) : Promise<Result<boolean>>
     {
-        return Purchase.CompleteOrder(userId,
+        return await Purchase.CompleteOrder(userId,
             this.storeId,
-            new ShippingInfo(this.storeAddress, userAddress),
+            shippingInfo,
             paymentInfo,
             this.bankAccount);
     }

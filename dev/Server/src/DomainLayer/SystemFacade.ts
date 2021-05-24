@@ -11,7 +11,7 @@ import path, { resolve } from 'path'
 import { buyingOption } from "./store/BuyingOption";
 import { Authentication } from "./user/Authentication";
 import { StoreDB } from "./store/StoreDB";
-import Purchase from "./purchase/Purchase";
+import Purchase, { tPaymentInfo, tShippingInfo } from "./purchase/Purchase";
 import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
 import { ProductDB } from "./store/ProductDB";
@@ -22,6 +22,8 @@ import { SpellChecker } from "./apis/spellchecker";
 import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
+import SupplySystemReal from "./apis/SupplySystemReal";
+import PaymentSystemReal from "./apis/PaymentSystemReal";
 
 export class SystemFacade
 {
@@ -35,20 +37,22 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers()))
+        if(!(this.initPaymentSystem() && this.initSupplySystem() &&  this.initSystemManagers()))
         {
             Logger.error("system could not initialized properly!");
         }
     }
 
-    private initSupplySystem() : boolean
+    private async initSupplySystem() : Promise<boolean>
     {
-        return true;
+        const initialization = await SupplySystemReal.init();
+        return initialization > 0 ? true : false;
     }
 
-    private initPaymentSystem() : boolean
+    private async initPaymentSystem() : Promise<boolean>
     {
-        return true;
+        const initialization = await PaymentSystemReal.init();
+        return initialization > 0 ? true : false;
     }
 
     public initSystemManagers() : boolean
@@ -513,7 +517,7 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
+    public async completeOrder(sessionId : string , storeId : number , paymentInfo : tPaymentInfo, shippingInfo:tShippingInfo) : Promise<boolean>
     {
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
         // if(userAddress === ''|| userAddress === undefined || userAddress === null){
@@ -524,7 +528,7 @@ export class SystemFacade
         let store: Store = StoreDB.getStoreByID(storeId);
         if(user !== undefined)
         {
-            let res: Result<boolean> = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
+            let res: Result<boolean> = await store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
             if(isOk(res))
             {
                 let value = res.value;

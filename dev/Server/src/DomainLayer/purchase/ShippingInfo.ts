@@ -1,11 +1,18 @@
 class ShippingInfo{
-    public from: string;
-    public to: string;
+    
+    public name: string
+    public address: string
+    public city:string
+    public country: string
+    public zip:number
 
     
-    constructor(from: string,to: string){
-        this.from = from;
-        this.to = to;
+    constructor(name: string, address: string, city:string, country: string, zip:number){
+        this.name = name;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.zip = zip;
     }
 }
 

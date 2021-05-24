@@ -11,6 +11,7 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { User } from "../DomainLayer/user/User";
 import { isOk, makeFailure, makeOk, Result} from "../Result";
 import StateInitializer from './state/StateInitializer';
+import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 
 export class Service
 {
@@ -125,9 +126,10 @@ export class Service
         return this.facade.checkoutSingleProduct(sessionId, productId, quantity, storeId, supply_address);
     }
 
-    public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
+
+    public completeOrder(sessionId : string , storeId : number , paymentInfo : tPaymentInfo, shippingInfo:tShippingInfo) : Promise<boolean>
     {
-        return this.facade.completeOrder(sessionId, storeId,paymentInfo, userAddress);
+        return this.facade.completeOrder(sessionId, storeId,paymentInfo, shippingInfo);
     }
 
 

@@ -18,6 +18,8 @@ export const stringUtil = {
     FAIL_FINALIZE_SHIPMENT: "We could not ship your items, you have been refunded, please try again later"
 };
 Object.freeze(stringUtil);
+export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
+export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
 
 export const PAYMENT_TIMEOUT_MILLISEC: number = 100000;
 
@@ -90,7 +92,7 @@ class Purchase {
 
     //completes an existing transaction in progress. returns failure in the event that
     //1) no transaction is in progress, 2)Shipping issue 3) payment issue
-    public CompleteOrder = (userId: number, storeId: number, shippingInfo: ShippingInfo, paymentInfo: PaymentInfo, storeBankAccount: number) : Result<boolean> => {
+    public CompleteOrder = async (userId: number, storeId: number, shippingInfo: tShippingInfo, paymentInfo: tPaymentInfo, storeBankAccount: number) : Promise<Result<boolean>> => {
         //verify transaction in progress
         const [oldTimerId, oldCallback] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId === undefined){
@@ -100,22 +102,22 @@ class Purchase {
         clearTimeout(oldTimerId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
         //approve supply
-        const shipmentId: number = this.supplySystem.reserve(shippingInfo);
+        const shipmentId: number = await this.supplySystem.supply(shippingInfo);
         if(shipmentId < 0){
             this.resetTimer(userId, storeId, oldCallback);
             return makeFailure("could not ship items");
         }
         transaction.setShipmentId(shipmentId);
         //approve payment
-        const paymentRes: Result<number> = this.paymentSystem.transfer(paymentInfo, storeBankAccount, transaction.getTotal());
+        const paymentRes: Result<number> = await this.paymentSystem.transfer(paymentInfo);
         if(isFailure(paymentRes)){
-            this.supplySystem.cancelReservation(shipmentId);
+            this.supplySystem.cancelSupply(shipmentId);
             this.resetTimer(userId, storeId, oldCallback);
             return paymentRes;
         }
         
         transaction.setPaymentId(paymentRes.value);
-        transaction.setCardNumber(paymentInfo.getCardNumber());
+        transaction.setCardNumber(paymentInfo.cardNumber);
         transaction.setStatus(TransactionStatus.COMPLETE);
         this.dbDummy.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
