@@ -14,11 +14,12 @@ const SimplePredicate=({getPredicateState, setPredicateState})=>{
     const predicate = getPredicateState();
     const {operand1, operator, operand2} = predicate;
 
-    const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
+    const paperStyle={padding :20,width:'90%', margin:"20px auto"}
     //const avatarStyle={backgroundColor:'#1bbd7e'}
     const btnstyle={margin:'8px 0'}
     return(
-
+        <Paper elevation={10} style={paperStyle}>
+        <h3>Simple</h3>
         <Grid container>
                 <Grid item xs={5}>
                     <TextField
@@ -26,7 +27,7 @@ const SimplePredicate=({getPredicateState, setPredicateState})=>{
                         placeholder='Enter first operand'
                         value={operand1}
                         onChange={(event) => setPredicateState({...predicate, operand1:event.target.value})}
-                        fullWidth/>
+                        />
                 </Grid>
                 <Grid item xs={2}>
                     <TextField
@@ -34,7 +35,7 @@ const SimplePredicate=({getPredicateState, setPredicateState})=>{
                         placeholder='Enter operator'
                         value={operator}
                         onChange={(event) => setPredicateState({...predicate, operator:event.target.value})}
-                        fullWidth/>
+                        />
                 </Grid>
                 <Grid item xs={5}>
                     <TextField
@@ -42,12 +43,11 @@ const SimplePredicate=({getPredicateState, setPredicateState})=>{
                         placeholder='Enter second operand'
                         value={operand2}
                         onChange={(event) => setPredicateState({...predicate, operand2:event.target.value})}
-                        fullWidth/>
+                        />
                 </Grid>
 
-            {/* <Paper elevation={10} style={paperStyle}>
-            </Paper> */}
         </Grid>
+        </Paper>
     )
 }
 

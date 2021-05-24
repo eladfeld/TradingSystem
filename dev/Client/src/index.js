@@ -26,7 +26,7 @@ const cPred = {
 }
 
 ReactDOM.render(
-    <BuyingPolicy predicate={cPred} />,
+    <BuyingPolicy pred={{}} />,
   document.getElementById('root')
 );
 
