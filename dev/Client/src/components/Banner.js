@@ -153,6 +153,7 @@ export default function Banner({getAppState, setAppState}) {
     switch(response.status){
         case SERVER_RESPONSE_OK:
             const cart = JSON.parse(response.data);
+            console.log('[t] cart:',cart);
             setAppState({cart});
             history.push('/cart');
             return;

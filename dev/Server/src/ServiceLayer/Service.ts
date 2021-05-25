@@ -10,10 +10,12 @@ import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import { User } from "../DomainLayer/user/User";
 import { isOk, makeFailure, makeOk, Result} from "../Result";
+import { policyState } from "./state/StateBuilder";
 import StateInitializer from './state/StateInitializer';
 
 export class Service
 {
+
 
     private static singletone: Service = undefined;
     private facade: SystemFacade;
@@ -217,6 +219,10 @@ export class Service
     public removeBuyingPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
         return this.facade.removeBuyingPolicy(sessionId, storeId, policyNumber);
     }
+
+    // public getBuyingPolicies(sessionId: string, storeId: number):Promise<policyState[]> {
+    //     return this.facade.getBuyingPolicies(sessiodId, storeId);
+    // }
 
     public removeDiscountPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
         return this.facade.removeDiscountPolicy(sessionId, storeId, policyNumber);

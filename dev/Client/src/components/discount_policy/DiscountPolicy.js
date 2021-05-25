@@ -2,32 +2,26 @@ import { Button, Grid, Paper, TextField } from '@material-ui/core';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { SERVER_BASE_URL } from '../../constants';
-import CompositePredicate from './CompositePredicate';
-import Predicate from './Predicate';
-import SimplePredicate from './SimplePredicate';
+import Discount from './Discount';
 
-const BuyingPolicy = ({getAppState, setAppState, pred, policyName, isNewPolicy}) => {
-    if(!policyName)policyName="";
-    if(!pred) pred = {};
-    const [name, setName] = useState(policyName);
-    const [predicate, setPredicate] = useState(pred);
-    console.log('[t] predicate:',predicate);
+const DiscountPolicy = ({getAppState, setAppState, disc, discountName, isNew}) => {
+    if(!discountName)discountName="";
+    if(!disc) disc = {};
+    const [name, setName] = useState(discountName);
+    const [discount, setDiscount] = useState(disc);
     const {userId, storeId} = getAppState();
-    console.log('[t] state:', getAppState());
-    console.log(`[t] userId: ${userId}, storeId: ${storeId}`);
 
     const onAddClick = async() => {//TODO: fix
-        console.log(`[t] saving policy:`, predicate);
-        const response = await axios.post(SERVER_BASE_URL+'addBuyingPolicy', {
+        const response = await axios.post(SERVER_BASE_URL+'addDiscountPolicy', {
             userId,
             storeId,
-            policyName:name,
-            policy:predicate
+            discountName:name,
+            discount
         });
         alert(response.data);
         if(response.status == 200){
             setName("");
-            setPredicate({});
+            setDiscount({});
         }
     }
 
@@ -35,13 +29,13 @@ const BuyingPolicy = ({getAppState, setAppState, pred, policyName, isNewPolicy})
     const paperStyle={padding :20,width:'90%', margin:"20px auto"}
     return(
         <div>
-            <h1>Buying Policy</h1>
+            <h1>Discount Policy</h1>
             <Paper elevation={10} style={paperStyle}>
                 <Grid container>
                     <Grid item xs={8}>
                         <TextField
-                        label='Policy Name'
-                        placeholder='Enter a policy name (i.e. No sales on saturday)'
+                        label='Discount Name'
+                        placeholder='Enter a discount name (i.e. 10% off Fruit)'
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         fullWidth/>
@@ -55,9 +49,9 @@ const BuyingPolicy = ({getAppState, setAppState, pred, policyName, isNewPolicy})
                 </Grid>
 
             </Paper>
-            <Predicate getPredicateState={() => predicate} setPredicateState={setPredicate}/>
+            <Discount getDiscountState={() => discount} setDiscountState={setDiscount}/>
         </div>
     );
 }
 
-export default BuyingPolicy;
+export default DiscountPolicy;

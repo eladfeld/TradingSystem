@@ -55,6 +55,7 @@ export class SimplePredicate implements iPredicate{
         if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
         return makeOk(this.rater(val1, val2));
     } 
+
 }
 
 export class Field implements iValue{
