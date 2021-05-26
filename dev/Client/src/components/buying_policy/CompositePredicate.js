@@ -26,7 +26,6 @@ const CompositePredicate=({getPredicateState, setPredicateState})=>{
         setPredicateState({type, operator, operands})
     }
 
-    console.log('[t] composite pred:', predicate);
     const paperStyle={padding :20,width:'90%', margin:"20px auto"}
     //const avatarStyle={backgroundColor:'#1bbd7e'}
     const btnstyle={margin:'8px 0'}

@@ -123,8 +123,6 @@ export default function ManageStore({getAppState, setAppState}) {
                         }
                     }
                     foo();
-                    console.log("here");
-
                 }
                 return <Inventory getAppState={getAppState} setAppState={setAppState}></Inventory>
             case "managecategories":
@@ -152,7 +150,6 @@ export default function ManageStore({getAppState, setAppState}) {
                 if(staff === undefined){
                     const foo = async () =>{
                         const staffResponse = await axios.post(SERVER_BASE_URL+'/getStoreStaff', {userId, storeId});
-                        console.log('[T] staff response data', staffResponse.data);
                         switch(staffResponse.status){
                             case SERVER_RESPONSE_OK:
                                 const staff = JSON.parse(staffResponse.data);
@@ -174,7 +171,6 @@ export default function ManageStore({getAppState, setAppState}) {
             case "policies":
                 const getPolicies = async () =>{
                     const policiesResponse = await axios.post(SERVER_BASE_URL+'/getBuyingPolicies', {userId, storeId});
-                    console.log('[T] policies response data', policiesResponse.data);
                     switch(policiesResponse.status){
                         case SERVER_RESPONSE_OK:
                             const policies = JSON.parse(policiesResponse.data);

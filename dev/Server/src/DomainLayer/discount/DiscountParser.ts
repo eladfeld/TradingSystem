@@ -45,9 +45,7 @@ class Parser{
         switch (d.type) {
             case "unconditional":   
                 var category: tSimpleOperand = d.category;
-                var ratio: number = (typeof d.ratio === 'number')? d.ratio : parseFloat(d.ratio);
-                console.log(`discount category: ${category}, ratio: ${ratio}`);
-                
+                var ratio: number = (typeof d.ratio === 'number')? d.ratio : parseFloat(d.ratio);                
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
                 if((typeof ratio !== 'number') || isNaN(ratio)) return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
                 return makeOk(new UnconditionalDiscount(ratio, category));//TODO: support category

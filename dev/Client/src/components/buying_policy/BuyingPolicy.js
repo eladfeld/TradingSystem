@@ -11,13 +11,9 @@ const BuyingPolicy = ({getAppState, setAppState, pred, policyName, isNewPolicy})
     if(!pred) pred = {};
     const [name, setName] = useState(policyName);
     const [predicate, setPredicate] = useState(pred);
-    console.log('[t] predicate:',predicate);
     const {userId, storeId} = getAppState();
-    console.log('[t] state:', getAppState());
-    console.log(`[t] userId: ${userId}, storeId: ${storeId}`);
 
     const onAddClick = async() => {//TODO: fix
-        console.log(`[t] saving policy:`, predicate);
         const response = await axios.post(SERVER_BASE_URL+'addBuyingPolicy', {
             userId,
             storeId,

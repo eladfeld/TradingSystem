@@ -98,7 +98,7 @@ const wssConnections: Map<number, WebSocket> = new Map();
 
 const messageSender = async (userId: number, message: string):Promise<string> =>
 {
-    console.log("message sent :)");
+    // console.log("message sent :)");
     let ws = wssConnections.get(userId);
     if(ws !== undefined)
     {
@@ -107,7 +107,7 @@ const messageSender = async (userId: number, message: string):Promise<string> =>
             res( "fine")
         })
     }
-    console.log("mesage didnt sent!");
+    // console.log("mesage didnt sent!");
     return new Promise((res, rej ) =>rej("user not logged in"));
 }
 

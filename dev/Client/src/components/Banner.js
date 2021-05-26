@@ -153,7 +153,6 @@ export default function Banner({getAppState, setAppState}) {
     switch(response.status){
         case SERVER_RESPONSE_OK:
             const cart = JSON.parse(response.data);
-            console.log('[t] cart:',cart);
             setAppState({cart});
             history.push('/cart');
             return;
@@ -166,7 +165,6 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
   const handleTransactionsClick = async () => {
-    console.log(`[T] transaction click userId: ${userId}`);
     const response = await axios.post(BASE_URL+'getMyPurchaseHistory',{userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:

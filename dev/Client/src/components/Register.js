@@ -17,7 +17,6 @@ const onRegisterClick = async (username, password, confirmPassword, age) =>
         return;
     }
     const response = await axios.post(`${SERVER_BASE_URL}register`, {username, password, age: Number(age)} );
-    console.log(response.data);
     switch(response.status){
         case SERVER_RESPONSE_OK:
             history.push('/auth');
