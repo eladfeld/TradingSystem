@@ -123,12 +123,13 @@ export default function Banner({getAppState, setAppState}) {
   };
 
   const handleManageSystemClick = () => {
-    handleMenuClose();
+    history.push('/managesystem');
   };
 
 
-  const {userId, isGuest, isSystemManager} = getAppState();
-
+  const {userId, isGuest} = getAppState();
+  const isSystemManager = true;
+  
 
   const handleManageStoresClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
@@ -212,7 +213,7 @@ export default function Banner({getAppState, setAppState}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage System</MenuItem> : <div></div>}
+      {isSystemManager ? <MenuItem onClick={handleManageSystemClick}>Manage System</MenuItem> : <div></div>}
       { isGuest ?
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
