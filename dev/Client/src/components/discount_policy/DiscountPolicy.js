@@ -5,6 +5,10 @@ import { SERVER_BASE_URL } from '../../constants';
 import Discount from './Discount';
 
 const DiscountPolicy = ({getAppState, setAppState, disc, discountName, isNew}) => {
+    // if(isNew){
+    //     discountName = "";
+    //     disc = {};
+    // }
     if(!discountName)discountName="";
     if(!disc) disc = {};
     const [name, setName] = useState(discountName);

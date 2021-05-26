@@ -15,7 +15,7 @@ const Discount = ({getDiscountState, setDiscountState}) => {
 
     //TODO:have dropdown menu and onchange handler
     switch(discount.type){
-        case "Unconditional":
+        case "unconditional":
             return <UnconditionalDiscount getDiscountState={getDiscountState} setDiscountState={setDiscountState}/>
         case "conditional":
             return <ConditionalDiscount getDiscountState={getDiscountState} setDiscountState={setDiscountState}/>

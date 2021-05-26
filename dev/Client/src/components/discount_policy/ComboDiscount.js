@@ -11,7 +11,7 @@ const ComboDiscount=({getDiscountState, setDiscountState})=>{
     const discount = getDiscountState();
     const {type, policy, discounts} = discount;
 
-    if(!discounts) setDiscountState({type, policy, discounts})
+    if(!discounts) setDiscountState({type, policy, discounts:[]})
 
     const addDiscount = () => {
         setDiscountState({

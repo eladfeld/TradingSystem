@@ -6,7 +6,8 @@ import Predicate from '../buying_policy/Predicate';
 
 const ConditionalDiscount=({getDiscountState,setDiscountState})=>{
     const discount = getDiscountState();
-    const {category, ratio, predicate} = discount;
+    const {category, ratio} = discount;
+    const predicate = discount.predicate? discount.predicate : {};
 
     const paperStyle={padding :20,width:'90%', margin:"20px auto"}
     //const avatarStyle={backgroundColor:'#1bbd7e'}
@@ -32,8 +33,8 @@ const ConditionalDiscount=({getDiscountState,setDiscountState})=>{
                         />
                 </Grid>
         </Grid>
-        <Grid container>
-            <Predicate pred={predicate}/>
+        <Grid container> 
+            <Predicate getPredicateState={() => predicate} setPredicateState={(p) => setDiscountState({...discount, predicate:p})}/>
         </Grid>
         </Paper>
     )
