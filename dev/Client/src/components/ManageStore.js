@@ -24,6 +24,9 @@ import ManageCategories from './ManageCategories'
 import axios from 'axios';
 import { unknownStatusMessage } from './componentUtil';
 import Employees from './Employees';
+import ManagePolicies from './ManagePolicies';
+import BuyingPolicy from './buying_policy/BuyingPolicy';
+import DiscountPolicy from './discount_policy/DiscountPolicy';
 
 const useStyles = makeStyles({
   root: {
@@ -31,10 +34,15 @@ const useStyles = makeStyles({
   },
 });
 
+
+
 const getInventory = async(userId, storeId, setAppState) =>
 {
 
 }
+
+const ADD_BUYING_POLICY = "add_buying_policy";
+const ADD_DISCOUNT_POLICY = "add_discount_policy";
 
 export default function ManageStore({getAppState, setAppState}) {
     const classes = useStyles();
@@ -46,6 +54,8 @@ export default function ManageStore({getAppState, setAppState}) {
     const [appointManager, setappointManager] = useState(undefined);
     const [addProduct, setaddProduct] = useState(undefined);
     const [manageCategories, setmanageCategories] = useState(undefined);
+    const [policies, setPolicies] = useState(undefined);
+
 
     const onInventoryClick =() =>{
         setPage("inventory");
@@ -79,6 +89,18 @@ export default function ManageStore({getAppState, setAppState}) {
         if(manageCategories !== undefined) setmanageCategories(undefined);
     }
 
+    const onPoliciesClick = () =>{
+        setPage("policies");
+        if(policies !== undefined) setPolicies(undefined);
+    }
+
+    const onAddPolicyClick = () =>{
+        setPage(ADD_BUYING_POLICY);
+    }
+    const onAddDiscountClick = () =>{
+        setPage(ADD_DISCOUNT_POLICY);
+    }
+
     const renderPage = () =>{
         const {userId} = getAppState();
         switch(page){
@@ -101,8 +123,6 @@ export default function ManageStore({getAppState, setAppState}) {
                         }
                     }
                     foo();
-                    console.log("here");
-
                 }
                 return <Inventory getAppState={getAppState} setAppState={setAppState}></Inventory>
             case "managecategories":
@@ -130,7 +150,6 @@ export default function ManageStore({getAppState, setAppState}) {
                 if(staff === undefined){
                     const foo = async () =>{
                         const staffResponse = await axios.post(SERVER_BASE_URL+'/getStoreStaff', {userId, storeId});
-                        console.log('[T] staff response data', staffResponse.data);
                         switch(staffResponse.status){
                             case SERVER_RESPONSE_OK:
                                 const staff = JSON.parse(staffResponse.data);
@@ -149,6 +168,28 @@ export default function ManageStore({getAppState, setAppState}) {
                     foo();
                 }
                 return <Employees getAppState={getAppState} setAppState={setAppState} storeId={storeId}/>
+            case "policies":
+                const getPolicies = async () =>{
+                    const policiesResponse = await axios.post(SERVER_BASE_URL+'/getBuyingPolicies', {userId, storeId});
+                    switch(policiesResponse.status){
+                        case SERVER_RESPONSE_OK:
+                            const policies = JSON.parse(policiesResponse.data);
+                            setAppState({buyingPolicies: policies})
+                            break;
+                        case SERVER_RESPONSE_BAD:
+                            alert(policiesResponse.data);
+                            break;
+                        default:
+                            alert(unknownStatusMessage(policiesResponse));
+                            break;
+                    }
+                }
+                getPolicies();
+                return <ManagePolicies getAppState={getAppState} setAppState={setAppState}/>
+            case ADD_BUYING_POLICY:
+                return <BuyingPolicy getAppState={getAppState} setAppState={setAppState} isNewPolicy/>
+            case ADD_DISCOUNT_POLICY:
+                return <DiscountPolicy getAppState={getAppState} setAppState={setAppState} isNewPolicy/>
             case "appointowner":
                 return <AppointOwner getAppState={getAppState} setAppState={setAppState}></AppointOwner>
             case "appointmanager":
@@ -209,6 +250,30 @@ export default function ManageStore({getAppState, setAppState}) {
                 manage categories
             </Typography>
             </MenuItem>
+            <MenuItem onClick={onAddPolicyClick}>
+                <ListItemIcon>
+                    <AssignmentIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                    add policy
+                </Typography>
+            </MenuItem>
+            <MenuItem onClick={onAddDiscountClick}>
+                <ListItemIcon>
+                    <AssignmentIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                    add discount
+                </Typography>
+            </MenuItem>
+            {/* <MenuItem onClick={onPoliciesClick}>
+                <ListItemIcon>
+                    <AssignmentIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                    manage policies
+                </Typography>
+            </MenuItem> */}
         </MenuList>
         </Paper>
         {renderPage(page, getAppState, setAppState, storeId)}

@@ -52,7 +52,6 @@ export default function ManageEmployee({getAppState, setAppState, emp, storeId, 
   const {userId} = getAppState();
   //if(!emp.permissions) emp.permissions = 6;//TODO: REMOVE!
   const [mask, setMask] = React.useState(emp.permission);
-    console.log('emp:',emp);
   const switchCheck = (idx) => {
     var bit = 1 << idx;
     if(isChecked(idx)){
@@ -75,7 +74,6 @@ export default function ManageEmployee({getAppState, setAppState, emp, storeId, 
       });
       switch(response.status){
         case SERVER_RESPONSE_OK:
-            console.log('[T] edit permissions response:',response.data);
             emp.permission = mask;
             onEmpUpdate(emp);
             

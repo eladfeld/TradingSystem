@@ -14,7 +14,7 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
     const [expirationText, setExpirationText] = useState("");
     const [cvvText, setCvvText] = useState("");
 
-    const {userId, basketAtCheckout} = getAppState();
+    const {userId, basketAtCheckout, cart} = getAppState();
 
     const onCancelClick = () =>{
         history.push('/cart');
@@ -33,7 +33,8 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
         const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, userAddress, paymentInfo});
         switch(response.status){
             case SERVER_RESPONSE_OK:
-                setAppState({basketAtCheckout: undefined});
+                cart.baskets = cart.baskets.filter(b => b.storeId !== basketAtCheckout);
+                setAppState({basketAtCheckout: undefined, cart});
                 history.push('/cart');
                 return;
             case SERVER_RESPONSE_BAD:
