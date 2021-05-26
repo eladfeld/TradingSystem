@@ -23,8 +23,22 @@ const simpleOpsMap: Map<string, (a: number, b: number)=>boolean> = new Map([
     [SimpleOps.EQUAL, equal],
     [SimpleOps.NOT_EQUAL, notEqual]
 ]);
+
+const simpleOpsToStringMap: Map<(a: number, b: number)=>boolean, string> = new Map([
+    [greaterThan, SimpleOps.GREATER_THAN],
+    [lessThan, SimpleOps.LESS_THAN],
+    [greaterThanOrEqual, SimpleOps.GTE],
+    [lessThanOrEqual, SimpleOps.LTE],
+    [equal, SimpleOps.EQUAL],
+    [notEqual, SimpleOps.NOT_EQUAL]
+]);
+
 export const getSimpleOperator = (op:string): (a: number, b: number)=>boolean =>{
     return simpleOpsMap.get(op);
+}
+
+export const simpleOpToString = (op:(a: number, b: number)=>boolean):string =>{
+    return simpleOpsToStringMap.get(op);
 }
 
 //----------- Composite -------------------------------------------------------------
@@ -49,7 +63,18 @@ const compositeOpsMap: Map<string, (a: boolean, b: boolean)=>boolean> = new Map(
     [CompositeOps.IFF, iff],
     [CompositeOps.IMPLIES, implies]
 ]);
+const compositeOpsToStringMap: Map<(a: boolean, b: boolean)=>boolean, string> = new Map([
+    [and, CompositeOps.AND],
+    [or, CompositeOps.OR],
+    [xor, CompositeOps.XOR],
+    [iff, CompositeOps.IFF],
+    [implies, CompositeOps.IMPLIES]
+]);
+
 
 export const getCompositeOperator = (op:string): (a: boolean, b: boolean)=>boolean =>{
     return compositeOpsMap.get(op);
+}
+export const compositeOpToString = (op:(a: boolean, b: boolean)=>boolean):string  =>{
+    return compositeOpsToStringMap.get(op);
 }

@@ -1,5 +1,6 @@
 import { isFailure, makeFailure, makeOk, Result } from "../../Result";
 import Categorizer from "./Categorizer";
+import { tDiscount } from "./Discount";
 import DiscountParser from "./DiscountParser";
 import iBasket from "./iBasket";
 import iDiscount from "./iDiscount";
@@ -7,7 +8,7 @@ import iDiscount from "./iDiscount";
 
 //The DiscountPolicy manages a data structure for all of a stores discounts
 //and can calculate the discount for a given iBasket.
-export default class DiscountPolicy implements iDiscount{
+export default class DiscountPolicy{
     private nextId: number = 1;
     private discounts: Map<number,iDiscount>;
 
@@ -42,4 +43,13 @@ export default class DiscountPolicy implements iDiscount{
         return makeOk(`Discount Policy #${id} has been removed`);
     }
 
+    public toObjs = ():tStoreDiscount[] =>{
+        const output:tStoreDiscount[] = [];
+        this.discounts.forEach((discount:iDiscount, id:number) => {
+            output.push({id, discount:discount.toObj()});
+        });
+        return output;
+    }
+
 }
+type tStoreDiscount = {id: number, discount: tDiscount}; 

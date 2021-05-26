@@ -46,7 +46,7 @@ class Parser{
         if(type === 'number')
             return makeOk(new Value(v));
         if(type === 'string'){
-            const num: number = parseInt(v);
+            const num: number = Number(v);
             if(!isNaN(num)) return makeOk(new Value(num));
             return makeOk(new Field(v));
         }

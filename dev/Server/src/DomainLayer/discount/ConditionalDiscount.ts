@@ -1,5 +1,5 @@
 import Categorizer from "./Categorizer";
-import Discount from "./Discount";
+import Discount, { tConditionalDiscount } from "./Discount";
 import {iPredicate} from "./logic/Predicate";
 import iBasket from "./iBasket";
 import { isFailure, makeOk, Result, ResultsToResult } from "../../Result";
@@ -32,5 +32,14 @@ export default class ConditionalDiscount extends Discount{
     }
 
     public getPredicate = () => this.predicate;
+
+    public toObj = ():tConditionalDiscount =>{
+        return{
+            type:"conditional",
+            ratio:this.ratio,
+            category:this.category,
+            predicate:this.predicate.toObject()
+        }
+    }
 
 }
