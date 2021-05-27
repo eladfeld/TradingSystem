@@ -485,7 +485,6 @@ export class SystemFacade
     public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , shippingInfo:tShippingInfo): Promise<string>
     {
         Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${shippingInfo}`);
-        //supply_address = " down da block";
         if( shippingInfo === undefined || shippingInfo === null){
             return new Promise((resolve,reject) => { reject("invalid user Address")})
         }

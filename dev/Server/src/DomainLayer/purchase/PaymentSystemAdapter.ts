@@ -1,7 +1,6 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import PaymentSystem from "../apis/PaymentSystem";
 import PaymentSystemReal from "../apis/PaymentSystemReal";
-import { PaymentInfo } from "./PaymentInfo";
 import { tPaymentInfo } from "./Purchase";
 
 class PaymentSystemAdapter {
