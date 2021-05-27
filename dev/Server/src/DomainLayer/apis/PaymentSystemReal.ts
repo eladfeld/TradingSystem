@@ -6,9 +6,7 @@ import { tPaymentInfo } from '../purchase/Purchase';
 
 class PaymentSystemReal {
 
-    //private static nextPaymentId: number = 10000;
     private static nextSessionId: number = 1;
-    //private static shouldSucceed: boolean = true;
 
     //initializes system. returns a session id or negative number on failure
     static init = async() : Promise<number> => {
@@ -48,10 +46,6 @@ class PaymentSystemReal {
                 return true; 
             }
     }
-
-    //static willFail = () => PaymentSystem.shouldSucceed = false;
-    //static willSucceed = () => PaymentSystem.shouldSucceed = true;
-
 
 }
 

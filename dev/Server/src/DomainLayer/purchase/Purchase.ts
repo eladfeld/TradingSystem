@@ -5,10 +5,11 @@ import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
 import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
-import PaymentInfo from './PaymentInfo';
 import { TIMEOUT } from 'dns';
 import { Publisher } from '../notifications/Publisher';
 import { userInfo } from 'os';
+import { rejects } from 'assert';
+import { resolve } from 'path';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -92,12 +93,12 @@ class Purchase {
 
     //completes an existing transaction in progress. returns failure in the event that
     //1) no transaction is in progress, 2)Shipping issue 3) payment issue
-    public CompleteOrder = async (userId: number, storeId: number, shippingInfo: tShippingInfo, paymentInfo: tPaymentInfo, storeBankAccount: number) : Promise<Result<boolean>> => {
+    public CompleteOrder = async (userId: number, storeId: number, shippingInfo: tShippingInfo, paymentInfo: tPaymentInfo, storeBankAccount: number) : Promise<boolean> => {
         //verify transaction in progress
         const [oldTimerId, oldCallback] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId === undefined){
             //no checkout is in progress, cancel the old timer/order
-            return makeFailure("No checkout in progress");
+            return new Promise((res , rej) => {rej("No checkout in progress")});
         }
         clearTimeout(oldTimerId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
@@ -105,25 +106,25 @@ class Purchase {
         const shipmentId: number = await this.supplySystem.supply(shippingInfo);
         if(shipmentId < 0){
             this.resetTimer(userId, storeId, oldCallback);
-            return makeFailure("could not ship items");
+            return new Promise((res , rej) => {rej("could not ship items")});
         }
         transaction.setShipmentId(shipmentId);
         //approve payment
-        const paymentRes: Result<number> = await this.paymentSystem.transfer(paymentInfo);
-        if(isFailure(paymentRes)){
+        const paymentRes: number = await this.paymentSystem.transfer(paymentInfo);
+        if(paymentRes < 0){
             this.supplySystem.cancelSupply(shipmentId);
             this.resetTimer(userId, storeId, oldCallback);
-            return paymentRes;
+            return new Promise((res , rej) => {rej("unable to complete money transfer")});
         }
         
-        transaction.setPaymentId(paymentRes.value);
+        transaction.setPaymentId(paymentRes);
         transaction.setCardNumber(paymentInfo.cardNumber);
         transaction.setStatus(TransactionStatus.COMPLETE);
         this.dbDummy.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
 
         Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
-        return makeOk(true);
+        return new Promise((res , rej) => {res(true)});
     }
 
     

@@ -12,7 +12,6 @@ import { buyingOption } from "./store/BuyingOption";
 import { Authentication } from "./user/Authentication";
 import { StoreDB } from "./store/StoreDB";
 import Purchase, { tPaymentInfo, tShippingInfo } from "./purchase/Purchase";
-import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
 import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
@@ -462,13 +461,13 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, shippingInfo: tShippingInfo ): Promise<boolean>
     {
-        Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
+        Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${shippingInfo}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let checkout_res = user.checkoutBasket(shopId, supply_address);
+            let checkout_res = user.checkoutBasket(shopId, shippingInfo);
             if (isOk(checkout_res))
             {
                 let res = checkout_res.value
@@ -483,11 +482,11 @@ export class SystemFacade
         return new Promise ((res,rej) => rej("user not found"));
     }
 
-    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
+    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , shippingInfo:tShippingInfo): Promise<string>
     {
-        Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
-        supply_address = " down da block";
-        if(supply_address === ''|| supply_address === undefined || supply_address === null){
+        Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${shippingInfo}`);
+        //supply_address = " down da block";
+        if( shippingInfo === undefined || shippingInfo === null){
             return new Promise((resolve,reject) => { reject("invalid user Address")})
         }
         if(quantity < 0|| quantity === undefined || quantity === null){
@@ -496,7 +495,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let res: Result<string> = user.checkoutSingleProduct(productId  , quantity,  supply_address, storeId , buyingOption.INSTANT);
+            let res: Result<string> = user.checkoutSingleProduct(productId  , quantity,  shippingInfo, storeId , buyingOption.INSTANT);
             if(isOk(res))
             {
                 let value = res.value;
@@ -528,21 +527,19 @@ export class SystemFacade
         let store: Store = StoreDB.getStoreByID(storeId);
         if(user !== undefined)
         {
-            let res: Result<boolean> = await store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
-            if(isOk(res))
+            let res: boolean = await store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
+            if(res)
             {
-                let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    resolve(value);
+                    resolve(res);
                 })
             }
             else
             {
-                let error = res.message;
                 return new Promise((resolve, reject) =>
                 {
-                    reject(error);
+                    reject(res);
                 })
             }
         }

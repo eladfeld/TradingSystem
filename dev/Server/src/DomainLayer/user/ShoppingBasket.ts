@@ -9,6 +9,7 @@ import iSubject from "../discount/logic/iSubject";
 import iBasket from "../discount/iBasket";
 import { iProduct, MyProduct } from "../discount/iProduct";
 import BuyingSubject from "../policy/buying/BuyingSubject";
+import { tShippingInfo } from "../purchase/Purchase";
 
 export class ShoppingBasket implements iBasket
 {
@@ -71,7 +72,7 @@ export class ShoppingBasket implements iBasket
         return makeOk("product added to cart");
     }
 
-    public checkout(userId:number, user: iSubject,  supply_address: string, userSubject: iSubject): Result<boolean>
+    public checkout(userId:number, user: iSubject,  shippingInfo: tShippingInfo, userSubject: iSubject): Result<boolean>
     {
         // this function restores the basket in case the purchase failed
         let products = this.getProducts()
@@ -81,7 +82,7 @@ export class ShoppingBasket implements iBasket
             )
         }
         let buyingSubject = new BuyingSubject(userSubject, this);
-        let result =  this.store.sellShoppingBasket(userId, supply_address, this, buyingSubject , onfail);
+        let result =  this.store.sellShoppingBasket(userId, shippingInfo, this, buyingSubject , onfail);
         if (isOk(result))
         {
             this.products.forEach( (qauntity,productId,_) =>

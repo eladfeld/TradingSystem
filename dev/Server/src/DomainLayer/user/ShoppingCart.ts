@@ -5,6 +5,8 @@ import { StoreDB } from "../store/StoreDB";
 import { ShoppingBasket } from "./ShoppingBasket";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
+import ts from "typescript";
+import { tShippingInfo } from "../purchase/Purchase";
 
 export class ShoppingCart
 {
@@ -15,7 +17,7 @@ export class ShoppingCart
         this.baskets = new Map();
     }
 
-    public checkoutBasket(userId: number, user: iSubject, storeId : number, supply_address: string, userSubject: iSubject) : Result<boolean>
+    public checkoutBasket(userId: number, user: iSubject, storeId : number, shippingInfo: tShippingInfo, userSubject: iSubject) : Result<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
@@ -23,7 +25,7 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return makeFailure("no such shopping basket");
         }
-        return basket.checkout(userId, user, supply_address, userSubject);
+        return basket.checkout(userId, user, shippingInfo, userSubject);
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
