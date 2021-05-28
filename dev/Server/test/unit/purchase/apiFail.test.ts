@@ -1,15 +1,12 @@
 import {expect} from 'chai';
 import PaymentSystem from '../../../src/DomainLayer/apis/PaymentSystem';
 import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';
-import { PaymentInfo } from '../../../src/DomainLayer/purchase/PaymentInfo';
-import Purchase from '../../../src/DomainLayer/purchase/Purchase'
-import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
+import { Value } from '../../../src/DomainLayer/discount/logic/Predicate';
+import Purchase, { tPaymentInfo, tShippingInfo } from '../../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
 import { isFailure, isOk, Result } from '../../../src/Result';
 
 
-
-//checkout should have
 
 //checkout should have
 var userId: number = -1000;
@@ -24,8 +21,8 @@ const prod2Quantity: number=4;
 const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
 const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];
-const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);
-const shippingInfo: ShippingInfo = new ShippingInfo("src", "dst");
+const payInfo : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
+const shippingInfo: tShippingInfo = {name:"shir", address:"rager", city:"beer sheva", country:"israel", zip:157};
 const cb: ()=>void = ()=>{};
 
 const updateValues = () => {
@@ -38,10 +35,10 @@ describe('purchase with api fail tests' , function() {
         PaymentSystem.willSucceed();
         SupplySystem.willFail();
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
+        const checkoutRes: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        checkoutRes.then(value=>expect(value).to.equal(true));
+        const completionRes: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
+        completionRes.catch(value=>expect(value).to.equal(false));       
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];
@@ -53,10 +50,10 @@ describe('purchase with api fail tests' , function() {
         SupplySystem.willSucceed();
         PaymentSystem.willFail();
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
+        const checkoutRes: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        checkoutRes.then(value=>expect(value).to.equal(true));
+        const completionRes: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
+        completionRes.catch(value=>expect(value).to.equal(false));       
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];

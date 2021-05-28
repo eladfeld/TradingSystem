@@ -3,7 +3,6 @@ import SupplySystem from '../apis/SupplySystem';
 import SupplySystemReal from '../apis/SupplySystemReal';
 import {ShoppingCart} from '../user/ShoppingCart';
 import { tShippingInfo } from './Purchase';
-import ShippingInfo from './ShippingInfo';
 
 class SupplySystemAdapter {
 

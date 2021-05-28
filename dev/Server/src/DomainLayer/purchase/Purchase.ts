@@ -3,7 +3,6 @@ import SupplySystemAdapter from './SupplySystemAdapter';
 
 import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
-import ShippingInfo from './ShippingInfo';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import { TIMEOUT } from 'dns';
 import { Publisher } from '../notifications/Publisher';
@@ -73,13 +72,14 @@ class Purchase {
 
     //initiates a transaction between the store and the user that will be completed within 5 minutes, otherwise cancelled.
     public checkout = (storeId: number, total: number, userId: number, 
-        products: Map<number, number>, storeName: string ,onFail:()=>void):Result<boolean>=>{
+        products: Map<number, number>, storeName: string ,onFail:()=>void):Promise<boolean>=>{
         const transaction: Transaction = new Transaction(userId, storeId, products, total,storeName);
         const [oldTimerId, oldOnFail] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId !== undefined){
             //a checkout is already in progress, cancel the old timer/order
             clearTimeout(oldTimerId);
             this.onTransactionCancel(userId, storeId, oldOnFail);
+            return new Promise((res , rej) => {rej("No checkout in progress")});
         }
 
         //allow payment within 5 minutes
@@ -88,7 +88,7 @@ class Purchase {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, onFail);
-        return makeOk(true);
+        new Promise((res , rej) => {res(true)});;
     }
 
     //completes an existing transaction in progress. returns failure in the event that

@@ -3,7 +3,6 @@ import PaymentSystem from '../../../src/DomainLayer/apis/PaymentSystem';
 import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';
 import { tPaymentInfo, tShippingInfo } from '../../../src/DomainLayer/purchase/Purchase';
 import Purchase from '../../../src/DomainLayer/purchase/Purchase'
-import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
 import { isFailure, Result } from '../../../src/Result';
 
@@ -21,9 +20,7 @@ const prod2Quantity: number=4;
 const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
 const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];
-//const : tPaymentInfo = new PaymentInfo(12346,123,456);
 const payInfo : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
-
 const shippingInfo: tShippingInfo = {name:"shir", address:"rager", city:"beer sheva", country:"israel", zip:157};
 const cb: ()=>void = ()=>{};
 
@@ -72,7 +69,7 @@ describe('purchase tests' , function() {
     it('checkout, then complete order within time' , function(done){
         updateValues();
 
-        const res: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        const res: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         const res2: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 12345678 );
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId).sort((t1,t2)=>t2.getStatus()-t1.getStatus());
@@ -91,7 +88,7 @@ describe('purchase tests' , function() {
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
         expect(Purchase.hasTransactionInProgress(userId,storeId)).to.equal(false);
         const res: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(res).to.equal(false);
+        res.catch(value=>expect(value).to.equal(false));       
         done();
     });
 
@@ -102,7 +99,7 @@ describe('purchase tests' , function() {
         Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         setTimeout(() =>{
             const res: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-            expect(res).to.equal(false);
+            res.catch(value=>expect(value).to.equal(false));       
         }, Purchase.getPaymentTimeoutInMillis()+1000);
         done();
     });
