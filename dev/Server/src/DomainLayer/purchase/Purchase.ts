@@ -88,7 +88,7 @@ class Purchase {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, onFail);
-        new Promise((res , rej) => {res(true)});;
+        return new Promise((res , rej) => {res(true)});;
     }
 
     //completes an existing transaction in progress. returns failure in the event that

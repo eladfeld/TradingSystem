@@ -1,6 +1,6 @@
 import { request } from 'http';
 import axios from 'axios';
-import ShippingInfo from '../purchase/ShippingInfo';
+import { tShippingInfo } from '../purchase/Purchase';
 
 
 
@@ -23,7 +23,7 @@ class SupplySystemReal {
 
 
     //finalizes the shipping order with reservation id @reservationId
-    static supply = async(shippingInfo : ShippingInfo) : Promise<number> => {
+    static supply = async(shippingInfo : tShippingInfo) : Promise<number> => {
         const response =await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "supply", name: shippingInfo.name, address:shippingInfo.address, city:shippingInfo.city, country:shippingInfo.country, zip:shippingInfo.zip});
         switch(response.data){
             case "-1":

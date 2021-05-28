@@ -17,7 +17,6 @@ import { StoreHistory } from "./StoreHistory";
 import Transaction from "../purchase/Transaction";
 import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
-import ShippingInfo from "../purchase/ShippingInfo";
 import { tPredicate } from "../discount/logic/Predicate";
 import { tDiscount } from "../discount/Discount";
 import BuyingSubject from "../policy/buying/BuyingSubject";
