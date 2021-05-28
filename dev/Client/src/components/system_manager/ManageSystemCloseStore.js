@@ -1,7 +1,7 @@
 import { Button, Typography } from '@material-ui/core';
 import React from 'react';
-import AbstractTable from './AbstractTable';
-import ProgressWheel from './ProgreeWheel';
+import AbstractTable from '../AbstractTable';
+import ProgressWheel from '../ProgreeWheel';
 
 const ManageSystemCloseStore = ({getAppState, setAppState}) =>{
     const {stores} = getAppState();//stores = store names list

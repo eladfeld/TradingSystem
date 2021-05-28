@@ -1,10 +1,10 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
-import AbstractTable from './AbstractTable';
-import ProgressWheel from './ProgreeWheel';
+import AbstractTable from '../AbstractTable';
+import ProgressWheel from '../ProgreeWheel';
 
-const ManageSystemRemoveSubscriber = ({getAppState, setAppState}) =>{
-    const {subscriberNames} = getAppState();//stores = store names list
+const ManageSubscribers = ({getAppState, subscriberNames}) =>{
+    const {userId} = getAppState();//stores = store names list
     if(!subscriberNames)return <ProgressWheel/>;
 
     const onRemoveSubscriberClick = (subscriberName) =>{
@@ -24,8 +24,12 @@ const ManageSystemRemoveSubscriber = ({getAppState, setAppState}) =>{
     const renderRowCells = (subscriberName) => [renderSubscriberName(subscriberName), renderRemoveSubscriberButton(subscriberName)];
 
     return(
-        <AbstractTable items={subscriberNames} columnNames={['User Name', 'Manage']} renderRowCells={renderRowCells}/>
+        <AbstractTable
+            items={subscriberNames} 
+            columnNames={['User Name', 'Manage']} 
+            renderRowCells={renderRowCells}
+            />
     );
 }
 
-export default ManageSystemRemoveSubscriber;
+export default ManageSubscribers;

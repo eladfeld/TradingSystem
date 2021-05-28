@@ -217,7 +217,6 @@ export default function Banner({getAppState, setAppState}) {
       { isGuest ?
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
-          {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
           <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem>
           <MenuItem onClick={handleCartClick}>Cart</MenuItem>
           <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>

@@ -19,7 +19,7 @@ import ManageStores from './ManageStores'
 import ManageStore from './ManageStore'
 import { ROUTE_MANAGE_EMPLOYEE } from '../routes';
 import ManageEmployee from './ManageEmployee';
-import ManageSystem from './ManageSystem';
+import ManageSystem from './system_manager/ManageSystem';
 import Checkout2 from './Checkout2';
 
 

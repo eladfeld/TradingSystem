@@ -35,6 +35,7 @@ const useStyles = makeStyles({
 });
 
 export default function AbstractTable({items, columnNames, renderRowCells, rowToKey, onRowClick}) {
+  console.log('[t] items: ', items);
   const classes = useStyles();
 
   if(!rowToKey){
