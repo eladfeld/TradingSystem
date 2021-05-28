@@ -20,6 +20,7 @@ import ManageStore from './ManageStore'
 import { ROUTE_MANAGE_EMPLOYEE } from '../routes';
 import ManageEmployee from './ManageEmployee';
 import ManageSystem from './ManageSystem';
+import Checkout2 from './Checkout2';
 
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
@@ -115,7 +116,7 @@ class App extends React.Component
           <Route
             path='/checkout' exact
             render={(props) => (
-              <Checkout {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+              <Checkout2 {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
           <Route

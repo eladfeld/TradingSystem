@@ -61,7 +61,6 @@ export default function SystemManageCloseStore({getAppState, setAppState}) {
                   <TableRow>
                     <StyledTableCell>Store Name</StyledTableCell>
                     <StyledTableCell align="left">Manage</StyledTableCell>
-
                   </TableRow>
                 </TableHead>
                 <TableBody>

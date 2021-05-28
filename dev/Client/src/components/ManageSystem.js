@@ -29,6 +29,7 @@ import BuyingPolicy from './buying_policy/BuyingPolicy';
 import DiscountPolicy from './discount_policy/DiscountPolicy';
 import SystemManageCloseStore from './SystemMangeCloseStore';
 import { Grid } from '@material-ui/core';
+import ManageSystemCloseStore from './ManageSystemCloseStore';
 
 const useStyles = makeStyles({
   root: {
@@ -108,7 +109,7 @@ export default function ManageSystem({getAppState, setAppState}) {
                     }
                     getStores();
                 }
-                return <SystemManageCloseStore getAppState={getAppState} setAppState={setAppState}/>
+                return <ManageSystemCloseStore getAppState={getAppState} setAppState={setAppState}/>
             // case REMOVE_SUBSCRIBER:
             //     if (manageCategories === undefined){
             //         const foo = async () =>{
@@ -179,7 +180,7 @@ export default function ManageSystem({getAppState, setAppState}) {
 
   return (
     <Grid container>
-        <Grid item xs={2}>
+        <Grid item xs={1}>
             <Paper className={classes.root}>
             <MenuList>
                 <MenuItem onClick={onCloseStoreClick} >
@@ -205,7 +206,7 @@ export default function ManageSystem({getAppState, setAppState}) {
             </MenuList>
             </Paper>
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={11}>
             {renderPage(page, getAppState, setAppState)}
         </Grid>
     </Grid>

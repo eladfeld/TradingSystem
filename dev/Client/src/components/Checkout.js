@@ -5,7 +5,7 @@ import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../con
 import history from '../history';
 import { areNonNegativeIntegers } from './componentUtil';
 
-const Checkout = ({getAppState, setAppState, storeId}) =>{
+const Checkout = ({getAppState, setAppState}) =>{
     const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
     const btnstyle={margin:'8px 0'}
 
@@ -35,6 +35,7 @@ const Checkout = ({getAppState, setAppState, storeId}) =>{
             case SERVER_RESPONSE_OK:
                 cart.baskets = cart.baskets.filter(b => b.storeId !== basketAtCheckout);
                 setAppState({basketAtCheckout: undefined, cart});
+                alert('purchase was succesful!\nThank you, come again.');
                 history.push('/cart');
                 return;
             case SERVER_RESPONSE_BAD:
