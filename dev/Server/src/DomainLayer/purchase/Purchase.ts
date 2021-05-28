@@ -79,7 +79,7 @@ class Purchase {
             //a checkout is already in progress, cancel the old timer/order
             clearTimeout(oldTimerId);
             this.onTransactionCancel(userId, storeId, oldOnFail);
-            return new Promise((res , rej) => {rej("No checkout in progress")});
+            return new Promise((res , rej) => {rej("A checkout is already in progress")});
         }
 
         //allow payment within 5 minutes

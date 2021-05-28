@@ -1,6 +1,7 @@
 import { request } from 'http';
 import axios from 'axios';
 import { tPaymentInfo } from '../purchase/Purchase';
+import { URLSearchParams } from "url"
 
 
 
@@ -10,7 +11,14 @@ class PaymentSystemReal {
 
     //initializes system. returns a session id or negative number on failure
     static init = async() : Promise<number> => {
-        const response =await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "handshake"});
+        var bodyFormData = new URLSearchParams();
+        bodyFormData.append('action_type', 'handshake');
+        const response = await axios({method: "post",
+        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        data: bodyFormData,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        });
+        //const response =await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "handshake"});
         switch(response.data){
             case "OK":
                 return PaymentSystemReal.nextSessionId++;
@@ -26,7 +34,19 @@ class PaymentSystemReal {
     //from credit card with number @cardNumber, expires at DD/MM/YYYY where @expiration=DDMMYYYY, and cvv of @cvv
     //returns the unique payment number necesary for referencing the payment and refunding or negative numbr on failure
     static transfer = async(paymentInfo: tPaymentInfo):Promise<number> => {
-        const response = await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "pay", card_number: paymentInfo.cardNumber, month: paymentInfo.expMonth, year: paymentInfo.expYear,holder: paymentInfo.holder, ccv: paymentInfo.cvv, id: paymentInfo.id});
+        var bodyFormData = new URLSearchParams();
+        bodyFormData.append('action_type', 'pay');
+        bodyFormData.append('card_number', paymentInfo.cardNumber.toString())
+        bodyFormData.append('month', paymentInfo.expMonth.toString())
+        bodyFormData.append('year', paymentInfo.expYear.toString())
+        bodyFormData.append('holder', paymentInfo.holder)
+        bodyFormData.append('ccv', paymentInfo.cvv.toString())
+        bodyFormData.append('id', paymentInfo.id.toString())
+        const response = await axios({method: "post",
+        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        data: bodyFormData,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        });
         switch(response.data){
             case "-1":
                 return -1;
@@ -38,7 +58,15 @@ class PaymentSystemReal {
     //refunds the credit charge with payment id of @paymentId
     //returns negative number if refund not possible
     static refund = async(paymentId: number):Promise<boolean> => {
-        const response = await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "cancel_pay", transaction_id: paymentId});
+        var bodyFormData = new URLSearchParams();
+        bodyFormData.append('action_type', 'cancel_pay');
+        bodyFormData.append('transaction_id', paymentId.toString())
+        const response = await axios({method: "post",
+        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        data: bodyFormData,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        });
+        //const response = await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "cancel_pay", transaction_id: paymentId});
         switch(response.data){
             case "-1":
                 return false;
