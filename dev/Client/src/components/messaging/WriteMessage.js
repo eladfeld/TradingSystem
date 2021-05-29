@@ -30,7 +30,7 @@ const WriteMessage=({getMessage, setMessage, onSendClick, onCancelClick})=>{
                     variant="outlined"
                     fullWidth
                     />
-                <Button type='submit' color='primary' variant="contained" onClick={onSendClick} style={btnstyle} fullWidth>Reply</Button>
+                <Button type='submit' color='primary' variant="contained" onClick={onSendClick} style={btnstyle} fullWidth>Send</Button>
                 <Button type='submit' color='secondary' variant="contained" onClick={onCancelClick} style={btnstyle} fullWidth>Cancel</Button>
             </Paper>
         </Grid>
