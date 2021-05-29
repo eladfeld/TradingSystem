@@ -23,9 +23,13 @@ export class StoreDB
         this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
     }
 
-    public static getStoreByName(storeName: string): Store
+    public static getStoreByName(storeName: string): Promise<Store>
     {
-        return this.stores.find(store => store.getStoreName() == storeName);
+        //TODO: ask real data base
+        let store = this.stores.find(store => store.getStoreName() == storeName);
+        if (store)
+            return Promise.resolve(store)
+        return Promise.reject("store doesnt exist")
     }
 
     public static getPruductInfoByName(productName: string): Result<string>{

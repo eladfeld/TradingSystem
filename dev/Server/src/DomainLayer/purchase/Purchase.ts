@@ -169,8 +169,8 @@ class Purchase {
         return this.dbDummy.getCompletedTransactions().filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)));
     }
 
-    public getCompletedTransactionsForUser = (userId: number): string => {
-        return JSON.stringify(this.dbDummy.getCompletedTransactions().filter(t => t.getUserId()==userId));
+    public getCompletedTransactionsForUser = (userId: number): Promise<string> => {
+        return Promise.resolve(JSON.stringify(this.dbDummy.getCompletedTransactions().filter(t => t.getUserId()==userId)));
     }
     public getCompletedTransactionsForStore = (storeId: number): Transaction[] =>{
         return this.dbDummy.getCompletedTransactions().filter(t => t.getStoreId()==storeId);

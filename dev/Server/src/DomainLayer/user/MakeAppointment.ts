@@ -10,11 +10,11 @@ import { Subscriber } from "./Subscriber";
 
 export class MakeAppointment
 {
-    public static appoint_founder(founder: Subscriber, store: Store): Result<string> 
+    public static appoint_founder(founder: Subscriber, store: Store): Promise<string> 
     {
         if (founder === undefined || store === undefined) {
             Logger.error("undefined arrgument given");
-            return makeFailure("undefined arrgument given");
+            return Promise.reject("undefined arrgument given");
         }
 
         if (founder.getUserId() === store.getStoreFounderId()) 
@@ -24,16 +24,16 @@ export class MakeAppointment
             let new_appointment = new OwnerAppointment(founder, store, founder, allGrantedPermission);
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
-            return makeOk("appointment made successfully");
+            return Promise.resolve("appointment made successfully");
         }
         Logger.log("the candidate is not the store founder");
-        return makeFailure("the candidate is not the store founder");
+        return Promise.reject("the candidate is not the store founder");
     }
 
-    public static appoint_owner(appointer: Subscriber, store: Store, appointee: Subscriber): Result<string> {
+    public static appoint_owner(appointer: Subscriber, store: Store, appointee: Subscriber): Promise<string> {
         if (appointer === undefined || store === undefined || appointee === undefined) {
             Logger.log("undefined arrgument given");
-            return makeFailure("undefined arrgument given");
+            return Promise.reject("undefined arrgument given");
         }
 
         //check if appointer is allowed to appoint owner
@@ -47,7 +47,7 @@ export class MakeAppointment
                     let new_appointment = new OwnerAppointment(appointer, store, appointee, new Permission(basic_owner_permissions));
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
-                    return makeOk("owner appointed successfully!");
+                    return Promise.resolve("owner appointed successfully!");
                 }
                 else
                 {
@@ -59,19 +59,19 @@ export class MakeAppointment
                     let new_appointment = new OwnerAppointment(appointer, store, appointee, prev_permission);
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
-                    return makeOk("owner appointed successfully!");
+                    return Promise.reject("owner appointed successfully!");
                 }
             }
         }
-        return makeFailure("unauthorized try to appoint owner");
+        return Promise.reject("unauthorized try to appoint owner");
     }
 
-    public static appoint_manager(appointer: Subscriber, store: Store, appointee: Subscriber): Result<string> 
+    public static appoint_manager(appointer: Subscriber, store: Store, appointee: Subscriber): Promise<string> 
     {
         if (appointer === undefined || store === undefined || appointee === undefined) 
         {
             Logger.error("appoint_manager: undefined arrgument given");
-            return makeFailure("undefined arrgument given");
+            return Promise.reject("undefined arrgument given");
         }
         //check if appointer is allowed to appoint manager
         if (appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, store)) 
@@ -83,13 +83,13 @@ export class MakeAppointment
                 let new_appointment = new ManagerAppointment(appointer, store, appointee, new Permission(basic_manager_permissions));
                 store.addAppointment(new_appointment);
                 appointee.addAppointment(new_appointment);
-                return makeOk("manager appointed successfully!");
+                return Promise.resolve("manager appointed successfully!");
             }
             else {
-                return makeFailure("user already appointed");
+                return Promise.reject("user already appointed");
             }
         }
-        return makeFailure("unauthorized try to appoint manager");
+        return Promise.reject("unauthorized try to appoint manager");
     }
 
     public static removeAppointment(appointment: Appointment): Result<string> {

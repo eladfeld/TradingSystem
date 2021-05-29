@@ -43,32 +43,28 @@ export class ShoppingBasket implements iBasket
         return this.products;
     }
 
-    public addProduct(productId: number, quantity: number): Result<string>
+    public addProduct(productId: number, quantity: number): Promise<string>
     {
-        if (quantity < 0)
-        {
+        if (quantity < 0){
             Logger.log("quantity can't be negative number");
-            return makeFailure("quantity can't be negative number");
+            return new Promise( (resolve,reject) => reject("quantity can't be negative number"));
         }
-        if(quantity === 0)
-        {
-            return makeFailure("quantity can't be set to zero");
+        if(quantity === 0){
+            return new Promise( (resolve,reject) => reject("quantity can't be set to zero"));
         }
-        if (!this.store.hasBuyingOption(buyingOption.INSTANT))
-        {
+        if (!this.store.hasBuyingOption(buyingOption.INSTANT)){
             Logger.log("product not for immediate buy");
-            return makeFailure("product not for immediate buy");
+            return new Promise( (resolve,reject) => reject("product not for immediate buy"));
         }
-        if(!this.store.isProductAvailable(productId, quantity))
-        {
-            return makeFailure("product is not available in this quantity");
+        if(!this.store.isProductAvailable(productId, quantity)){
+            return new Promise( (resolve,reject) => reject("product is not available in this quantity"));
         }
 
         let prevQuantity : number = 0;
         if (this.products.get(productId) != undefined)
             prevQuantity = this.products.get(productId);
         this.products.set(productId,prevQuantity+quantity);
-        return makeOk("product added to cart");
+        return new Promise( (resolve,reject) => resolve("product added to cart"));
     }
 
     public checkout(userId:number, user: iSubject,  supply_address: string, userSubject: iSubject): Result<boolean>
@@ -91,16 +87,16 @@ export class ShoppingBasket implements iBasket
         return result;
     }
 
-    public edit(productId: number, newQuantity: number): Result<string>
+    public edit(productId: number, newQuantity: number): Promise<string>
     {
         if (newQuantity < 0)
-            return makeFailure("negative quantity");
+            return Promise.reject("negative quantity");
         if (!this.store.isProductAvailable(productId,newQuantity))
-            return makeFailure("quantity not available");
+            return Promise.reject("quantity not available");
         if (newQuantity === 0)
             this.products.delete(productId);
         else this.products.set(productId,newQuantity);
-        return makeOk("added to cart");
+        return Promise.resolve("added to cart");
     }
 
     getShoppingBasket() : {}

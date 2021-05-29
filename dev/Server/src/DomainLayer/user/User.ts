@@ -1,8 +1,11 @@
+import { rejects } from 'assert';
+import subscriberDB from '../../DataAccessLayer/SubscriberDummyDb';
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
 import iSubject from '../discount/logic/iSubject';
 import { buyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
+import { ShoppingBasket } from './ShoppingBasket';
 import { ShoppingCart} from './ShoppingCart'
 import { Subscriber } from './Subscriber';
 
@@ -37,14 +40,15 @@ export class User implements iSubject
         let store:Store =  StoreDB.getStoreByID(shopId);
         return store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
     }
-    public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
+    
+    public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Promise<ShoppingBasket>
     {
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-    public GetShoppingCart(): Result<string>
+    public GetShoppingCart(): string
     {
-        return makeOk(JSON.stringify(this.shoppingCart.getShoppingCart()));
+        return JSON.stringify(this.shoppingCart.getShoppingCart());
     }
 
     public getShoppingBasket(storeId: number): {}
@@ -57,7 +61,7 @@ export class User implements iSubject
         return this.userId;
     }
 
-    public editCart(storeId: number, productId: number, quantity: number): Result<string>
+    public editCart(storeId: number, productId: number, quantity: number): Promise<string>
     {
         return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }

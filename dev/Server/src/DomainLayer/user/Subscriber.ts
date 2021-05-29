@@ -1,3 +1,4 @@
+import subscriberDB from "../../DataAccessLayer/SubscriberDummyDb";
 import { isOk, Result } from "../../Result";
 import { Publisher } from "../notifications/Publisher";
 import { buyingOption } from "../store/BuyingOption";
@@ -5,6 +6,7 @@ import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
+import { ShoppingBasket } from "./ShoppingBasket";
 import { SubscriberHistory } from "./SubscriberHistory";
 import {  User } from "./User";
 
@@ -15,13 +17,15 @@ export class Subscriber extends User
     private username: string;
     private hashPassword: string;
     private age: number
+
     private appointments: Appointment[];
     private history: SubscriberHistory;
     private pending_messages: string[];
 
-    public constructor(username: string, age: number ){
+    public constructor(username: string, hashedPassword : string, age: number ){
         super();
         this.username = username;
+        this.hashPassword = hashedPassword;
         this.age = age;
         this.appointments = [];
         this.pending_messages=[]
@@ -29,11 +33,22 @@ export class Subscriber extends User
     }
 
     static buildSubscriber(username: string, hashpassword: string, age: number): Subscriber {
-        let subscriber: Subscriber = new Subscriber(username, age);
-        subscriber.hashPassword = hashpassword;
+        let subscriber: Subscriber = new Subscriber(username, hashpassword, age);
         return subscriber;
     }
     
+    public addProductToShoppingCart(storeId: number,  productId: number, quantity: number) : Promise<ShoppingBasket>
+    {
+        let addp = this.shoppingCart.addProduct(storeId, productId, quantity);
+        return new Promise ((resolve,reject) => {
+            addp.then( shoppingbasket => {
+                subscriberDB.addProduct(this.userId, productId, quantity);
+                resolve(shoppingbasket)
+            })
+            .catch( error => reject(error))
+        })
+    }
+
     public setPassword(hashPassword: string){
         this.hashPassword = hashPassword;
     }
@@ -77,13 +92,26 @@ export class Subscriber extends User
         return false;
     }
 
+    public editCart(storeId: number, productId: number, quantity: number): Promise<string>
+    {
+        let editp = this.shoppingCart.editStoreCart(storeId, productId, quantity);
+        return new Promise( (resolve,reject) => {
+            editp.then ( msg => {
+                subscriberDB.updateCart(this.userId, storeId, productId, quantity)
+                resolve(msg)
+            })
+            editp.catch( error => {
+                reject(error)
+            })
+        })
+    }
 
     public deleteAppointment(store_app: Appointment) 
     {
         this.appointments = this.appointments.filter(app => app !== store_app);
     }
 
-    public isSystemManager(): boolean
+    public isSystemManager(): Promise<boolean>
     {
         return Authentication.isSystemManager(this.userId);
     }

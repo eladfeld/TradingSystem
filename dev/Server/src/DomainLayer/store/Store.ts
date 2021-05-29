@@ -445,25 +445,44 @@ export class Store implements iCategorizer
             appointment.getAppointer().getUserId() === appointer)
     }
 
-    public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Result<string>
+    public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Promise<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || Authentication.isSystemManager(appointer.getUserId())
-            || appointer.getUserId() === this.storeFounderId)
-        {
-            return MakeAppointment.appoint_owner(appointer, this, appointee);
-        }
-        return makeFailure("user is not permited to appoint store owner");
-
+        let ismanagerp = Authentication.isSystemManager(appointer.getUserId())
+        return new Promise( (resolve,reject) => {
+            ismanagerp.then( ismanager => {
+                if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || ismanager)
+                {
+                    let makeapp = MakeAppointment.appoint_owner(appointer, this, appointee);
+                    makeapp.then( msg => {
+                        resolve(msg)
+                    })
+                    .catch( error => {
+                        reject(error)
+                    })
+                }
+                else reject("user is not permited to appoint store owner")
+            })
+        })
     }
 
-    public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Result<string>
+    public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Promise<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || Authentication.isSystemManager(appointer.getUserId())
-            || appointer.getUserId() === this.storeFounderId)
-        {
-            return MakeAppointment.appoint_manager(appointer, this, appointee)
-        }
-        return makeFailure("user is not permited to appoint store manager");
+        let ismanagerp =Authentication.isSystemManager(appointer.getUserId())
+        return new Promise ((resolve,reject) => {
+            ismanagerp.then( ismanager => {
+                if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || ismanager || appointer.getUserId() === this.storeFounderId)
+                {
+                    let makeapp = MakeAppointment.appoint_manager(appointer, this, appointee)
+                    makeapp.then( msg => {
+                        resolve(msg)
+                    })
+                    .catch( error => {
+                        reject(error)
+                    })
+                }
+                else reject("user is not permited to appoint store manager");
+            })
+        })
     }
 
     public editStaffPermission(subscriber: Subscriber, managerToEditId: number, permissionMask: number): Result<string> {

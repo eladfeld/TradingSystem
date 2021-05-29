@@ -5,6 +5,7 @@ import { StoreDB } from "../store/StoreDB";
 import { ShoppingBasket } from "./ShoppingBasket";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
+import { rejects } from "assert";
 
 export class ShoppingCart
 {
@@ -26,7 +27,7 @@ export class ShoppingCart
         return basket.checkout(userId, user, supply_address, userSubject);
     }
 
-    public addProduct(storeId:number, productId:number, quantity:number) : Result<string>
+    public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
         if(basket === undefined)
@@ -40,17 +41,26 @@ export class ShoppingCart
             else
             {
                 Logger.log(`shop with id ${storeId} does not exist`);
-                return makeFailure(`shop with id ${storeId} does not exist`);
+                return new Promise( (resolve,reject) => reject(`shop with id ${storeId} does not exist`))
             }
         }
-        return basket.addProduct(productId, quantity);
+
+        let addp = basket.addProduct(productId, quantity);
+        return new Promise( (resolve,reject) => {
+            addp.then( _ => {
+                resolve(basket)
+            })
+            .catch( error => {
+                reject("error")
+            })
+        })
     }
 
-    editStoreCart(storeId : number , productId:number , newQuantity:number) : Result<string>
+    editStoreCart(storeId : number , productId:number , newQuantity:number) : Promise<string>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
-            return makeFailure("shopping basket doesnt exist");
+            return Promise.reject("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
     }
 
@@ -69,12 +79,6 @@ export class ShoppingCart
         var mycart : any = {};
         mycart['baskets'] = [];
         Array.from(this.baskets.values()).forEach(basket => mycart['baskets'].push(basket.getShoppingBasket()))
-        // for (var basket in this.baskets)
-        // {
-        //     let basket2 = ShoppingBasket(basket);
-        //     mycart['baskets'].push(basket.getShoppingBasket())
-        // }
-        // this.baskets.forEach( (basket,storeId,map) => mycart['baskets'].push(basket.getShoppingBasket()));
         return mycart;
     }
 
