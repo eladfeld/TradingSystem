@@ -1,6 +1,6 @@
 import PaymentSystemAdapter from './PaymentSystemAdapter';
 import SupplySystemAdapter from './SupplySystemAdapter';
-import {setSystemConfigurations} from '../../../src/config';
+import {setSystemConfigurations, PAYMENT_SYSTEM, SUPPLY_SYSTEM} from '../../../src/config';
 import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
@@ -21,20 +21,20 @@ Object.freeze(stringUtil);
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
 export const PAYMENT_TIMEOUT_MILLISEC: number = CHECKOUT_TIMEOUT;
-setSystemConfigurations();
 
 
 class Purchase {
 
-    private supplySystem: SupplySystemAdapter;
-    private paymentSystem: PaymentSystemAdapter;
+    private supplySystem: any;
+    private paymentSystem: any;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, () => void]>>;
     private dbDummy: DbDummy;
 
 
+
     constructor(){
-        this.paymentSystem = new PaymentSystemAdapter();
-        this.supplySystem = new SupplySystemAdapter();
+        this.paymentSystem = PAYMENT_SYSTEM;
+        this.supplySystem = SUPPLY_SYSTEM;
         this.cartCheckoutTimers = new Map();
         this.dbDummy = new DbDummy();
     }

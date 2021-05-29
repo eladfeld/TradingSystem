@@ -7,15 +7,15 @@ import fakeSupplySystemAdapter from "./DomainLayer/purchase/fakeSupplySystemAdap
 
 export const setTestConfigurations = () => {
     CHECKOUT_TIMEOUT = 100;
-    PAYMENT_SYSTEM = new fakePaymentSystemAdapter;
-    SUPPLY_SYSTEM = new fakeSupplySystemAdapter;
+    PAYMENT_SYSTEM = new fakePaymentSystemAdapter();
+    SUPPLY_SYSTEM = new fakeSupplySystemAdapter();
     SHOULD_INIT_STATE = false;
 }
 
 export const setSystemConfigurations = () => {
     CHECKOUT_TIMEOUT = 3000000;
-    PAYMENT_SYSTEM = new PaymentSystemAdapter;
-    SUPPLY_SYSTEM = new SupplySystemAdapter;
+    PAYMENT_SYSTEM = new PaymentSystemAdapter();
+    SUPPLY_SYSTEM = new SupplySystemAdapter();
 }
 
 //program constants
@@ -28,8 +28,8 @@ export const INITIAL_STATE = state;
 
 
 //API configurations
-export var PAYMENT_SYSTEM:any = undefined;
-export var SUPPLY_SYSTEM:any = undefined;
+export var PAYMENT_SYSTEM:any = new PaymentSystemAdapter();
+export var SUPPLY_SYSTEM:any = new SupplySystemAdapter();
 export const PAYMENT_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 export const SUPPLY_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 

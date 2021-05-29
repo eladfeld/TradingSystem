@@ -17,7 +17,6 @@ const prod1Id: number=3000;
 const prod2Id: number=4000;
 const prod1Quantity: number=3;
 const prod2Quantity: number=4;
-setTestConfigurations();        //changing external APIs to mocks
 const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
 const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];
@@ -32,6 +31,7 @@ const updateValues = () => {
 
 
 describe('purchase tests' , function() {
+    setTestConfigurations();        //changing external APIs to mocks
     it('checkout, without completing order' , function(done){
         updateValues();
         PaymentSystem.willSucceed();

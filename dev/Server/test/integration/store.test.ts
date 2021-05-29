@@ -17,10 +17,10 @@ import {setTestConfigurations} from '../../src/config';
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
-setTestConfigurations;
 
 
 describe('view store products' , () => {
+    setTestConfigurations();
 
     // it('view store without products', () => {
     //     let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')

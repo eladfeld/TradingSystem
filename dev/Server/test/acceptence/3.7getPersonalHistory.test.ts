@@ -17,12 +17,12 @@ import {setTestConfigurations} from '../../src/config';
 const payInfo : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"shir", address:"rager", city:"beer sheva", country:"israel", zip:157};
-setTestConfigurations;
 
 describe('3.7: get subscriber history', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        setTestConfigurations();
     });
 
     afterEach(function () {
