@@ -18,6 +18,19 @@ export const setSystemConfigurations = () => {
     SUPPLY_SYSTEM = new SupplySystemAdapter;
 }
 
+export const setTestConfigurations = () => {
+    CHECKOUT_TIMEOUT = 100;
+    PAYMENT_SYSTEM = undefined;
+    SUPPLY_SYSTEM = undefined;
+    SHOULD_INIT_STATE = false;
+}
+
+export const setSystemConfigurations = () => {
+    CHECKOUT_TIMEOUT = 3000000;
+    PAYMENT_SYSTEM = undefined;
+    SUPPLY_SYSTEM = undefined;
+}
+
 //program constants
 export var CHECKOUT_TIMEOUT = 3000000;//5 minutes
 export const CACHE_SIZE = -1;           //how much memory we want to cache (in bytes?)
@@ -28,8 +41,10 @@ export const INITIAL_STATE = state;
 
 
 //API configurations
+
 export var PAYMENT_SYSTEM:any = undefined;
 export var SUPPLY_SYSTEM:any = undefined;
+
 export const PAYMENT_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 export const SUPPLY_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 

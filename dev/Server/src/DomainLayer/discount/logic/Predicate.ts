@@ -1,13 +1,16 @@
 import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
 import iSubject from "./iSubject";
+import { compositeOpToString, simpleOpToString } from "./LogicalOperators";
 
 export interface iPredicate{
     //isValid: (f:(field: tSimpleOperand)=>boolean)=>boolean;
     isSatisfied: (subject: iSubject)=>Result<boolean>;
+    toObject: () => tPredicate;
 }
 export interface iValue{
     calc: (basket: iSubject)=>number;
     toString: () => string;
+    toValue: () => tSimpleOperand;
 }
 
 export class CompositePredicate implements iPredicate{
@@ -35,6 +38,14 @@ export class CompositePredicate implements iPredicate{
         }
         return makeOk(acc);
     }
+
+    public toObject = ():tCompositePredicate => {
+        return {
+            type:"composite",
+            operator:compositeOpToString(this.rater),
+            operands: this.rands.map(r => r.toObject())
+        };
+    }
 }
   
 export class SimplePredicate implements iPredicate{
@@ -55,6 +66,16 @@ export class SimplePredicate implements iPredicate{
         if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
         return makeOk(this.rater(val1, val2));
     } 
+
+    public toObject = ():tSimplePredicate =>{
+        return{
+            type:"simple",
+            operand1:this.rand1.toValue(),
+            operator:simpleOpToString(this.rater), 
+            operand2:this.rand2.toValue()
+        }
+    }
+
 }
 
 export class Field implements iValue{
@@ -68,6 +89,7 @@ export class Field implements iValue{
         return subject.getValue(this.field);
     }   
     public toString = (): string => this.field;
+    public toValue = ():tSimpleOperand => this.field;
 }
 
 export class Value implements iValue{
@@ -82,6 +104,8 @@ export class Value implements iValue{
     }   
 
     public toString = ():string =>`${this.value}`;
+    public toValue = ():tSimpleOperand => this.value;
+
 
 }
 

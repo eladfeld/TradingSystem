@@ -1,5 +1,5 @@
 import DiscountPolicy from "../discount/DiscountPolicy";
-import BuyingPolicy from "../policy/buying/BuyingPolicy";
+import BuyingPolicy, { Rule } from "../policy/buying/BuyingPolicy";
 import { Inventory } from "./Inventory";
 import { TreeRoot, ID, Rating, TreeNode } from './Common'
 import { Appointment } from "../user/Appointment";
@@ -28,6 +28,7 @@ import UniversalPolicy from "../policy/buying/UniversalPolicy";
 
 export class Store implements iCategorizer
 {
+
 
     public getStoreFounderId():number
     {
@@ -208,6 +209,15 @@ export class Store implements iCategorizer
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
         return this.buyingPolicy.removePolicy(policyNumber); 
+    }
+
+
+
+    public getBuyingPolicies(subscriber: Subscriber): Result<Rule[]> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted")       
+        return makeOk(this.buyingPolicy.getPolicies()); 
     }
 
     public sellShoppingBasket(buyerId: number, shippingInfo: tShippingInfo, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Result<boolean> {

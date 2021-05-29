@@ -1,6 +1,6 @@
 import { makeOk, Result } from '../../Result';
 import iCategorizer from './Categorizer';
-import Discount from './Discount';
+import Discount, { tUnconditionalDiscount } from './Discount';
 import iBasket from './iBasket';
 
 export default class UnconditionalDiscount extends Discount{
@@ -18,5 +18,13 @@ export default class UnconditionalDiscount extends Discount{
         var totalDiscount: number = 0;
         discounts.forEach((discount) => totalDiscount += discount);
         return makeOk(totalDiscount);
+    }
+
+    public toObj = ():tUnconditionalDiscount =>{
+        return{
+            type:"unconditional",
+            ratio:this.ratio,
+            category:this.category
+        }
     }
 }

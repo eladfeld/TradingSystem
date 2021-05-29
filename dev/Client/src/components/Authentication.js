@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Grid,Paper, TextField, Button, Typography, Link } from '@material-ui/core'
 import axios from 'axios';
 import history from '../history';
-import {SERVER_BASE_URL} from '../constants'
+import {SERVER_BASE_URL , SERVER_RESPONSE_OK} from '../constants'
 
 
 const onRegisterClick = async () =>
@@ -21,7 +21,7 @@ const Authentication=({getAppState, setAppState})=>{
 
     const login = async (userId, username, password) =>
     {
-
+        
         const res = await axios.post(`${SERVER_BASE_URL}login`, {userId, username, password} )
         if(res.data.userId !== undefined)
         {
@@ -35,6 +35,17 @@ const Authentication=({getAppState, setAppState})=>{
 
             ws.addEventListener("message", e => alert(e.data))
             setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});
+
+
+            let stores_res = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
+            if (stores_res.status == SERVER_RESPONSE_OK)
+            {
+                const stores = JSON.parse(stores_res.data).stores;
+                console.log(stores)
+                stores.length === 0 ?  setAppState({IsStoreManager : false}) :  setAppState({IsStoreManager : true})
+            }
+              
+              
             history.push('/welcome');
         }
         else

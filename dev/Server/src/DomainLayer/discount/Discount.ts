@@ -10,6 +10,7 @@ export default abstract class Discount implements iDiscount{
     protected ratio: number;
     protected category: string|number;
     public getDiscount: (basket: iBasket, categorizer: iCategorizer) => Result<number>;
+    public toObj: () => tDiscount;
 
     constructor(ratio: number, category:string|number){
         this.ratio=ratio;
