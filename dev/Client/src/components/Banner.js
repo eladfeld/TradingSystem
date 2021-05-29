@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
       width: '20ch',
     },
   },
+
   sectionDesktop: {
     display: 'none',
     [theme.breakpoints.up('md')]: {
@@ -104,7 +105,7 @@ export default function Banner({getAppState, setAppState}) {
   const showSidebar = () => setSidebar(!sidebar);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  const {IsStoreManager} = getAppState();
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -123,12 +124,13 @@ export default function Banner({getAppState, setAppState}) {
   };
 
   const handleManageSystemClick = () => {
-    handleMenuClose();
+    history.push('/managesystem');
   };
 
 
-  const {userId, isGuest, isSystemManager} = getAppState();
-
+  const {userId, isGuest} = getAppState();
+  const isSystemManager = true;
+  
 
   const handleManageStoresClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
@@ -165,7 +167,6 @@ export default function Banner({getAppState, setAppState}) {
     }
   };
   const handleTransactionsClick = async () => {
-    console.log(`[T] transaction click userId: ${userId}`);
     const response = await axios.post(BASE_URL+'getMyPurchaseHistory',{userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:
@@ -213,12 +214,12 @@ export default function Banner({getAppState, setAppState}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage System</MenuItem> : <div></div>}
+      {isSystemManager ? <MenuItem onClick={handleManageSystemClick}>Manage System</MenuItem> : <div></div>}
+      {IsStoreManager    ? <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem> : <div></div>}
       { isGuest ?
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
-          {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
-          <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem>
+          
           <MenuItem onClick={handleCartClick}>Cart</MenuItem>
           <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
           <MenuItem onClick={handleComplainClick}>Complain</MenuItem>

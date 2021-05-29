@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import iBasket, { MyBasket } from '../../../src/DomainLayer/discount/iBasket';
 import iSubject from '../../../src/DomainLayer/discount/logic/iSubject';
 import {SimpleOps, CompositeOps, getSimpleOperator, getCompositeOperator} from '../../../src/DomainLayer/discount/logic/LogicalOperators';
-import {CompositePredicate, SimplePredicate, Field, Value, iPredicate} from '../../../src/DomainLayer/discount/logic/Predicate';
+import {CompositePredicate, SimplePredicate, Field, Value, iPredicate, tSimplePredicate} from '../../../src/DomainLayer/discount/logic/Predicate';
 import PredicateParser from '../../../src/DomainLayer/discount/logic/parser';
 import { isOk, Result } from '../../../src/Result';
 
@@ -308,6 +308,26 @@ describe('Predicate Tests' , function() {
         }
     });
 
+    it('reconstruct input object' , function(){
+        //id, price, quantity, name
+        const query: tSimplePredicate = {
+            type: "simple",
+            operand1: 1,
+            operator: ">",
+            operand2: "3_price"
+        };
+        // const basket: iSubject = new MyBasket();     
+        const predRes: Result<iPredicate> = PredicateParser.parse(query);
+        expect(isOk(predRes)).to.equal(true);
+        if(isOk(predRes)){
+            const pred = predRes.value.toObject();
+            const qVals: any[] = Object.values(query);
+            const pVals: any[] = Object.values(pred);
+            for(var i=0; i<qVals.length; i++){
+                expect(qVals[i]).to.equal(pVals[i]);
+            }
+        }
+    });
     
 });
 

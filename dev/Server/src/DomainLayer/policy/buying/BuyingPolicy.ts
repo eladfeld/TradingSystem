@@ -5,10 +5,12 @@ import { iPredicate } from "../../discount/logic/Predicate";
 import BuyingSubject from "./BuyingSubject";
 
 export class Rule{
+    public id: number;
     public predicate: iPredicate;               //the condition (i.e. 'no alcohol for minors', 'only babies can buy iPhones')    
     public description: string;                 //a message explaining the rule
 
-    constructor(predicate:iPredicate, description:string){
+    constructor(id:number, predicate:iPredicate, description:string){
+        this.id = id;
         this.predicate = predicate;             
         this.description = description;         
     }
@@ -41,7 +43,8 @@ export default class BuyingPolicy{
     public addPolicy = (predicate: any, policyInWords: string ):Result<string> =>{
         const predRes: Result<iPredicate> = PredicateParser.parse(predicate);
         if(isFailure(predRes)) return predRes;
-        this.rules.set(this.nextId++, new Rule(predRes.value, policyInWords));
+        this.rules.set(this.nextId, new Rule(this.nextId,predRes.value, policyInWords));
+        this.nextId++;
         return makeOk("successfully added condition to the buying policy");
     }
 
@@ -50,6 +53,12 @@ export default class BuyingPolicy{
         if(policy === undefined)return makeFailure("polcy does not exist");
         this.rules.delete(id);
         return makeOk(`Policy #${id}: ${policy.description} has been removed`);
+    }
+
+    public getPolicies = ():Rule[] =>{
+        const output:Rule[] = [];
+        this.rules.forEach((rule:Rule, id:number)=>output.push(rule));
+        return output;
     }
 
 }

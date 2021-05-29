@@ -26,6 +26,7 @@ import PaymentSystemReal from "./apis/PaymentSystemReal";
 
 export class SystemFacade
 {
+
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
@@ -695,6 +696,18 @@ export class SystemFacade
         }
         return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
     }
+
+    // public getBuyingPolicies(sessiodId: any, storeId: number): Promise<string> {
+    //     Logger.log(`getBuyingPolicies : sessionId:${sessionId} , storeId:${storeId}`);
+    //     let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+    //     let store: Store = StoreDB.getStoreByID(storeId);
+    //     if(subscriber !== undefined && store !== undefined)
+    //     {
+    //         let res: Result<string> =  store.getBuyingPolicies(subscriber);
+    //         return this.resultToPromise(res);
+    //     }
+    //     return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+    // }
 
     public addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount): Promise<string> {
         Logger.log(`addDiscountPolicy : sessionId:${sessionId} , storeId:${storeId}, discountName:${name}`);

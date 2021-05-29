@@ -15,6 +15,7 @@ export const unknownStatusMessage = (res) =>{
 }
 
 export const isNonNegativeInteger = (str) =>{
+    if((str===undefined) || (str === null))return false;
     if(str.length === 0)return false;
     for(var i=0; i<str.length; i++){
       const c = str.charAt(i);
@@ -22,6 +23,10 @@ export const isNonNegativeInteger = (str) =>{
         return false;
     }
     return true;
+}
+
+export const areNotEmptyStrings = (strs) => {
+    return (strs.map(s => (s !== undefined) & (s !== null) && (s.length !== 0)).find(b => b===false) === undefined);
 }
 
 export const areNonNegativeIntegers = (strs) =>{

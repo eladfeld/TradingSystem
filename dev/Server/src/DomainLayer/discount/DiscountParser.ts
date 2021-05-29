@@ -45,15 +45,17 @@ class Parser{
         switch (d.type) {
             case "unconditional":   
                 var category: tSimpleOperand = d.category;
-                var ratio: number = d.ratio;
+                var ratio: number = (typeof d.ratio === 'number')? d.ratio : Number(d.ratio);                
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
-                if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
+                if((typeof ratio !== 'number') || isNaN(ratio)) return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
+                if(ratio > 1 || ratio < 0) return makeFailure(`discount ratio must be between 0 and 1`);
                 return makeOk(new UnconditionalDiscount(ratio, category));//TODO: support category
             case "conditional":   
                 var category: tSimpleOperand = d.category;
-                var ratio: number = d.ratio;
+                var ratio: number = (typeof d.ratio === 'number')? d.ratio : Number(d.ratio);
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
-                if(typeof ratio !== 'number') return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
+                if((typeof ratio !== 'number') || isNaN(ratio)) return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
+                if(ratio > 1 || ratio < 0) return makeFailure(`discount ratio must be between 0 and 1`);
                 if(d.predicate===undefined) return makeFailure(`conditional discount does not have a predicate in ${d}`);
                 const predRes: Result<iPredicate> = PredicateParser.parse(d.predicate);
                 if(isFailure(predRes))return predRes;

@@ -1,15 +1,19 @@
 export interface iComboPolicy{
     calc: (discounts: number[]) => number;
+    getSignature: ()=> string;
 }
 
 class ComboPolicy implements iComboPolicy{
     private f: (discounts: number[]) => number;
+    private signature: string;
 
-    constructor(f: (discounts:number[]) => number){
+    constructor(f: (discounts:number[]) => number, signature: string){
         this.f = f;
+        this.signature = this.signature;
     }
 
     public calc = (discounts: number[]): number => this.f(discounts);
+    public getSignature = ():string => this.signature;
 
 }
 
@@ -25,14 +29,14 @@ const getSum = (nums: number[]) =>{
     return sum;
 }
 
-const ComboPolicies = {
-    BEST: new ComboPolicy(getMax),
-    COMBINE: new ComboPolicy(getSum)
-}
 export const ComboPolicyNames = {
     BEST: "max",
     COMBINE: "add"
 };
+const ComboPolicies = {
+    BEST: new ComboPolicy(getMax, ComboPolicyNames.BEST),
+    COMBINE: new ComboPolicy(getSum, ComboPolicyNames.COMBINE)
+}
 const comboPolicyMap: Map<string, iComboPolicy> = new Map([
     [ComboPolicyNames.BEST, ComboPolicies.BEST],
     [ComboPolicyNames.COMBINE, ComboPolicies.COMBINE]

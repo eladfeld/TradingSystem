@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
+import BuyingPolicy from './components/buying_policy/BuyingPolicy';
+import Operand from './components/buying_policy/Operand'
+import SimplePredicate from './components/buying_policy/SimplePredicate';
 //import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(

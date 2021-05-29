@@ -56,7 +56,6 @@ export class SpellCheckerAdapter
 
     add_category(category: string)
     {
-        console.log("added category to spell chacker!");
         this.categorySpellChecker.add_word_to_world_list(category);
     }
 

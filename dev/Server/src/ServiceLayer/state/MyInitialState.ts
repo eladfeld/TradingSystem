@@ -42,8 +42,8 @@ const state:systemState = {
             ],
             discounts:[
                 sb.discountWithName("10% off tetris", sb.unconditionalDiscount(0.10,`${PRODUCT_PREF}${videoGames.tetris}`)),
-                sb.discountWithName("20% off food", sb.unconditionalDiscount(0.20,categories.FOOD)),
-                sb.discountWithName("20% off snacks", sb.unconditionalDiscount(0.20,foodCategories.SNACKS))
+                // sb.discountWithName("20% off food", sb.unconditionalDiscount(0.20,categories.FOOD)),
+                // sb.discountWithName("20% off snacks", sb.unconditionalDiscount(0.20,foodCategories.SNACKS)),
                 // sb.discountWithName(
                 //     "15% apples and 10% off food",
                 //     sb.comboDiscount("add",[

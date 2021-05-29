@@ -435,6 +435,15 @@ const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
     .catch(message => res.status(FAILSTATUS).json(message));
 }
 
+// const getBuyingPolicies = (req: Request, res: Response, next: NextFunction) =>
+// {
+//     let sessionId   : string = req.body.userId;
+//     let storeId     : number = req.body.storeId;
+//     let promise = service.getBuyingPolicies(sessionId, storeId);
+//     promise
+//     .then(message => res.status(OKSTATUS).json(message))
+//     .catch(message => res.status(FAILSTATUS).json(message));
+// } 
 
 const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
@@ -517,6 +526,7 @@ export default {
     addDiscountPolicy,
     addBuyingPolicy,
     removeBuyingPolicy,
+    // getBuyingPolicies,
     removeDiscountPolicy,
     getUsername,
     getUserStores,
