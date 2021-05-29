@@ -160,7 +160,7 @@ export class Store implements iCategorizer
         return NaN
     }
 
-    public getPurchaseHistory() : Transaction[]{
+    public getPurchaseHistory() : Promise<Transaction[]>{
         return this.storeHistory.getPurchaseHistory();
     }
 

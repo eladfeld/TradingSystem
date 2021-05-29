@@ -35,7 +35,7 @@ export class StoreDB
         return Promise.reject("store doesnt exist")
     }
 
-    public static getPruductInfoByName(productName: string): Result<string>{
+    public static getPruductInfoByName(productName: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -52,10 +52,10 @@ export class StoreDB
             }
         })
         Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getPruductInfoByCategory(category: string): Result<string>{
+    public static getPruductInfoByCategory(category: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -71,10 +71,10 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getProductInfoAbovePrice(price: number): Result<string>{
+    public static getProductInfoAbovePrice(price: number): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -90,10 +90,10 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getProductInfoBelowPrice(price: number): Result<string>{
+    public static getProductInfoBelowPrice(price: number): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -109,10 +109,10 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getPruductInfoByStore(storeName: string): Result<string>{
+    public static getPruductInfoByStore(storeName: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -131,7 +131,7 @@ export class StoreDB
 
         Logger.log(`Getting products by store answer: ${JSON.stringify(products)}`)
 
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
     //------------------------------------------functions for tests-------------------------
 

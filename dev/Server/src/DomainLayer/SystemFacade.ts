@@ -5,7 +5,7 @@ import { Login } from "./user/Login";
 import { Register } from "./user/Register";
 import { Subscriber } from "./user/Subscriber";
 import { PaymentMeans, SupplyInfo, User } from "./user/User";
-import { isFailure,isOk, makeFailure, makeOk, Result } from "../Result";
+// import { isFailure,isOk, makeFailure, makeOk, Result } from "../Result";
 import fs from 'fs';
 import path, { resolve } from 'path'
 import { buyingOption } from "./store/BuyingOption";
@@ -193,120 +193,39 @@ export class SystemFacade
         })
     }
 
-    //--
+    //++
     public getPruductInfoByName(sessionId : string, productName: string): Promise<string>
     {
         Logger.log(`getPruductInfoByName : sessionId:${sessionId}, productName: ${productName}`);
-        let res:Result<string> = StoreDB.getPruductInfoByName(productName);
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
-            })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
+        return StoreDB.getPruductInfoByName(productName);
     }
 
-    //--
+    //++
     public getPruductInfoByCategory(sessionId : string, category: string): Promise<string>
     {
         Logger.log(`getPruductInfoByCategory : sessionId:${sessionId} , category:${category}`);
-        let res: Result<string> = StoreDB.getPruductInfoByCategory(category);
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
-            })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
-
+        return StoreDB.getPruductInfoByCategory(category);
     }
 
     //--
     public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoAbovePrice : userId:${userId} , price:${price}`);
-        let res: Result<string> = StoreDB.getProductInfoAbovePrice(price);
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
-            })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
+        return StoreDB.getProductInfoAbovePrice(price);
     }
 
     //--
     public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
-        let res: Result<string> = StoreDB.getProductInfoAbovePrice(price);
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
-            })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
+        return StoreDB.getProductInfoAbovePrice(price);
     }
 
     //--
     public getPruductInfoByStore(userId : number, store: string): Promise<string>
     {
         Logger.log(`getPruductInfoByStore : userId:${userId} , store:${store}`);
-        let res: Result<string> = StoreDB.getPruductInfoByStore(store);
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
-            })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
+        return StoreDB.getPruductInfoByStore(store);
     }
 
     //++
@@ -577,25 +496,25 @@ export class SystemFacade
         })
     }
 
-    //--
-    private resultToPromise = (res: Result<any>):Promise<string> => {
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
-            })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
-    }
+    // //--
+    // private resultToPromise = (res: Result<any>):Promise<string> => {
+    //     if(isOk(res))
+    //     {
+    //         let value = res.value;
+    //         return new Promise((resolve, reject) =>
+    //         {
+    //             resolve(value);
+    //         })
+    //     }
+    //     else
+    //     {
+    //         let error = res.message;
+    //         return new Promise((resulve, reject) =>
+    //         {
+    //             reject(error);
+    //         })
+    //     }
+    // }
 
     //++
     public addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
