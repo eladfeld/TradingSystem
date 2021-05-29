@@ -9,7 +9,7 @@ import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { buyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
-import Purchase from "../purchase/Purchase";
+import Purchase, { tPaymentInfo, tShippingInfo } from "../purchase/Purchase";
 import { discountOption, DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
@@ -17,8 +17,6 @@ import { StoreHistory } from "./StoreHistory";
 import Transaction from "../purchase/Transaction";
 import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
-import PaymentInfo from "../purchase/PaymentInfo";
-import ShippingInfo from "../purchase/ShippingInfo";
 import { tPredicate } from "../discount/logic/Predicate";
 import { tDiscount } from "../discount/Discount";
 import BuyingSubject from "../policy/buying/BuyingSubject";
@@ -213,6 +211,8 @@ export class Store implements iCategorizer
         return this.buyingPolicy.removePolicy(policyNumber); 
     }
 
+
+
     public getBuyingPolicies(subscriber: Subscriber): Result<Rule[]> {
         if(this.storeClosed) return makeFailure("Store is closed");
         const userId: number = subscriber.getUserId();
@@ -220,7 +220,7 @@ export class Store implements iCategorizer
         return makeOk(this.buyingPolicy.getPolicies()); 
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Result<boolean> {
+    public sellShoppingBasket(buyerId: number, shippingInfo: tShippingInfo, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Result<boolean> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
@@ -273,18 +273,18 @@ export class Store implements iCategorizer
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
 
-    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: buyingOption): Result<string> {
+    public sellProduct(buyerId: number, shippingInfo: tShippingInfo, productId: number, quantity: number, buyingOption: buyingOption): Result<string> {
         if(this.storeClosed){
             return makeFailure("Store is closed")
         }
         if(buyingOption < this.buyingOptionsMenu.length && buyingOption >= 0){
             //return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
-            return this.buyInstant(productId,quantity,buyerId,userAddr);
+            return this.buyInstant(productId,quantity,buyerId,shippingInfo);
         }
         return makeFailure("Invalid buying option");
     }
 
-    private buyInstant(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyInstant(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         if(!this.hasBuyingOption(buyingOption.INSTANT)){
             return makeFailure("Store does not support instant buying option")
         }
@@ -304,15 +304,15 @@ export class Store implements iCategorizer
         return makeOk("Checkout passed to purchase");
     }
 
-    private buyOffer(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyOffer(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyBid(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyBid(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyRaffle(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyRaffle(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         return makeFailure("Not implemented")
     }
 
@@ -556,11 +556,11 @@ export class Store implements iCategorizer
         this.buyingOptions = this.buyingOptions.filter(option => option !== buyingOption);
     }
 
-    public completeOrder(userId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
+    public async completeOrder(userId : number , paymentInfo : tPaymentInfo, shippingInfo: tShippingInfo) : Promise<boolean>
     {
-        return Purchase.CompleteOrder(userId,
+        return await Purchase.CompleteOrder(userId,
             this.storeId,
-            new ShippingInfo(this.storeAddress, userAddress),
+            shippingInfo,
             paymentInfo,
             this.bankAccount);
     }

@@ -18,17 +18,18 @@
 //import state from './InitialState';
 import { INITIAL_STATE } from '../../config';
 import ConditionalDiscount from '../../DomainLayer/discount/ConditionalDiscount';
-import PaymentInfo from '../../DomainLayer/purchase/PaymentInfo';
 import { StoreCategoryInfo } from '../../DomainLayer/store/StoreInfo';
 import { Service } from '../Service';
+import Purchase, { tPaymentInfo, tShippingInfo } from '../../DomainLayer/purchase/Purchase';
 import { basketState, discountState, predState, PRODUCT_PREF } from './StateBuilder';
 
 const BANK_ACCOUNT = 0;
-const ADDRESS = "313 8 Mile Road, Detroit";
+const SHIPPING_INFO : tShippingInfo = {name: "shir", address: "313 8 Mile Road" , city:"Detroit", country:"Michigan" , zip:3553}
+const ADDRESS = SHIPPING_INFO.address;      //might need to replace with tShippingInfo
 const ROOT_CATEGORY:any = null;
 const AGE = 25;
 const DEFAULT_PASSWORD = "123";
-const PAYMENT_INFO = new PaymentInfo(123,456,7890);
+const PAYMENT_INFO : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const state = INITIAL_STATE;
 
@@ -158,8 +159,8 @@ export default class StateInitializer{
                 const productId = this.products.get(store).get(name);
                 await service.addProductTocart(sessionId, storeId, productId,quantity );
             }
-            await service.checkoutBasket(sessionId, storeId, ADDRESS);
-            await service.completeOrder(sessionId, storeId, PAYMENT_INFO, ADDRESS);
+            await service.checkoutBasket(sessionId, storeId, SHIPPING_INFO);
+            await service.completeOrder(sessionId, storeId, PAYMENT_INFO, SHIPPING_INFO);
         }
     }
 

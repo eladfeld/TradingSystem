@@ -1,15 +1,20 @@
 import { assert, expect } from 'chai';
-import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
-import Purchase from '../../src/DomainLayer/purchase/Purchase';
+import Purchase, { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
+import {setTestConfigurations} from '../../src/config';
+
 
 declare interface PromiseConstructor {
     allSettled(promises: Array<Promise<any>>): Promise<Array<{ status: 'fulfilled' | 'rejected', value?: any, reason?: any }>>;
 }
 
-describe('2.9: buy products', function () {
+const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
+const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
+
+describe('2.9: buy products', function () {
+    setTestConfigurations();        //changing external APIs to mocks
     var service: Service = Service.get_instance();
     beforeEach(function () {
     });
@@ -26,8 +31,8 @@ describe('2.9: buy products', function () {
         let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
-        await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        let purchase_res = await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        await service.checkoutBasket(avi_sessionId, store.getStoreId(), shippingInfo);
+        let purchase_res = await service.completeOrder(avi_sessionId, store.getStoreId(), payInfo, shippingInfo)
 
         expect(purchase_res).to.equal(true)
         // check basktet updated successfully
@@ -60,11 +65,11 @@ describe('2.9: buy products', function () {
         await service.addProductTocart(ali_sessionId, store.getStoreId(), banana, 40);
 
         // avi buys 40 bananas successfully
-        await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        await service.checkoutBasket(avi_sessionId, store.getStoreId(), shippingInfo);
+        await service.completeOrder(avi_sessionId, store.getStoreId(), payInfo, shippingInfo);
         
         try{
-            let checkout_res =await service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42")
+            let checkout_res =await service.checkoutBasket(ali_sessionId, store.getStoreId(), shippingInfo)
             assert.fail()
         }
         catch{
@@ -96,12 +101,12 @@ describe('2.9: buy products', function () {
         service.addProductTocart(ali_sessionId, store.getStoreId(), banana_id, 1).then(_ => {
         
         //both avi and ali try to checkout with this banana(async calls not blocking)
-        service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42").catch( _ => {})
-        service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42").catch( _ => {})
+        service.checkoutBasket(ali_sessionId, store.getStoreId(), shippingInfo).catch( _ => {})
+        service.checkoutBasket(avi_sessionId, store.getStoreId(), shippingInfo).catch( _ => {})
         
         //both avi and ali try to complete the order
-        let ali_buy_res = service.completeOrder(ali_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-        let avi_buy_res = service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        let ali_buy_res = service.completeOrder(ali_sessionId, store.getStoreId(), payInfo, shippingInfo);
+        let avi_buy_res = service.completeOrder(avi_sessionId, store.getStoreId(), payInfo, shippingInfo);
 
         // here avi succeeds and ali fails to buy
         avi_buy_res.then(avi_buy => {

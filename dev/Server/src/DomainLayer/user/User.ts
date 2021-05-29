@@ -1,5 +1,6 @@
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
 import iSubject from '../discount/logic/iSubject';
+import { tShippingInfo } from '../purchase/Purchase';
 import { buyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
 import { StoreDB } from '../store/StoreDB';
@@ -27,15 +28,15 @@ export class User implements iSubject
         return 0;
     }
 
-    public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
+    public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Result<boolean>
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address, this);
+        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, shippingInfo, this);
     }
 
-    public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Result<string>
     {
         let store:Store =  StoreDB.getStoreByID(shopId);
-        return store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
+        return store.sellProduct(this.getUserId() , shippingInfo,productId, quantity, buying_option);
     }
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
     {

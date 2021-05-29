@@ -3,7 +3,6 @@ import { tDiscount } from "../DomainLayer/discount/Discount";
 import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
 import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
 import { Publisher } from "../DomainLayer/notifications/Publisher";
-import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
 import { SystemFacade } from "../DomainLayer/SystemFacade";
@@ -12,6 +11,7 @@ import { User } from "../DomainLayer/user/User";
 import { isOk, makeFailure, makeOk, Result} from "../Result";
 import { policyState } from "./state/StateBuilder";
 import StateInitializer from './state/StateInitializer';
+import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 
 export class Service
 {
@@ -117,19 +117,20 @@ export class Service
         return this.facade.editCart(sessionId, storeId, productId, newQuantity);
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, shippingInfo: tShippingInfo ): Promise<boolean>
     {
-        return this.facade.checkoutBasket(sessionId, shopId, supply_address);
+        return this.facade.checkoutBasket(sessionId, shopId, shippingInfo);
     }
 
-    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
+    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , shippingInfo:tShippingInfo): Promise<string>
     {
-        return this.facade.checkoutSingleProduct(sessionId, productId, quantity, storeId, supply_address);
+        return this.facade.checkoutSingleProduct(sessionId, productId, quantity, storeId, shippingInfo);
     }
 
-    public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
+
+    public completeOrder(sessionId : string , storeId : number , paymentInfo : tPaymentInfo, shippingInfo:tShippingInfo) : Promise<boolean>
     {
-        return this.facade.completeOrder(sessionId, storeId,paymentInfo, userAddress);
+        return this.facade.completeOrder(sessionId, storeId,paymentInfo, shippingInfo);
     }
 
 

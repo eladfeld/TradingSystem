@@ -11,8 +11,7 @@ import path, { resolve } from 'path'
 import { buyingOption } from "./store/BuyingOption";
 import { Authentication } from "./user/Authentication";
 import { StoreDB } from "./store/StoreDB";
-import Purchase from "./purchase/Purchase";
-import { PaymentInfo } from "./purchase/PaymentInfo";
+import Purchase, { tPaymentInfo, tShippingInfo } from "./purchase/Purchase";
 import Transaction from "./purchase/Transaction";
 import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
@@ -22,6 +21,8 @@ import { SpellChecker } from "./apis/spellchecker";
 import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
+import SupplySystemReal from "./apis/SupplySystemReal";
+import PaymentSystemReal from "./apis/PaymentSystemReal";
 
 export class SystemFacade
 {
@@ -36,20 +37,22 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers()))
+        if(!(this.initPaymentSystem() && this.initSupplySystem() &&  this.initSystemManagers()))
         {
             Logger.error("system could not initialized properly!");
         }
     }
 
-    private initSupplySystem() : boolean
+    private async initSupplySystem() : Promise<boolean>
     {
-        return true;
+        const initialization = await SupplySystemReal.init();
+        return initialization > 0 ? true : false;
     }
 
-    private initPaymentSystem() : boolean
+    private async initPaymentSystem() : Promise<boolean>
     {
-        return true;
+        const initialization = await PaymentSystemReal.init();
+        return initialization > 0 ? true : false;
     }
 
     public initSystemManagers() : boolean
@@ -459,13 +462,13 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, shippingInfo: tShippingInfo ): Promise<boolean>
     {
-        Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${supply_address}`);
+        Logger.log(`checkoutBasket : sessionId:${sessionId} , shopId:${shopId}  , supplyInfo:${shippingInfo}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let checkout_res = user.checkoutBasket(shopId, supply_address);
+            let checkout_res = user.checkoutBasket(shopId, shippingInfo);
             if (isOk(checkout_res))
             {
                 let res = checkout_res.value
@@ -480,11 +483,10 @@ export class SystemFacade
         return new Promise ((res,rej) => rej("user not found"));
     }
 
-    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
+    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , shippingInfo:tShippingInfo): Promise<string>
     {
-        Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
-        supply_address = " down da block";
-        if(supply_address === ''|| supply_address === undefined || supply_address === null){
+        Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${shippingInfo}`);
+        if( shippingInfo === undefined || shippingInfo === null){
             return new Promise((resolve,reject) => { reject("invalid user Address")})
         }
         if(quantity < 0|| quantity === undefined || quantity === null){
@@ -493,7 +495,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let res: Result<string> = user.checkoutSingleProduct(productId  , quantity,  supply_address, storeId , buyingOption.INSTANT);
+            let res: Result<string> = user.checkoutSingleProduct(productId  , quantity,  shippingInfo, storeId , buyingOption.INSTANT);
             if(isOk(res))
             {
                 let value = res.value;
@@ -514,7 +516,7 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
+    public async completeOrder(sessionId : string , storeId : number , paymentInfo : tPaymentInfo, shippingInfo:tShippingInfo) : Promise<boolean>
     {
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
         // if(userAddress === ''|| userAddress === undefined || userAddress === null){
@@ -525,21 +527,19 @@ export class SystemFacade
         let store: Store = StoreDB.getStoreByID(storeId);
         if(user !== undefined)
         {
-            let res: Result<boolean> = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
-            if(isOk(res))
+            let res: boolean = await store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
+            if(res)
             {
-                let value = res.value;
                 return new Promise((resolve, reject) =>
                 {
-                    resolve(value);
+                    resolve(res);
                 })
             }
             else
             {
-                let error = res.message;
                 return new Promise((resolve, reject) =>
                 {
-                    reject(error);
+                    reject(res);
                 })
             }
         }

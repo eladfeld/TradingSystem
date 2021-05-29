@@ -1,6 +1,5 @@
 import { assert, expect } from 'chai';
 import { servicesVersion } from 'typescript';
-import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
 import { Product } from '../../src/DomainLayer/store/Product';

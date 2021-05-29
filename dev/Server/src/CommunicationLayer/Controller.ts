@@ -2,7 +2,7 @@ import { Service } from '../ServiceLayer/Service';
 import {Request, Response, NextFunction} from 'express';
 import { isOk, Result } from '../Result';
 import { Subscriber } from '../DomainLayer/user/Subscriber';
-import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
+import {tPaymentInfo,tShippingInfo} from '../DomainLayer/purchase/Purchase';
 import { checkout } from './Router';
 import { SpellChecker } from '../DomainLayer/apis/spellchecker';
 import { SpellCheckerAdapter } from '../DomainLayer/SpellCheckerAdapter';
@@ -191,8 +191,8 @@ const checkoutBasket = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let supplyAddress: string = req.body.supplyAddress;
-    let checkout_res = service.checkoutBasket(sessionId, storeId, supplyAddress)
+    let shippingInfo: any = req.body.supplyAddress;
+    let checkout_res = service.checkoutBasket(sessionId, storeId, shippingInfo)
     checkout_res.then(result => res.status(OKSTATUS).json(result))
     .catch( message =>res.status(FAILSTATUS).json(message))
 }
@@ -204,8 +204,8 @@ const checkoutSingleProduct = (req: Request, res: Response, next: NextFunction) 
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
     let storeId: number = req.body.storeId;
-    let supplyAddress: string = req.body.supplyAddress;
-    service.checkoutSingleProduct(sessionId, productId, quantity, storeId, supplyAddress)
+    let shippingInfo: any = req.body.supplyAddress;
+    service.checkoutSingleProduct(sessionId, productId, quantity, storeId, shippingInfo)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -215,10 +215,9 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let paymentInfoObj: any = req.body.paymentInfo;
-    let paymentInfo: PaymentInfo = new PaymentInfo(paymentInfoObj.cardNumber, paymentInfoObj.expiration, paymentInfoObj.cvv);
-    let userAddress: string = req.body.userAddress;
-    service.completeOrder(sessionId, storeId, paymentInfo, userAddress)
+    let paymentInfo: any = req.body.paymentInfo;
+    let shippingInfo: any = req.body.shippingInfo;
+    service.completeOrder(sessionId, storeId, paymentInfo, shippingInfo)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }

@@ -1,6 +1,5 @@
 import { assert, expect } from 'chai';
 import { servicesVersion } from 'typescript';
-import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
@@ -8,11 +7,20 @@ import { register_login, open_store } from './common';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
+import { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
+import { setTestConfigurations} from '../../src/config';
+
+
+const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
+const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
+
+
 
 describe('7.1: Api Fail', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        setTestConfigurations();        //changing external APIs to mocks
     });
 
     afterEach(function () {
@@ -29,8 +37,8 @@ describe('7.1: Api Fail', function () {
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
         service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        service.checkoutBasket(sessionId, store.getStoreId(), shippingInfo);
+        service.completeOrder(sessionId, store.getStoreId(), payInfo, shippingInfo)
         .then(_ => assert.ok(""))
         .catch(_ => assert.fail())
         }
@@ -47,8 +55,8 @@ describe('7.1: Api Fail', function () {
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
         service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        service.checkoutBasket(sessionId, store.getStoreId(), shippingInfo);
+        service.completeOrder(sessionId, store.getStoreId(), payInfo, shippingInfo)
         .then(_ => assert.fail())
         .catch(_ => assert.ok(""))
     })
@@ -64,9 +72,9 @@ describe('7.1: Api Fail', function () {
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        await service.checkoutBasket(sessionId, store.getStoreId(), shippingInfo);
         try{
-        await service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        await service.completeOrder(sessionId, store.getStoreId(), payInfo, shippingInfo)
         assert.fail()
         }
         catch{
@@ -97,8 +105,8 @@ describe('7.1: Api Fail', function () {
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 20);
         await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), apple, 10);
-        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        await service.checkoutBasket(sessionId, store.getStoreId(), shippingInfo);
+        await service.checkoutBasket(sessionId, store.getStoreId(), shippingInfo);
         
         try{
             let cartStr = await service.getCartInfo(sessionId)

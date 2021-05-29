@@ -1,35 +1,23 @@
 import { makeFailure, makeOk, Result } from '../../Result';
 import SupplySystem from '../apis/SupplySystem';
+import SupplySystemReal from '../apis/SupplySystemReal';
 import {ShoppingCart} from '../user/ShoppingCart';
-import ShippingInfo from './ShippingInfo';
+import { tShippingInfo } from './Purchase';
 
 class SupplySystemAdapter {
 
-    init = () : Result<number> => {
-        const res: number = SupplySystem.init();
-        if(res<0)//failed to init
-            return makeFailure(SupplySystemAdapter.initResToMessage(res));
-        return makeOk(res);
+    init = () : Promise<number> => {
+        return SupplySystemReal.init();
     }
 
-    supply = (reservationId: number) : boolean => {
-        return SupplySystem.supply(reservationId);
+    supply = (shippingInfo: tShippingInfo) : Promise<number> => {
+        return SupplySystemReal.supply(shippingInfo);
     }
 
-    reserve = (shippingInfo: ShippingInfo) : number => {
-        return SupplySystem.reserve(shippingInfo.to, shippingInfo.from);
+    cancelSupply = (transId: number) :Promise<boolean> => {
+        return SupplySystemReal.cancelSupply(transId);
     }
 
-    cancelReservation = (reservationId: number) :boolean => {
-        return SupplySystem.cancelReservation(reservationId);
-    }
-
-    static initResToMessage = (res: number):string =>{
-        switch(res){
-            default:
-                return "Failed to init system."
-        }
-    }
 }
 
 export default SupplySystemAdapter;

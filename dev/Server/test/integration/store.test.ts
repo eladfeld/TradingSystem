@@ -10,8 +10,17 @@ import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
 import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
 import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
+import { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
+import {setTestConfigurations} from '../../src/config';
+
+
+const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
+
+const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
+
 
 describe('view store products' , () => {
+    setTestConfigurations();
 
     // it('view store without products', () => {
     //     let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
@@ -105,7 +114,7 @@ describe('search product in store' , () => {
                     expect(isOk(policyRes)).to.equal(true);
                     const buyingSubject = new BuyingSubject(subsriber, basket1a);
 
-                    let sellRes = store1.sellShoppingBasket(user1Id, user1Adrs,basket1a, buyingSubject, ()=>{})
+                    let sellRes = store1.sellShoppingBasket(user1Id, shippingInfo,basket1a, buyingSubject, ()=>{})
                     // expect(isFailure(sellRes)).to.equal(true)
                 }
 
