@@ -3,16 +3,19 @@ import axios from 'axios';
 import { useState } from 'react';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../constants';
 import history from '../history';
-import { areNonNegativeIntegers } from './componentUtil';
+import { areNonNegativeIntegers, areNotEmptyStrings } from './componentUtil';
+import PaymentInfo from './PaymentInfo';
+import ShippingInfo from './ShippingInfo';
 
 const Checkout = ({getAppState, setAppState}) =>{
-    const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
-    const btnstyle={margin:'8px 0'}
+    const [shippingInfo,setShippingInfo] = useState({});
+    const [paymentInfo, setPaymentInfo] = useState({});
+    const resetFields = () =>{
+        setShippingInfo({});
+        setPaymentInfo({});
+    }
 
-    const [userAddress, setUserAddress] = useState("");
-    const [CardNumberText, setCardNumberText] = useState("");
-    const [expirationText, setExpirationText] = useState("");
-    const [cvvText, setCvvText] = useState("");
+
 
     const {userId, basketAtCheckout, cart} = getAppState();
 
@@ -20,20 +23,23 @@ const Checkout = ({getAppState, setAppState}) =>{
         history.push('/cart');
     }
     const onCompleteClick = async () =>{
-        if(userAddress.length === 0){
-            alert("you must provide a shipping address");
+        const {card_number,month, year, holder, ccv, id} = paymentInfo;
+        const {name, address, city, country, zip} = shippingInfo;
+        if(!areNotEmptyStrings([holder,name,address,city,country])){
+            alert("you must fill in all fields");
             return;            
         }
-        if(!areNonNegativeIntegers([CardNumberText, cvvText, expirationText])){
-            alert("credit card info must be valid numbers");
+        if(!areNonNegativeIntegers([card_number, month, year, ccv, id, zip])){
+            alert("credit card info and zip code must be valid numbers");
             return;
         }
 
-        const paymentInfo = {cardNumber: Number(CardNumberText), cvv: Number(cvvText), expiraion:Number(expirationText)};
-        const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, userAddress, paymentInfo});
+        const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, userAddress:"8Mile", paymentInfo});
+        //const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, shippingInfo, paymentInfo});
         switch(response.status){
             case SERVER_RESPONSE_OK:
                 cart.baskets = cart.baskets.filter(b => b.storeId !== basketAtCheckout);
+                resetFields();
                 setAppState({basketAtCheckout: undefined, cart});
                 alert('purchase was succesful!\nThank you, come again.');
                 history.push('/cart');
@@ -47,45 +53,27 @@ const Checkout = ({getAppState, setAppState}) =>{
         }
     }
 
-
+    const paperStyle={padding :20,height:"auto",width:"700px", margin:"20px auto"}
+    const btnstyle={margin:'8px 0'}
     return(
-        <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
-                    <Typography>Checkout</Typography>
+                    <Typography variant="h3">Checkout</Typography>
                 </Grid>
-                <TextField 
-                    label='Address' 
-                    placeholder='Enter address' 
-                    value={userAddress} 
-                    onChange={(event) =>  setUserAddress(event.target.value)} 
-                    fullWidth/>
-                <TextField 
-                    label='Card Number' 
-                    placeholder='Enter Credit Card' 
-                    value={CardNumberText} 
-                    onChange={(event) => setCardNumberText(event.target.value)} 
-                    fullWidth/>
-                <TextField 
-                    label='Expiration' 
-                    placeholder='Enter expiration date' 
-                    value={expirationText} 
-                    onChange={(event) => setExpirationText(event.target.value)} 
-                    fullWidth/>
-                <TextField 
-                    label='cvv' 
-                    placeholder='Enter cvv' 
-                    value={cvvText} 
-                    onChange={(event) => setCvvText(event.target.value)} 
-                    fullWidth/>
+                <Grid container>
+                    <Grid item xs={6}>
+                        <ShippingInfo shippingInfo={shippingInfo} setShippingInfo={setShippingInfo}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <PaymentInfo  paymentInfo = {paymentInfo} setPaymentInfo = {setPaymentInfo}/>
+                    </Grid>
+                </Grid>
                 <br/> <br/> 
                 <Button type='submit' color='primary' variant="contained" style={btnstyle}
                     onClick={onCompleteClick} fullWidth>Complete</Button>
                 <Button type='submit' color='secondary' variant="contained" style={btnstyle}
                     onClick={onCancelClick} fullWidth>Cancel</Button>
-
             </Paper>
-        </Grid>
     );
 };
 
