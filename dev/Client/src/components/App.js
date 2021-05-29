@@ -17,8 +17,7 @@ import MyTransaction from './MyTransaction';
 import Register from './Register';
 import ManageStores from './ManageStores'
 import ManageStore from './ManageStore'
-import { ROUTE_MANAGE_EMPLOYEE } from '../routes';
-import ManageEmployee from './ManageEmployee';
+import ManageSystem from './system_manager/ManageSystem';
 
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
@@ -170,6 +169,12 @@ class App extends React.Component
             path= '/store/:storeId' exact
             render={(props) => (
               <ManageStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path= '/managesystem' exact
+            render={(props) => (
+              <ManageSystem {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>
