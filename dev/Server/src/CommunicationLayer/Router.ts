@@ -47,4 +47,15 @@ router.post('/getUserStores', Controller.getUserStores)
 router.post('/getMyPurchaseHistory', Controller.getMyPurchaseHistory)
 
 
+
+router.post('/complain', Controller.complain)
+router.post('/getUsersNames', Controller.getUserNames)
+router.post('/getSystemComplaints', Controller.getSystemComplaints)
+router.post('/getSystemTransactions', Controller.getSystemTransactions)
+router.post('/closeStore', Controller.closeStore)
+router.post('/deleteComplaint', Controller.deleteComplaint)
+router.post('/replyToComplaint', Controller.replyToComplaint)
+router.post('/banUser', Controller.banUser)
+
+
 export = router;

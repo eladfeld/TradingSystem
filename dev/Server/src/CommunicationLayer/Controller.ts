@@ -491,6 +491,37 @@ const getStoreNames = (req : Request, res: Response , next: NextFunction) =>
     res.status(OKSTATUS).json(stores);
 }
 
+const complain = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let message     : {title:string, body:string, authorName:string} = req.body.storeId;
+    // let promise = service.complain(sessionId, storeId, policyNumber );
+    // promise
+    // .then(message => res.status(OKSTATUS).json(message))
+    // .catch(message => res.status(FAILSTATUS).json(message));
+}
+const getUserNames = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let promise = service.getUsernames();
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
+}
+const getSystemComplaints = (req : Request, res: Response , next: NextFunction) =>{
+
+}
+const getSystemTransactions = (req : Request, res: Response , next: NextFunction) =>{
+
+}
+const closeStore = (req : Request, res: Response , next: NextFunction) =>{
+
+}
+const deleteComplaint = (req : Request, res: Response , next: NextFunction) =>{
+
+}
+const replyToComplaint = (req : Request, res: Response , next: NextFunction) =>{
+
+}
+
 
 export default {
     enter,
