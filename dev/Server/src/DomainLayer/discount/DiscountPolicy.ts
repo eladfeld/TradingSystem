@@ -29,18 +29,20 @@ export default class DiscountPolicy{
     }
 
     //adds a new iDiscount to the policy. If @obj is invalid, returns Failure explaining why.
-    public addPolicy = (obj: any):Result<string> =>{
+    public addPolicy = (obj: any):Promise<string> =>{
+        //TODO: #saveDB
         const res: Result<iDiscount> = DiscountParser.parse(obj);
-        if(isFailure(res)) return res;
+        if(isFailure(res)) return Promise.reject(res.message);
         this.discounts.set(this.nextId++, res.value);
-        return makeOk("successfully added discount to the discount policy");
+        return Promise.resolve("successfully added discount to the discount policy");
     }
 
-    public removePolicy = (id: number):Result<string> =>{
+    public removePolicy = (id: number):Promise<string> =>{
+        //TODO: #saveDB
         const policy = this.discounts.get(id);
-        if(policy === undefined)return makeFailure("polcy does not exist");
+        if(policy === undefined)return Promise.reject("polcy does not exist");
         this.discounts.delete(id);
-        return makeOk(`Discount Policy #${id} has been removed`);
+        return Promise.resolve(`Discount Policy #${id} has been removed`);
     }
 
     public toObjs = ():tStoreDiscount[] =>{

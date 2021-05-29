@@ -23,6 +23,7 @@ import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import { rejects } from "assert";
+import { StoreProduct } from "./store/StoreProduct";
 
 export class SystemFacade
 {
@@ -45,11 +46,13 @@ export class SystemFacade
 
     private initSupplySystem() : boolean
     {
+        //TODO: handshake
         return true;
     }
 
     private initPaymentSystem() : boolean
     {
+        //TODO: handshake
         return true;
     }
 
@@ -137,9 +140,9 @@ export class SystemFacade
         Logger.log(`login : sessionId:${sessionId} , username:${username}`);
 
         if(username === '' || username === undefined || username === null)
-            return new Promise((resolve,reject) => { reject("invalid username name")})
+            return Promise.reject("invalid username name")
         if(password === '' || password === undefined || password === null)
-            return new Promise((resolve,reject) => { reject("invalid password")})
+            return Promise.reject("invalid password")
         if(this.logged_guest_users.get(sessionId) === undefined)
         {
             Logger.log(`login => user didn't enter the system`);
@@ -165,34 +168,29 @@ export class SystemFacade
         })
     }
 
-    //--
+    //++
     public getStoreInfo(sessionId : string ,storeId: number): Promise<string>
     {
         Logger.log(`getStoreInfo : sessionId:${sessionId} , storeId:${storeId}`);
         if(storeId === undefined || storeId === null){
-            return new Promise((resolve,reject) => { reject("invalid storeId")})
+            return Promise.reject("invalid storeId")
         }
-        let store: Store = StoreDB.getStoreByID(storeId);
+        
         let user = this.logged_guest_users.get(sessionId)
-        if (user === undefined)
-            return new Promise((resolve,reject) => reject("user is not logged in"))
-        let res: Result<string> = store.getStoreInfoResult(user.getUserId());
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
+            if (user === undefined)
+                return Promise.reject("user is not logged in")
+
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve, reject) => {
+            storep.then( store => {
+                let infop = store.getStoreInfoResult(user.getUserId())
+                infop.then( info => {
+                    resolve(info)
+                })
+                .catch( error => reject(error))
             })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
+            .catch( error => reject(error))
+        })
     }
 
     //--
@@ -326,76 +324,63 @@ export class SystemFacade
                 .catch ( error => reject(error))
             })
         }
-        return new Promise((resolve, reject) => reject("user not found"));
+        return Promise.reject("user not found");
     }
 
-    //--
+    //++
     public addCategoryToRoot(sessionId: string, storeId: number, category: string): Promise<string>
     {
         Logger.log(`addCategoryToRoot : sessionId:${sessionId} , storeId: ${storeId} , category:${category}`);
         if(category === '' || category === undefined || category === null){
-            return new Promise((resolve,reject) => { reject("invalid category Name")})
+            return Promise.reject("invalid category Name")
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if (subscriber !== undefined)
-        {
-            let res: Result<string> = store.addCategoryToRoot(category)
-            if(isOk(res))
-            {
-                SpellCheckerAdapter.get_instance().add_category(category);
-                let value = res.value;
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
+
+        if (subscriber === undefined)
+            return Promise.reject("user not found");
+
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise( (resolve,reject) => {
+            storep.then( store => {
+                let addcatp = store.addCategoryToRoot(category)
+                addcatp.then( msg => {
+                    SpellCheckerAdapter.get_instance().add_category(category);
+                    resolve(msg);
                 })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
+                .catch( error => reject(error))
+            })
+            .catch( error => reject(error))
+        })        
     }
 
-    //--
+    //++
     public addCategory(sessionId: string, storeId: number, categoryFather:string, category: string): Promise<string>
     {
         Logger.log(`addCategory : sessionId:${sessionId} , storeId: ${storeId} , categoryFather:${categoryFather} , category:${category}`);
         if(category === '' || category === undefined || category === null){
-            return new Promise((resolve,reject) => { reject("invalid category Name")})
+            return Promise.reject("invalid category Name")
         }
+
         if(categoryFather === '' || categoryFather === undefined || categoryFather === null){
-            return new Promise((resolve,reject) => { reject("invalid categoryFather Name")})
+            return Promise.reject("invalid categoryFather Name");
         }
+
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if (subscriber !== undefined)
-        {
-            let res: Result<string> = store.addCategory(categoryFather, category)
-            if(isOk(res))
-            {
-                SpellCheckerAdapter.get_instance().add_category(category);
-                let value = res.value;
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
+        if(subscriber === undefined)
+            return Promise.reject("user not found");
+
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise( (resolve,reject) => {
+            storep.then( store => {
+                let addcatp = store.addCategory(categoryFather, category)
+                addcatp.then( msg => {
+                    SpellCheckerAdapter.get_instance().add_category(category);
+                    resolve(msg)
                 })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
+                .catch( error => reject(error))
+            })
+            .catch( error => reject(error))
+        })
     }
 
     //++
@@ -442,19 +427,13 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let checkout_res = user.checkoutBasket(shopId, supply_address);
-            if (isOk(checkout_res))
-            {
-                let res = checkout_res.value
-                return new Promise((resolve,reject)=>resolve(res))
-            }
-            else
-            {
-                let msg = checkout_res.message
-                return new Promise((resolve,reject)=>reject(msg))
-            }
+            let checkoutp = user.checkoutBasket(shopId, supply_address);
+            return new Promise((resolve,reject) => {
+                checkoutp.then( res => resolve(res) )
+                .catch(error => reject(error))
+            })
         }
-        return new Promise ((res,rej) => rej("user not found"));
+        return Promise. reject("user not found");
     }
 
     //--
@@ -463,36 +442,25 @@ export class SystemFacade
         Logger.log(`checkoutSingleProduct : sessionId : ${sessionId}, productId: ${productId}, quantity :${quantity} , storeId : ${storeId},  , supplyInfo:${supply_address}`);
         supply_address = " down da block";
         if(supply_address === ''|| supply_address === undefined || supply_address === null){
-            return new Promise((resolve,reject) => { reject("invalid user Address")})
+            return Promise.reject("invalid user Address")
         }
         if(quantity < 0|| quantity === undefined || quantity === null){
-            return new Promise((resolve,reject) => { reject("invalid quantity")})
+            return Promise.reject("invalid quantity")
         }
+
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let res: Result<string> = user.checkoutSingleProduct(productId  , quantity,  supply_address, storeId , buyingOption.INSTANT);
-            if(isOk(res))
-            {
-                let value = res.value;
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
-                })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
+            let checkoutp = user.checkoutSingleProduct(productId  , quantity,  supply_address, storeId , buyingOption.INSTANT);
+            return new Promise((resolve,reject) => {
+                checkoutp.then( msg => resolve(msg))
+                .catch(error => reject(error))
+            })
         }
-        return new Promise((resolve, reject) => reject("user not found"));
+        return Promise.reject("user not found");
     }
 
-    //--
+    //++
     public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
     {
         Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
@@ -501,28 +469,20 @@ export class SystemFacade
         // }
 
         let user: User = this.logged_guest_users.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(user !== undefined)
-        {
-            let res: Result<boolean> = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
-            if(isOk(res))
-            {
-                let value = res.value;
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
+        if (user === undefined)
+            return Promise.reject("user not found")
+        
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve,reject) => {
+            storep.then( store => {
+                let completep = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
+                completep.then( complete => {
+                    resolve(complete)
                 })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resolve, reject) =>
-                {
-                    reject(error);
-                })
-            }
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
+                .catch( error => reject(error))
+            })
+            .catch( error => reject(error))
+        })
     }
 
 
@@ -560,77 +520,61 @@ export class SystemFacade
         return Promise.reject("user not found");
     }
 
-    //--
+    //++
     public editStoreInventory(sessionId: string, storeId: number, productId: number, quantity: number): Promise<string>
     {
         Logger.log(`editStoreInventory : sessionId:${sessionId} , storeId:${storeId}, productId:${productId}, quantity:${quantity}`);
         if(quantity < 0|| quantity === undefined || quantity === null){
-            return new Promise((resolve,reject) => { reject("invalid quantity")})
+            return Promise.reject("invalid quantity")
         }
+
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> =  store.setProductQuantity(subscriber, productId, quantity);
-            if(isOk(res))
-            {
-                let value = res.value;
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
+        if (subscriber === undefined)
+            return Promise.reject("subscriber wasn't found");
+
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise ((resolve,reject) => {
+            storep.then( store => {
+                let setp =  store.setProductQuantity(subscriber, productId, quantity);
+                setp.then( msg => {
+                    resolve(msg)
                 })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
-        }
-        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+                .catch( error => reject(error) )
+            }).
+            catch( error => reject(error))
+        })
     }
 
-    //--
+    //++
     public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
     {
         Logger.log(`addNewProduct : sessionId:${sessionId} , storeId:${storeId}, productName:${productName} , categories:${categories} , price:${price} , quantity:${quantity} `);
         if(productName === '' || productName === undefined || productName === null){
-            return new Promise((resolve,reject) => { reject("invalid product Name")})
+            return Promise.reject("invalid product Name")
         }
         if(price < 1|| price === undefined || price === null){
-            return new Promise((resolve,reject) => { reject("invalid price")})
+            return Promise.reject("invalid price")
         }
         if(quantity < 0|| quantity === undefined || quantity === null){
-            return new Promise((resolve,reject) => { reject("invalid quantity")})
+            return Promise.reject("invalid quantity")
         }
-        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<number> = store.addNewProduct(subscriber, productName, categories, price, quantity);
-            if(isOk(res))
-            {
-                let value = res.value;
-                SpellCheckerAdapter.get_instance().add_productName(productName);
-                return new Promise((resolve, reject) =>
-                {
-                    resolve(value);
-                })
-            }
-            else
-            {
 
-                let error = res.message;
-                Logger.log(error);
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
+        let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        if (subscriber === undefined)
+            return Promise.reject("subscriber or store wasn't found")
+
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve,reject) => {
+            storep.then( store => {
+                let addp =store.addNewProduct(subscriber, productName, categories, price, quantity);
+                addp.then( productId => {
+                    SpellCheckerAdapter.get_instance().add_productName(productName);
+                    resolve(productId)
                 })
-            }
-        }
-        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+                .catch( error => reject(error))
+            })
+            .catch( error => reject(error))
+        })
     }
 
     //--
@@ -653,36 +597,49 @@ export class SystemFacade
         }
     }
 
-    //--
+    //++
     public addBuyingPolicy(sessionId: string, storeId: number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
         Logger.log(`addBuyingPolicy : sessionId:${sessionId} , storeId:${storeId}, policyName:${policyName}`);
         if(policyName === '' || policyName === undefined || policyName === null){
             return new Promise((resolve,reject) => { reject("invalid policy name")});
         }
+
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> =  store.addBuyingPolicy(subscriber, policyName, buyingPolicy);
-            return this.resultToPromise(res);
-        }
-        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve, reject) => {
+            storep.then(store => {
+                if(subscriber !== undefined && store !== undefined)
+                {
+                    let addp =  store.addBuyingPolicy(subscriber, policyName, buyingPolicy);
+                    addp.then(msg => resolve(msg))
+                    .catch( error => reject(error))
+                }
+                else reject("subscriber or store wasn't found");
+            }).
+            catch( error => reject(error))
+        })
     }
 
-    //--
+    //++
     public removeBuyingPolicy(sessionId: string, storeId: number, policyNumber: number):Promise<string> {
         Logger.log(`removeBuyingPolicy : sessionId:${sessionId} , storeId:${storeId}, policyNumber:${policyNumber}`);
         if(policyNumber < 0){
             return new Promise((resolve,reject) => { reject("invalid policy number")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> =  store.removeBuyingPolicy(subscriber, policyNumber);
-            return this.resultToPromise(res);
-        }
-        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise ((resolve,reject) => {
+            storep.then( store => {
+                if(subscriber !== undefined && store !== undefined)
+                {
+                    let remp =  store.removeBuyingPolicy(subscriber, policyNumber);
+                    remp.then( msg =>{
+                        resolve(msg)
+                    }).catch( error => reject(error))
+                }
+                else reject("subscriber or store wasn't found");
+            }).catch( error => reject(error))
+        })
     }
 
     // public getBuyingPolicies(sessiodId: any, storeId: number): Promise<string> {
@@ -704,29 +661,44 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid discount name")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> =  store.addDiscount(subscriber, name, discount);
-            return this.resultToPromise(res);
-        }
-        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve, reject) => {
+            storep.then(store =>
+                {
+                    if(subscriber !== undefined && store !== undefined)
+                    {
+                        let msgp =  store.addDiscount(subscriber, name, discount);
+                        msgp.then(msg => resolve(msg))
+                        .catch(error => reject(error))
+                    }
+                    reject(`subscriber or store wasn't found ${JSON.stringify(subscriber)} ${JSON.stringify(store)}`);
+                }
+            )
+            .catch(error => reject(error))
+        })
+
     }
 
-    //--
+    //++
     public removeDiscountPolicy(sessionId: string, storeId: number, policyNumber: number): Promise<string> {
         Logger.log(`removeDiscountPolicy : sessionId:${sessionId} , storeId:${storeId}, policyNumber:${policyNumber}`);
         if(policyNumber < 0){
             return new Promise((resolve,reject) => { reject("invalid policy number")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> =  store.removeDiscountPolicy(subscriber, policyNumber);
-            return this.resultToPromise(res);
-        }
-        return new Promise((resolve, reject) => reject("subscriber or store wasn't found"));
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve,reject) => {
+            storep.then( store => {
+                if(subscriber !== undefined && store !== undefined)
+                {
+                    let remp =  store.removeDiscountPolicy(subscriber, policyNumber);
+                    remp.then( msg => resolve(msg))
+                    .catch( error => reject(error))
+                }
+                else reject("subscriber or store wasn't found")
+            })
+            .catch(error => reject(error))
+        })
     }
 
     //++
@@ -745,9 +717,7 @@ export class SystemFacade
                     issystemManagerp.then( ismanager => {
                         if (ismanager){
                             let historyp = watchee.getPurchaseHistory()
-                            historyp.then( history => {
-                                resolve(history)
-                            })
+                            historyp.then( history => { resolve(history) })
                             .catch ( error => reject(error))
                         }
                         else reject("user doesnt have permissions")
@@ -772,73 +742,67 @@ export class SystemFacade
     }
 
     //this function is used by subscribers that wants to see stores's history
-    //--
+    //++
     public getStorePurchaseHistory(sessionId: string, storeId: number): Promise<Transaction[]>
     {
         Logger.log(`getStorePurchaseHistory : sessionId:${sessionId} ,storeId: ${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if (subscriber === undefined)
-            return new Promise((resolve, reject) => reject("User not logged in"));
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(!store.permittedToViewHistory(subscriber) && !Authentication.isSystemManager(subscriber.getUserId()) )
-            return new Promise((resolve, reject) => reject("user don't have system manager permissions"));
-        return new Promise((resolve, reject) => resolve(Purchase.getCompletedTransactionsForStore(storeId)));
+            return Promise.reject("User not logged in");
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise ((resolve,reject) => {
+            storep.then( store => {
+                let sysmanagerp = Authentication.isSystemManager(subscriber.getUserId());
+                sysmanagerp.then ( isSysManager => {
+                    if(!store.permittedToViewHistory(subscriber) && !isSysManager)
+                        reject("user don't have system manager permissions");
+                    resolve(Purchase.getCompletedTransactionsForStore(storeId));
+                })
+                .catch( error => reject(error))
+            }).catch(error => reject(error))
+        })
     }
 
+    //++
     public deleteManagerFromStore(sessionId: string, managerToDelete: number, storeId: number): Promise<string>
     {
         Logger.log(`deleteManagerFromStore : sessionId:${sessionId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> = store.deleteManager(subscriber, managerToDelete );
-            if(isOk(res))
-            {
-                let value = res.value;
-                return new Promise((resolve, reject) =>
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve, reject) => {
+            storep.then(store =>
                 {
-                    resolve(value);
+                    if(subscriber !== undefined && store !== undefined)
+                    {
+                        let msgp: Promise<string> = store.deleteManager(subscriber, managerToDelete );
+                        msgp.then(msg => resolve(msg))
+                        .catch(error => reject(error))
+                    } 
+                    else reject("wrong parameter given");
                 })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
-        }
-        return new Promise((resolve, reject) => reject("wrong parameter given"));
+                .catch(error => reject(error))
+        })
     }
 
+    //++
     public editStaffPermission(sessionId: string, managerToEditId: number, storeId: number, permissionMask: number):Promise<string>
     {
         Logger.log(`editStaffPermission : sessionId:${sessionId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        if(subscriber !== undefined && store !== undefined)
-        {
-            let res: Result<string> = store.editStaffPermission(subscriber, managerToEditId, permissionMask);
-            if(isOk(res))
-            {
-                let value = res.value;
-                return new Promise((resolve, reject) =>
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve,reject) => {
+            storep.then( store => {
+                if(subscriber !== undefined && store !== undefined)
                 {
-                    resolve(value);
-                })
-            }
-            else
-            {
-                let error = res.message;
-                return new Promise((resulve, reject) =>
-                {
-                    reject(error);
-                })
-            }
-        }
-        return new Promise((resolve, reject) => reject("wrong parameter given"));
+                    let editp = store.editStaffPermission(subscriber, managerToEditId, permissionMask);
+                    editp.then ( msg => {
+                        resolve(msg)
+                    })
+                    .catch(error => reject(error))
+                }
+                else reject("wrong parameter given")
+            }).catch( error => reject(error))
+        })
     }
 
     //++
@@ -850,16 +814,18 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         let newOwnerp = Authentication.getSubscriberByName(newOwnerUsername)
-        
         return new Promise ((resolve,reject) => {
             newOwnerp.then ( newOwner => {
-                let appownerp = store.appointStoreOwner(appointer, newOwner );
-                appownerp.then( msg => {
-                    resolve(msg)
-                })
-                .catch( error => reject(error))
+                storep.then(store =>
+                    {
+                        let appownerp = store.appointStoreOwner(appointer, newOwner );
+                        appownerp.then( msg => { resolve(msg)})
+                        .catch( error => reject(error))
+                    }
+                )
+                .catch(error => reject(error))
             })
             .catch( error => reject(error))
         })
@@ -874,42 +840,38 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         let newManagerp = Authentication.getSubscriberByName(newManagerUsername)
         
         return new Promise ((resolve,reject) => {
-            newManagerp.then ( newmanager => {
-                let appmanp =  store.appointStoreManager(appointer, newmanager);
-                appmanp.then( msg => {
-                    resolve(msg)
+            storep.then (store => {
+                newManagerp.then ( newmanager => {
+                    let appmanp =  store.appointStoreManager(appointer, newmanager);
+                    appmanp.then( msg => {
+                        resolve(msg)
+                    })
+                    .catch( error => reject(error))
                 })
                 .catch( error => reject(error))
             })
-            .catch( error => reject(error))
+            .catch(error => reject(error))
         })
     }
 
     public getStoreStaff(sessionId: string, storeId: number): Promise<string> {
         Logger.log(`getStoreStaff : sessionId:${sessionId} , storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let store: Store = StoreDB.getStoreByID(storeId);
-        let res: Result<string> = store.getStoreStaff(subscriber)
-        if(isOk(res))
-        {
-            let value = res.value;
-            return new Promise((resolve, reject) =>
-            {
-                resolve(value);
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve,reject) => {
+            storep.then( store => {
+                let getp = store.getStoreStaff(subscriber)
+                getp.then ( info => {
+                    resolve(info)
+                })
+                .catch ( error => { reject(error)})
             })
-        }
-        else
-        {
-            let error = res.message;
-            return new Promise((resulve, reject) =>
-            {
-                reject(error);
-            })
-        }
+            .catch(error => reject(error))
+        })
     }
 
     //++

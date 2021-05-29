@@ -67,7 +67,7 @@ export class ShoppingBasket implements iBasket
         return new Promise( (resolve,reject) => resolve("product added to cart"));
     }
 
-    public checkout(userId:number, user: iSubject,  supply_address: string, userSubject: iSubject): Result<boolean>
+    public checkout(userId:number, user: iSubject,  supply_address: string, userSubject: iSubject): Promise<boolean>
     {
         // this function restores the basket in case the purchase failed
         let products = this.getProducts()
@@ -77,14 +77,11 @@ export class ShoppingBasket implements iBasket
             )
         }
         let buyingSubject = new BuyingSubject(userSubject, this);
-        let result =  this.store.sellShoppingBasket(userId, supply_address, this, buyingSubject , onfail);
-        if (isOk(result))
-        {
-            this.products.forEach( (qauntity,productId,_) =>
-                this.products.delete(productId)
-            )
-        }
-        return result;
+        let sellp =  this.store.sellShoppingBasket(userId, supply_address, this, buyingSubject , onfail);
+        return new Promise((resolve,reject) => {
+            sellp.then( sell_res => { resolve(sell_res) })
+            .catch( error => reject(error))
+        })
     }
 
     public edit(productId: number, newQuantity: number): Promise<string>

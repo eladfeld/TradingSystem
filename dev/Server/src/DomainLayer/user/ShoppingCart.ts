@@ -16,13 +16,13 @@ export class ShoppingCart
         this.baskets = new Map();
     }
 
-    public checkoutBasket(userId: number, user: iSubject, storeId : number, supply_address: string, userSubject: iSubject) : Result<boolean>
+    public checkoutBasket(userId: number, user: iSubject, storeId : number, supply_address: string, userSubject: iSubject) : Promise<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
         {
             Logger.log("no such shopping basket");
-            return makeFailure("no such shopping basket");
+            return Promise.reject("no such shopping basket");
         }
         return basket.checkout(userId, user, supply_address, userSubject);
     }
@@ -30,30 +30,28 @@ export class ShoppingCart
     public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
-        if(basket === undefined)
-        {
-            let store : Store = StoreDB.getStoreByID(storeId);
-            if (store !== undefined)
-            {
-                basket = new ShoppingBasket(store);
-                this.baskets.set(storeId, basket);
-            }
-            else
-            {
-                Logger.log(`shop with id ${storeId} does not exist`);
-                return new Promise( (resolve,reject) => reject(`shop with id ${storeId} does not exist`))
-            }
-        }
-
-        let addp = basket.addProduct(productId, quantity);
-        return new Promise( (resolve,reject) => {
-            addp.then( _ => {
-                resolve(basket)
+        let storep = StoreDB.getStoreByID(storeId);
+        return new Promise((resolve,reject) => {
+            storep.then (store => {
+                if(basket === undefined)
+                {
+                    if (store !== undefined)
+                    {
+                        basket = new ShoppingBasket(store);
+                        this.baskets.set(storeId, basket);
+                    }
+                    else
+                    {
+                        Logger.log(`shop with id ${storeId} does not exist`);
+                        reject(`shop with id ${storeId} does not exist`)
+                    }
+                }
+                let addp = basket.addProduct(productId, quantity);
+                addp.then( _ => { resolve(basket) })
+                .catch( error => { reject("error") })
             })
-            .catch( error => {
-                reject("error")
-            })
-        })
+            .catch( error => reject(error))
+        }) 
     }
 
     editStoreCart(storeId : number , productId:number , newQuantity:number) : Promise<string>

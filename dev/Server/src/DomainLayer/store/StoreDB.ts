@@ -13,9 +13,12 @@ export class StoreDB
         this.stores.push(store);
     }
 
-    public static getStoreByID(storeId: number): Store
+    public static getStoreByID(storeId: number): Promise<Store>
     {
-        return this.stores.find(store => store.getStoreId() == storeId);
+        let store: Store =  this.stores.find(store => store.getStoreId() == storeId);
+        if (store)
+            return Promise.resolve(store)
+        return Promise.reject("store doesnt exist")
     }
 
     public static deleteStore(storeId: number): void

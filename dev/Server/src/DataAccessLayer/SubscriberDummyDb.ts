@@ -4,14 +4,7 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 
 class SubscriberDB
 {
-
-    // private username: string;
-    // private hashPassword: string;
-    // private age: number
-
-    // private appointments: Appointment[];
-    // private history: SubscriberHistory;
-    // private pending_messages: string[];
+    // #saveDB  ----------------------move all the class to save in the real db
     private subscribers: Subscriber[];
     private systemManagers: Subscriber[];
     constructor(){

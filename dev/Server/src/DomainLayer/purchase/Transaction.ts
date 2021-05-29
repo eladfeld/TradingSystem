@@ -17,7 +17,7 @@ class Transaction {
     private storeName: string;
     private total: number;//
     private cardNumber: number;//
-    private items: Map<number, number>; //productId => quantity
+    private items: Map<number, [number,string,number]>; //productId => [quantity,name, price]
     private status: number;//
     private time: number;//
     private shipmentId: number;//
@@ -37,20 +37,20 @@ class Transaction {
         obj['shipmentId'] = this.shipmentId
         obj['storeName'] = this.storeName
         var items = [];
-        for(const [key, value] of this.items){
+        for(const [key, [quantity,name,price]] of this.items){
             items.push({ 
                 
                 'productId':key,
-                'name': StoreDB.getStoreByID(this.storeId).getProductbyId(key).getName(),
-                'price' : StoreDB.getStoreByID(this.storeId).getProductbyId(key).getPrice(),
-                'quantity':value,
+                'name': name,
+                'price' : price,
+                'quantity':quantity,
             });
         }
         obj['items']=items;
         return obj;
     }
 
-    constructor(userId: number, storeId: number, items: Map<number, number>, total:number, storeName:string ){
+    constructor(userId: number, storeId: number, items: Map<number, [number,string,number]>, total:number, storeName:string ){
         this.transcationId = Transaction.nextId++;
         this.userId = userId;
         this.storeId = storeId;
@@ -74,7 +74,7 @@ class Transaction {
     getPaymentId = () : number => this.paymentId;
     getUserId = () : number => this.userId;
     getStoreId = () : number => this.storeId;
-    getItems = () : Map<number, number> => this.items;
+    getItems = () : Map<number, [number,string,number]> => this.items;
     getStatus = () : number => this.status;
     getTime = () : number => this.time;
 
@@ -91,12 +91,12 @@ class Transaction {
         obj['storeName'] = this.storeName
 
         obj['items']=[];
-        for(const [key, value] of this.items){
+        for(const [key, [quantity,name,price]] of this.items){
             obj['items'].push({ 
                 'productId':key,
-                'name': StoreDB.getStoreByID(this.storeId).getProductbyId(key).getName(),
-                'price' : StoreDB.getStoreByID(this.storeId).getProductbyId(key).getPrice(),
-                'Quantity':value,
+                'name': name,
+                'price' : price,
+                'Quantity':quantity,
                 
             });
         }

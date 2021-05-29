@@ -92,9 +92,10 @@ export class MakeAppointment
         return Promise.reject("unauthorized try to appoint manager");
     }
 
-    public static removeAppointment(appointment: Appointment): Result<string> {
+    public static removeAppointment(appointment: Appointment): Promise<string> {
+        //TODO: #saveDB
         if (appointment === undefined) {
-            return makeFailure("bad argument");
+            return Promise.reject("bad argument");
         }
         appointment.appointee.deleteAppointment(appointment);
         appointment.store.deleteAppointment(appointment);
@@ -104,6 +105,6 @@ export class MakeAppointment
         appointment.store.getAppointments().forEach(appointment => {
             if (appointment.appointer === appointee) this.removeAppointment(appointment)
         })
-        return makeOk("appointmetn removed");
+        return Promise.resolve("appointmetn removed");
     }
 }

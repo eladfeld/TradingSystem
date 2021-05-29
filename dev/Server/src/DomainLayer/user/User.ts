@@ -30,16 +30,23 @@ export class User implements iSubject
         return 0;
     }
 
-    public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
+    public checkoutBasket(shopId: number, supply_address: string): Promise<boolean>
     {
         return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address, this);
     }
 
-    public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Promise<string>
     {
-        let store:Store =  StoreDB.getStoreByID(shopId);
-        return store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
-    }
+        let storep =  StoreDB.getStoreByID(shopId);
+        return new Promise ((resolve,reject) => {
+            storep.then (store => {
+                let sellp = store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
+                sellp.then( msg => resolve(msg))
+                .catch( error => reject(error))
+            })
+            .catch( error => reject(error))
+        })
+    }       
     
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Promise<ShoppingBasket>
     {

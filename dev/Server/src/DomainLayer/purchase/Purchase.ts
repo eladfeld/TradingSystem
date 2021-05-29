@@ -70,7 +70,7 @@ class Purchase {
 
     //initiates a transaction between the store and the user that will be completed within 5 minutes, otherwise cancelled.
     public checkout = (storeId: number, total: number, userId: number, 
-        products: Map<number, number>, storeName: string ,onFail:()=>void):Result<boolean>=>{
+        products: Map<number, [number,string,number]>, storeName: string ,onFail:()=>void):Result<boolean>=>{
         const transaction: Transaction = new Transaction(userId, storeId, products, total,storeName);
         const [oldTimerId, oldOnFail] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId !== undefined){
@@ -90,12 +90,12 @@ class Purchase {
 
     //completes an existing transaction in progress. returns failure in the event that
     //1) no transaction is in progress, 2)Shipping issue 3) payment issue
-    public CompleteOrder = (userId: number, storeId: number, shippingInfo: ShippingInfo, paymentInfo: PaymentInfo, storeBankAccount: number) : Result<boolean> => {
+    public CompleteOrder = (userId: number, storeId: number, shippingInfo: ShippingInfo, paymentInfo: PaymentInfo, storeBankAccount: number) : Promise<boolean> => {
         //verify transaction in progress
         const [oldTimerId, oldCallback] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId === undefined){
             //no checkout is in progress, cancel the old timer/order
-            return makeFailure("No checkout in progress");
+            return Promise.reject("No checkout in progress");
         }
         clearTimeout(oldTimerId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
@@ -103,15 +103,16 @@ class Purchase {
         const shipmentId: number = this.supplySystem.reserve(shippingInfo);
         if(shipmentId < 0){
             this.resetTimer(userId, storeId, oldCallback);
-            return makeFailure("could not ship items");
+            return Promise.reject("could not ship items");
         }
         transaction.setShipmentId(shipmentId);
+
         //approve payment
         const paymentRes: Result<number> = this.paymentSystem.transfer(paymentInfo, storeBankAccount, transaction.getTotal());
         if(isFailure(paymentRes)){
             this.supplySystem.cancelReservation(shipmentId);
             this.resetTimer(userId, storeId, oldCallback);
-            return paymentRes;
+            return Promise.reject(paymentRes.message);
         }
         
         transaction.setPaymentId(paymentRes.value);
@@ -121,7 +122,7 @@ class Purchase {
         this.removeTimerAndCallback(userId, storeId);
 
         Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
-        return makeOk(true);
+        return Promise.resolve(true);
     }
 
     
