@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
       width: '20ch',
     },
   },
+
   sectionDesktop: {
     display: 'none',
     [theme.breakpoints.up('md')]: {
@@ -104,7 +105,7 @@ export default function Banner({getAppState, setAppState}) {
   const showSidebar = () => setSidebar(!sidebar);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  const {IsStoreManager} = getAppState();
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -214,10 +215,11 @@ export default function Banner({getAppState, setAppState}) {
       onClose={handleMenuClose}
     >
       {isSystemManager ? <MenuItem onClick={handleManageSystemClick}>Manage System</MenuItem> : <div></div>}
+      {IsStoreManager    ? <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem> : <div></div>}
       { isGuest ?
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
-          <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem>
+          
           <MenuItem onClick={handleCartClick}>Cart</MenuItem>
           <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
           <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
