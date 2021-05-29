@@ -4,6 +4,7 @@ import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';
 import { tPaymentInfo, tShippingInfo } from '../../../src/DomainLayer/purchase/Purchase';
 import Purchase from '../../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
+import {setTestConfigurations} from '../../../src/config';
 import { isFailure, Result } from '../../../src/Result';
 
 
@@ -16,7 +17,7 @@ const prod1Id: number=3000;
 const prod2Id: number=4000;
 const prod1Quantity: number=3;
 const prod2Quantity: number=4;
-
+setTestConfigurations();        //changing external APIs to mocks
 const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
 const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];

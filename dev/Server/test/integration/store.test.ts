@@ -11,11 +11,13 @@ import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
 import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
 import { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
+import {setTestConfigurations} from '../../src/config';
+
 
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
-
+setTestConfigurations;
 
 
 describe('view store products' , () => {

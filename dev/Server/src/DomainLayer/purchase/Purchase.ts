@@ -1,6 +1,6 @@
 import PaymentSystemAdapter from './PaymentSystemAdapter';
 import SupplySystemAdapter from './SupplySystemAdapter';
-
+import {setSystemConfigurations} from '../../../src/config';
 import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
 import { isFailure, makeFailure, makeOk, Result } from '../../Result';
@@ -20,8 +20,8 @@ export const stringUtil = {
 Object.freeze(stringUtil);
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
-
 export const PAYMENT_TIMEOUT_MILLISEC: number = CHECKOUT_TIMEOUT;
+setSystemConfigurations();
 
 
 class Purchase {

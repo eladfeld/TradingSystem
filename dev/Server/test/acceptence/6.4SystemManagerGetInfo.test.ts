@@ -4,11 +4,13 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { add_product, enter_login, register_login, open_store } from './common';
+import {setTestConfigurations} from '../../src/config';
+
 
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
-
+setTestConfigurations;
 
 describe('6.4: System Manager Get Info', function () {
 

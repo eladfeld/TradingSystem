@@ -2,6 +2,8 @@ import { assert, expect } from 'chai';
 import Purchase, { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
+import {setTestConfigurations} from '../../src/config';
+
 
 declare interface PromiseConstructor {
     allSettled(promises: Array<Promise<any>>): Promise<Array<{ status: 'fulfilled' | 'rejected', value?: any, reason?: any }>>;
@@ -10,7 +12,7 @@ declare interface PromiseConstructor {
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
-
+setTestConfigurations;
 
 describe('2.9: buy products', function () {
 

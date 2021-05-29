@@ -11,10 +11,13 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { add_product, register_login, open_store } from './common';
+import {setTestConfigurations} from '../../src/config';
+
 
 const payInfo : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"shir", address:"rager", city:"beer sheva", country:"israel", zip:157};
+setTestConfigurations;
 
 describe('3.7: get subscriber history', function () {
 

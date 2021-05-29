@@ -1,4 +1,6 @@
 import {expect} from 'chai';
+//import { config } from 'dotenv';
+import {setTestConfigurations} from '../../../src/config';
 import PaymentSystem from '../../../src/DomainLayer/apis/PaymentSystem';
 import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';
 import { Value } from '../../../src/DomainLayer/discount/logic/Predicate';
@@ -17,7 +19,7 @@ const prod1Id: number=3000;
 const prod2Id: number=4000;
 const prod1Quantity: number=3;
 const prod2Quantity: number=4;
-
+setTestConfigurations();        //changing external APIs to mocks
 const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
 const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
 const [total1a, total1b]: [number, number] = [30, 40];
@@ -29,12 +31,12 @@ const updateValues = () => {
     userId--;
 }
 
+
 describe('purchase with api fail tests' , function() {
     it('supply system fails' , function(){
         updateValues();
         PaymentSystem.willSucceed();
         SupplySystem.willFail();
-
         const checkoutRes: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         checkoutRes.then(value=>expect(value).to.equal(true));
         const completionRes: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);

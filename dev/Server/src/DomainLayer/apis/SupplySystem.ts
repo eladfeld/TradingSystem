@@ -1,3 +1,5 @@
+import { tShippingInfo } from "../purchase/Purchase";
+
 class SupplySystem {
     private static nextReservationId: number = 1;
     private static nextSessionId: number = 1;
@@ -11,7 +13,7 @@ class SupplySystem {
 
     //reserves a shipment from @from to @to and @returns a unique shipment reservation number
     //this reservation number is needed for canceling and supplying the reservation
-    static reserve = (from: string, to:string) : number => {
+    static reserve = (shippingInfo: tShippingInfo) : number => {
         return SupplySystem.shouldSucceed ? SupplySystem.nextReservationId++ : -1;
     }
     
