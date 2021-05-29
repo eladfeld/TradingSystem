@@ -32,50 +32,41 @@ const CLOSE_STORE = "close_store";
 const REMOVE_SUBSCRIBER = "remove_subscriber";
 const COMPLAINTS = "complaints";
 const TRANSACTIONS = "transactions";
-const WTF = "wtf";
 
 const NOT_REQUESTED = undefined;
 const REQUESTED = null;
 const RECEIVED = [];
 
 export default function ManageSystem({getAppState, setAppState}) {
-    console.log('[t] ManageSystem getAppState:', getAppState);
     const classes = useStyles();
     const [page, setPage] = useState("");
 
     const [stores, setStores] = useState(NOT_REQUESTED);
-    const [complaints, setComplaints] = useState(NOT_REQUESTED);
     const [userNames, setUserNames] = useState(NOT_REQUESTED);
+    const [complaints, setComplaints] = useState(NOT_REQUESTED);
     const [transactions, setTransactions] = useState(NOT_REQUESTED);
 
 
 
-    const onCloseStoreClick =() =>{
+    const onCloseStoreClick =async() =>{
+        setStores(NOT_REQUESTED);
         setPage(CLOSE_STORE);
-        //if(stores !== undefined) setStores(undefined);
     }
-    const onRemoveSubscriberClick = () => {
+    const onRemoveSubscriberClick =async () => {
+        setUserNames(NOT_REQUESTED);
         setPage(REMOVE_SUBSCRIBER);
-        //if(staff !== undefined)setStaff(undefined);
     }
 
-    const onComplaintsClick =() =>{
+    const onComplaintsClick =async() =>{
+        setComplaints(NOT_REQUESTED);
         setPage(COMPLAINTS);
-        //if(appointOwner !== undefined) setappointOwner(undefined);
-
     }
 
-    const onTransactionsClick =() =>{
+    const onTransactionsClick =async() =>{
+        setTransactions(NOT_REQUESTED);
         setPage(TRANSACTIONS);
-        //if(appointManager !== undefined) setappointManager(undefined);
-
     }
 
-    const onWtfClick =() =>{
-        setPage(WTF);
-        //if(addProduct !== undefined) setaddProduct(undefined);
-
-    }
 
 
     const renderPage = () =>{
@@ -87,7 +78,6 @@ export default function ManageSystem({getAppState, setAppState}) {
                         switch(storesResponse.status){
                             case SERVER_RESPONSE_OK:
                                 const stores = JSON.parse(storesResponse.data);
-                                console.log('[t] stores:', stores);
                                 setAppState({stores});
                                 setStores(RECEIVED);
                                 break;
@@ -106,29 +96,27 @@ export default function ManageSystem({getAppState, setAppState}) {
                 }
                 return <ManageSystemCloseStore getAppState={getAppState} setAppState={setAppState}/>
             case REMOVE_SUBSCRIBER:
-            //     if (manageCategories === undefined){
-            //         const foo = async () =>{
-            //             const storeResponse = await axios.post(`${SERVER_BASE_URL}getStoreInfo`, {userId, storeId})
-            //             switch(storeResponse.status){
-            //                 case SERVER_RESPONSE_OK:
-            //                     const store = JSON.parse(storeResponse.data);
-            //                     setAppState({categories: store.categories})
-            //                     setmanageCategories([]);
-            //                     break;
-            //                 case SERVER_RESPONSE_BAD:
-            //                     alert(storeResponse.data);
-            //                     break;
-            //                 default:
-            //                     alert(unknownStatusMessage(storeResponse));
-            //                     break;
-            //             }
-            //         }
-            //         foo();
-            //     }
+                // if (userNames === NOT_REQUESTED){
+                //     const loadUserNames = async () =>{
+                //         const userNamesResponse = await axios.post(`${SERVER_BASE_URL}getUsersNames`, {userId})
+                //         switch(userNamesResponse.status){
+                //             case SERVER_RESPONSE_OK:
+                //                 setUserNames(JSON.parse(userNamesResponse.data));
+                //                 break;
+                //             case SERVER_RESPONSE_BAD:
+                //                 alert(userNamesResponse.data);
+                //                 break;
+                //             default:
+                //                 alert(unknownStatusMessage(userNamesResponse));
+                //                 break;
+                //         }
+                //     }
+                //     loadUserNames();
+                // }
                 if(userNames === NOT_REQUESTED){
                     setUserNames(ph_subscribers);
                 }
-                return <ManageSubscribers getAppState={getAppState} subscriberNames={userNames}/>
+                return <ManageSubscribers getAppState={getAppState} subscriberNames={userNames} setSubscriberNames={setUserNames}/>
             case COMPLAINTS:
                 // if(complaints === undefined){
                 //     const loadComplaints = async () =>{
@@ -181,9 +169,7 @@ export default function ManageSystem({getAppState, setAppState}) {
                     setAppState({systemTransactions: ph_system_transactions});
                     setTransactions(ph_system_transactions);
                 }
-                return <SystemTransactions allTransactions={transactions}/>
-            // case WTF:
-            //     return <BuyingPolicy getAppState={getAppState} setAppState={setAppState} isNewPolicy/>            
+                return <SystemTransactions allTransactions={transactions}/>         
             default:
                 return <div></div>;
         }
@@ -211,10 +197,6 @@ export default function ManageSystem({getAppState, setAppState}) {
                 <MenuItem onClick={onTransactionsClick} >
                     <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
                     <Typography variant="inherit" noWrap>Transactions</Typography>
-                </MenuItem>
-                <MenuItem onClick={onWtfClick}>
-                    <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
-                    <Typography variant="inherit" noWrap>WTF</Typography>
                 </MenuItem>
             </MenuList>
             </Paper>

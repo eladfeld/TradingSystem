@@ -5,12 +5,7 @@ import SystemTransaction from './SystemTransaction';
 
 
 const SystemTransactions = ({allTransactions}) => {
-    // items: any;
-    // columnNames: any;
-    // renderRowCells: any;
-    // rowToKey: any;
-    // onRowClick: any;
-    console.log('[t] all transactions:', allTransactions);
+    // items: any;// columnNames: any;// renderRowCells: any;// rowToKey: any;// onRowClick: any;
     const [transaction, setTransaction] = useState(undefined);
     const columnNames = ['Date', 'User', 'Store', 'Total'];
 
@@ -27,7 +22,6 @@ const SystemTransactions = ({allTransactions}) => {
     
     var rowNumber = 0;
     const rowToKey = (t) => `${rowNumber++}`;
-    console.log('[t] specific transaction:', transaction);
     return(
         transaction ?
         <SystemTransaction transaction={transaction} goBackToTable={()=>setTransaction(undefined)}/> :

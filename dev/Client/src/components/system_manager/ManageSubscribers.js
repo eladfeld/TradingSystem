@@ -3,12 +3,26 @@ import React from 'react';
 import AbstractTable from '../AbstractTable';
 import ProgressWheel from '../ProgreeWheel';
 
-const ManageSubscribers = ({getAppState, subscriberNames}) =>{
+const ManageSubscribers = ({getAppState, subscriberNames, setSubscriberNames}) =>{
     const {userId} = getAppState();//stores = store names list
     if(!subscriberNames)return <ProgressWheel/>;
 
-    const onRemoveSubscriberClick = (subscriberName) =>{
-        console.log(`closed store ${subscriberName}`);
+    const onRemoveSubscriberClick = async(subscriberName) =>{
+        console.log(`banned user ${subscriberName}`);
+        // const banUserResponse = await axios.get(`${SERVER_BASE_URL}banUser`, {userId, subscriberName})
+        // switch(banUserResponse.status){
+        //     case SERVER_RESPONSE_OK:
+        //         //const stores = JSON.parse(closeStoreResponse.data);
+        //         setSubscriberNames(subscriberNames.filter(s => s !== subscriberName));
+        //         break;
+        //     case SERVER_RESPONSE_BAD:
+        //         alert(banUserResponse.data);
+        //         break;
+        //     default:
+        //         alert(unknownStatusMessage(banUserResponse));
+        //         break;
+        // }
+        setSubscriberNames(subscriberNames.filter(s => s !== subscriberName));
     };
 
     const renderRemoveSubscriberButton = (subscriberName) =>{

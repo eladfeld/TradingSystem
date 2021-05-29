@@ -4,11 +4,26 @@ import AbstractTable from '../AbstractTable';
 import ProgressWheel from '../ProgreeWheel';
 
 const ManageSystemCloseStore = ({getAppState, setAppState}) =>{
-    const {stores} = getAppState();//stores = store names list
+    const {stores, userId} = getAppState();//stores = store names list
     if(!stores)return <ProgressWheel/>;
 
-    const onCloseStoreClick = (storeName) =>{
+    const onCloseStoreClick = async (storeName) =>{
         console.log(`closed store ${storeName}`);
+        // const closeStoreResponse = await axios.get(`${SERVER_BASE_URL}closeStore`, {userId, storeName})
+        // switch(closeStoreResponse.status){
+        //     case SERVER_RESPONSE_OK:
+        //         //const stores = JSON.parse(closeStoreResponse.data);
+        //         setAppState({stores: stores.filter(s => s !== storeName)});
+        //         break;
+        //     case SERVER_RESPONSE_BAD:
+        //         alert(closeStoreResponse.data);
+        //         break;
+        //     default:
+        //         alert(unknownStatusMessage(closeStoreResponse));
+        //         break;
+        // }
+        setAppState({stores: stores.filter(s => s !== storeName)});
+
     };
 
     const renderCloseStoreButton = (storeName) =>{
