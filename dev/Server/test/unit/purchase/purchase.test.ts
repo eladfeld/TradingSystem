@@ -66,11 +66,11 @@ describe('purchase tests' , function() {
 
 
 
-    it('checkout, then complete order within time' , function(done){
+    it('checkout, then complete order within time' , async function(){
         updateValues();
-
-        const res: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
-        const res2: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 12345678 );
+        
+        const res: boolean = await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        const res2: boolean = await Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 12345678 );
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId).sort((t1,t2)=>t2.getStatus()-t1.getStatus());
         expect(allTransactions.length).to.equal(1);
@@ -79,7 +79,7 @@ describe('purchase tests' , function() {
         expect(t.getItems().get(prod1Id)).to.equal(prod1Quantity);
         expect(t.getItems().get(prod2Id)).to.equal(undefined);
         expect(t.getStatus()).to.equal(TransactionStatus.COMPLETE);
-        done();
+        //return new Promise(res,rej) =>
     });
 
     it('attempt completing order before checkout' , function(done){
@@ -88,7 +88,7 @@ describe('purchase tests' , function() {
         expect(Purchase.numTransactionsInProgress(userId,storeId)).to.equal(0);
         expect(Purchase.hasTransactionInProgress(userId,storeId)).to.equal(false);
         const res: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        res.catch(value=>expect(value).to.equal(false));       
+        res.catch(value=>expect(value).to.equal("No checkout in progress"));
         done();
     });
 
