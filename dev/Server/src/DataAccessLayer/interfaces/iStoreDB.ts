@@ -19,4 +19,7 @@ export interface iStoreDB
     getProductInfoBelowPrice: (price: number) => Promise<string>;
 
     getPruductInfoByStore:(storeName: string) => Promise<string>;
+
+    clear:() => void;
+
 }

@@ -1,5 +1,5 @@
-import { iPurchaseDB } from "../../DataAccessLayer/interfaces/iPurchaseDB";
-import Transaction, { TransactionStatus } from "./Transaction";
+import { iPurchaseDB } from "../interfaces/iPurchaseDB";
+import Transaction, { TransactionStatus } from "../../DomainLayer/purchase/Transaction";
 
 export class PurchaseDummyDB implements iPurchaseDB{
     private transactions: Transaction[];
@@ -41,8 +41,9 @@ export class PurchaseDummyDB implements iPurchaseDB{
         this.transactions = ts;
     }
 
-    public static clear()
+    public clear()
     {
+        this.transactions = [];
     }
 
     getUserStoreHistory = (userId: number, storeId:number) : Promise<Transaction[]> => {

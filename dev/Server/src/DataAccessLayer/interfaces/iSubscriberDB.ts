@@ -11,7 +11,7 @@ export interface iSubscriberDB
 
     isSystemManager: (userId: number) => Promise<boolean>;
 
-    addProduct:(subscriberId: number, productId: number, quantity : number) => void;
+    addProduct:(subscriberId: number, storeId: number, productId: number, quantity : number) => void;
 
     updateCart: (subscriberId: number, storeId: number, productId: number, newQuantity:number) => void;
 
@@ -24,5 +24,7 @@ export interface iSubscriberDB
     getAppointment:(userId : number, storeId : number) => Promise<Appointment>;
 
     deleteBasket:(userId: number, storeId: number) => void;
+
+    clear:() => void;
     
 }

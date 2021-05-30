@@ -9,9 +9,15 @@ import { SpellCheckerAdapter } from '../DomainLayer/SpellCheckerAdapter';
 import { tPredicate } from '../DomainLayer/discount/logic/Predicate';
 import { tDiscount } from '../DomainLayer/discount/Discount';
 
-const service: Service = Service.get_instance();
+let service: Service = undefined;
 const OKSTATUS: number = 200;
 const FAILSTATUS: number = 201;
+
+
+const initSystem = async () =>
+{
+    service = await Service.get_instance();
+}
 
 
 const enter = (req: Request, res: Response, next: NextFunction) =>
@@ -493,6 +499,7 @@ const getStoreNames = (req : Request, res: Response , next: NextFunction) =>
 }
 
 
+
 export default {
     enter,
     register,
@@ -536,5 +543,6 @@ export default {
     getAllCategories,
     getProductNames,
     getkeywords,
-    getStoreNames
+    getStoreNames,
+    initSystem
     };

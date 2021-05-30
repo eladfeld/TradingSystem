@@ -1,6 +1,5 @@
 import { Logger } from "../Logger";
 import { Store } from "./store/Store";
-import { Appointment } from "./user/Appointment";
 import { Login } from "./user/Login";
 import { Register } from "./user/Register";
 import { Subscriber } from "./user/Subscriber";
@@ -13,18 +12,15 @@ import { Authentication } from "./user/Authentication";
 import Purchase from "./purchase/Purchase";
 import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
-import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
 import { Publisher } from "./notifications/Publisher";
 import { createHash } from 'crypto';
-import { SpellChecker } from "./apis/spellchecker";
 import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
-import { rejects } from "assert";
-import { StoreProduct } from "./store/StoreProduct";
-import { StoreDB } from "../DataAccessLayer/DBinit";
-
+import { ProductDB, StoreDB } from "../DataAccessLayer/DBinit";
+import * as connector from "../DataAccessLayer/connectDb"
+import { Sequelize } from "sequelize/types";
 export class SystemFacade
 {
 
@@ -32,17 +28,29 @@ export class SystemFacade
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
     private static lastSessionId = 0;
-
+    private static instance: SystemFacade;
     public constructor()
     {
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers()))
+
+        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers() ))
         {
             Logger.error("system could not initialized properly!");
         }
     }
+
+
+    public static async get_instance(): Promise<SystemFacade>{
+        if(this.instance == undefined){
+            await connector.initTables()
+            this.instance = new SystemFacade();
+            return this.instance;
+        }
+        return this.instance;
+    }
+
 
     private initSupplySystem() : boolean
     {
@@ -854,7 +862,7 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        // StoreDB.clear();
+        StoreDB.clear();
         ProductDB.clear();
         Purchase.clear();
     }

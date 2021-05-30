@@ -48,7 +48,7 @@ export default class StateInitializer{
 
     public initState = async() =>{
         try {
-            const service: Service = Service.get_instance();
+            const service: Service = await Service.get_instance();
             await this.initAndLoginUsers(service);
             await this.openStores(service);
             await this.performTransactions(service);

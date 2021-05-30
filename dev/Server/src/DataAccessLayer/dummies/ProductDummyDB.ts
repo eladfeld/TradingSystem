@@ -1,22 +1,24 @@
-import { StoreProduct } from "./StoreProduct";
-import { Product } from "./Product";
+import { Product } from "../../DomainLayer/store/Product";
+import { iProductDB } from "../interfaces/iProductDB";
 
-export class ProductDB
+
+export class ProductDummyDB implements iProductDB
 {
 
-    private static products: Product[]  = [];
 
-    public static addProduct(product: Product): void
+    private  products: Product[]  = [];
+
+    public  addProduct(product: Product): void
     {
         this.products.push(product);
     }
 
-    public static addWitheredProduct(wproduct: Product): void
+    public  addWitheredProduct(wproduct: Product): void
     {
         this.products.push(wproduct);
     }
 
-    public static async getProductByName(productName: string): Promise<Product>
+    public  async getProductByName(productName: string): Promise<Product>
     {
         let product = this.products.find(product => product.getName() == productName);
         if (product)
@@ -24,7 +26,7 @@ export class ProductDB
         return Promise.reject("product not found1")
     }
 
-    public static async getProductById(productId: number): Promise<Product>
+    public  async getProductById(productId: number): Promise<Product>
     {
         let product = this.products.find(product => product.getProductId() === productId);
         if (product)
@@ -32,7 +34,7 @@ export class ProductDB
         return Promise.reject("product not found2")
     }
 
-    public static clear()
+    public  clear()
     {
         this.products=[]
     }

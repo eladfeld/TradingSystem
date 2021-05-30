@@ -1,7 +1,8 @@
+import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Store } from "./Store";
-import { StoreProductInfo } from "./StoreInfo";
-import { iStoreDB } from "../../DataAccessLayer/interfaces/iStoreDB";
+import { Store } from "../../DomainLayer/store/Store";
+import { StoreProductInfo } from "../../DomainLayer/store/StoreInfo";
+import { iStoreDB } from "../interfaces/iStoreDB";
 
 export class StoreDummyDB implements iStoreDB
 {

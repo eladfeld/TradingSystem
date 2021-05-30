@@ -1,48 +1,42 @@
 import { SHOULD_INIT_STATE } from "../config";
 import { tDiscount } from "../DomainLayer/discount/Discount";
 import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
-import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
-import { Publisher } from "../DomainLayer/notifications/Publisher";
 import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
 import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
-import { User } from "../DomainLayer/user/User";
-import { isOk, makeFailure, makeOk, Result} from "../Result";
-import { policyState } from "./state/StateBuilder";
 import StateInitializer from './state/StateInitializer';
 
 export class Service
 {
-
-
     private static singletone: Service = undefined;
     private facade: SystemFacade;
 
     private constructor()
     {
-        this.facade = new SystemFacade();
-        if(SHOULD_INIT_STATE){
-            setTimeout(async() =>{
-                const res = await new StateInitializer().initState();
-                console.log(`init state was succesful: ${res}`)
-            }, 0);
-        }
     }
 
-    public get_word_list(word: string): string[]
-    {
-        return ['asd', 'bdsa', 'casd', 'ddsa'];
-    }
-
-    public static get_instance() : Service
+    public static async get_instance() : Promise<Service>
     {
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
+            Service.singletone.facade = await SystemFacade.get_instance();
+            if(SHOULD_INIT_STATE){
+                setTimeout(async() =>{
+                    const res = await new StateInitializer().initState();
+                    console.log(`init state was successful: ${res}`)
+                }, 0);
+            }
         }
         return Service.singletone;
+    }
+
+
+    public get_word_list(word: string): string[]
+    {
+        return ['asd', 'bdsa', 'casd', 'ddsa'];
     }
 
     //returns a session id string

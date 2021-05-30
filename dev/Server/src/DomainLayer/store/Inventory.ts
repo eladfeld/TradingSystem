@@ -1,9 +1,9 @@
 import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../../Logger";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { ProductDB } from "./ProductDB";
 import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
+import { ProductDB } from "../../DataAccessLayer/DBinit";
 
 export class Inventory
 {

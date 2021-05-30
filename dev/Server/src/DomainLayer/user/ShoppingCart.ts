@@ -9,6 +9,7 @@ import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingCart
 {
+
     private baskets : Map<number , ShoppingBasket>; // {} <storeId, ShoppingBasket>
 
     public constructor()
@@ -16,6 +17,15 @@ export class ShoppingCart
         this.baskets = new Map();
     }
 
+
+    public static rebuildShoppiongCart(baskets: ShoppingBasket[])
+    {
+        let cart = new ShoppingCart();
+        baskets.map(basket => cart.baskets.set(basket.getStoreId(), basket))
+        return cart;
+    }
+
+    
     public checkoutBasket(userId: number, user: iSubject, storeId : number, supply_address: string, userSubject: iSubject) : Promise<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);

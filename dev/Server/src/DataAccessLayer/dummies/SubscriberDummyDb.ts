@@ -1,7 +1,7 @@
-import { TEST_MODE } from "../config";
-import { Appointment } from "../DomainLayer/user/Appointment";
-import { Subscriber } from "../DomainLayer/user/Subscriber";
-import { iSubscriberDB } from "./interfaces/iSubscriberDB";
+import { TEST_MODE } from "../../config";
+import { Appointment } from "../../DomainLayer/user/Appointment";
+import { Subscriber } from "../../DomainLayer/user/Subscriber";
+import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 export class SubscriberDummyDB implements iSubscriberDB
 {
@@ -32,7 +32,7 @@ export class SubscriberDummyDB implements iSubscriberDB
         return this.systemManagers.some(sub => sub.getUserId() === userId);
     }
 
-    public addProduct(subscriberId: number, productId: number, quantity : number) 
+    public addProduct(subscriberId: number, storeId: number, productId: number, quantity : number) 
     {
         //do nothing here, since we don't have an actual db and the subscriber already added this product, TODO: when we change to db we need to add the basket if needed and add the product right after
     }
@@ -81,6 +81,12 @@ export class SubscriberDummyDB implements iSubscriberDB
     }
     deleteBasket(userId: number, storeId: number) {
         //do nothing here, since we don't have an actual db and the subscriber already added this product, TODO: when we change to db we need to add the basket if needed and add the product right after
+    }
+
+    public clear()
+    {
+        this.subscribers = [];
+        this.systemManagers = [];
     }
 }
 

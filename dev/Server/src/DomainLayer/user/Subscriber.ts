@@ -1,4 +1,5 @@
 import { subscriberDB } from "../../DataAccessLayer/DBinit";
+import { Logger } from "../../Logger";
 import { isOk, Result } from "../../Result";
 import { Publisher } from "../notifications/Publisher";
 import { buyingOption } from "../store/BuyingOption";
@@ -7,12 +8,25 @@ import { Appointment } from "./Appointment";
 import { Authentication } from "./Authentication";
 import { ACTION } from "./Permission";
 import { ShoppingBasket } from "./ShoppingBasket";
+import { ShoppingCart } from "./ShoppingCart";
 import { SubscriberHistory } from "./SubscriberHistory";
 import {  User } from "./User";
 
 
 export class Subscriber extends User
 {
+    public static rebuildSubscriber(id:number, username: string, hashPassword: string, age: number, pending_messages: string[], appointments: Appointment[], shoppingCart: ShoppingCart): Subscriber
+    {
+        let sub: Subscriber = new Subscriber(username, hashPassword, age);
+        sub.hashPassword = hashPassword;
+        sub.pending_messages = pending_messages;
+        sub.appointments = appointments;
+        sub.shoppingCart = shoppingCart;
+        sub.userId = id
+        Logger.log(`rebuilt subscriber: ${JSON.stringify(sub)}`)
+
+        return sub;
+    }
 
     private username: string;
     private hashPassword: string;
@@ -42,7 +56,7 @@ export class Subscriber extends User
         let addp = this.shoppingCart.addProduct(storeId, productId, quantity);
         return new Promise ((resolve,reject) => {
             addp.then( shoppingbasket => {
-                subscriberDB.addProduct(this.userId, productId, quantity);
+                subscriberDB.addProduct(this.userId,storeId, productId, quantity);
                 resolve(shoppingbasket)
             })
             .catch( error => reject(error))
