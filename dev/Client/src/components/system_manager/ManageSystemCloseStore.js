@@ -9,7 +9,7 @@ const ManageSystemCloseStore = ({getAppState, setAppState}) =>{
 
     const onCloseStoreClick = async (storeName) =>{
         console.log(`closed store ${storeName}`);
-        // const closeStoreResponse = await axios.get(`${SERVER_BASE_URL}closeStore`, {userId, storeName})
+        // const closeStoreResponse = await axios.post(`${SERVER_BASE_URL}closeStore`, {userId, storeName})
         // switch(closeStoreResponse.status){
         //     case SERVER_RESPONSE_OK:
         //         //const stores = JSON.parse(closeStoreResponse.data);

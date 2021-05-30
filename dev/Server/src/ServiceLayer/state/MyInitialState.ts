@@ -64,7 +64,7 @@ const state:systemState = {
         sb.subscriber("tupac","123",true, [
             sb.basket("Walmart",
                 [sb.item(videoGames.minecraft, 10), sb.item(videoGames.tetris, 1),
-                    sb.item(alcohols.goldstar,6), sb.item(smoking.camel,1)]
+                    sb.item(alcohols.goldstar,6)]
             )
         ])
     ],

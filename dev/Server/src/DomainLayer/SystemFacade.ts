@@ -23,6 +23,7 @@ import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
+import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 
 export class SystemFacade
 {
@@ -53,6 +54,68 @@ export class SystemFacade
     {
         const initialization = await PaymentSystemReal.init();
         return initialization > 0 ? true : false;
+    }
+
+    private isNonEmptyString = (str: string):boolean =>{
+        return str !== '' && str !== undefined && str !== null;
+    }
+
+    public complain= async(sessionId:string, title:string, body:string):Promise<string> => {
+        Logger.log(`complain : sessionId:${sessionId} , title: ${title} , body:${body.substring(0,20)}...`);
+        if(!this.isNonEmptyString(title))
+            return new Promise((resolve,reject) => { reject("invalid message title")})
+        if(!this.isNonEmptyString(body))
+            return new Promise((resolve,reject) => { reject("invalid message body")})
+        
+        let user: User = this.logged_guest_users.get(sessionId);
+        if (user !== undefined)
+        {
+            ComplaintsDBDummy.addComplaint(user.getUserId(), title, body);
+            return new Promise((resolve, reject) => resolve("Your complaint has been received."));
+        }
+        return new Promise((resolve, reject) => reject("user not found"));
+    }
+
+    public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
+        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);      
+        let user: User = this.logged_guest_users.get(sessionId);
+        if (user !== undefined)
+        {
+            const complaints:tComplaint[][] = await ComplaintsDBDummy.getComplaints()
+            return new Promise((resolve, reject) => resolve(complaints));
+        }
+        return new Promise((resolve, reject) => reject("user not found"));
+    }
+
+    public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
+        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);      
+        let user: User = this.logged_guest_users.get(sessionId);
+        if (user !== undefined)
+        {
+            await ComplaintsDBDummy.deleteComplaint(messageId);
+            return new Promise((resolve, reject) => resolve("complaint successfully deleted."));
+        }
+        return new Promise((resolve, reject) => reject("user not found"));
+    }
+
+    public replyToComplaint = (sessionId:string, title:string, body:string, id:number):Promise<string> =>{
+        return new Promise((resolve, reject) => resolve("replying not yet supported"));
+    }
+
+    public getUsernames = async(sessionId:string):Promise<string[]> =>{
+        //TODO: IMPLEMENT!!!
+        return ["feature","not", "yet", "supported"];
+    }
+    public closeStore = (sessionId:string, storeName:string):Promise<string> =>{
+        Logger.log(`closeStore : sessionId:${sessionId} storeName: ${storeName}`);  
+        if(!this.isNonEmptyString(storeName)) 
+            return new Promise((resolve,reject) => { reject("invalid storeName")});
+        let user: User = this.logged_guest_users.get(sessionId);
+        if (user !== undefined)
+        {
+            return new Promise((resolve, reject) => resolve("function not yet supported"));
+        }
+        return new Promise((resolve, reject) => reject("user not found"));
     }
 
     public initSystemManagers() : boolean
@@ -518,7 +581,7 @@ export class SystemFacade
 
     public async completeOrder(sessionId : string , storeId : number , paymentInfo : tPaymentInfo, shippingInfo:tShippingInfo) : Promise<boolean>
     {
-        Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}`);
+        Logger.log(`completeOrder: sessionId : ${sessionId}, storeId:${storeId}, paymentInfo:${paymentInfo}, shippingInfo:${shippingInfo}`);
         // if(userAddress === ''|| userAddress === undefined || userAddress === null){
         //     return new Promise((resolve,reject) => { reject("invalid user Address")})
         // }
@@ -747,7 +810,7 @@ export class SystemFacade
         if (watcher !== undefined)
             if (Authentication.isSystemManager(requestingUserId))
             {
-                return new Promise((resolve, reject) => resolve(watchee.getPurchaseHistory()));
+                return new Promise((resolve, reject) => resolve(Purchase.getAllTransactionsForUser(subscriberToSeeId)));
             }
         return new Promise((resolve, reject) => reject("user don't have permissions"));
     }

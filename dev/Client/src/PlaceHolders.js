@@ -40,3 +40,9 @@ export const ph_subscribers = [
     "Alice", "Bob", "Charlie", "Donald", "Eugene","Fred", "Gerald", "Hilbert", "Irwing", "Jackson",
     "kelly", "Lary", "Moe", "Norman"
 ]
+
+export const chat1 = [...ph_complaints];
+export const chat2 = [...ph_complaints];
+export const chat3 = [...ph_complaints];
+
+export const inbox = [chat1, chat2, chat3];

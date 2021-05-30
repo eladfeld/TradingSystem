@@ -34,8 +34,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function AbstractTable({items, columnNames, renderRowCells, rowToKey, onRowClick}) {
-  //console.log('[t] items: ', items);
+export default function AbstractTable({items, columnNames, renderRowCells, rowToKey, onRowClick, xs, md}) {
+  console.log('[t] abstract table items: ', {items:items});
+  if(!items || !items.map){
+    console.log('[t] isnt array:',{items:items});
+  }
   const classes = useStyles();
 
   if(!rowToKey){
@@ -46,12 +49,15 @@ export default function AbstractTable({items, columnNames, renderRowCells, rowTo
   if(!onRowClick){
     onRowClick = () => {};
   }
+  if(!xs)xs=0;
+  if(!md)md=3;
+  
 
   return (   
     <div>
       <Grid container>
-        <Grid item xs={0} md={3}/>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12-(2*xs)} md={12-(2*md)}/>
+        <Grid item xs={xs} md={md}>
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="customized table">
               <TableHead>
@@ -69,7 +75,7 @@ export default function AbstractTable({items, columnNames, renderRowCells, rowTo
             </Table>
           </TableContainer>
           </Grid>
-          <Grid item xs={0} md={3}/>
+          <Grid item xs={12-(2*xs)} md={12-(2*md)}/>
       </Grid>
     </div>
 
