@@ -4,14 +4,15 @@ import { Login } from '../../src/DomainLayer/user/Login';
 import { isFailure, isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { Register } from '../../src/DomainLayer/user/Register';
+import { failIfRejected } from '../testUtil';
 
 
 describe('Store owner manage store inventory' , () => {
 
-    it('Owner adds valid product to inventory', () => {
+    it('Owner adds valid product to inventory', async() => {
         let service: Service = Service.get_instance()
-        service.register("shir", "123",13)
-        let res = Login.login("shir","123")
+        await failIfRejected(()=> service.register("shir", "123",13));
+        let res = failIfRejected(()=> Login.login("shir","123"));
         if(isOk(res)){
             let store= new Store(res.value.getUserId(), 'nike', 123, 'Herzelyia leyad bbb')
             store.addCategoryToRoot('Shirt')

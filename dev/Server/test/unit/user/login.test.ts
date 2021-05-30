@@ -2,19 +2,25 @@ import {expect} from 'chai';
 import { Login } from '../../../src/DomainLayer/user/Login';
 import { Register } from '../../../src/DomainLayer/user/Register';
 import { isOk } from '../../../src/Result';
+import { failIfRejected, failIfResolved, failTest } from '../../testUtil';
 
 
 
 describe('login test' , function() {
     
-    it('postive log in', function(){
-        Register.register("yosi", "1234", 13);
-        expect(Login.login("yosi", "1234")).to.not.null;
+    it('postive log in', async function(){
+        try{
+            await Register.register("yosi", "1234", 13);
+            const subscriber = await Login.login("yosi", "1234");
+            expect(subscriber).to.not.null;
+        }catch(e){
+            failTest("register or login failed");
+        }
     })
 
-    it('negative log in' , function ()
+    it('negative log in' , async function ()
     {
-        expect(isOk(Login.login("yosi", "123"))).to.equal(false);
+        failIfResolved(() => Login.login("yosi", "123"));
     });
 
 

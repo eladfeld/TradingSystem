@@ -21,7 +21,7 @@ describe('2.6: find product', function () {
 
     afterEach(function () {
         service.clear();
-        Authentication.clean();
+        //Authentication.clean();
     });
     it('find product by name', async function () {
         let sessionId = await service.enter();
