@@ -27,5 +27,5 @@ export const SUPPLY_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 //Database configurations
 
 //Test Configurations
-export const TEST_CHECKOUT_TIMEOUT =3000000 //100;//100 ms
+export const TEST_CHECKOUT_TIMEOUT = 30000 //100;//100 ms
 

@@ -96,15 +96,21 @@ class Purchase {
         clearTimeout(oldTimerId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
         //approve supply
-        const shipmentId: number = await this.supplySystem.supply(shippingInfo);
-        if(shipmentId < 0){
+        var shipmentId: number = -1;
+        try{
+            shipmentId  = await this.supplySystem.supply(shippingInfo);
+        }catch(e){}
+        if(shipmentId < 0){//shipment failed or threw error
             this.resetTimer(userId, storeId, oldCallback);
             return new Promise((res , rej) => {rej("could not ship items")});
         }
         transaction.setShipmentId(shipmentId);
         //approve payment
-        const paymentRes: number = await this.paymentSystem.transfer(paymentInfo);
-        if(paymentRes < 0){
+        var paymentRes: number = -1;
+        try{
+            paymentRes = await this.paymentSystem.transfer(paymentInfo);
+        }catch(e){}        
+        if(paymentRes < 0){//payment failed or threw error
             this.supplySystem.cancelSupply(shipmentId);
             this.resetTimer(userId, storeId, oldCallback);
             return new Promise((res , rej) => {rej("unable to complete money transfer")});
