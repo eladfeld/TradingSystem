@@ -22,4 +22,7 @@ export interface iSubscriberController
     addAppointment:(userId : number, appointment : Appointment) => Promise<void>;
 
     getAppointment:(userId : number, storeId : number) => Promise<Appointment>;
+
+    deleteBasket:(userId: number, storeId: number) => void;
+    
 }

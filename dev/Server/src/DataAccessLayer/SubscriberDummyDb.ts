@@ -4,6 +4,7 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 
 class SubscriberDB
 {
+
     // #saveDB  ----------------------move all the class to save in the real db
     private subscribers: Subscriber[];
     private systemManagers: Subscriber[];
@@ -77,8 +78,11 @@ class SubscriberDB
         }
         return new Promise((resolve, reject) => reject("addAppointment: subscriber not found"))
     }
-
+    deleteBasket(userId: number, storeId: number) {
+        //do nothing here, since we don't have an actual db and the subscriber already added this product, TODO: when we change to db we need to add the basket if needed and add the product right after
+    }
 }
+
 
 const subscriberDB = new SubscriberDB();
 export default subscriberDB;

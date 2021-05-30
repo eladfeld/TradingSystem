@@ -6,6 +6,7 @@ import { ShoppingBasket } from "./ShoppingBasket";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
 import { rejects } from "assert";
+import subscriberDB from "../../DataAccessLayer/SubscriberDummyDb";
 
 export class ShoppingCart
 {
@@ -24,7 +25,15 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return Promise.reject("no such shopping basket");
         }
-        return basket.checkout(userId, user, supply_address, userSubject);
+        let checkoutp = basket.checkout(userId, user, supply_address, userSubject);
+        return new Promise((resolve,reject) => {
+            checkoutp.then( isSusccesfull => {
+                this.baskets.delete(storeId);
+                subscriberDB.deleteBasket(userId,storeId);
+                resolve(isSusccesfull)
+            })
+            .catch( error => reject(error))
+        })
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>
