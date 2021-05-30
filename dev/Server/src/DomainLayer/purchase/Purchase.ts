@@ -1,14 +1,7 @@
-import PaymentSystemAdapter from './PaymentSystemAdapter';
-import SupplySystemAdapter from './SupplySystemAdapter';
-import {setSystemConfigurations, PAYMENT_SYSTEM, SUPPLY_SYSTEM} from '../../../src/config';
+import {PAYMENT_SYSTEM, SUPPLY_SYSTEM, TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../config';
 import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
-import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import { Publisher } from '../notifications/Publisher';
-import { userInfo } from 'os';
-import { rejects } from 'assert';
-import { resolve } from 'path';
-import { CHECKOUT_TIMEOUT } from '../../config';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -18,9 +11,10 @@ export const stringUtil = {
     FAIL_FINALIZE_SHIPMENT: "We could not ship your items, you have been refunded, please try again later"
 };
 Object.freeze(stringUtil);
+
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
-export const PAYMENT_TIMEOUT_MILLISEC: number = CHECKOUT_TIMEOUT;
+export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
 
 
 class Purchase {
@@ -29,8 +23,6 @@ class Purchase {
     private paymentSystem: any;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, () => void]>>;
     private dbDummy: DbDummy;
-
-
 
     constructor(){
         this.paymentSystem = PAYMENT_SYSTEM;

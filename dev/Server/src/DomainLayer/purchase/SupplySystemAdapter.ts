@@ -2,9 +2,10 @@ import { makeFailure, makeOk, Result } from '../../Result';
 import SupplySystem from '../apis/SupplySystem';
 import SupplySystemReal from '../apis/SupplySystemReal';
 import {ShoppingCart} from '../user/ShoppingCart';
-import { tShippingInfo } from './Purchase';
+import { iSupplyAdapter } from './iAPI';
+import { tPaymentInfo, tShippingInfo } from './Purchase';
 
-class SupplySystemAdapter {
+class SupplySystemAdapter implements iSupplyAdapter{
 
     init = () : Promise<number> => {
         return SupplySystemReal.init();

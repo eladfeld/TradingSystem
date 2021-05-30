@@ -5,6 +5,7 @@ class PaymentSystem {
     private static nextPaymentId: number = 1;
     private static nextSessionId: number = 1;
     private static shouldSucceed: boolean = true;
+    //public  static ERROR: number = -500;
 
     //initializes system. returns a session id or negative number on failure
     static init = () : number => {
@@ -24,6 +25,7 @@ class PaymentSystem {
         return PaymentSystem.shouldSucceed ? true : false;
     }
 
+    
     static willFail = () => PaymentSystem.shouldSucceed = false;
     static willSucceed = () => PaymentSystem.shouldSucceed = true;
 

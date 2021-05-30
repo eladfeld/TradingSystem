@@ -4,24 +4,13 @@ import SupplySystemAdapter from "./DomainLayer/purchase/SupplySystemAdapter";
 import state from "./ServiceLayer/state/MyInitialState";
 import fakePaymentSystemAdapter from "./DomainLayer/purchase/fakePaymentSystemAdapter";
 import fakeSupplySystemAdapter from "./DomainLayer/purchase/fakeSupplySystemAdapter";
+import { iPaymentAdapter, iSupplyAdapter } from "./DomainLayer/purchase/iAPI";
 
-export const setTestConfigurations = () => {
-    CHECKOUT_TIMEOUT = 100;
-    PAYMENT_SYSTEM = new fakePaymentSystemAdapter();
-    SUPPLY_SYSTEM = new fakeSupplySystemAdapter();
-    SHOULD_INIT_STATE = false;
-}
-
-export const setSystemConfigurations = () => {
-    CHECKOUT_TIMEOUT = 3000000;
-    PAYMENT_SYSTEM = new PaymentSystemAdapter();
-    SUPPLY_SYSTEM = new SupplySystemAdapter();
-}
-
+export var TEST_MODE = true;
 
 
 //program constants
-export var CHECKOUT_TIMEOUT = 3000000;//5 minutes
+export const CHECKOUT_TIMEOUT = 3000000;//5 minutes
 export const CACHE_SIZE = -1;           //how much memory we want to cache (in bytes?)
 
 //init configurations
@@ -30,11 +19,13 @@ export const INITIAL_STATE = state;
 
 
 //API configurations
-export var PAYMENT_SYSTEM:any = new PaymentSystemAdapter();
-export var SUPPLY_SYSTEM:any = new SupplySystemAdapter();
+export var PAYMENT_SYSTEM:iPaymentAdapter = new PaymentSystemAdapter();
+export var SUPPLY_SYSTEM:iSupplyAdapter = new SupplySystemAdapter();
 export const PAYMENT_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 export const SUPPLY_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 
 //Database configurations
 
-//
+//Test Configurations
+export const TEST_CHECKOUT_TIMEOUT =3000000 //100;//100 ms
+

@@ -1,9 +1,11 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import PaymentSystem from "../apis/PaymentSystem";
 import PaymentSystemReal from "../apis/PaymentSystemReal";
+import { iPaymentAdapter } from "./iAPI";
 import { tPaymentInfo } from "./Purchase";
 
-class PaymentSystemAdapter {
+class PaymentSystemAdapter implements iPaymentAdapter {
+
 
     init = () : Promise<number> => {
         return PaymentSystemReal.init();
