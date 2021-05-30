@@ -10,7 +10,6 @@ import fs from 'fs';
 import path, { resolve } from 'path'
 import { buyingOption } from "./store/BuyingOption";
 import { Authentication } from "./user/Authentication";
-import { StoreDB } from "./store/StoreDB";
 import Purchase from "./purchase/Purchase";
 import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
@@ -24,6 +23,7 @@ import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import { rejects } from "assert";
 import { StoreProduct } from "./store/StoreProduct";
+import { StoreDB } from "../DataAccessLayer/DBinit";
 
 export class SystemFacade
 {
@@ -309,8 +309,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let cart: string = user.GetShoppingCart();
-            return Promise.resolve(cart);   
+            return user.GetShoppingCart();   
         }
         return Promise.reject("user not found");
     }
@@ -855,7 +854,7 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        StoreDB.clear();
+        // StoreDB.clear();
         ProductDB.clear();
         Purchase.clear();
     }

@@ -1,6 +1,7 @@
+import { iPurchaseDB } from "../../DataAccessLayer/interfaces/iPurchaseDB";
 import Transaction, { TransactionStatus } from "./Transaction";
 
-class DbDummy{
+export class PurchaseDummyDB implements iPurchaseDB{
     private transactions: Transaction[];
 
     constructor(){
@@ -52,5 +53,3 @@ class DbDummy{
     }
 
 }
-
-export default DbDummy;

@@ -4,7 +4,6 @@ import { Inventory } from "./Inventory";
 import { TreeRoot, ID, Rating, TreeNode } from './Common'
 import { Appointment } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { StoreDB } from "./StoreDB";
 import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { buyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
@@ -26,6 +25,7 @@ import iCategorizer from "../discount/Categorizer";
 
 import { StoreProduct } from "./StoreProduct";
 import UniversalPolicy from "../policy/buying/UniversalPolicy";
+import { StoreDB } from "../../DataAccessLayer/DBinit";
 
 
 export class Store implements iCategorizer

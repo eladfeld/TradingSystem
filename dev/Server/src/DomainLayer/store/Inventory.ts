@@ -29,16 +29,22 @@ export class Inventory
             Logger.log("Product already exist in inventory!")
             return Promise.reject(`Product already exist in inventory! productName: ${productName}`);
         }
-        let product = ProductDB.getProductByName(productName)
-        if(product === undefined){
-            let product = new Product(productName, categories)
-        }
-
-        //TODO: #saveDB
-        let productId = ProductDB.getProductByName(productName).getProductId()
-        let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
-        this.products.set(storeProduct.getProductId(), storeProduct);
-        return Promise.resolve(productId);
+        let productp = ProductDB.getProductByName(productName)
+        return new Promise((resolve,reject) => {
+            productp.then( product => {
+                let productId = product.getProductId()
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                this.products.set(storeProduct.getProductId(), storeProduct);
+                resolve(productId);
+            })
+            .catch( _ => {
+                let product = new Product(productName, categories)
+                let productId = product.getProductId()
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                this.products.set(storeProduct.getProductId(), storeProduct);
+                resolve(productId);
+            })
+        })
     }
 
     public addProductQuantity(productId: number, quantity: number) : Result<string> {

@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import subscriberDB from '../../DataAccessLayer/SubscriberDummyDb';
+import { subscriberDB } from '../../DataAccessLayer/DBinit';
 import { Logger } from '../../Logger';
 import { Subscriber } from './Subscriber'; 
 

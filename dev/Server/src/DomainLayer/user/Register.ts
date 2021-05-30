@@ -1,10 +1,4 @@
-import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../../Logger"
 import {Authentication} from "./Authentication"
-import { Subscriber } from "./Subscriber";
-import { readJsonConfigFile } from "typescript";
-import { StoreDB } from "../store/StoreDB";
-import subscriberDB from "../../DataAccessLayer/SubscriberDummyDb";
 export class Register
 {
 

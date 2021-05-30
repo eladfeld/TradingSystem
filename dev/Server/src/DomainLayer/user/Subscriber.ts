@@ -1,4 +1,4 @@
-import subscriberDB from "../../DataAccessLayer/SubscriberDummyDb";
+import { subscriberDB } from "../../DataAccessLayer/DBinit";
 import { isOk, Result } from "../../Result";
 import { Publisher } from "../notifications/Publisher";
 import { buyingOption } from "../store/BuyingOption";

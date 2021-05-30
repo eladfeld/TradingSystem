@@ -1,5 +1,3 @@
-import { StoreDB } from "../store/StoreDB";
-
 export const TransactionStatus = {
     IN_PROGRESS: 0,
     CANCELLED: 1,

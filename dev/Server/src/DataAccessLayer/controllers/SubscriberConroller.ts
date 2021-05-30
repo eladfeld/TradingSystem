@@ -1,9 +1,9 @@
 import { Appointment } from "../../DomainLayer/user/Appointment";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
-import { iSubscriberController } from "../interfaces/iSubscriberConreoller";
+import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
-class SubscriverController implements iSubscriberController
+class SubscriverController implements iSubscriberDB
 {
     addSubscriber: (username: string, password: string, age: number) => void;
     addSystemManager: (subscriber: Subscriber) => void;
@@ -15,5 +15,4 @@ class SubscriverController implements iSubscriberController
     addAppointment: (userId: number, appointment: Appointment) => Promise<void>;
     getAppointment: (userId: number, storeId: number) => Promise<Appointment>;
     deleteBasket: (userId: number, storeId: number) => void;
-    
 }

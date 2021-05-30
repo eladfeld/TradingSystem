@@ -96,17 +96,30 @@ export class ShoppingBasket implements iBasket
         return Promise.resolve("added to cart");
     }
 
-    getShoppingBasket() : {}
+    getShoppingBasket() : Promise<{}>
     {
         var basket : any = {}
         basket['store'] = this.store.getStoreName();
         basket['storeId'] = this.store.getStoreId();
         basket['products']=[]
+
+        let productPromises: Promise<Product>[] = []
         this.products.forEach(function(quantity,productId,map){
-            let product: Product = ProductDB.getProductById(productId);
-            basket['products'].push({'productId':productId , 'name':product.getName(),'quantity':quantity})
+            let product = ProductDB.getProductById(productId);
+            productPromises.push(product);
         })
-        return basket;
+
+        let allProducts = Promise.all(productPromises);
+        return new Promise((resolve, reject) => {
+            allProducts.then(products =>{
+                    products.forEach(product => {
+                        let pid = product.getProductId()
+                        basket['products'].push({'productId': pid, 'name':product.getName(),'quantity':this.products.get(pid)})
+                        resolve(basket)
+                    })
+                })
+                .catch (error => reject(error))
+        })
     }
 
     public getValue = (field: string):number => {

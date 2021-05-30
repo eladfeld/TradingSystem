@@ -1,8 +1,9 @@
+import { TEST_MODE } from "../config";
 import { Appointment } from "../DomainLayer/user/Appointment";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
+import { iSubscriberDB } from "./interfaces/iSubscriberDB";
 
-
-class SubscriberDB
+export class SubscriberDummyDB implements iSubscriberDB
 {
 
     // #saveDB  ----------------------move all the class to save in the real db
@@ -83,6 +84,3 @@ class SubscriberDB
     }
 }
 
-
-const subscriberDB = new SubscriberDB();
-export default subscriberDB;

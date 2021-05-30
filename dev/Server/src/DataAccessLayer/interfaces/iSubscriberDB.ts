@@ -3,7 +3,7 @@ import { Subscriber } from "../../DomainLayer/user/Subscriber";
 
 
 
-export interface iSubscriberController
+export interface iSubscriberDB
 {
     addSubscriber: (username: string, password: string, age: number) => void
 

@@ -1,12 +1,11 @@
 import { makeFailure, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
-import { StoreDB } from "../store/StoreDB";
 import { ShoppingBasket } from "./ShoppingBasket";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
 import { rejects } from "assert";
-import subscriberDB from "../../DataAccessLayer/SubscriberDummyDb";
+import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingCart
 {
@@ -81,12 +80,20 @@ export class ShoppingCart
         return this.baskets;
     }
 
-    getShoppingCart() : {}
+    getShoppingCart() : Promise<string>
     {
         var mycart : any = {};
         mycart['baskets'] = [];
-        Array.from(this.baskets.values()).forEach(basket => mycart['baskets'].push(basket.getShoppingBasket()))
-        return mycart;
+        let basketsPromises: Promise<{}>[] = [];
+        this.baskets.forEach(basket => basketsPromises.push(basket.getShoppingBasket()));
+        let allBaskets = Promise.all(basketsPromises)
+        return new Promise((resolve, reject) => {
+            allBaskets.then(baskets => {
+                baskets.forEach(basket => mycart['baskets'].push(basket))
+                resolve(JSON.stringify(mycart))
+            })
+            .catch(error => reject(error))
+        })
     }
 
     quantityInBasket = (storeId:number , productId:number ) : number =>

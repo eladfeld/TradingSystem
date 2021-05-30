@@ -1,10 +1,9 @@
 import { rejects } from 'assert';
-import subscriberDB from '../../DataAccessLayer/SubscriberDummyDb';
+import { StoreDB } from '../../DataAccessLayer/DBinit';
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
 import iSubject from '../discount/logic/iSubject';
 import { buyingOption } from '../store/BuyingOption';
 import { Store } from '../store/Store';
-import { StoreDB } from '../store/StoreDB';
 import { ShoppingBasket } from './ShoppingBasket';
 import { ShoppingCart} from './ShoppingCart'
 import { Subscriber } from './Subscriber';
@@ -53,9 +52,9 @@ export class User implements iSubject
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-    public GetShoppingCart(): string
+    public GetShoppingCart(): Promise<string>
     {
-        return JSON.stringify(this.shoppingCart.getShoppingCart());
+        return this.shoppingCart.getShoppingCart();
     }
 
     public getShoppingBasket(storeId: number): {}

@@ -14,5 +14,5 @@ export const PAYMENT_SYSTEM_URL = '';
 export const SUPPLY_SYSTEM_URL = '';
 
 //Database configurations
-
+export const TEST_MODE = false;
 //

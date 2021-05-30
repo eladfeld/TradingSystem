@@ -16,14 +16,20 @@ export class ProductDB
         this.products.push(wproduct);
     }
 
-    public static getProductByName(productName: string): Product
+    public static async getProductByName(productName: string): Promise<Product>
     {
-        return this.products.find(product => product.getName() == productName);
+        let product = this.products.find(product => product.getName() == productName);
+        if (product)
+            return Promise.resolve(product)
+        return Promise.reject("product not found1")
     }
 
-    public static getProductById(productId: number): Product
+    public static async getProductById(productId: number): Promise<Product>
     {
-        return this.products.find(product => product.getProductId() === productId);
+        let product = this.products.find(product => product.getProductId() === productId);
+        if (product)
+            return Promise.resolve(product)
+        return Promise.reject("product not found2")
     }
 
     public static clear()

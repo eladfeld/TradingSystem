@@ -1,6 +1,6 @@
 import Transaction from "../../DomainLayer/purchase/Transaction";
 
-export interface iPurchaseConreoller
+export interface iPurchaseDB
 {
     getAllTransactions: () =>Promise<Transaction[]>;
 

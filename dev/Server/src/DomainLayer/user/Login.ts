@@ -1,8 +1,6 @@
-import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../../Logger";
+import { subscriberDB } from "../../DataAccessLayer/DBinit";
 import { Authentication } from "./Authentication";
 import { Subscriber } from "./Subscriber";
-import subscriberDB from "../../DataAccessLayer/SubscriberDummyDb";
 
 
 export class Login
