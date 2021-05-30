@@ -53,7 +53,7 @@ export class Service
     public getUsernames = (sessionId:string):Promise<string[]> =>{
         return this.facade.getUsernames(sessionId);
     }
-    public getSystemComplaints = (sessionId:string):Promise<tComplaint[]> => {
+    public getSystemComplaints = (sessionId:string):Promise<tComplaint[][]> => {
         return this.facade.getSystemComplaints(sessionId);
     }
     public deleteComplaint = (sessionId:string, messageId:number):Promise<string> =>{

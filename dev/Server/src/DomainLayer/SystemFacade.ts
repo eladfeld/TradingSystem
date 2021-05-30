@@ -76,12 +76,12 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public getSystemComplaints = async (sessionId:string):Promise<tComplaint[]> => {
+    public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
         Logger.log(`getSystemComplaints : sessionId:${sessionId}`);      
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            const complaints:tComplaint[] = await ComplaintsDBDummy.getComplaints()
+            const complaints:tComplaint[][] = await ComplaintsDBDummy.getComplaints()
             return new Promise((resolve, reject) => resolve(complaints));
         }
         return new Promise((resolve, reject) => reject("user not found"));
@@ -591,7 +591,6 @@ export class SystemFacade
         if(user !== undefined)
         {
             let res: boolean = await store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
-            console.log('complete order res:', res);
             if(res)
             {
                 return new Promise((resolve, reject) =>

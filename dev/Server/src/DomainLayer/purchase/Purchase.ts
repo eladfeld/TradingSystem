@@ -94,7 +94,6 @@ class Purchase {
     //1) no transaction is in progress, 2)Shipping issue 3) payment issue
     public CompleteOrder = async (userId: number, storeId: number, shippingInfo: tShippingInfo, paymentInfo: tPaymentInfo, storeBankAccount: number) : Promise<boolean> => {
         //verify transaction in progress
-        //console.log('order info',{userId, storeId,shippingInfo, paymentInfo});
         const [oldTimerId, oldCallback] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId === undefined){
             //no checkout is in progress, cancel the old timer/order

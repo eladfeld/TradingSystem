@@ -486,7 +486,6 @@ const getkeywords = (req : Request, res: Response , next: NextFunction) =>
 // this function is to give the clients autocomplete data with stores
 const getStoreNames = (req : Request, res: Response , next: NextFunction) =>
 {
-    console.log("someone requested store names")
     let stores = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_store_names());
     res.status(OKSTATUS).json(stores);
 }

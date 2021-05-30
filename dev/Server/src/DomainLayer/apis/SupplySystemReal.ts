@@ -43,7 +43,6 @@ class SupplySystemReal {
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
-        console.log('supply response', response.data);
         
         //const response =await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "supply", name: shippingInfo.name, address:shippingInfo.address, city:shippingInfo.city, country:shippingInfo.country, zip:shippingInfo.zip});
         switch(response.data){

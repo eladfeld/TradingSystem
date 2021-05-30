@@ -125,7 +125,8 @@ export default function ManageSystem({getAppState, setAppState}) {
                         const complaintsResponse = await axios.post(SERVER_BASE_URL+'/getSystemComplaints', {userId});
                         switch(complaintsResponse.status){
                             case SERVER_RESPONSE_OK:
-                                const allComplaints = complaintsResponse.data;// JSON.parse(complaintsResponse.data);
+                                var allComplaints = complaintsResponse.data;// JSON.parse(complaintsResponse.data);
+                                allComplaints = allComplaints.map(chat => chat[0]);//
                                 console.log('[t] all complaints', allComplaints);
                                 setAppState({complaints:allComplaints})
                                 setComplaints(RECEIVED);
