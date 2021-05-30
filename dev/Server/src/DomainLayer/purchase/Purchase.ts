@@ -2,6 +2,8 @@ import {PAYMENT_SYSTEM, SUPPLY_SYSTEM, TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT
 import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
 import { Publisher } from '../notifications/Publisher';
+import APIAdapterFactory from '../apis/APIAdapterFactory';
+import {iPaymentAdapter, iSupplyAdapter} from './iAPI';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -19,13 +21,13 @@ export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOU
 
 class Purchase {
 
-    private supplySystem: any;
-    private paymentSystem: any;
+    private supplySystem: iSupplyAdapter;
+    private paymentSystem: iPaymentAdapter;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, () => void]>>;
     private dbDummy: DbDummy;
 
     constructor(){
-        this.paymentSystem = PAYMENT_SYSTEM;
+        this.paymentSystem = APIAdapterFactory.getPaymentAdapter();
         this.supplySystem = SUPPLY_SYSTEM;
         this.cartCheckoutTimers = new Map();
         this.dbDummy = new DbDummy();

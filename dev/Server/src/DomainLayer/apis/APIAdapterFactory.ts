@@ -5,7 +5,7 @@ import { iPaymentAdapter, iSupplyAdapter } from "../purchase/iAPI"
 import PaymentSystemAdapter from "../purchase/PaymentSystemAdapter";
 import SupplySystemAdapter from "../purchase/SupplySystemAdapter";
 
-class APIAdapterFactory{
+export default class APIAdapterFactory{
     
     public static getSupplyAdapter = ():iSupplyAdapter =>{
         if(TEST_MODE)
