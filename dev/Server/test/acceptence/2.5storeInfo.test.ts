@@ -1,5 +1,4 @@
 import { expect , assert} from 'chai';
-import { exception } from 'console';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';

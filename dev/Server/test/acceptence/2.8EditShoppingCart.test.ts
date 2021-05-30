@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import { assert } from 'console';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';

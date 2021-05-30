@@ -39,7 +39,7 @@ describe('2.9: buy products', function () {
         expect(store.getProductQuantity(apple)).to.equal(3)
         
         // if transaction completed then the external systems were activated 
-        expect(Purchase.getAllTransactions().length).to.equal(1)
+        expect((await Purchase.getAllTransactions()).length).to.equal(1)
     })
 
 
@@ -73,7 +73,7 @@ describe('2.9: buy products', function () {
             // chech that the store's inventory hasnt changed
             expect(store.getProductQuantity(banana)).to.equal(10)
             // check that transaction wasnt completed
-            expect(Purchase.getAllTransactions().length).to.equal(1);
+            expect((await Purchase.getAllTransactions()).length).to.equal(1);
         }
     })
 
@@ -114,7 +114,9 @@ describe('2.9: buy products', function () {
                 expect(avi.quantityInBasket(store.getStoreId(), banana_id)).to.equal(0)
                 expect(ali.quantityInBasket(store.getStoreId(), banana_id)).to.equal(1)
                 expect(store.getProductQuantity(banana_id)).to.equal(0);
-                expect(Purchase.getAllTransactions().length).to.equal(1);
+                Purchase.getAllTransactions().then(transactions =>{
+                    expect(transactions.length).to.equal(1);
+                })
             })
         })
 
@@ -125,7 +127,9 @@ describe('2.9: buy products', function () {
                 expect(ali.quantityInBasket(store.getStoreId(), banana_id)).to.equal(0)
                 expect(avi.quantityInBasket(store.getStoreId(), banana_id)).to.equal(1)
                 expect(store.getProductQuantity(banana_id)).to.equal(0);
-                expect( Purchase.getAllTransactions().length).to.equal(1);
+                Purchase.getAllTransactions().then(transactions =>{
+                    expect( transactions.length).to.equal(1);
+                })
             })
             ali_buy_res.catch(msg => {
                 //only one purchase should fail

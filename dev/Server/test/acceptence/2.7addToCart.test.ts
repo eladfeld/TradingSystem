@@ -8,7 +8,6 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
-import { assert } from 'console';
 
 describe('2.7: add to cart test' , function() {
 
