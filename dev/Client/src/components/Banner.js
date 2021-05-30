@@ -203,6 +203,11 @@ export default function Banner({getAppState, setAppState}) {
   const handleSignInClick = () => {
     history.push('/auth');
   }
+
+  const handleInboxClick = () => {
+    alert('inbox');
+    //history.push('/inbox');
+  }
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -242,7 +247,7 @@ export default function Banner({getAppState, setAppState}) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
+        <IconButton aria-label="show 4 new mails" color="inherit" onClick={handleInboxClick}>
           <Badge badgeContent={0} color="secondary">
             <MailIcon />
           </Badge>
@@ -295,7 +300,7 @@ export default function Banner({getAppState, setAppState}) {
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={handleInboxClick}>
               <Badge badgeContent={0} color="secondary">
                 <MailIcon />
               </Badge>
