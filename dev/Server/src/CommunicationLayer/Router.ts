@@ -55,7 +55,7 @@ router.post('/getSystemTransactions', Controller.getSystemTransactions)
 router.post('/closeStore', Controller.closeStore)
 router.post('/deleteComplaint', Controller.deleteComplaint)
 router.post('/replyToComplaint', Controller.replyToComplaint)
-router.post('/banUser', Controller.banUser)
+//router.post('/banUser', Controller.banUser)
 
 
 export = router;

@@ -46,6 +46,8 @@ export default function ManageSystem({getAppState, setAppState}) {
     const [complaints, setComplaints] = useState(NOT_REQUESTED);
     const [transactions, setTransactions] = useState(NOT_REQUESTED);
 
+    const {userId} = getAppState();
+
 
 
     const onCloseStoreClick =async() =>{
@@ -118,32 +120,33 @@ export default function ManageSystem({getAppState, setAppState}) {
                 }
                 return <ManageSubscribers getAppState={getAppState} subscriberNames={userNames} setSubscriberNames={setUserNames}/>
             case COMPLAINTS:
-                // if(complaints === undefined){
-                //     const loadComplaints = async () =>{
-                //         const complaintsResponse = await axios.post(SERVER_BASE_URL+'/getSystemComplaints', {userId});
-                //         switch(staffResponse.status){
-                //             case SERVER_RESPONSE_OK:
-                //                 const complaints = JSON.parse(complaintsResponse.data);
-                //                 setAppState({complaints})
-                //                 setComplaints([]);
-                //                 break;
-                //             case SERVER_RESPONSE_BAD:
-                //                 alert(staffResponse.data);
-                //                 setComplaints(NOT_REQUESTED);
-                //                 break;
-                //             default:
-                //                 alert(unknownStatusMessage(staffResponse));
-                //                 setComplaints(NOT_REQUESTED);
-                //                 break;
-                //         }
-                //     }
-                //     loadComplaints();
-                //     setComplaints(null)
-                // }
                 if(complaints === NOT_REQUESTED){
-                    setAppState({complaints: ph_complaints});
-                    setComplaints(RECEIVED);
+                    const loadComplaints = async () =>{
+                        const complaintsResponse = await axios.post(SERVER_BASE_URL+'/getSystemComplaints', {userId});
+                        switch(complaintsResponse.status){
+                            case SERVER_RESPONSE_OK:
+                                const allComplaints = complaintsResponse.data;// JSON.parse(complaintsResponse.data);
+                                console.log('[t] all complaints', allComplaints);
+                                setAppState({complaints:allComplaints})
+                                setComplaints(RECEIVED);
+                                break;
+                            case SERVER_RESPONSE_BAD:
+                                alert(complaintsResponse.data);
+                                setComplaints(NOT_REQUESTED);
+                                break;
+                            default:
+                                alert(unknownStatusMessage(complaintsResponse));
+                                setComplaints(NOT_REQUESTED);
+                                break;
+                        }
+                    }
+                    loadComplaints();
+                    setComplaints(null)
                 }
+                // if(complaints === NOT_REQUESTED){
+                //     setAppState({complaints: ph_complaints});
+                //     setComplaints(RECEIVED);
+                // }
                 return <ViewComplaints getAppState={getAppState} setAppState={setAppState}/>
             case TRANSACTIONS:
                 // if(transactions === undefined){
@@ -169,7 +172,7 @@ export default function ManageSystem({getAppState, setAppState}) {
                     setAppState({systemTransactions: ph_system_transactions});
                     setTransactions(ph_system_transactions);
                 }
-                return <SystemTransactions allTransactions={transactions}/>         
+                return <SystemTransactions userId={userId}/>         
             default:
                 return <div></div>;
         }

@@ -23,19 +23,22 @@ const Checkout = ({getAppState, setAppState}) =>{
         history.push('/cart');
     }
     const onCompleteClick = async () =>{
-        const {card_number,month, year, holder, ccv, id} = paymentInfo;
+        const {cardNumber, expMonth, expYear, holder, cvv, id} = paymentInfo;
         const {name, address, city, country, zip} = shippingInfo;
         if(!areNotEmptyStrings([holder,name,address,city,country])){
             alert("you must fill in all fields");
             return;            
         }
-        if(!areNonNegativeIntegers([card_number, month, year, ccv, id, zip])){
+        if(!areNonNegativeIntegers([cardNumber, expMonth, expYear, cvv, id, zip])){
             alert("credit card info and zip code must be valid numbers");
             return;
         }
+        //todo:remove
+        paymentInfo.amount = '12345';
+        paymentInfo.toAccount = '54321';
 
-        const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, userAddress:"8Mile", paymentInfo});
-        //const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, shippingInfo, paymentInfo});
+        //const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, userAddress:"8Mile", paymentInfo});
+        const response = await axios.post(SERVER_BASE_URL+'/completeOrder',{userId, storeId:basketAtCheckout, shippingInfo, paymentInfo});
         switch(response.status){
             case SERVER_RESPONSE_OK:
                 cart.baskets = cart.baskets.filter(b => b.storeId !== basketAtCheckout);

@@ -12,6 +12,8 @@ import { isOk, makeFailure, makeOk, Result} from "../Result";
 import { policyState } from "./state/StateBuilder";
 import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
+import { Session } from "inspector";
+import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 
 export class Service
 {
@@ -44,6 +46,26 @@ export class Service
         }
         return Service.singletone;
     }
+
+    public complain = (sessionId:string, title:string, body:string):Promise<string> =>{
+        return this.facade.complain(sessionId, title, body);
+    }
+    public getUsernames = (sessionId:string):Promise<string[]> =>{
+        return this.facade.getUsernames(sessionId);
+    }
+    public getSystemComplaints = (sessionId:string):Promise<tComplaint[]> => {
+        return this.facade.getSystemComplaints(sessionId);
+    }
+    public deleteComplaint = (sessionId:string, messageId:number):Promise<string> =>{
+        return this.facade.deleteComplaint(sessionId, messageId);
+    }
+    public replyToComplaint = (sessionId:string, title:string, body:string, messageId:number):Promise<string> =>{
+        return this.facade.replyToComplaint(sessionId,title,body,messageId);
+    }
+    public closeStore = (sessionId:string, storeName:string):Promise<string> =>{
+        return this.facade.closeStore(sessionId,storeName);
+    }
+
 
     //returns a session id string
     public async enter(): Promise<string>
@@ -255,5 +277,7 @@ export class Service
     {
         this.facade.clear();
     }
+
+
 
 }

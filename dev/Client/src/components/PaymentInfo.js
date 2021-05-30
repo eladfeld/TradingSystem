@@ -4,9 +4,19 @@ import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL} from '../constants'
 
+// type tPaymentInfo = {
+//     holder: string;
+//     id: number;
+//     cardNumber: number;
+//     expMonth: number;
+//     expYear: number;
+//     cvv: number;
+//     toAccount: number;
+//     amount: number;
+// }
 
 const PaymentInfo=({paymentInfo, setPaymentInfo})=>{
-    const {card_number, month, year, holder, ccv, id} = paymentInfo;//underscore notation for payment api consistency
+    const {cardNumber, expMonth, expYear, holder, cvv, id} = paymentInfo;//underscore notation for payment api consistency
 
     //const {userId} = getAppState();
 
@@ -22,27 +32,27 @@ const PaymentInfo=({paymentInfo, setPaymentInfo})=>{
                 <TextField
                     label='Card Number'
                     placeholder='Enter your credit card number'
-                    value={card_number}
-                    onChange={(event) => setPaymentInfo({...paymentInfo, card_number:event.target.value})}
+                    value={cardNumber}
+                    onChange={(event) => setPaymentInfo({...paymentInfo, cardNumber:event.target.value})}
                     type="number"
                     fullWidth/>
                 <TextField
                     label='Exp Month'
                     placeholder='Enter card expiration month'
-                    value={month}
-                    onChange={(event) => setPaymentInfo({...paymentInfo, month:event.target.value})}
+                    value={expMonth}
+                    onChange={(event) => setPaymentInfo({...paymentInfo, expMonth:event.target.value})}
                     fullWidth/>
                 <TextField
                     label='Exp Year'
                     placeholder='Enter card expiration year'
-                    value={year}
-                    onChange={(event) => setPaymentInfo({...paymentInfo, year:event.target.value})}
+                    value={expYear}
+                    onChange={(event) => setPaymentInfo({...paymentInfo, expYear:event.target.value})}
                     fullWidth/>
                 <TextField
                     label='CCV'
                     placeholder='Enter 3 digits on back of card'
-                    value={ccv}
-                    onChange={(event) => setPaymentInfo({...paymentInfo, ccv:event.target.value})}
+                    value={cvv}
+                    onChange={(event) => setPaymentInfo({...paymentInfo, cvv:event.target.value})}
                     fullWidth/>
                 <TextField
                     label='Card Holder Name'

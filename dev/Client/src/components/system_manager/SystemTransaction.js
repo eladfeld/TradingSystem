@@ -16,9 +16,9 @@ const SystemTransaction = ({transaction, goBackToTable}) => {
     const columnNames = ['Product', 'Quantity', 'Price Per Unit', 'Total'];
 
     const renderProduct = (p) => p.name;
-    const renderQuantity = (p) => p.quantity;
+    const renderQuantity = (p) => p.Quantity;
     const renderPrice = (p) => p.price;
-    const renderTotal = (p) => `$${p.price*p.quantity}`;
+    const renderTotal = (p) => `$${p.price*p.Quantity}`;
 
     const renderRowCells = (p) => [renderProduct(p),renderQuantity(p),renderPrice(p),renderTotal(p)];
     
@@ -32,7 +32,8 @@ const SystemTransaction = ({transaction, goBackToTable}) => {
                 items={items}
                 columnNames={columnNames}
                 renderRowCells={renderRowCells}
-                rowToKey={rowToKey}/>
+                rowToKey={rowToKey}
+                xs={12} md={12}/>
             <Button variant="contained" color="primary" onClick={goBackToTable}>
                 Back
             </Button>

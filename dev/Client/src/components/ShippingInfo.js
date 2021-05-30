@@ -4,6 +4,13 @@ import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL} from '../constants'
 
+// (alias) type tShippingInfo = {
+//     name: string;
+//     address: string;
+//     city: string;
+//     country: string;
+//     zip: number;
+// }
 const ShippingInfo=({shippingInfo, setShippingInfo })=>{
     const {name, address, city, country, zip} = shippingInfo;
 

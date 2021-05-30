@@ -491,36 +491,61 @@ const getStoreNames = (req : Request, res: Response , next: NextFunction) =>
     res.status(OKSTATUS).json(stores);
 }
 
+
+
+//Need to support! here broooo
 const complain = (req : Request, res: Response , next: NextFunction) =>{
     let sessionId   : string = req.body.userId;
-    let message     : {title:string, body:string, authorName:string} = req.body.storeId;
-    // let promise = service.complain(sessionId, storeId, policyNumber );
-    // promise
-    // .then(message => res.status(OKSTATUS).json(message))
-    // .catch(message => res.status(FAILSTATUS).json(message));
+    let message     : {title:string, body:string, authorName:string} = req.body.message;
+    let promise = service.complain(sessionId, message.title, message.body);
+    promise
+    .then(msg => res.status(OKSTATUS).json(msg))
+    .catch(msg => res.status(FAILSTATUS).json(msg));
 }
 const getUserNames = (req : Request, res: Response , next: NextFunction) =>{
     let sessionId   : string = req.body.userId;
-    let promise = service.getUsernames();
+    let promise = service.getUsernames(sessionId);
     promise
     .then(message => res.status(OKSTATUS).json(message))
     .catch(message => res.status(FAILSTATUS).json(message));
 }
 const getSystemComplaints = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let promise = service.getSystemComplaints(sessionId);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 
 }
 const getSystemTransactions = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
 
 }
 const closeStore = (req : Request, res: Response , next: NextFunction) =>{
-
+    let sessionId   : string = req.body.userId;
+    let storeName   : string = req.body.storeName;
+    let promise = service.closeStore(sessionId, storeName);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 const deleteComplaint = (req : Request, res: Response , next: NextFunction) =>{
-
+    let sessionId   : string = req.body.userId;
+    let messageId   : number = req.body.messageId;
+    let promise = service.deleteComplaint(sessionId, messageId);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 const replyToComplaint = (req : Request, res: Response , next: NextFunction) =>{
-
+    let sessionId   : string = req.body.userId;
+    let replyMsg    : {title:string, body:string, id:number} = req.body.message;//id of message being replied to
+    let promise = service.replyToComplaint(sessionId, replyMsg.title, replyMsg.body, replyMsg.id);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
+
 
 
 export default {
@@ -566,5 +591,12 @@ export default {
     getAllCategories,
     getProductNames,
     getkeywords,
-    getStoreNames
+    getStoreNames,
+    complain,
+    getUserNames,
+    getSystemComplaints,
+    getSystemTransactions,
+    closeStore,
+    deleteComplaint,
+    replyToComplaint
     };

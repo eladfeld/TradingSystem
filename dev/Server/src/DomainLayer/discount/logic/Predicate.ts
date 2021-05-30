@@ -61,9 +61,9 @@ export class SimplePredicate implements iPredicate{
 
     public isSatisfied = (subject: iSubject):Result<boolean> => {
         const val1: number = this.rand1.calc(subject);
-        if(val1 === undefined) return makeFailure(`'${this.rand1.toString()}' is not a valid value for iSubject ${subject}`);
+        if(val1 === undefined) return makeFailure(`'${this.rand1.toString()}' is not a valid value for iSubject ${subject.constructor.name}`);
         const val2: number = this.rand2.calc(subject);
-        if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
+        if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject.constructor.name}`);
         return makeOk(this.rater(val1, val2));
     } 
 
