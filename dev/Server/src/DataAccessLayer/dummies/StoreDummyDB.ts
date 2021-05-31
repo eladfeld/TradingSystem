@@ -9,9 +9,10 @@ export class StoreDummyDB implements iStoreDB
 
     private  stores: Store[]  = [];
 
-    public  addStore(store: Store): void
+    public addStore(store: Store): Promise<void>
     {
         this.stores.push(store);
+        return Promise.resolve()
     }
 
     public  getStoreByID(storeId: number): Promise<Store>
@@ -22,9 +23,10 @@ export class StoreDummyDB implements iStoreDB
         return Promise.reject("store doesnt exist")
     }
 
-    public  deleteStore(storeId: number): void
+    public  deleteStore(storeId: number): Promise<void>
     {
         this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
+        return Promise.resolve()
     }
 
     public  getStoreByName(storeName: string): Promise<Store>

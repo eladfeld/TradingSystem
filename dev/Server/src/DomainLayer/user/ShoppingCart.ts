@@ -18,7 +18,7 @@ export class ShoppingCart
     }
 
 
-    public static rebuildShoppiongCart(baskets: ShoppingBasket[])
+    public static rebuildShoppingCart(baskets: ShoppingBasket[])
     {
         let cart = new ShoppingCart();
         baskets.map(basket => cart.baskets.set(basket.getStoreId(), basket))
@@ -34,15 +34,8 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return Promise.reject("no such shopping basket");
         }
-        let checkoutp = basket.checkout(userId, user, supply_address, userSubject);
-        return new Promise((resolve,reject) => {
-            checkoutp.then( isSusccesfull => {
-                this.baskets.delete(storeId);
-                subscriberDB.deleteBasket(userId,storeId);
-                resolve(isSusccesfull)
-            })
-            .catch( error => reject(error))
-        })
+        return basket.checkout(userId, user, supply_address, userSubject);
+
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>
@@ -78,6 +71,11 @@ export class ShoppingCart
         if (basket === undefined)
             return Promise.reject("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
+    }
+
+    deleteShoppingBasket(storeId : number) : void
+    {
+        this.baskets.delete(storeId);
     }
 
     getBasketById(storeId: number): {}

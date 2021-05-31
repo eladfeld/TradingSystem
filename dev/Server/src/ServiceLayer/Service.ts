@@ -40,7 +40,7 @@ export class Service
     }
 
     //returns a session id string
-    public async enter(): Promise<string>
+    public enter(): Promise<string>
     {
         return this.facade.enter();
     }
@@ -55,12 +55,12 @@ export class Service
         return this.facade.logout(sessionId)
     }
 
-    public async register(username: string, password: string, age: number): Promise<string>
+    public register(username: string, password: string, age: number): Promise<string>
     {
         return this.facade.register(username, password, age);
     }
 
-    public async login(sessionId: string, username: string, password: string): Promise<Subscriber>
+    public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         return this.facade.login(sessionId, username, password);
     }

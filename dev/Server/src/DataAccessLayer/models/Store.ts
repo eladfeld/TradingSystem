@@ -2,6 +2,13 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../connectDb";
 
 const Store = sequelize.define('Store', {
+  id:
+  {    
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: false
+  },
   storeName: {
     type: DataTypes.STRING,
     allowNull: false,

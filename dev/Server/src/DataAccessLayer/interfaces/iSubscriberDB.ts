@@ -5,15 +5,17 @@ import { Subscriber } from "../../DomainLayer/user/Subscriber";
 
 export interface iSubscriberDB
 {
-    addSubscriber: (username: string, password: string, age: number) => void
+    getLastId() : Promise<number>
 
-    addSystemManager: (subscriber: Subscriber) => void;
+    addSubscriber: (username: string, password: string, age: number) => Promise<void>
+
+    addSystemManager: (subscriber: Subscriber) => Promise<void>;
 
     isSystemManager: (userId: number) => Promise<boolean>;
 
-    addProduct:(subscriberId: number, storeId: number, productId: number, quantity : number) => void;
+    addProduct:(subscriberId: number, storeId: number, productId: number, quantity : number) => Promise<void>;
 
-    updateCart: (subscriberId: number, storeId: number, productId: number, newQuantity:number) => void;
+    updateCart: (subscriberId: number, storeId: number, productId: number, newQuantity:number) => Promise<void>;
 
     getSubscriberById: (userId : number) => Promise<Subscriber>
 
@@ -23,7 +25,15 @@ export interface iSubscriberDB
 
     getAppointment:(userId : number, storeId : number) => Promise<Appointment>;
 
-    deleteBasket:(userId: number, storeId: number) => void;
+    deleteBasket:(userId: number, storeId: number) => Promise<void>;
+
+    deleteAppointment:(appointee: number, appointer: number, storeId: number) =>void;
+
+    addPendingMessage:(userId: number, message: string) => void;
+
+    deletePendingMessages:(userId: number) => void;
+
+    
 
     clear:() => void;
     

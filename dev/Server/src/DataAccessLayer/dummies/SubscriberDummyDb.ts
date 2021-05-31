@@ -6,7 +6,6 @@ import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 export class SubscriberDummyDB implements iSubscriberDB
 {
 
-    // #saveDB  ----------------------move all the class to save in the real db
     private subscribers: Subscriber[];
     private systemManagers: Subscriber[];
     constructor(){
@@ -15,16 +14,38 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     }
 
+    public deleteAppointment(appointee: number, appointer: number, storeId: number) : void
+    {
+        //do nothing here, since we don't have an actual db and the subscriber already did this in memory
+    }
+
+    addPendingMessage(userId: number, message: string) :void
+    {       
+        //do nothing here, since we don't have an actual db and the subscriber already did this in memory
+    }
+
+    deletePendingMessages(userId: number) : void
+    {
+        //do nothing here, since we don't have an actual db and the subscriber already did this in memory
+    }
+
+    public getLastId(): Promise<number> 
+    {
+        return Promise.resolve(0);
+    }
+
     public addSubscriber(username: string, password: string, age: number)
     {
         let sub = new Subscriber(username, password, age);
         this.subscribers.push(sub);
+        return Promise.resolve()
     }
 
     public addSystemManager(subscriber: Subscriber)
     {
         this.subscribers.push(subscriber);
         this.systemManagers.push(subscriber);
+        return Promise.resolve()
     }
 
     public async isSystemManager(userId: number): Promise<boolean> 
@@ -34,12 +55,14 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     public addProduct(subscriberId: number, storeId: number, productId: number, quantity : number) 
     {
-        //do nothing here, since we don't have an actual db and the subscriber already added this product, TODO: when we change to db we need to add the basket if needed and add the product right after
+        //do nothing here, since we don't have an actual db and the subscriber already did this in memory
+        return Promise.resolve()
     }
 
     public updateCart(subscriberId: number, storeId: number, productId: number, newQuantity:number)
     {
-        //do nothing here, since we don't have an actual db and the subscriber already added this product, TODO: when we change to db we need to add the basket if needed and add the product right after
+        //do nothing here, since we don't have an actual db and the subscriber already  did this in memory
+        return Promise.resolve()
     }
 
 
@@ -80,7 +103,8 @@ export class SubscriberDummyDB implements iSubscriberDB
         return new Promise((resolve, reject) => reject("addAppointment: subscriber not found"))
     }
     deleteBasket(userId: number, storeId: number) {
-        //do nothing here, since we don't have an actual db and the subscriber already added this product, TODO: when we change to db we need to add the basket if needed and add the product right after
+        //do nothing here, since we don't have an actual db and the subscriber already did this in memory
+        return Promise.resolve()
     }
 
     public clear()

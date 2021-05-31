@@ -7,18 +7,20 @@ import { ShoppingCart } from "../../DomainLayer/user/ShoppingCart";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
-import { subscriberDB } from "../DBinit";
+import { StoreDB, subscriberDB } from "../DBinit";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
 export class SubscriberDB implements iSubscriberDB
 {
 
+    //add functions:
 
-    public addSubscriber(username: string, password: string, age: number): void
+    public async addSubscriber(username: string, password: string, age: number) : Promise<void>
     {
         let subscriber = new Subscriber(username, password, age);
-        sequelize.models.Subscriber.create({
+        
+        await sequelize.models.Subscriber.create({
             id: subscriber.getUserId(),
             username:username,
             password: password,
@@ -26,12 +28,104 @@ export class SubscriberDB implements iSubscriberDB
         })
     }
 
-    public addSystemManager (subscriber: Subscriber): void 
+    public async addSystemManager (subscriber: Subscriber): Promise<void>
     {
+        await sequelize.models.Subscriber.create({
+            id: subscriber.getUserId(),
+            username: subscriber.getUsername(),
+            password: subscriber.getPassword(),
+            age : subscriber.getAge()
+        })
         sequelize.models.SystemManager.create({
-            subscriberId: subscriber.getUserId()
+            SubscriberId: subscriber.getUserId()
         })
     }
+
+    public async addAppointment(userId: number, appointment: Appointment): Promise<void>
+    {
+
+        let store = await StoreDB.getStoreByID(appointment.getStoreId());
+        await sequelize.models.Store.create({
+            id: store.getStoreId(),
+            storeName: store.getStoreName(),
+            storeRating: store.getStoreRating(),
+            numOfRaters: 0, //TODO: change
+            bankAccount: store.getBankAccount(),
+            storeAddress: store.getStoreAddress(),
+            storeClosed: store.getIsStoreClosed()
+        })
+        await sequelize.models.Appointment.create({
+            appointerId: appointment.appointer,
+            StoreId: appointment.getStoreId(),
+            appointeeId: appointment.appointee,
+            permissionsMask: appointment.permission.getPermissions(),
+            isManager: appointment.isManager()
+        })
+        return Promise.resolve();
+    }
+
+
+    public async addProduct(subscriberId: number, storeId: number, productId: number, quantity: number): Promise<void>
+    {
+
+        let basket = await sequelize.models.ShoppingBasket.findOne({
+            where:{
+                SubscriberId: subscriberId,
+                StoreId: storeId
+            }
+        });
+        if(basket === null)
+        {
+            basket = await sequelize.models.ShoppingBasket.create({
+                SubscriberId: subscriberId,
+                StoreId: storeId
+            })
+        }
+
+        let product = await sequelize.models.BasketProduct.findOne({
+            where:{
+                productId: productId,
+                ShoppingBasketId: basket.id
+        }})
+
+        if(product === null)
+        {
+            await sequelize.models.BasketProduct.create({
+                ShoppingBasketId: basket.id,
+                quantity: quantity,
+                productId: productId
+            })
+        }
+        else
+        {
+            return this.updateCart(subscriberId, storeId, productId, product.quantity + quantity)
+        }
+
+
+        return Promise.resolve()
+    }
+
+    public async addPendingMessage(userId: number, message: string): Promise<void>
+    {
+        await sequelize.models.PendingMessage.create({
+            message: message,
+            SubscriberId: userId
+        })
+
+    }
+
+    //get functions:
+
+
+    public async getLastId() : Promise<number>
+    {
+        let lastId = await sequelize.models.Subscriber.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
+    }
+
+
 
     public async isSystemManager(subscriberId: number) : Promise<boolean> {
         
@@ -39,31 +133,13 @@ export class SubscriberDB implements iSubscriberDB
         if (sys_manager === null )
         {
             Logger.log(`SubscriberDb.isSystemManager ${subscriberId} => not system manager`)
-            return Promise.reject(`${subscriberId} not system manager`)
+            return Promise.resolve(false)
         }
         Logger.log(`SubscriberDb.isSystemManager ${subscriberId} => true`)
         return Promise.resolve(true)
     }
 
-    public async getSubscriberById(userId: number): Promise<Subscriber>
-    { 
-        let subscriber = await sequelize.models.Subscriber.findOne({
-            where:
-            {
-                id: userId
-            }
-        })
-        if (subscriber === null )
-        {
-            Logger.log(`SubscriberDb.getSubscriberById ${userId} => not found`)
-            return Promise.reject(`${userId} not found`)
-        }
-        Logger.log(`SubscriberDb.getSubscriberById ${userId} => ${subscriber}`)
-        return Promise.resolve(subscriber)        
-    }
-
-
-    public static async getSubscriber(userId: number) : Promise<Subscriber>
+    public async getSubscriberById(userId: number) : Promise<Subscriber>
     {
         let subscriber = await sequelize.models.Subscriber.findOne({
             where: {
@@ -72,14 +148,14 @@ export class SubscriberDB implements iSubscriberDB
         });
         if (subscriber === null )
         {
-            Logger.log(`SubscriberDb.getSubscriberById ${userId} => not found`)
+            Logger.log(`SubscriberDb.getSubscriberById ${userId} => not found, ${subscriber.username}`)
             return Promise.reject(`${userId} not found`)
         }
         let subscriberD : Subscriber = Subscriber.rebuildSubscriber(subscriber.id, subscriber.username, subscriber.password, subscriber.age, await this.getMessages(subscriber.id), await this.getAppointmentsByAppointee(subscriber.id), await this.getShoppingCart(subscriber.id));
         return subscriberD;
     }
 
-    private static async getMessages(SubscriberId: number)
+    private async getMessages(SubscriberId: number)
     {
         let messages = await sequelize.models.PendingMessage.findAll({
             where: {
@@ -88,31 +164,36 @@ export class SubscriberDB implements iSubscriberDB
         });
 
         return messages.map((message: any) => message.message)
-
     }
 
-    private static async getShoppingCart(SubscriberId: number)
+    private async getShoppingCart(SubscriberId: number): Promise<ShoppingCart>
     {
         let baskets = await sequelize.models.ShoppingBasket.findAll({
             where:{
                 SubscriberId
             }
         });
-
-        return ShoppingCart.rebuildShoppiongCart(baskets.map(async (basket: any) => await this.getShoppingBasket(basket.subscriberId, basket.storeId)))
+        let cartp: Promise<ShoppingBasket>[] =  baskets.map(async (basket: any) => await this.getShoppingBasket(basket.id, basket.StoreId))
+        return new Promise((resolve,reject) =>{
+            Promise.all(cartp).then( cart => {
+                resolve(ShoppingCart.rebuildShoppingCart(cart))
+            })
+            .catch (error => reject(error))
+        })
     }
 
-    private static async getShoppingBasket(subscriberId: number, storeId: number)
-    {
-        let products = await sequelize.models.BasketProduct.findAll({
-            where:{
-                subscriberId,
-                storeId
+    private async getShoppingBasket(basketId: number, storeId: number)
+    { 
+        let products = await sequelize.models.BasketProduct.findAll(
+            {
+                where:
+                {
+                    ShoppingBasketId: basketId
+                }
             }
-        });
-
+        )
         let productMap = new Map <number, number> ();
-        products.map((product: any) => productMap.set(product.productId, product.quantity))
+        products.map( (product: any) => productMap.set(product.productId, product.quantity))
         return ShoppingBasket.rebuildShoppingBasket(storeId, productMap);
     }
 
@@ -126,11 +207,12 @@ export class SubscriberDB implements iSubscriberDB
             return Promise.reject(`${username} not found`)
         }
         Logger.log(`SubscriberDb.getSubscriberByUsername ${username} => ${subscriber}`)
-        // TODO:uplaod entire subscriber
-        return Promise.resolve(subscriber)     
+        let appointements : Appointment[] = await this.getAppointmentsByAppointee(subscriber.id)
+        let subscriberD : Subscriber = Subscriber.rebuildSubscriber(subscriber.id, subscriber.username, subscriber.password, subscriber.age, await this.getMessages(subscriber.id), appointements, await this.getShoppingCart(subscriber.id));
+        return subscriberD;    
     }
 
-    private static async getAppointmentsByAppointee(appointee: number): Promise<Appointment[]>{
+    private async getAppointmentsByAppointee(appointee: number): Promise<Appointment[]>{
         let appointments = await sequelize.models.Appointment.findAll({
             where:{
                 appointeeId: appointee
@@ -141,29 +223,8 @@ export class SubscriberDB implements iSubscriberDB
             (app : any) => app.isManager ?
             new ManagerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)) :
             new OwnerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)))
+
         return apps;
-    }
-
-    public addAppointment(userId: number, appointment: Appointment): Promise<void>
-    {
-        sequelize.models.Appointment.create({
-            appointerId: appointment.appointer.getUserId(),
-            StoreId: appointment.store.getStoreId(),
-            appointeeId: appointment.appointee.getUserId(),
-            permissionsMask: appointment.permission.getPermissions(),
-            isManager: appointment.isManager()
-        })
-        return Promise.resolve();
-    }
-
-    public addProduct(subscriberId: number, storeId: number, productId: number, quantity: number): void
-    {
-        sequelize.models.BasketProduct.create({
-            userId: subscriberDB,
-            storeId: storeId,
-            quantity: quantity,
-            productId: productId
-        })
     }
 
     public async getAppointment(userId: number, storeId: number): Promise<Appointment>
@@ -182,40 +243,87 @@ export class SubscriberDB implements iSubscriberDB
         return appoint;
     }
 
-    public deleteBasket(userId: number, storeId: number)
+
+    //delete functions:
+
+    public async deleteBasket(userId: number, storeId: number)
     {
-        sequelize.models.BasketProduct.destroy(
+        console.log(`storeId: ${storeId}, userid: ${userId}`)
+        let basket = await sequelize.models.ShoppingBasket.findOne({
+            where:{
+                SubscriberId: userId,
+                StoreId: storeId
+            }
+        });
+        let basketId = basket.id;
+        await sequelize.models.BasketProduct.destroy(
             {
                 where:
                 {
-                    userId,
-                    storeId
+                    ShoppingBasketId : basketId,
                 }
             }
         )
-        sequelize.models.ShoppingBasket.destory(
+        await sequelize.models.ShoppingBasket.destroy(
             {
                 where:
                 {
-                    userId,
-                    storeId
+                    SubscriberId : userId,
+                    StoreId :storeId
+                }
+            }
+        )
+        return Promise.resolve()
+    }
+
+    public async deleteAppointment(appointee: number, appointer: number, storeId: number)
+    {
+        await sequelize.models.Appointment.destroy(
+            {
+                where:
+                {
+                    appointeeId: appointee,
+                    appointerId: appointer,
+                    StoreId: storeId
                 }
             }
         )
     }
 
-    public updateCart(subscriberId: number, storeId: number, productId: number, newQuantity: number): void
+    public async deletePendingMessages(userId: number): Promise<void>
     {
-        sequelize.models.BasketProduct.update(
+        await sequelize.models.PendingMessage.destroy(
+            {
+                where:
+                {
+                    SubscriberId: userId
+                }
+            }
+        )
+    }
+
+
+    //update functions:
+
+    public async updateCart(subscriberId: number, storeId: number, productId: number, newQuantity: number): Promise<void>
+    {
+
+        let basket = await sequelize.models.ShoppingBasket.findOne({
+            where:{
+                SubscriberId: subscriberId,
+                StoreId: storeId
+            }
+        });
+        await sequelize.models.BasketProduct.update(
             {quantity: newQuantity},
             {
                 where:
                 {
-                    subscriberId: subscriberId,
-                    storeId: storeId,
+                    ShoppingBasketId: basket.id,
                     productId: productId
                 }
             } )
+        return Promise.resolve()
     }
 
     public clear() {}

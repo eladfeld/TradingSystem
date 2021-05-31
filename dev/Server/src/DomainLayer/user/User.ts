@@ -1,5 +1,5 @@
 import { rejects } from 'assert';
-import { StoreDB } from '../../DataAccessLayer/DBinit';
+import { StoreDB, subscriberDB } from '../../DataAccessLayer/DBinit';
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
 import iSubject from '../discount/logic/iSubject';
 import { buyingOption } from '../store/BuyingOption';
@@ -24,14 +24,28 @@ export class User implements iSubject
         this.userId = User.lastId++;
     }
 
-    private static getLastId() : number
+    static getLastId() 
     {
         return 0;
+    }
+
+    public static async initLastId()
+    {
+       
+        let id = await subscriberDB.getLastId()
+        User.lastId =  0;
     }
 
     public checkoutBasket(shopId: number, supply_address: string): Promise<boolean>
     {
         return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address, this);
+    }
+
+    public deleteShoppingBasket(storeId : number) : Promise<void>
+    {
+        // this is user so no need to delete from DB
+        this.shoppingCart.deleteShoppingBasket(storeId)
+        return Promise.resolve()
     }
 
     public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Promise<string>
@@ -91,4 +105,5 @@ export class User implements iSubject
     }
 
 }
+
 

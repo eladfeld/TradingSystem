@@ -13,6 +13,8 @@ export const sequelize = new Sequelize('db', 'root', '1234', {
     }
   });
 
+
+
 // Register and wrap your models:
 const Subscriber = require('./models/Subscriber')
 const PendingMessage = require('./models/PendingMessage')
@@ -23,6 +25,10 @@ const Store = require('./models/Store')
 const Appointment = require('./models/Appointment')
 const StoreProduct = require('./models/StoreProduct')
 export async function initTables (){
+
+    //TODO:delete when finshed working on db
+    await sequelize.queryInterface.dropAllTables()
+
     console.log(sequelize.models)
     //store connections
     // sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
@@ -45,9 +51,9 @@ export async function initTables (){
     sequelize.models.ShoppingBasket.belongsTo(sequelize.models.Store)
 
     // //Appointment conections
-    // sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointer'})
-    // sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointee'})
-    // sequelize.models.Appointment.belongsTo(sequelize.models.Store)
+    sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointer'})
+    sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointee'})
+    sequelize.models.Appointment.belongsTo(sequelize.models.Store)
     await sequelize.sync()
 
 }

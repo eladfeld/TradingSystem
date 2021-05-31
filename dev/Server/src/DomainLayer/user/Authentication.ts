@@ -8,9 +8,9 @@ export class Authentication
     // private static subscribers: Subscriber[]  = [];
     // private static system_managers : Subscriber[] = [];
     
-    public static addSystemManager(sys_manager : Subscriber):void
+    public static addSystemManager(sys_manager : Subscriber): Promise<void>
     {
-        subscriberDB.addSystemManager(sys_manager);
+        return subscriberDB.addSystemManager(sys_manager);
     }
 
     public static isSystemManager(userId : number) : Promise<boolean>
@@ -18,10 +18,10 @@ export class Authentication
         return subscriberDB.isSystemManager(userId);
     }
 
-    public static addSubscriber(username:string , password:string, age : number): void
+    public static addSubscriber(username:string , password:string, age : number): Promise<void>
     {
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
-        subscriberDB.addSubscriber(username, hashedPass, age)
+        return subscriberDB.addSubscriber(username, hashedPass, age)
     }    
 
     public static checkedUsedUserName(username: string): Promise<boolean>

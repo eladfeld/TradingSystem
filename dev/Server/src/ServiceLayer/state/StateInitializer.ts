@@ -16,6 +16,7 @@
 
 
 //import state from './InitialState';
+import { errorMonitor } from 'events';
 import { INITIAL_STATE } from '../../config';
 import ConditionalDiscount from '../../DomainLayer/discount/ConditionalDiscount';
 import PaymentInfo from '../../DomainLayer/purchase/PaymentInfo';
@@ -51,19 +52,18 @@ export default class StateInitializer{
             const service: Service = await Service.get_instance();
             await this.initAndLoginUsers(service);
             await this.openStores(service);
-            await this.performTransactions(service);
-            await this.fillCarts(service);
-            await this.logoutUsers(service);
+            // await this.performTransactions(service);
+            // await this.fillCarts(service);
+            // await this.logoutUsers(service);
             return true;
             
         } catch (error) {
-            console.log(error);
+            throw error;
             return false;
         }
     }
 
     private initAndLoginUsers = async (service: Service) =>{
-        //init subscribers
         for(var subIdx=0; subIdx<state.subscribers.length; subIdx++){
             const subState = state.subscribers[subIdx];
             const subName = subState.name;
@@ -110,42 +110,42 @@ export default class StateInitializer{
             }
 
             //appoint owners
-            const owners = storeState.employees.owners;
-            for(var i=0; i<owners.length; i++){
-                const ownerState = owners[i];
-                this.sessions.get(ownerState.appointer),storeId,ownerState.name;
-                await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
-            }
+            // const owners = storeState.employees.owners;
+            // for(var i=0; i<owners.length; i++){
+            //     const ownerState = owners[i];
+            //     this.sessions.get(ownerState.appointer),storeId,ownerState.name;
+            //     await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
+            // }
 
 
-            //appoint managers
-            const managers = storeState.employees.managers;
-            for(var i=0; i<managers.length; i++){
-                const appointerSessionId = this.sessions.get(managers[i].appointer);
-                await service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
-                await service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
-            }
+            // //appoint managers
+            // const managers = storeState.employees.managers;
+            // for(var i=0; i<managers.length; i++){
+            //     const appointerSessionId = this.sessions.get(managers[i].appointer);
+            //     await service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
+            //     await service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
+            // }
 
             //add buying policy
             // convert fields
-            storeState.buying_policies.forEach(policyState =>{
-                this.convertPredicate(storeName, policyState.rule);
-            });
-            for(var pIdx=0; pIdx<storeState.buying_policies.length; pIdx++){
-                const policy = storeState.buying_policies[pIdx];
-                await service.addBuyingPolicy(founderSessionId, storeId, policy.name, policy.rule); 
-            }
+            // storeState.buying_policies.forEach(policyState =>{
+            //     this.convertPredicate(storeName, policyState.rule);
+            // });
+            // for(var pIdx=0; pIdx<storeState.buying_policies.length; pIdx++){
+            //     const policy = storeState.buying_policies[pIdx];
+            //     await service.addBuyingPolicy(founderSessionId, storeId, policy.name, policy.rule); 
+            // }
 
             //add discounts
 
 
-            storeState.discounts.forEach(discount => {
-                this.convertDiscount(storeName, discount.discount);
-            })
-            for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
-                const discount = storeState.discounts[dIdx];
-                await service.addDiscountPolicy(founderSessionId, storeId,discount.name, discount.discount); 
-            }
+            // storeState.discounts.forEach(discount => {
+            //     this.convertDiscount(storeName, discount.discount);
+            // })
+            // for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
+            //     const discount = storeState.discounts[dIdx];
+            //     await service.addDiscountPolicy(founderSessionId, storeId,discount.name, discount.discount); 
+            // }
 
 
         }

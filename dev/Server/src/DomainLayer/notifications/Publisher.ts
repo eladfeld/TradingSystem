@@ -64,7 +64,7 @@ export class Publisher
             // if fail message failed add message to subscriber queue
             promise.catch( reason => {  
                 Logger.log(`publisher: can't send message, ${subscriber.getUsername()} is not logged in`);
-                subscriber.addMessage(message);
+                subscriber.addPendingMessage(message);
                 resolve();
                 return;
             })

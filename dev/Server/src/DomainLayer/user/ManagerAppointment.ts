@@ -5,7 +5,7 @@ import { Subscriber } from "./Subscriber";
 
 export class ManagerAppointment extends Appointment
 {
-    public constructor(appointer: Subscriber, store: Store, appointee: Subscriber, permission: Permission) {
+    public constructor(appointer: number, store: number, appointee: number, permission: Permission) {
         super(appointer, store, appointee, permission)
     }
 

@@ -3,6 +3,7 @@ import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
+import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 
 
 
@@ -11,13 +12,13 @@ import { Subscriber } from "./Subscriber";
 
 export abstract class Appointment {
 
-    appointer: Subscriber;
-    appointee: Subscriber;
-    store: Store;
+    appointer: number;
+    appointee: number;
+    store: number;
     permission: Permission;
 
 
-    public constructor(appointer: Subscriber, store: Store, appointee: Subscriber, permission: Permission) {
+    public constructor(appointer: number, store: number, appointee: number, permission: Permission) {
         this.appointee = appointee;
         this.appointer = appointer;
         this.store = store;
@@ -30,16 +31,30 @@ export abstract class Appointment {
         return Promise.resolve("permission changed successfully");
     }
 
-    public getStore(): Store {
+    public getStore(): Promise<Store> {
+        return StoreDB.getStoreByID(this.store);
+    }
+
+    public getStoreId() {
         return this.store;
     }
 
-    public getAppointee(): Subscriber {
+    public getAppointeeId(): number {
         return this.appointee;
     }
 
-    public getAppointer(): Subscriber {
+    public getAppointerId(): number {
         return this.appointer;
+    }
+
+    public getAppointee() : Promise<Subscriber>
+    {
+        return subscriberDB.getSubscriberById(this.appointee);
+    }
+
+    public getAppointer() : Promise<Subscriber>
+    {
+        return subscriberDB.getSubscriberById(this.appointer);
     }
 
     public getPermissions(): Permission {

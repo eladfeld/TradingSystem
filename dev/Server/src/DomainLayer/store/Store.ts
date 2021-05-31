@@ -319,19 +319,30 @@ export class Store implements iCategorizer
         return makeFailure("Not implemented")
     }
 
-    public closeStore(userId: number): Result<string> {
+    public closeStore(userId: number): Promise<string> {
 
         // this is irreversible
-        if( this.isOwner(userId) && !Authentication.isSystemManager(userId)){
-            return makeFailure("User not permitted5")
-        }
-        this.storeClosed = true
-        StoreDB.deleteStore(this.storeId)
+        let isSystemManagerp = Authentication.isSystemManager(userId)
+
+        return new Promise((resolve,reject) => {
+            isSystemManagerp.then( isSystemManager => {
+                if( this.isOwner(userId) && !isSystemManager){
+                    reject("User not permitted5")
+                }
+                else{
+                    this.storeClosed = true
+                    let deletestorep = StoreDB.deleteStore(this.storeId)
+                    deletestorep.then( _ =>{
+                        resolve("store deleted")
+                    })
+                }
+            })
+        })   
     }
 
     public getAppointmentById(userId: number): Appointment
     {
-        return this.appointments.find( appointment => appointment.appointee.getUserId() === userId);
+        return this.appointments.find( appointment => appointment.appointee === userId);
     }
 
     public isOwner(userId: number): boolean
@@ -449,8 +460,8 @@ export class Store implements iCategorizer
 
     public findAppointedBy(appointer: number, appointee: number): Appointment {
         return this.appointments.find(appointment =>
-            appointment.getAppointee().getUserId() === appointee &&
-            appointment.getAppointer().getUserId() === appointer)
+            appointment.getAppointeeId() === appointee &&
+            appointment.getAppointerId() === appointer)
     }
 
     public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Promise<string>
@@ -510,7 +521,7 @@ export class Store implements iCategorizer
         var staff : any = {}
         staff['subscribers']=[]
         this.appointments.forEach((appointment) => {
-            let subscriber = appointment.getAppointee()
+            let subscriberId = appointment.getAppointeeId()
             staff['subscribers'].push(
             {   'id':subscriber.getUserId() ,
                 'username': subscriber.getUsername(),
@@ -625,6 +636,10 @@ export class Store implements iCategorizer
 
     public getProductbyId( productId : number) : StoreProduct{
         return this.inventory.getProductById(productId)
+    }
+
+    public getIsStoreClosed(){
+        return this.storeClosed;
     }
 
 }

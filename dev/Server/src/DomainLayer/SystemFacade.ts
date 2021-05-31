@@ -34,7 +34,7 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-
+        //User.initLastId();
         if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers() ))
         {
             Logger.error("system could not initialized properly!");
@@ -165,8 +165,11 @@ export class SystemFacade
 
                 this.logged_guest_users.set(sessionId,subscriber)
                 this.logged_subscribers.set(sessionId,subscriber);
-                if(subscriber.isSystemManager())
+                let ismanagerp = subscriber.isSystemManager()
+                ismanagerp.then (issysmanager => {
+                    if(issysmanager)
                     this.logged_system_managers.set(sessionId,subscriber);
+                })
                 resolve(subscriber);
             })
             .catch( error => {
@@ -403,7 +406,11 @@ export class SystemFacade
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
                 completep.then( complete => {
-                    resolve(complete)
+                    let deletep = user.deleteShoppingBasket(storeId)
+                    deletep.then ( _ => {
+                        resolve(complete)
+                    })
+                    .catch( error => reject(error))
                 })
                 .catch( error => reject(error))
             })
@@ -487,7 +494,7 @@ export class SystemFacade
 
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if (subscriber === undefined)
-            return Promise.reject("subscriber or store wasn't found")
+            return Promise.reject("subscriber wasn't found")
 
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
@@ -643,8 +650,8 @@ export class SystemFacade
                     issystemManagerp.then( ismanager => {
                         if (ismanager){
                             let historyp = watchee.getPurchaseHistory()
-                            historyp.then( history => { resolve(history) })
-                            .catch ( error => reject(error))
+                            historyp.then( history => { resolve(history) 
+                            }).catch ( error => reject(error))
                         }
                         else reject("user doesnt have permissions")
                     })
