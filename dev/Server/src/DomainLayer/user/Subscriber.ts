@@ -1,4 +1,4 @@
-import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { storeDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
@@ -146,7 +146,7 @@ export class Subscriber extends User
     }
 
 
-    public getValue = (field: string): number => this.age;
+    public getValue = async (field: string): Promise<number> => this.age;
 
     public isPendingMessages() : boolean
     {
@@ -170,7 +170,7 @@ export class Subscriber extends User
         let stores: Promise<{}>[] =[]
         this.appointments.forEach( appointment =>{
             stores.push( new Promise<{}>(async (resolve, reject) => {
-                let storeName = (await StoreDB.getStoreByID(appointment.getStoreId())).getStoreName()
+                let storeName = (await storeDB.getStoreByID(appointment.getStoreId())).getStoreName()
                 resolve({storeId: appointment.getStoreId(), storeName: storeName , permissions: appointment.getPermissions()})
             }))
         })

@@ -8,16 +8,16 @@ export default class UnconditionalDiscount extends Discount{
         super(ratio, category);
     }
     //TODO: improve algorithm. extremely inefficient!
-    public getDiscount = (basket: iBasket, categorizer: iCategorizer): Result<number> => {
-        const productsInCategory: number[] = this.getProductsInCategory(categorizer);
-        const discounts: number[] = basket.getItems().map((prod) => {
+    public getDiscount = async (basket: iBasket, categorizer: iCategorizer): Promise<number> => {
+        const productsInCategory: number[] =await this.getProductsInCategory(categorizer);
+        const discounts: number[] =(await basket.getItems()).map((prod) => {
             if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getProductId())){
                 return prod.getQuantity()*this.ratio*prod.getPrice();
             }else return 0;
         });
         var totalDiscount: number = 0;
         discounts.forEach((discount) => totalDiscount += discount);
-        return makeOk(totalDiscount);
+        return Promise.resolve(totalDiscount);
     }
 
     public toObj = ():tUnconditionalDiscount =>{

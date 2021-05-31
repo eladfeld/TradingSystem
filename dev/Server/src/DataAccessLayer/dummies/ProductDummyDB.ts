@@ -1,24 +1,28 @@
-import { Product } from "../../DomainLayer/store/Product";
+import { StoreProduct } from "../../DomainLayer/store/StoreProduct";
 import { iProductDB } from "../interfaces/iProductDB";
 
 
 export class ProductDummyDB implements iProductDB
 {
+    getProductQuantity: (productId: number) => Promise<number>;
+    getProductByStoreId(storeId: number, productName: string): Promise<StoreProduct> {
+        throw new Error("Method not implemented.");
+    }
+    getAllProductByStoreId: (storeId: number) => Promise<StoreProduct[]>;
 
 
-    private  products: Product[]  = [];
+    private  products: StoreProduct[]  = [];
 
-    public  addProduct(product: Product): void
+    public updateProduct: (product: StoreProduct) => void;
+
+    public  addProduct(product: StoreProduct): Promise<number>
     {
         this.products.push(product);
+        return Promise.resolve(0);
     }
 
-    public  addWitheredProduct(wproduct: Product): void
-    {
-        this.products.push(wproduct);
-    }
 
-    public  async getProductByName(productName: string): Promise<Product>
+    public  async getProductByName(productName: string): Promise<StoreProduct>
     {
         let product = this.products.find(product => product.getName() == productName);
         if (product)
@@ -26,7 +30,7 @@ export class ProductDummyDB implements iProductDB
         return Promise.reject("product not found1")
     }
 
-    public  async getProductById(productId: number): Promise<Product>
+    public  async getProductById(productId: number): Promise<StoreProduct>
     {
         let product = this.products.find(product => product.getProductId() === productId);
         if (product)

@@ -9,10 +9,10 @@ export class StoreDummyDB implements iStoreDB
 
     private  stores: Store[]  = [];
 
-    public addStore(store: Store): Promise<void>
+    public addStore(store: Store): Promise<number>
     {
         this.stores.push(store);
-        return Promise.resolve()
+        return Promise.resolve(this.stores.length)
     }
 
     public  getStoreByID(storeId: number): Promise<Store>
@@ -42,99 +42,148 @@ export class StoreDummyDB implements iStoreDB
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchByName(productName);
-            for(let storeProduct of storeProducts){
-                products['products'].push({ 'productName':storeProduct.getName() ,
-                                            'numberOfRaters':storeProduct.getNumOfRaters(),
-                                            'rating':storeProduct.getProductRating(),
-                                            'price': storeProduct.getPrice(),
-                                            'storeName': store.getStoreName(),
-                                            'storeId': store.getStoreId(),
-                                            'productId': storeProduct.getProductId(),
-                                        })
-            }
+            let storeProductp: Promise<StoreProductInfo> = store.searchByName(productName);
+            return new Promise((resolve, reject) => {
+                storeProductp.then(storeProduct => {
+                    products['products'].push({ 'productName':storeProduct.getName() ,
+                    'numberOfRaters':storeProduct.getNumOfRaters(),
+                    'rating':storeProduct.getProductRating(),
+                    'price': storeProduct.getPrice(),
+                    'storeName': store.getStoreName(),
+                    'storeId': store.getStoreId(),
+                    'productId': storeProduct.getProductId(),
+                })
+                Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
+                return Promise.resolve(JSON.stringify(products))
+                })
+            })
+            
         })
-        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
-        return Promise.resolve(JSON.stringify(products))
+        return Promise.all(products['products']).then( _ => {
+            let jsonProducts = JSON.stringify(products)
+            Logger.log(`Getting products by name answer: ${JSON.stringify(jsonProducts)}`)
+            return jsonProducts
+        }).catch( error => Promise.reject(error))
+
     }
 
     public  getPruductInfoByCategory(category: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchByCategory(category);
-            for(let storeProduct of storeProducts){
-                products['products'].push({ 'productName':storeProduct.getName() ,
-                'numberOfRaters':storeProduct.getNumOfRaters(),
-                'rating':storeProduct.getProductRating(),
-                'price': storeProduct.getPrice(),
-                'storeName': store.getStoreName(),
-                'storeId': store.getStoreId(),
-                'productId': storeProduct.getProductId(),
-                                        })
-            }
-        })
-        return Promise.resolve(JSON.stringify(products))
+            let storeProductp: Promise<StoreProductInfo[]> = store.searchByCategory(category);
+            
+            return new Promise((resolve, reject) => {
+                storeProductp.then(storeProducts => {
+                    for(let storeProduct of storeProducts){
+                            products['products'].push({ 'productName':storeProduct.getName() ,
+                            'numberOfRaters':storeProduct.getNumOfRaters(),
+                            'rating':storeProduct.getProductRating(),
+                            'price': storeProduct.getPrice(),
+                            'storeName': store.getStoreName(),
+                            'storeId': store.getStoreId(),
+                            'productId': storeProduct.getProductId(),
+                            })
+                        }}
+                        ).catch(err => reject(err))
+                    return Promise.resolve(JSON.stringify(products))
+                })
+
+            })
+        return Promise.all(products['products']).then( _ => {
+            let jsonProducts = JSON.stringify(products)
+            Logger.log(`Getting products by category answer: ${JSON.stringify(jsonProducts)}`)
+            return jsonProducts
+        }).catch( error => Promise.reject(error))
     }
 
     public  getProductInfoAbovePrice(price: number): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchAbovePrice(price);
-            for(let storeProduct of storeProducts){
-                products['products'].push({ 'productName':storeProduct.getName() ,
-                'numberOfRaters':storeProduct.getNumOfRaters(),
-                'rating':storeProduct.getProductRating(),
-                'price': storeProduct.getPrice(),
-                'storeName': store.getStoreName(),
-                'storeId': store.getStoreId(),
-                'productId': storeProduct.getProductId(),
-                                        })
-            }
-        })
-        return Promise.resolve(JSON.stringify(products))
+            let storeProductp: Promise<StoreProductInfo[]> = store.searchAbovePrice(price);
+            
+            return new Promise((resolve, reject) => {
+                storeProductp.then(storeProducts => {
+                    for(let storeProduct of storeProducts){
+                            products['products'].push({ 'productName':storeProduct.getName() ,
+                            'numberOfRaters':storeProduct.getNumOfRaters(),
+                            'rating':storeProduct.getProductRating(),
+                            'price': storeProduct.getPrice(),
+                            'storeName': store.getStoreName(),
+                            'storeId': store.getStoreId(),
+                            'productId': storeProduct.getProductId(),
+                            })
+                        }}
+                        ).catch(err => reject(err))
+                    return Promise.resolve(JSON.stringify(products))
+                })
+
+            })
+        return Promise.all(products['products']).then( _ => {
+            let jsonProducts = JSON.stringify(products)
+            Logger.log(`Getting products by category answer: ${JSON.stringify(jsonProducts)}`)
+            return jsonProducts
+        }).catch( error => Promise.reject(error))
     }
 
     public  getProductInfoBelowPrice(price: number): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.searchBelowPrice(price);
-            for(let storeProduct of storeProducts){
-                products['products'].push({ 'productName':storeProduct.getName() ,
-                'numberOfRaters':storeProduct.getNumOfRaters(),
-                'rating':storeProduct.getProductRating(),
-                'price': storeProduct.getPrice(),
-                'storeName': store.getStoreName(),
-                'storeId': store.getStoreId(),
-                'productId': storeProduct.getProductId(),
-                                        })
-            }
-        })
-        return Promise.resolve(JSON.stringify(products))
+            let storeProductp: Promise<StoreProductInfo[]> = store.searchBelowPrice(price);
+            
+            return new Promise((resolve, reject) => {
+                storeProductp.then(storeProducts => {
+                    for(let storeProduct of storeProducts){
+                            products['products'].push({ 'productName':storeProduct.getName() ,
+                            'numberOfRaters':storeProduct.getNumOfRaters(),
+                            'rating':storeProduct.getProductRating(),
+                            'price': storeProduct.getPrice(),
+                            'storeName': store.getStoreName(),
+                            'storeId': store.getStoreId(),
+                            'productId': storeProduct.getProductId(),
+                            })
+                        }}
+                        ).catch(err => reject(err))
+                    return Promise.resolve(JSON.stringify(products))
+                })
+
+            })
+        return Promise.all(products['products']).then( _ => {
+            let jsonProducts = JSON.stringify(products)
+            Logger.log(`Getting products by category answer: ${JSON.stringify(jsonProducts)}`)
+            return jsonProducts
+        }).catch( error => Promise.reject(error))
     }
 
     public  getPruductInfoByStore(storeName: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
-            let storeProducts: StoreProductInfo[] = store.getStoreName() === storeName ? store.getProductsInfo() : [];
-            for(let storeProduct of storeProducts){
-                products['products'].push({ 'productName':storeProduct.getName() ,
-                'numberOfRaters':storeProduct.getNumOfRaters(),
-                'rating':storeProduct.getProductRating(),
-                'price': storeProduct.getPrice(),
-                'storeName': store.getStoreName(),
-                'storeId': store.getStoreId(),
-                'productId': storeProduct.getProductId(),
-                                        })
-            }
-        })
+            let storeProductp: Promise<StoreProductInfo[]> = store.getStoreName() === storeName ? store.getProductsInfo() : Promise.resolve([]);
+            return new Promise((resolve, reject) => {
+                storeProductp.then(storeProducts => {
+                    for(let storeProduct of storeProducts){
+                            products['products'].push({ 'productName':storeProduct.getName() ,
+                            'numberOfRaters':storeProduct.getNumOfRaters(),
+                            'rating':storeProduct.getProductRating(),
+                            'price': storeProduct.getPrice(),
+                            'storeName': store.getStoreName(),
+                            'storeId': store.getStoreId(),
+                            'productId': storeProduct.getProductId(),
+                            })
+                        }}
+                        ).catch(err => reject(err))
+                    return Promise.resolve(JSON.stringify(products))
+                })
 
-        Logger.log(`Getting products by store answer: ${JSON.stringify(products)}`)
-
-        return Promise.resolve(JSON.stringify(products))
+            })
+            return Promise.all(products['products']).then( _ => {
+                let jsonProducts = JSON.stringify(products)
+                Logger.log(`Getting products by store answer: ${JSON.stringify(products)}`)
+                return jsonProducts
+            }).catch( error => Promise.reject(error))
     }
     //------------------------------------------functions for tests-------------------------
 

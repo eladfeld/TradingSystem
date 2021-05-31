@@ -3,7 +3,7 @@ import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
-import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { storeDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 
 
 
@@ -32,7 +32,7 @@ export abstract class Appointment {
     }
 
     public getStore(): Promise<Store> {
-        return StoreDB.getStoreByID(this.store);
+        return storeDB.getStoreByID(this.store);
     }
 
     public getStoreId() {

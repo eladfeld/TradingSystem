@@ -1,14 +1,14 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { buyingOption } from "../store/BuyingOption";
-import { Product } from "../store/Product";
+import { StoreProduct } from "../store/StoreProduct";
 import { Store } from "../store/Store";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
 import iBasket from "../discount/iBasket";
 import { iProduct, MyProduct } from "../discount/iProduct";
 import BuyingSubject from "../policy/buying/BuyingSubject";
-import { ProductDB, StoreDB } from "../../DataAccessLayer/DBinit";
+import { productDB, storeDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingBasket implements iBasket
 {
@@ -23,14 +23,14 @@ export class ShoppingBasket implements iBasket
 
     public static async rebuildShoppingBasket(storeId: number, products: Map<number, number>)
     {
-        let basket = new ShoppingBasket(await StoreDB.getStoreByID(storeId));
+        let basket = new ShoppingBasket(await storeDB.getStoreByID(storeId));
         basket.products = products;
         return basket;
     }
 
-    public getItems = () : iProduct[] =>{
+    public getItems = async () : Promise<iProduct[]> =>{
         const output: iProduct[] = [];
-        const allProducts = this.store.getProductsInfo();
+        const allProducts =await  this.store.getProductsInfo();
         for(const [productId, quantity] of this.products){
             const prod = allProducts.find(p => p.getProductId() === productId);
             const myProduct = new MyProduct(productId,prod.getPrice(), quantity, prod.getName(),prod.getCategories());
@@ -49,7 +49,7 @@ export class ShoppingBasket implements iBasket
         return this.products;
     }
 
-    public addProduct(productId: number, quantity: number): Promise<string>
+    public async addProduct(productId: number, quantity: number): Promise<string>
     {
         if (quantity < 0){
             Logger.log("quantity can't be negative number");
@@ -62,7 +62,7 @@ export class ShoppingBasket implements iBasket
             Logger.log("product not for immediate buy");
             return new Promise( (resolve,reject) => reject("product not for immediate buy"));
         }
-        if(!this.store.isProductAvailable(productId, quantity)){
+        if(! await this.store.isProductAvailable(productId, quantity)){
             return new Promise( (resolve,reject) => reject("product is not available in this quantity"));
         }
 
@@ -90,11 +90,11 @@ export class ShoppingBasket implements iBasket
         })
     }
 
-    public edit(productId: number, newQuantity: number): Promise<string>
+    public async edit(productId: number, newQuantity: number): Promise<string>
     {
         if (newQuantity < 0)
             return Promise.reject("negative quantity");
-        if (!this.store.isProductAvailable(productId,newQuantity))
+        if (! await this.store.isProductAvailable(productId,newQuantity))
             return Promise.reject("quantity not available");
         if (newQuantity === 0)
             this.products.delete(productId);
@@ -109,9 +109,9 @@ export class ShoppingBasket implements iBasket
         basket['storeId'] = this.store.getStoreId();
         basket['products']=[]
 
-        let productPromises: Promise<Product>[] = []
+        let productPromises: Promise<StoreProduct>[] = []
         this.products.forEach(function(quantity,productId,map){
-            let product = ProductDB.getProductById(productId);
+            let product = productDB.getProductById(productId);
             productPromises.push(product);
         })
 
@@ -128,14 +128,14 @@ export class ShoppingBasket implements iBasket
         })
     }
 
-    public getValue = (field: string):number => {
+    public getValue = async (field: string): Promise<number> => {
         const strs: string[] = field.split("_");
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);
             if(!isNaN(id)){//product
                 switch(strs[1]){
                     case "price":
-                        return this.store.getProductsInfo().find(p => p.getProductId() === id).getPrice();
+                        return (await this.store.getProductsInfo()).find(p => p.getProductId() === id).getPrice();
                     case "quantity":
                         const quantity = this.products.get(id);
                         return quantity? quantity : 0;
@@ -144,7 +144,7 @@ export class ShoppingBasket implements iBasket
                 }
             }
             else{//category
-                const prodsInCategory = this.store.getProducts(strs[0]);                
+                const prodsInCategory = await this.store.getProducts(strs[0]);                
                 switch(strs[1]){
                     case "quantity":
                         var acc = 0;

@@ -1,5 +1,5 @@
 import { rejects } from 'assert';
-import { StoreDB, subscriberDB } from '../../DataAccessLayer/DBinit';
+import { storeDB, subscriberDB } from '../../DataAccessLayer/DBinit';
 import { isOk, makeFailure, makeOk, Result } from '../../Result';
 import iSubject from '../discount/logic/iSubject';
 import { buyingOption } from '../store/BuyingOption';
@@ -50,7 +50,7 @@ export class User implements iSubject
 
     public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Promise<string>
     {
-        let storep =  StoreDB.getStoreByID(shopId);
+        let storep =  storeDB.getStoreByID(shopId);
         return new Promise ((resolve,reject) => {
             storep.then (store => {
                 let sellp = store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
@@ -86,7 +86,7 @@ export class User implements iSubject
         return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
 
-    getValue =  (field: string): number => {
+    getValue = async (field: string): Promise<number> => {
         if(this instanceof Subscriber){
             return this.getAge();
         }

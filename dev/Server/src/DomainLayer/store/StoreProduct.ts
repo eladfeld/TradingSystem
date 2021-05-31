@@ -1,6 +1,7 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { Rating } from "./Common"
+import { productDB } from "../../DataAccessLayer/DBinit";
 
 export class StoreProduct
 {
@@ -24,6 +25,25 @@ export class StoreProduct
         this.productRating = 0 // getting productRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
         this.categories = categories
+    }
+
+    public static rebuildStoreProduct(productId: number, name: string, price: number, storeId: number, quantity:number, categories: string[]) {
+        return new StoreProduct(productId, name, price, storeId, quantity, categories);
+    }
+
+    static createProduct(name: string, price: number, storeId: number, quantity:number, categories: string[]): Promise<StoreProduct> {
+        let product = new StoreProduct(0, name, price, storeId, quantity, categories);
+
+        return new Promise( (resolve,reject) => { productDB.addProduct(product).then((id: number) => {
+            product.setId(id);
+            resolve(product);
+        }).catch((error => reject(error)))
+        return product;
+    })
+    }
+
+    private setId(id: number){
+        this.productId = id;
     }
 
     public getProductId()

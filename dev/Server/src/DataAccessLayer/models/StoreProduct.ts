@@ -6,7 +6,6 @@ const StoreProduct = sequelize.define('StoreProduct', {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      primaryKey: true,
     },
     price: {
       type: DataTypes.INTEGER,

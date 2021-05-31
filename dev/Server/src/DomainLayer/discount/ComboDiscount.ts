@@ -15,11 +15,14 @@ export default class ComboDiscount implements iDiscount{
         this.discounts = discounts;
     }
     
-    public getDiscount = (basket: iBasket, categorizer: Categorizer):Result<number> =>{
-        const results: Result<number>[] = this.discounts.map(d => d.getDiscount(basket, categorizer));
-        const res: Result<number[]> = ResultsToResult(results);
-        if(isFailure(res)) return res;
-        return makeOk(this.policy.calc(res.value));
+    public getDiscount = (basket: iBasket, categorizer: Categorizer):Promise<number> =>{
+        const promises: Promise<number>[] = this.discounts.map(d => d.getDiscount(basket, categorizer));
+        return new Promise((resolve,reject) =>{
+            Promise.all(promises).then( discounts =>{
+                resolve(this.policy.calc(discounts))
+            })
+            .catch( error => reject(error))
+        })
     }
 
     public getPolicy = () => this.policy;

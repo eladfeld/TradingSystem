@@ -9,7 +9,7 @@ import { TIMEOUT } from 'dns';
 import { Publisher } from '../notifications/Publisher';
 import { userInfo } from 'os';
 import { resolve } from 'path';
-import { PurchaseDB } from '../../DataAccessLayer/DBinit';
+import { purchaseDB } from '../../DataAccessLayer/DBinit';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -42,14 +42,14 @@ class Purchase {
         this.addTimerAndCallback(userId, storeId, timerId, callback);
     }
     private terminateTransaction = (userId:number, storeId:number, storeCallback: () => void, status: number) => {
-        const transactionp = PurchaseDB.getTransactionInProgress(userId, storeId);
+        const transactionp = purchaseDB.getTransactionInProgress(userId, storeId);
         transactionp.then(transaction =>
             {
                 if(!transaction) return;
                 storeCallback();
                 this.removeTimerAndCallback(userId, storeId);
                 transaction.setStatus(status);
-                PurchaseDB.updateTransaction(transaction);
+                purchaseDB.updateTransaction(transaction);
             })
 
     }
@@ -84,7 +84,7 @@ class Purchase {
         }
 
         //allow payment within 5 minutes
-        PurchaseDB.storeTransaction(transaction);
+        purchaseDB.storeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
@@ -102,7 +102,7 @@ class Purchase {
             return Promise.reject("No checkout in progress");
         }
         clearTimeout(oldTimerId);
-        const transactionp = PurchaseDB.getTransactionInProgress(userId, storeId);
+        const transactionp = purchaseDB.getTransactionInProgress(userId, storeId);
         return new Promise((resolve,reject) => {
             transactionp.then( transaction => {
                 //approve supply
@@ -124,7 +124,7 @@ class Purchase {
                     transaction.setPaymentId(paymentRes.value);
                     transaction.setCardNumber(paymentInfo.getCardNumber());
                     transaction.setStatus(TransactionStatus.COMPLETE);
-                    PurchaseDB.updateTransaction(transaction);
+                    purchaseDB.updateTransaction(transaction);
                     this.removeTimerAndCallback(userId, storeId);
             
                     Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
@@ -167,7 +167,7 @@ class Purchase {
 
 
     public numTransactionsInProgress = (userId: number, storeId: number): Promise<number> => {
-        const transactionsp = PurchaseDB.getTransactionsInProgress(userId,storeId);
+        const transactionsp = purchaseDB.getTransactionsInProgress(userId,storeId);
         return new Promise((resolve,reject) => {
             transactionsp.then (transactions => {
                 resolve(transactions.length)
@@ -177,14 +177,14 @@ class Purchase {
     }
 
     public getAllTransactions = () => {
-        return PurchaseDB.getAllTransactions();
+        return purchaseDB.getAllTransactions();
     }
     public getTransactionInProgress = (userId: number, storeId: number): Promise<Transaction> =>{
-        return PurchaseDB.getTransactionInProgress(userId, storeId);
+        return purchaseDB.getTransactionInProgress(userId, storeId);
     }
 
     public getCompletedTransactions = (userId: number, storeId: number): Promise<Transaction[]> => {
-        let transp = PurchaseDB.getCompletedTransactions();
+        let transp = purchaseDB.getCompletedTransactions();
         return new Promise((resolve, reject) =>{
             transp.then(trans => resolve(trans.filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)))))
             .catch(error => reject(error))
@@ -193,14 +193,14 @@ class Purchase {
         
 
     public getCompletedTransactionsForUser = (userId: number): Promise<string> => {
-        let transp = PurchaseDB.getCompletedTransactions();
+        let transp = purchaseDB.getCompletedTransactions();
         return new Promise((resolve, reject) =>{
             transp.then(trans => resolve(JSON.stringify(trans.filter(t => t.getUserId()==userId))))
         })
     }
 
     public getCompletedTransactionsForStore = (storeId: number): Promise<Transaction[]> =>{
-        let transp = PurchaseDB.getCompletedTransactions();
+        let transp = purchaseDB.getCompletedTransactions();
         return new Promise((resolve, reject) =>{
             transp.then(trans => resolve(trans.filter(t => t.getStoreId()==storeId)))
             .catch(error => reject(error))
@@ -208,7 +208,7 @@ class Purchase {
     }
 
     public getAllTransactionsForUser = (userId: number): Promise<Transaction[]> =>{
-        let transp = PurchaseDB.getCompletedTransactions();
+        let transp = purchaseDB.getCompletedTransactions();
         return new Promise((resolve, reject) =>{
             transp.then(trans => resolve(trans.filter(t => t.getUserId() === userId)))
             .catch(error => reject(error))
@@ -220,7 +220,7 @@ class Purchase {
     }
     
     public getUserStoreHistory = (userId: number, storeId: number): Promise<Transaction[]> =>{
-        return PurchaseDB.getUserStoreHistory(userId, storeId);
+        return purchaseDB.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
 

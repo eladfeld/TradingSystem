@@ -13,7 +13,7 @@ export default class BuyingSubject implements iSubject{
         this.basket = basket;
     }
     
-    public getValue = (field: string) : number =>{
+    public getValue =async (field: string) : Promise<number> =>{
         switch (field) {
             case "time":
                 const now = new Date();
