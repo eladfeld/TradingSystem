@@ -7,7 +7,7 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from '../acceptence/common';
 import {failIfResolved, uniqueAviName, uniqueMegaName} from '../testUtil';
 
-describe('2.9: buy products', function () {
+describe('API fail', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {

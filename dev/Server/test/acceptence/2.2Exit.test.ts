@@ -15,15 +15,11 @@ describe('2.2: exit system test' , function() {
         service.clear();
     });
 
-    it('guest user exit system' , function() {
-        let res  = service.enter()
-        res.then(
-            id=>
-            {
-                service.exit(id);
-                expect(service.get_logged_guest_users().size).to.equal(0);   
-            }
-        )
+    it('guest user exit system' , async function() {
+        let id: string  = await service.enter()
+        let numUsers: number = service.get_logged_guest_users().size;
+        service.exit(id);
+        expect(service.get_logged_guest_users().size).to.equal(numUsers-1);           
     })
 
     it('exit 3 users' , function() {

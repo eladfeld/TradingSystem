@@ -98,7 +98,11 @@ export class ShoppingCart
 
     quantityInBasket = (storeId:number , productId:number ) : number =>
     {
-        return this.baskets.get(storeId).quantity(productId)
+        try{
+            return this.baskets.get(storeId).quantity(productId)
+        }catch(e){
+            return 0;
+        }
     }
 
 }

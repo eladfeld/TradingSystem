@@ -15,12 +15,12 @@ describe('1.1 Ensure Proper Initialization' , function() {
         Service.uninitialize();
     });
    
-    it('main success scenario - successfully init' ,async function() {
+    it('main success scenario - successfully init' ,function() {
         Service.get_instance();
         //didnt throw error is a pass
     })
 
-    it('fail to init supply system - system should not init' ,async function() {
+    it('fail to init supply system - system should not init' ,function() {
         SupplySystem.willFail();
         try{
             Service.get_instance();
@@ -30,7 +30,7 @@ describe('1.1 Ensure Proper Initialization' , function() {
         }
     })
 
-    it('fail to init payment system - system should not init' ,async function() {
+    it('fail to init payment system - system should not init' ,function() {
         PaymentSystem.willFail();
         try{
             Service.get_instance();
@@ -40,7 +40,7 @@ describe('1.1 Ensure Proper Initialization' , function() {
         }
     })
 
-    it('no system managers - system should not init' ,async function() {
+    it('no system managers - system should not init' ,function() {
         const originalPath:string = (' ' + PATH_TO_SYSTEM_MANAGERS).slice(1);//deep copy of string
         try{
             setPathToSystemManagers('../resources/empty_list.json');
