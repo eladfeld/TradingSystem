@@ -11,7 +11,7 @@ import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { add_product, register_login, open_store } from './common';
+import { add_product, register_login, open_store, PAYMENT_INFO, SHIPPING_INFO } from './common';
 import { APIsWillSucceed } from '../testUtil';
 
 describe('3.7: get subscriber history', function () {
@@ -35,7 +35,7 @@ describe('3.7: get subscriber history', function () {
         service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
         service.getSubscriberPurchaseHistory(sessionId, avi.getUserId())
         .then(historyRes =>{
             let history = JSON.parse(historyRes);

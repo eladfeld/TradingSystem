@@ -4,7 +4,7 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service'
 import { APIsWillSucceed } from '../testUtil';
-import { add_product, register_login, open_store } from './common';
+import { add_product, register_login, open_store, PAYMENT_INFO, SHIPPING_INFO } from './common';
 
 describe('4.11: view store buying history', function () {
 
@@ -27,7 +27,7 @@ describe('4.11: view store buying history', function () {
         service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
         service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
         service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
         service.getStorePurchaseHistory(avi_sessionId, store.getStoreId())
         .then(_ => assert.ok(""))
         .catch(_ => assert.fail())

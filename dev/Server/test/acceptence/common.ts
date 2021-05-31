@@ -1,3 +1,4 @@
+import PaymentInfo from "../../src/DomainLayer/purchase/PaymentInfo";
 import { Store } from "../../src/DomainLayer/store/Store";
 import { Subscriber } from "../../src/DomainLayer/user/Subscriber";
 import { isOk } from "../../src/Result";
@@ -9,7 +10,12 @@ export async function register_login(service :Service , sessionId:string , userN
     service.register(userName,password,13);
     let subscriber =await service.login(sessionId, userName, password);
     return subscriber;
-
+}
+export async function register_login_with_age(service :Service , sessionId:string , userName:string, password : string, age:number) : Promise<Subscriber>
+{
+    service.register(userName,password,age);
+    let subscriber =await service.login(sessionId, userName, password);
+    return subscriber;
 }
 
 //this function performs: enter->login and returns the subscriber object
@@ -36,3 +42,5 @@ export async function add_product(service : Service , sessionId:string, user:Sub
 
 }
 
+export const PAYMENT_INFO = new PaymentInfo(1,1,1);
+export const SHIPPING_INFO = "8 Mile Road";

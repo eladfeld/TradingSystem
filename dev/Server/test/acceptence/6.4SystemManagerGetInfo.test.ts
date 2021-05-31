@@ -4,7 +4,7 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed } from '../testUtil';
-import { add_product, enter_login, register_login, open_store } from './common';
+import { add_product, enter_login, register_login, open_store, PAYMENT_INFO, SHIPPING_INFO } from './common';
 
 describe('6.4: System Manager Get Info', function () {
 
@@ -25,7 +25,7 @@ describe('6.4: System Manager Get Info', function () {
         store.addCategoryToRoot('Sweet')
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", ['Sweet'], 10, 15);
         service.checkoutSingleProduct(sys_manager_sessionId, apple, 5, store.getStoreId(), "King Goerge street");
-        service.completeOrder(sys_manager_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
+        service.completeOrder(sys_manager_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
         service.getStorePurchaseHistory(sys_manager_sessionId, store.getStoreId())
         .then(_ => assert.ok(""))
         .catch(_ => assert.fail())
@@ -42,7 +42,7 @@ describe('6.4: System Manager Get Info', function () {
         store.addCategoryToRoot('Sweet')
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", ['Sweet'], 10, 15);
         service.checkoutSingleProduct(ali_sessionId, apple, 5, store.getStoreId(), "King Goerge street");
-        service.completeOrder(ali_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 48948), "user address");
+        service.completeOrder(ali_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
         service.getSubscriberPurchaseHistory(sysm_sessionId, ali.getUserId())
         .then(_ => assert.ok(""))
         .catch(_ => assert.fail())

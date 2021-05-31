@@ -4,7 +4,7 @@ import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import { Service } from '../../src/ServiceLayer/Service';
-import { register_login, open_store } from '../acceptence/common';
+import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from '../acceptence/common';
 import {failIfResolved} from '../testUtil';
 
 describe('2.9: buy products', function () {
@@ -28,9 +28,9 @@ describe('2.9: buy products', function () {
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        await failIfResolved(()=>service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address"))
+        await failIfResolved(()=>service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO))
         PaymentSystem.willSucceed();
-        await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
     })
    
 });

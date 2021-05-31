@@ -9,7 +9,7 @@ import { PATH_TO_SYSTEM_MANAGERS, setPathToSystemManagers } from '../../src/conf
 // import fs from '../../../Client/node_modules/fs-extra/lib/fs/index.js'
 
 // 
-describe('2.1: enter system test' , function() {
+describe('1.1 Ensure Proper Initialization' , function() {
     beforeEach(function () {
         APIsWillSucceed();
         Service.uninitialize();

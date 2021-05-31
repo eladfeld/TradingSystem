@@ -4,7 +4,7 @@ import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { register_login, open_store } from './common';
+import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from './common';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
@@ -32,7 +32,7 @@ describe('7.1: Api Fail', function () {
         service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
         .then(_ => assert.ok(""))
         .catch(_ => assert.fail())
         }
@@ -50,7 +50,7 @@ describe('7.1: Api Fail', function () {
         service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
         .then(_ => assert.fail())
         .catch(_ => assert.ok(""))
     })
@@ -68,7 +68,7 @@ describe('7.1: Api Fail', function () {
         await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
         try{
-        await service.completeOrder(sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        await service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
         assert.fail()
         }
         catch{

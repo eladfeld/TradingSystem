@@ -3,7 +3,7 @@ import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed } from '../testUtil';
-import { register_login, open_store } from './common';
+import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from './common';
 
 declare interface PromiseConstructor {
     allSettled(promises: Array<Promise<any>>): Promise<Array<{ status: 'fulfilled' | 'rejected', value?: any, reason?: any }>>;
@@ -29,7 +29,7 @@ describe('2.9: buy products', function () {
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        let purchase_res = await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address")
+        let purchase_res = await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO,SHIPPING_INFO)
 
         expect(purchase_res).to.equal(true)
         // check basktet updated successfully
@@ -63,7 +63,7 @@ describe('2.9: buy products', function () {
 
         // avi buys 40 bananas successfully
         await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
-        await service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO,SHIPPING_INFO);
         
         try{
             let checkout_res =await service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42")
@@ -102,8 +102,8 @@ describe('2.9: buy products', function () {
         service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42").catch( _ => {})
         
         //both avi and ali try to complete the order
-        let ali_buy_res = service.completeOrder(ali_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
-        let avi_buy_res = service.completeOrder(avi_sessionId, store.getStoreId(), new PaymentInfo(1234, 456, 2101569), "user address");
+        let ali_buy_res = service.completeOrder(ali_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
+        let avi_buy_res = service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
 
         // here avi succeeds and ali fails to buy
         avi_buy_res.then(avi_buy => {
