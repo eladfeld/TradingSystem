@@ -24,6 +24,7 @@ import { tDiscount } from "./discount/Discount";
 import { rejects } from "assert";
 import { StoreProduct } from "./store/StoreProduct";
 import { StoreDB } from "../DataAccessLayer/DBinit";
+import { PATH_TO_SYSTEM_MANAGERS } from "../config";
 
 export class SystemFacade
 {
@@ -33,32 +34,44 @@ export class SystemFacade
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
     private static lastSessionId = 0;
 
+    public static AsyncConstructor = async():Promise<SystemFacade> => {
+        const facade: SystemFacade = new SystemFacade();
+        await facade.init();
+        return facade;
+    }
+
     public constructor()
     {
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers()))
+    }
+
+    public async init(){
+        if(!((await this.initPaymentSystem()) && (await this.initSupplySystem()) && this.initSystemManagers()))
         {
             Logger.error("system could not initialized properly!");
+            throw new Error("failed to init trading system. check api connections and system managers");
         }
     }
 
-    private initSupplySystem() : boolean
+    private async initSupplySystem() : Promise<boolean>
     {
         //TODO: handshake
-        return true;
+        //return Purchase.initSupplySystem()
+        return Promise.resolve(true);
     }
 
-    private initPaymentSystem() : boolean
+    private async initPaymentSystem () : Promise<boolean>
     {
         //TODO: handshake
-        return true;
+        //return Purchase.initPaymentSystem()
+        return Promise.resolve(true);
     }
 
     public initSystemManagers() : boolean
     {
-        const data = fs.readFileSync(path.resolve('src/systemManagers.json') ,  {encoding:'utf8', flag:'r'});
+        const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
         let arr: any[] = JSON.parse(data);
         if (arr.length === 0)
         {

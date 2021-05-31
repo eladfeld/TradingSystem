@@ -3,10 +3,13 @@ import { Store } from '../../src/DomainLayer/store/Store';
 import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
 import { ShoppingCart } from '../../src/DomainLayer/user/ShoppingCart';
 import { isOk } from '../../src/Result';
-import { failIfRejected, failIfResolved } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved } from '../testUtil';
 import { StoreStub } from '../unit/user/StoreStub';
 
 describe('shopping cart tests' , function() {
+    beforeEach(function () {
+        APIsWillSucceed();
+    });
     it("add product to cart", async function(){
         let shoppingCart: ShoppingCart = new ShoppingCart();
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");

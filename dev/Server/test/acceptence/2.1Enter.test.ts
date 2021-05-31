@@ -2,11 +2,13 @@ import {assert, expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed } from '../testUtil';
 
 describe('2.1: enter system test' , function() {
 
     var service : Service = Service.get_instance();
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function() {

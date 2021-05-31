@@ -23,6 +23,7 @@ export class Service
     private constructor()
     {
         this.facade = new SystemFacade();
+        this.facade.init();//may be problematic
         if(SHOULD_INIT_STATE){
             setTimeout(async() =>{
                 const res = await new StateInitializer().initState();
@@ -253,6 +254,11 @@ export class Service
     public clear() : void
     {
         this.facade.clear();
+    }
+
+    public static uninitialize() : void
+    {
+        Service.singletone = undefined;
     }
 
 }

@@ -4,10 +4,13 @@ import { Login } from '../../src/DomainLayer/user/Login';
 import { isFailure, isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { Register } from '../../src/DomainLayer/user/Register';
-import { failIfRejected, failIfResolved, failTestFromError } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved, failTestFromError } from '../testUtil';
 
 
 describe('Store owner manage store inventory' , () => {
+    beforeEach(function () {
+        APIsWillSucceed();
+    });
 
     it('Owner adds valid product to inventory', async() => {
         let service: Service = Service.get_instance()

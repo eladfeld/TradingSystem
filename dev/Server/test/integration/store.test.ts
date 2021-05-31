@@ -10,9 +10,13 @@ import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
 import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
 import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
-import { failIfRejected, HASHED_PASSWORD } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, HASHED_PASSWORD } from '../testUtil';
 
 describe('view store products' , () => {
+
+    beforeEach(function () {
+        APIsWillSucceed();
+    });
 
     // it('view store without products', () => {
     //     let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')

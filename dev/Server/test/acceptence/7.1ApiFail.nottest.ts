@@ -8,11 +8,13 @@ import { register_login, open_store } from './common';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
+import { APIsWillSucceed } from '../testUtil';
 
 describe('7.1: Api Fail', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function () {

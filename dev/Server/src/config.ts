@@ -16,3 +16,12 @@ export const SUPPLY_SYSTEM_URL = '';
 //Database configurations
 export const TEST_MODE = true;
 //
+
+
+export var PATH_TO_SYSTEM_MANAGERS = 'src/systemManagers.json';
+
+
+/************* FUNCTIONS FOR TESTING PURPOSES ONLY *********** */
+export const setPathToSystemManagers = (newPath:string) =>{ 
+    PATH_TO_SYSTEM_MANAGERS = newPath;
+}

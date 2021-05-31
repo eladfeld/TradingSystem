@@ -2,12 +2,14 @@ import { assert, expect } from 'chai';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed } from '../testUtil';
 import { register_login, open_store } from './common';
 
 describe('4.7: remove appointment', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function () {

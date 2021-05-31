@@ -4,12 +4,14 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed } from '../testUtil';
 
 describe('2.4: login system test' , function() {
 
     var service : Service = Service.get_instance();
 
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function() {

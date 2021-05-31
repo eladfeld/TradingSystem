@@ -3,12 +3,14 @@ import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed } from '../testUtil';
 import { add_product, enter_login, register_login, open_store } from './common';
 
 describe('6.4: System Manager Get Info', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function () {

@@ -5,14 +5,14 @@ import { PaymentInfo } from '../../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../../src/DomainLayer/purchase/Purchase'
 import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
-import { isFailure, isOk, Result } from '../../../src/Result';
+import { APIsWillSucceed, failIfResolved } from '../../testUtil';
 
 
 
 //checkout should have
 
 //checkout should have
-var userId: number = -1000;
+var uId: number = -1000;
 var storeId: number = -7653;
 var storeName: string = "Mega Bair";
 const userAdrs: string = "8 Mile Road, Detroit";
@@ -33,31 +33,32 @@ const updateValues = () => {
 }
 
 describe('purchase with api fail tests' , function() {
-    it('supply system fails' , function(){
+
+    beforeEach(function () {
+        APIsWillSucceed();
+    });
+
+    it('supply system fails' , async function(){
+        const userId = uId--;
         updateValues();
-        PaymentSystem.willSucceed();
         SupplySystem.willFail();
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
-        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
+        await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        failIfResolved(()=> Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234));
+        const allTransactions: Transaction[] = await Purchase.getAllTransactionsForUser(userId);
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];
         expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
     });
 
-    it('payment system fails' , function(){
-        updateValues();
-        SupplySystem.willSucceed();
+    it('payment system fails' ,async function(){
+        const userId = uId--;
+
         PaymentSystem.willFail();
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
-        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
+        await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        failIfResolved(()=> Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234));
+        const allTransactions: Transaction[] = await Purchase.getAllTransactionsForUser(userId);
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];
         expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);

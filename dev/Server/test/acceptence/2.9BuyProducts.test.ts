@@ -2,6 +2,7 @@ import { assert, expect } from 'chai';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed } from '../testUtil';
 import { register_login, open_store } from './common';
 
 declare interface PromiseConstructor {
@@ -12,6 +13,7 @@ describe('2.9: buy products', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function () {

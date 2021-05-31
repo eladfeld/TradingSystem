@@ -12,11 +12,13 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
+import { APIsWillSucceed } from '../testUtil';
 
 describe('2.6: find product', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
+        APIsWillSucceed();
     });
 
     afterEach(function () {

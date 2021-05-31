@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "react-icons": "^4.2.0"
+    "react-icons": "^4.2.0",
+    "typescript-require": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.2"
