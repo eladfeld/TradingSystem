@@ -1,14 +1,9 @@
-import PaymentSystemAdapter from './PaymentSystemAdapter';
-import SupplySystemAdapter from './SupplySystemAdapter';
-import {setSystemConfigurations, PAYMENT_SYSTEM, SUPPLY_SYSTEM} from '../../../src/config';
+import {PAYMENT_SYSTEM, SUPPLY_SYSTEM, TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../config';
 import Transaction, { TransactionStatus } from './Transaction';
 import DbDummy from './DbDummy';
-import { isFailure, makeFailure, makeOk, Result } from '../../Result';
 import { Publisher } from '../notifications/Publisher';
-import { userInfo } from 'os';
-import { rejects } from 'assert';
-import { resolve } from 'path';
-import { CHECKOUT_TIMEOUT } from '../../config';
+import APIAdapterFactory from '../apis/APIAdapterFactory';
+import {iPaymentAdapter, iSupplyAdapter} from './iAPI';
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -18,22 +13,21 @@ export const stringUtil = {
     FAIL_FINALIZE_SHIPMENT: "We could not ship your items, you have been refunded, please try again later"
 };
 Object.freeze(stringUtil);
+
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
-export const PAYMENT_TIMEOUT_MILLISEC: number = CHECKOUT_TIMEOUT;
+export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
 
 
 class Purchase {
 
-    private supplySystem: any;
-    private paymentSystem: any;
+    private supplySystem: iSupplyAdapter;
+    private paymentSystem: iPaymentAdapter;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, () => void]>>;
     private dbDummy: DbDummy;
 
-
-
     constructor(){
-        this.paymentSystem = PAYMENT_SYSTEM;
+        this.paymentSystem = APIAdapterFactory.getPaymentAdapter();
         this.supplySystem = SUPPLY_SYSTEM;
         this.cartCheckoutTimers = new Map();
         this.dbDummy = new DbDummy();
@@ -102,15 +96,21 @@ class Purchase {
         clearTimeout(oldTimerId);
         const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
         //approve supply
-        const shipmentId: number = await this.supplySystem.supply(shippingInfo);
-        if(shipmentId < 0){
+        var shipmentId: number = -1;
+        try{
+            shipmentId  = await this.supplySystem.supply(shippingInfo);
+        }catch(e){}
+        if(shipmentId < 0){//shipment failed or threw error
             this.resetTimer(userId, storeId, oldCallback);
             return new Promise((res , rej) => {rej("could not ship items")});
         }
         transaction.setShipmentId(shipmentId);
         //approve payment
-        const paymentRes: number = await this.paymentSystem.transfer(paymentInfo);
-        if(paymentRes < 0){
+        var paymentRes: number = -1;
+        try{
+            paymentRes = await this.paymentSystem.transfer(paymentInfo);
+        }catch(e){}        
+        if(paymentRes < 0){//payment failed or threw error
             this.supplySystem.cancelSupply(shipmentId);
             this.resetTimer(userId, storeId, oldCallback);
             return new Promise((res , rej) => {rej("unable to complete money transfer")});

@@ -1,42 +1,28 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import PaymentSystem from "../apis/PaymentSystem";
+import { iPaymentAdapter } from "./iAPI";
 import { PaymentInfo } from "./PaymentInfo";
 import { tPaymentInfo } from "./Purchase";
 
 
-class fakePaymentSystemAdapter {
+class fakePaymentSystemAdapter implements iPaymentAdapter{
 
-    init = () : Result<number> => {
+    init = () : Promise<number> => {
         const res: number = PaymentSystem.init();
-        if(res<0)//failed to init
-            return makeFailure(fakePaymentSystemAdapter.initResToMessage(res));
-        return makeOk(res);
+        return Promise.resolve(res);
     }
 
     //returns a transaction number
-    transfer = (paymentInfo:tPaymentInfo ):Result<number> => {
+    transfer = (paymentInfo:tPaymentInfo ):Promise<number> => {
         const res: number =  PaymentSystem.transfer(paymentInfo);
-        if(res<0) return makeFailure(fakePaymentSystemAdapter.transferResToMessage(res));
-        return makeOk(res);
+        return Promise.resolve(res)
     }
 
-    refund = (transactionNumber: number):boolean => {
-        return PaymentSystem.refund(transactionNumber);
+    refund = (transactionNumber: number):Promise<boolean> => {
+        const res: boolean = PaymentSystem.refund(transactionNumber);
+        return Promise.resolve(res);
     }
 
-    static transferResToMessage = (res: number):string =>{
-        switch(res){
-            default:
-                return "Failed to transfer funds."
-        }
-    }
-
-    static initResToMessage = (res: number):string =>{
-        switch(res){
-            default:
-                return "Failed to init system."
-        }
-    }
 
 }
 

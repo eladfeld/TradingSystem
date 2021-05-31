@@ -3,34 +3,25 @@ import SupplySystem from '../apis/SupplySystem';
 import {ShoppingCart} from '../user/ShoppingCart';
 import ShippingInfo from './ShippingInfo';
 import { tShippingInfo } from "./Purchase";
+import { iSupplyAdapter } from './iAPI';
 
 
-class fakeSupplySystemAdapter {
+class fakeSupplySystemAdapter implements iSupplyAdapter{
 
-    init = () : Result<number> => {
+    init = () : Promise<number> => {
         const res: number = SupplySystem.init();
-        if(res<0)//failed to init
-            return makeFailure(fakeSupplySystemAdapter.initResToMessage(res));
-        return makeOk(res);
+        return Promise.resolve(res);
     }
 
-    supply = (reservationId: number) : boolean => {
-        return SupplySystem.supply(reservationId);
+    supply = (shippingInfo: tShippingInfo) : Promise<number> => {
+        const res: number = SupplySystem.supply(shippingInfo);
+        return Promise.resolve(res);
     }
 
-    reserve = (shippingInfo: tShippingInfo) : number => {
-        return SupplySystem.reserve(shippingInfo);
-    }
 
-    cancelReservation = (reservationId: number) :boolean => {
-        return SupplySystem.cancelReservation(reservationId);
-    }
-
-    static initResToMessage = (res: number):string =>{
-        switch(res){
-            default:
-                return "Failed to init system."
-        }
+    cancelSupply = (reservationId: number) :Promise<boolean> => {
+        const res = SupplySystem.cancel(reservationId);
+        return Promise.resolve(res);
     }
 }
 
