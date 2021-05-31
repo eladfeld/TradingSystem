@@ -44,4 +44,44 @@ export const APIsWillSucceed = () =>{
     SupplySystem.willSucceed();
 }
 
+var testId: number = 0;
+export const nextId = ():number => testId++;
+export const uniqueName = (name:string):string  =>{
+    return `${name}_${nextId()}`;
+}
+export const uniqueAviName = () => {
+    return `avi_${nextId()}`;
+}
+export const uniqueMosheName = () => {
+    return `moshe_${nextId()}`;
+}
+export const uniqueAlufHasportName = () => {
+    return `aluf hasport_${nextId()}`;
+}
+export const uniqueMegaName = () => {
+    return `Mega_${nextId()}`;
+}
+
+
+var ready: boolean = true;
+export const isReady = () => ready;
+export const setReady = (state: boolean) =>ready = state;
+export const waitToRun = async():Promise<void> =>{
+    // if(ready) return Promise.resolve();
+    return new Promise((resolve, reject) =>{
+        if(ready) resolve();
+        else{
+            setTimeout(async() =>{
+                await waitToRun();
+                resolve();
+            },10)
+        }
+    })
+
+}
+export var check = function(done:Mocha.Done) {
+    if (isReady()) done();
+    else setTimeout( function(){ check(done) }, 10 );
+}
+
 export const HASHED_PASSWORD = "7110eda4d09e062aa5e4a390b0a572ac0d2c0220";

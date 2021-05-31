@@ -12,7 +12,7 @@ describe('2.1: enter system test' , function() {
     });
 
     afterEach(function() {
-        service.clear();
+        //service.clear();
     });
     
     it('guest user enter system' , function() {
@@ -43,8 +43,8 @@ describe('2.1: enter system test' , function() {
             })
         })
 
-        it('fail exit' , function() {
-            service.enter();
+        it('fail exit' , async function() {
+            await service.enter();
             service.exit("5");
             expect(service.get_logged_guest_users().size).to.equal(1);
             

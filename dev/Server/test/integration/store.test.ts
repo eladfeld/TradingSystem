@@ -10,7 +10,7 @@ import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
 import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
 import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
-import { APIsWillSucceed, failIfRejected, HASHED_PASSWORD } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, HASHED_PASSWORD, uniqueName } from '../testUtil';
 
 describe('view store products' , () => {
 
@@ -27,7 +27,7 @@ describe('view store products' , () => {
     it('view store with products', async() => {
         Service.get_instance()
         //let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
-        let manager = await Login.login('michael', '1234')
+        let manager = await Login.login(uniqueName("michael"), '1234')
         let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
         await store.addCategoryToRoot('Shirt')
         await store.addCategoryToRoot('Pants')
@@ -47,8 +47,8 @@ describe('search product in store' , () => {
 
     it('search product by name', async() => {
         Service.get_instance()
-        let manager = await Login.login('michael', '1234')
-        let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
+        let manager = await Login.login(uniqueName('michael'), '1234')
+        let store = new Store(1, uniqueName('nike'), 123, 'Herzelyia leyad bbb')
         await store.addCategoryToRoot('Shirt')
         await store.addCategoryToRoot('Pants')
         await store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 120, 20)
@@ -63,8 +63,8 @@ describe('search product in store' , () => {
 
     it('search product by category', async() => {
         Service.get_instance()
-        let manager = await Login.login('michael', '1234')
-        let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
+        let manager = await Login.login(uniqueName('michael'), '1234')
+        let store = new Store(1, uniqueName('nike'), 123, 'Herzelyia leyad bbb')
         await store.addCategoryToRoot('Shirt')
         await store.addCategoryToRoot('Pants')
         await store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 120, 20)
@@ -80,19 +80,19 @@ describe('search product in store' , () => {
     describe('buying against policy' , () => {
         it('buying against policy', async() => {
             Service.get_instance()
-            let manager = await Login.login('michael', '1234')
-                let subsriber = new Subscriber('something',HASHED_PASSWORD, 13)
-                const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
-                await store1.addCategoryToRoot('alcohol')
-                const user1Id: number = 100;
-                const user1Adrs: string = "8 Mile Road, Detroit";
-                let productId = await store1.addNewProduct(manager, 'Jack Daniels', ['alcohol'], 80, 20)
-                const basket1a: ShoppingBasket = new ShoppingBasket (store1);
-                await basket1a.addProduct(productId, 1);
-                const policy:tPredicate = {type:"simple",operand1:0,operator:"<",operand2:1};
-                const policyRes = await store1.addBuyingPolicy(subsriber,"no one buys anything", policy);
-                const buyingSubject = new BuyingSubject(subsriber, basket1a);
-                await store1.sellShoppingBasket(user1Id, user1Adrs,basket1a, buyingSubject, ()=>{})
+            let manager = await Login.login(uniqueName('michael'), '1234')
+            let subsriber = new Subscriber(uniqueName('something'),HASHED_PASSWORD, 13)
+            const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
+            await store1.addCategoryToRoot('alcohol')
+            const user1Id: number = 100;
+            const user1Adrs: string = "8 Mile Road, Detroit";
+            let productId = await store1.addNewProduct(manager, 'Jack Daniels', ['alcohol'], 80, 20)
+            const basket1a: ShoppingBasket = new ShoppingBasket (store1);
+            await basket1a.addProduct(productId, 1);
+            const policy:tPredicate = {type:"simple",operand1:0,operator:"<",operand2:1};
+            const policyRes = await store1.addBuyingPolicy(subsriber,"no one buys anything", policy);
+            const buyingSubject = new BuyingSubject(subsriber, basket1a);
+            await store1.sellShoppingBasket(user1Id, user1Adrs,basket1a, buyingSubject, ()=>{})
         })
 
     })

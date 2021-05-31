@@ -4,10 +4,10 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store, register_login_with_age } from './common';
-import { APIsWillSucceed, failIfRejected, failIfResolved } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAviName, uniqueMegaName, uniqueName } from '../testUtil';
 import { tCompositePredicate, tPredicate, tSimplePredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 
-describe('4.5:Appoint manager tests', function () {
+describe('2.9.1 Buying with respect to buying policy', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
@@ -15,7 +15,7 @@ describe('4.5:Appoint manager tests', function () {
     });
 
     afterEach(function () {
-        service.clear();
+        //service.clear();
     });
 
     //child should succeed, adult should fail
@@ -23,10 +23,10 @@ describe('4.5:Appoint manager tests', function () {
         let avi_sessionId = await service.enter();
         let child_sessionId = await service.enter();
         let adult_sessionId = await service.enter();
-        let avi = await register_login(service,avi_sessionId, "avi", "123456789");
-        let child = await register_login_with_age(service,child_sessionId, "tbaby", "123456789", 7);
-        let adult = await register_login_with_age(service,adult_sessionId, "moshe", "123456789", 22);
-        let store = await open_store(service, avi_sessionId,avi, "Mega", 123456, "Tel Aviv");
+        let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
+        let child = await register_login_with_age(service,child_sessionId, uniqueName("tbaby"), "123456789", 7);
+        let adult = await register_login_with_age(service,adult_sessionId, uniqueName("moshe"), "123456789", 22);
+        let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         await service.addCategoryToRoot(avi_sessionId,storeId, "toys")
         const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000);
@@ -60,9 +60,9 @@ describe('4.5:Appoint manager tests', function () {
     it('cant buy more than 1 playstation (product)', async function () {
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
-        let avi = await register_login(service,avi_sessionId, "avi", "123456789");
-        let moshe = await register_login_with_age(service,moshe_sessionId, "tbaby", "123456789", 25);
-        let store = await open_store(service, avi_sessionId,avi, "Mega", 123456, "Tel Aviv");
+        let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
+        let moshe = await register_login_with_age(service,moshe_sessionId, uniqueName("moshe"), "123456789", 25);
+        let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         const playstationId = await service.addNewProduct(avi_sessionId, storeId, "playstation", [], 10, 1000);
         const pred:tSimplePredicate = {

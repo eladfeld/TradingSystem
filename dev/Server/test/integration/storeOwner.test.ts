@@ -4,7 +4,7 @@ import { Login } from '../../src/DomainLayer/user/Login';
 import { isFailure, isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { Register } from '../../src/DomainLayer/user/Register';
-import { APIsWillSucceed, failIfRejected, failIfResolved, failTestFromError } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved, failTestFromError, uniqueName } from '../testUtil';
 
 
 describe('Store owner manage store inventory' , () => {
@@ -13,9 +13,10 @@ describe('Store owner manage store inventory' , () => {
     });
 
     it('Owner adds valid product to inventory', async() => {
+        const shirName = uniqueName("shir")
         let service: Service = Service.get_instance()
-        await failIfRejected(()=> service.register("shir", "123",13));
-        let subscriber = await failIfRejected(()=> Login.login("shir","123"));
+        await failIfRejected(()=> service.register(shirName, "123",13));
+        let subscriber = await failIfRejected(()=> Login.login(shirName,"123"));
             let store= new Store(subscriber.getUserId(), 'nike', 123, 'Herzelyia leyad bbb');
             try{
                 await store.addCategoryToRoot('Shirt');
@@ -32,10 +33,11 @@ describe('Store owner manage store inventory' , () => {
     })
 
     it('Owner adds negative quantity of products to inventory', async() => {
+        const shirName = uniqueName("shir");
         let service: Service = Service.get_instance()
-        await Register.register("shir2", "123", 13)
-        let subscriber = await Login.login("shir2","123")
-        let store = new Store(subscriber.getUserId(), 'nike', 123, 'Herzelyia leyad bbb')
+        await Register.register(shirName, "123", 13)
+        let subscriber = await Login.login(shirName,"123")
+        let store = new Store(subscriber.getUserId(), uniqueName('nike'), 123, 'Herzelyia leyad bbb')
         await failIfResolved(()=> store.addNewProduct(subscriber, 'Dri-Fit Shirt', ['Shirt'], 100, -20))
     })
 

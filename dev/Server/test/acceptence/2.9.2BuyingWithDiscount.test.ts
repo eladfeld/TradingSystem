@@ -4,13 +4,13 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store, register_login_with_age, PAYMENT_INFO, SHIPPING_INFO } from './common';
-import { APIsWillSucceed, failIfRejected, failIfResolved } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAviName, uniqueMegaName, uniqueName, uniqueMosheName } from '../testUtil';
 import { tCompositePredicate, tPredicate, tSimplePredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import { tConditionalDiscount, tUnconditionalDiscount } from '../../src/DomainLayer/discount/Discount';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
 
-describe('4.5:Appoint manager tests', function () {
+describe('2.9.2 Buying with discount', function () {
 
     var service: Service = Service.get_instance();
     beforeEach(function () {
@@ -25,9 +25,9 @@ describe('4.5:Appoint manager tests', function () {
     it('10% off toys category', async function () {
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
-        let avi = await register_login(service,avi_sessionId, "avi", "123456789");
-        await register_login_with_age(service,moshe_sessionId, "tbaby", "123456789", 7);
-        let store = await open_store(service, avi_sessionId,avi, "Mega", 123456, "Tel Aviv");
+        let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
+        await register_login_with_age(service,moshe_sessionId, uniqueName("tbaby"), "123456789", 7);
+        let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         await service.addCategoryToRoot(avi_sessionId,storeId, "toys")
         const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000);
@@ -45,8 +45,8 @@ describe('4.5:Appoint manager tests', function () {
         const mosheHistoryStr = await service.getMyPurchaseHistory(moshe_sessionId);
         const mosheHistory = JSON.parse(mosheHistoryStr);
         expect(mosheHistory.length).to.equal(1);
-        const t: Transaction = mosheHistory[0];
-        expect(t.getTotal()).to.equal(90);
+        const t: any = mosheHistory[0];
+        expect(t.total).to.equal(90);
 
     })
 
@@ -55,10 +55,10 @@ describe('4.5:Appoint manager tests', function () {
         let moshe_sessionId = await service.enter();
         let al_sessionId = await service.enter();
 
-        let avi = await register_login(service,avi_sessionId, "avi", "123456789");
-        await register_login_with_age(service,moshe_sessionId, "moshe", "123456789", 7);
-        await register_login_with_age(service,al_sessionId, "al", "123456789", 7);
-        let store = await open_store(service, avi_sessionId,avi, "Mega", 123456, "Tel Aviv");
+        let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
+        await register_login_with_age(service,moshe_sessionId, uniqueMosheName(), "123456789", 7);
+        await register_login_with_age(service,al_sessionId, uniqueName("al"), "123456789", 7);
+        let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         await service.addCategoryToRoot(avi_sessionId,storeId, "toys")
         const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000);
@@ -69,7 +69,7 @@ describe('4.5:Appoint manager tests', function () {
             ratio:0.1,
             predicate:{
                 type:"simple",
-                operand1:`b_toys_quantity`,
+                operand1:`toys_quantity`,
                 operator:">",
                 operand2:9
             }
@@ -83,8 +83,8 @@ describe('4.5:Appoint manager tests', function () {
         const mosheHistoryStr = await service.getMyPurchaseHistory(moshe_sessionId);
         const mosheHistory = JSON.parse(mosheHistoryStr);
         expect(mosheHistory.length).to.equal(1);
-        const t_moshe: Transaction = mosheHistory[0];
-        expect(t_moshe.getTotal()).to.equal(90);
+        const t_moshe: any = mosheHistory[0];
+        expect(t_moshe.total).to.equal(90);
 
         await service.addProductTocart(al_sessionId,storeId, legoId,5);
         await service.checkoutBasket(al_sessionId, storeId, "8 Mile");
@@ -92,8 +92,8 @@ describe('4.5:Appoint manager tests', function () {
         const alHistoryStr = await service.getMyPurchaseHistory(al_sessionId);
         const alHistory = JSON.parse(alHistoryStr);
         expect(alHistory.length).to.equal(1);
-        const t_al: Transaction = mosheHistory[0];
-        expect(t_al.getTotal()).to.equal(90);
+        const t_al: any = mosheHistory[0];
+        expect(t_al.total).to.equal(90);
 
     })
 

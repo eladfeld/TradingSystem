@@ -8,7 +8,7 @@ import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from './commo
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
-import { APIsWillSucceed } from '../testUtil';
+import { APIsWillSucceed, failIfResolved, failTest, uniqueAviName, uniqueMegaName } from '../testUtil';
 
 describe('7.1: Api Fail', function () {
 
@@ -18,23 +18,21 @@ describe('7.1: Api Fail', function () {
     });
 
     afterEach(function () {
-        service.clear();
+        //service.clear();
     });
     it('supply fail', async function () {
         SupplySystem.willFail();
         PaymentSystem.willSucceed();
         let sessionId = await service.enter();
-        let avi =await register_login(service,sessionId, "avi", "1234");
-        let store =await open_store(service,sessionId, avi, "Mega", 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
+        let store =await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
+        await store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
-        .then(_ => assert.ok(""))
-        .catch(_ => assert.fail())
+        await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
+        await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
+        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        await service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
         }
     )
 
@@ -42,59 +40,46 @@ describe('7.1: Api Fail', function () {
         SupplySystem.willSucceed();
         PaymentSystem.willFail();
         let sessionId = await service.enter();
-        let avi =await register_login(service,sessionId, "avi", "1234");
-        let store =await open_store(service,sessionId, avi, "Mega", 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
+        let store =await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
+        await store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
-        service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
-        .then(_ => assert.fail())
-        .catch(_ => assert.ok(""))
+        await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
+        await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
+        await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
+        await failIfResolved(()=> service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO))
     })
 
     it('Api fails, cart unchanged',async function () {
         SupplySystem.willSucceed();
         PaymentSystem.willFail();
         let sessionId = await service.enter();
-        let avi =await register_login(service,sessionId, "avi", "1234");
-        let store =await open_store(service,sessionId, avi, "Mega", 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
+        let store =await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
+        await store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(sessionId, store.getStoreId(), "king Goerge st 42");
-        try{
-        await service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
-        assert.fail()
-        }
-        catch{
 
-        }
-        
-        setTimeout(async () => {
-            console.log(avi.GetShoppingCart())
-            let cart_info = await service.getCartInfo(sessionId)
-            let cart = JSON.parse( String(cart_info));
-            expect(cart['baskets'][0]['products'].length).to.equal(2);
-            expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
-            expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
-        }, 10);
-        
-        
+        await failIfResolved(()=> service.completeOrder(sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO))
 
+        let cart_info = await service.getCartInfo(sessionId)
+        let cart = JSON.parse( String(cart_info));
+        expect(cart['baskets'][0]['products'].length).to.equal(2);
+        expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
+        expect(cart['baskets'][0]['products'].length).to.equal(2);//need to verify item quantities
     })
 
     it('double checkout, inventory and basket editted once',async function () {
         SupplySystem.willSucceed();
         PaymentSystem.willFail();
         let sessionId = await service.enter();
-        let avi =await register_login(service,sessionId, "avi", "1234");
-        let store =await open_store(service,sessionId, avi, "Mega", 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
+        let store =await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
+        await store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
         let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 20);
         await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
@@ -114,7 +99,7 @@ describe('7.1: Api Fail', function () {
             expect(store.isProductAvailable(ProductDB.getProductByName('apple').getProductId(), 10)).to.equal(true);
             expect(store.isProductAvailable(ProductDB.getProductByName('apple').getProductId(), 11)).to.equal(false);
         }
-        catch{assert.fail}
+        catch{failTest("cart doesnt have proper structure")}
             
     })
 });

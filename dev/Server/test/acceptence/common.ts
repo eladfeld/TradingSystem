@@ -7,13 +7,13 @@ import { Service } from "../../src/ServiceLayer/Service";
 //this function performs: enter->register->login and returns the subscriber object
 export async function register_login(service :Service , sessionId:string , userName:string, password : string) : Promise<Subscriber>
 {
-    service.register(userName,password,13);
+    await service.register(userName,password,13);
     let subscriber =await service.login(sessionId, userName, password);
     return subscriber;
 }
 export async function register_login_with_age(service :Service , sessionId:string , userName:string, password : string, age:number) : Promise<Subscriber>
 {
-    service.register(userName,password,age);
+    await service.register(userName,password,age);
     let subscriber =await service.login(sessionId, userName, password);
     return subscriber;
 }

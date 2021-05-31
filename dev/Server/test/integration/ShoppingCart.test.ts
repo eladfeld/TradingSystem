@@ -3,7 +3,7 @@ import { Store } from '../../src/DomainLayer/store/Store';
 import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
 import { ShoppingCart } from '../../src/DomainLayer/user/ShoppingCart';
 import { isOk } from '../../src/Result';
-import { APIsWillSucceed, failIfRejected, failIfResolved } from '../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAlufHasportName } from '../testUtil';
 import { StoreStub } from '../unit/user/StoreStub';
 
 describe('shopping cart tests' , function() {
@@ -12,7 +12,7 @@ describe('shopping cart tests' , function() {
     });
     it("add product to cart", async function(){
         let shoppingCart: ShoppingCart = new ShoppingCart();
-        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
+        let store : StoreStub = new StoreStub(123,uniqueAlufHasportName() , 123456 , "Tel Aviv");
         await failIfRejected(() => shoppingCart.addProduct(store.getStoreId(),1,2));
     })
 
@@ -23,7 +23,7 @@ describe('shopping cart tests' , function() {
 
     it("edit product to cart", async function(){
         let shoppingCart: ShoppingCart = new ShoppingCart();
-        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
+        let store : StoreStub = new StoreStub(123,uniqueAlufHasportName() , 123456 , "Tel Aviv");
         await failIfRejected(() => shoppingCart.addProduct(store.getStoreId(),1,2));
         await failIfRejected(() => shoppingCart.editStoreCart(store.getStoreId(), 1, 1))
     })
@@ -35,7 +35,7 @@ describe('shopping cart tests' , function() {
 
     it("check basket after add to cart", async function(){
         let shoppingCart: ShoppingCart = new ShoppingCart();
-        let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
+        let store : StoreStub = new StoreStub(123,uniqueAlufHasportName() , 123456 , "Tel Aviv");
         await failIfRejected(()=> shoppingCart.addProduct(store.getStoreId(),1,2));
         let storebasket : any= shoppingCart.getBasketById(store.getStoreId());
         expect(storebasket.get(1)).to.equal(2);
