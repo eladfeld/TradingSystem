@@ -84,7 +84,7 @@ describe('AppointmentManager tests' , function() {
         await MakeAppointment.appoint_founder(founder,store);  
         let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
         await MakeAppointment.appoint_manager(founder,store,manager);
-        await failIfRejected(() => MakeAppointment.appoint_owner(founder,store,manager))
+        await failIfResolved(() => MakeAppointment.appoint_owner(founder,store,manager))
     })
 
     it('remove appontment good',async function() {//here

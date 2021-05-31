@@ -23,8 +23,8 @@ export class Publisher
         if (Publisher.singleton === undefined)
         {
             Publisher.singleton = new Publisher();
-            Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
-            //Publisher.singleton.send_message_func= (userId : number, message:{}) => {return Promise.resolve('just testing')};
+            //Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
+            Publisher.singleton.send_message_func= (userId : number, message:{}) => {return Promise.resolve('just testing')};
         }
         return Publisher.singleton;
     }

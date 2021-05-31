@@ -14,7 +14,7 @@ describe('4.11: view store buying history', function () {
     });
 
     afterEach(function () {
-        service.clear();
+        //service.clear();
     });
     it('viwe store history',async function () {
         let avi_sessionId = await service.enter();

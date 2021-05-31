@@ -4,7 +4,7 @@
   "description": "Workshop for software engineering",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test/acceptence/*.test.ts test/acceptence/*.test.ts",
+    "test": "mocha --require ts-node/register test/unit/**/*.test.ts test/unit/**/*.test.ts",
     "coverage": "nyc npm run test"
   },
   "keywords": [],

@@ -24,7 +24,7 @@ describe('shopping Basket tests' , function() {
 
         it('add non exsistent item to cart', async function(){
             shoppingBasket.clear();
-            await shoppingBasket.addProduct(-1,18)
+            await failIfResolved(()=> shoppingBasket.addProduct(-1,18))
             expect((shoppingBasket.getProducts()).get(-1)).to.equal(undefined)
         })
 
