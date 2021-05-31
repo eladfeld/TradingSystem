@@ -20,7 +20,7 @@ describe('6.4: System Manager Get Info', function () {
         let avi_sessionId = await service.enter();
         let sys_manager_sessionId = await service.enter();
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "1234");
-        let sys_manager =await service.login(sys_manager_sessionId, uniqueName("michael"), "1234");
+        let sys_manager =await service.login(sys_manager_sessionId, "michael", "1234");
         let store =await open_store(service,avi_sessionId, avi, uniqueAlufHasportName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", ['Sweet'], 10, 15);
@@ -35,7 +35,7 @@ describe('6.4: System Manager Get Info', function () {
         let sysm_sessionId = await service.enter();
         let avi = await register_login(service,avi_sessionId, uniqueAviName(), "1234");
         let ali = await register_login(service,ali_sessionId, uniqueName("ali"), "1234");
-        let sys_manager = await service.login(sysm_sessionId, uniqueName("michael"), "1234");
+        let sys_manager = await service.login(sysm_sessionId, "michael", "1234");
         let store =await open_store(service,avi_sessionId, avi, uniqueAlufHasportName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", ['Sweet'], 10, 15);

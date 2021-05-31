@@ -59,7 +59,7 @@ describe('2.5: store info test' , function() {
     it('avi opens store , system manager watching it' ,async function() {
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
-        const michaelName = uniqueName("michael");
+        const michaelName = "michael";
 
         //----------------avi opens store---------------------------------
         let sessionId = await service.enter();

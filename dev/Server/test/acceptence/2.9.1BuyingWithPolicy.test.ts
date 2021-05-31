@@ -74,7 +74,8 @@ describe('2.9.1 Buying with respect to buying policy', function () {
         await service.addBuyingPolicy(avi_sessionId, storeId, "max 1 playstation per customer",pred );
         await service.addProductTocart(moshe_sessionId,storeId, playstationId, 1);
         await service.checkoutBasket(moshe_sessionId, storeId, "8 Mile");
-        await service.editCart(moshe_sessionId,storeId,playstationId,2);
+        // await service.editCart(moshe_sessionId,storeId,playstationId,2);
+        await service.addProductTocart(moshe_sessionId,storeId, playstationId, 2);
         await failIfResolved(() => service.checkoutBasket(moshe_sessionId, storeId, "8 Mile"))
     })
 

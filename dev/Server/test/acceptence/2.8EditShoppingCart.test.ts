@@ -21,7 +21,7 @@ describe('2.8: Shopping Cart view and edit' , function() {
 
     it('shopping cart before and after delete' , async function()
     {
-        //this.timeout(10000)
+        //this.timeout(30000)
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
 
@@ -30,11 +30,10 @@ describe('2.8: Shopping Cart view and edit' , function() {
         let store1 = await open_store(service,sessionId,avi,storeName , 123456 , "Tel Aviv" );
         await store1.addCategoryToRoot('Sweet')
         await store1.addCategoryToRoot('Computer')
-        let product1: Product = new Product("banana", ['Sweet']);
-        await store1.addNewProduct(avi,product1.getName(),['Computer'],500,100);
-        await service.addProductTocart(sessionId, store1.getStoreId() , product1.getProductId() , 10);
+        let prodId = await store1.addNewProduct(avi,"banana",['Computer'],500,100);
+        await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10);
         await service.getCartInfo(sessionId)
-        await service.editCart(sessionId, store1.getStoreId(), product1.getProductId(), 0 );
+        await service.editCart(sessionId, store1.getStoreId(), prodId, 0 );
         let cart = await service.getCartInfo(sessionId);
         let tester: any = JSON.parse(cart);
         expect(tester['baskets'][0]['products'].length).to.equal(0);

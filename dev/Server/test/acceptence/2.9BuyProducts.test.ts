@@ -65,22 +65,18 @@ describe('2.9: buy products', function () {
         await service.checkoutBasket(avi_sessionId, store.getStoreId(), "king Goerge st 42");
         await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO,SHIPPING_INFO);
         
-        try{
-            let checkout_res =await service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42")
-            assert.fail()
-        }
-        catch{
-            // check that the basket of ali hasn't changed
-            expect(ali.quantityInBasket(store.getStoreId(),banana)).to.equal(40)
-            // chech that the store's inventory hasnt changed
-            expect(store.getProductQuantity(banana)).to.equal(10)
-            // check that transaction wasnt completed
-            //expect((await Purchase.getCompletedTransactionsForUser(avi.getUserId())).length).to.equal(1);
-            //expect((await Purchase.getCompletedTransactionsForUser(ali.getUserId())).length).to.equal(0);
+        await failIfResolved(()=>service.checkoutBasket(ali_sessionId, store.getStoreId(), "king Goerge st 42"))
 
-            expect((await service.getMyPurchaseHistory(avi_sessionId)).length).to.equal(1);
-            expect((await service.getMyPurchaseHistory(ali_sessionId)).length).to.equal(0);
-        }
+        // check that the basket of ali hasn't changed
+        expect(ali.quantityInBasket(store.getStoreId(),banana)).to.equal(40)
+        // chech that the store's inventory hasnt changed
+        expect(store.getProductQuantity(banana)).to.equal(10)
+        // check that transaction wasnt completed
+        //expect((await Purchase.getCompletedTransactionsForUser(avi.getUserId())).length).to.equal(1);
+        //expect((await Purchase.getCompletedTransactionsForUser(ali.getUserId())).length).to.equal(0);
+        expect((await service.getMyPurchaseHistory(avi_sessionId)).length).to.equal(1);
+        expect((await service.getMyPurchaseHistory(ali_sessionId)).length).to.equal(0);
+        
     })
 
     

@@ -54,7 +54,7 @@ export class SubscriberDummyDB implements iSubscriberDB
     public async getSubscriberByUsername(username: string): Promise<Subscriber>
     {
         let sub = this.subscribers.find( sub => sub.getUsername() === username)
-        if(sub) return sub;
+        if(sub) return Promise.resolve(sub);
         return new Promise((resolve, reject) => reject("getSubscriverByUsername: subscriber not found"))
     }
 

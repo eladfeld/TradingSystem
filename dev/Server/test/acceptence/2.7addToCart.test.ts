@@ -30,10 +30,8 @@ describe('2.7: add to cart test' , function() {
         await service.addCategoryToRoot(sessionId, store1.getStoreId(),'Sweet')
         await service.addCategoryToRoot(sessionId, store1.getStoreId(),'Computer')
         let product1: Product = new Product("banana", ['Sweet']);
-        await service.addNewProduct(sessionId, store1.getStoreId(), product1.getName(),['Computer'],500,100);
-        await service.addProductTocart(sessionId, store1.getStoreId() , product1.getProductId() , 10)
-        // .then( _ => expect(true).to.eq(true))
-        // .catch( _ => expect(true).to.eq(false))
+        let prodId = await service.addNewProduct(sessionId, store1.getStoreId(), product1.getName(),['Computer'],500,100);
+        await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10)
     })
 
     it('add non existent product to cart' , async function() {
