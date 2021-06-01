@@ -25,12 +25,14 @@ export class Service
     private constructor()
     {
         this.facade = new SystemFacade();
-        if(SHOULD_INIT_STATE){
-            setTimeout(async() =>{
-                const res = await new StateInitializer().initState();
-                console.log(`init state was succesful: ${res}`)
-            }, 0);
-        }
+        this.facade.init().then(_ =>{
+            if(SHOULD_INIT_STATE){
+                setTimeout(async() =>{
+                    const res = await new StateInitializer().initState();
+                    console.log(`init state was succesful: ${res}`)
+                }, 0);
+            }
+        })
     }
 
     public get_word_list(word: string): string[]
@@ -278,6 +280,9 @@ export class Service
         this.facade.clear();
     }
 
-
+    public static uninitialize() : void
+    {
+        Service.singletone = undefined;
+    }
 
 }

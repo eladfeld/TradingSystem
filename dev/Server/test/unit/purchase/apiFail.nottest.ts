@@ -6,12 +6,18 @@ import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';
 import { Value } from '../../../src/DomainLayer/discount/logic/Predicate';
 import Purchase, { tPaymentInfo, tShippingInfo } from '../../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
-import { isFailure, isOk, Result } from '../../../src/Result';
+import { APIsWillSucceed, failIfResolved } from '../../testUtil';
 
 
 
 //checkout should have
+<<<<<<< HEAD:dev/Server/test/unit/purchase/apiFail.test.ts
 var userId: number = -1000;
+=======
+
+//checkout should have
+var uId: number = -1000;
+>>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03:dev/Server/test/unit/purchase/apiFail.nottest.ts
 var storeId: number = -7653;
 var storeName: string = "Mega Bair";
 const userAdrs: string = "8 Mile Road, Detroit";
@@ -33,30 +39,48 @@ const updateValues = () => {
 
 
 describe('purchase with api fail tests' , function() {
-    it('supply system fails' , function(){
+
+    beforeEach(function () {
+        APIsWillSucceed();
+    });
+
+    it('supply system fails' , async function(){
+        const userId = uId--;
         updateValues();
-        PaymentSystem.willSucceed();
         SupplySystem.willFail();
+<<<<<<< HEAD:dev/Server/test/unit/purchase/apiFail.test.ts
         const checkoutRes: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         checkoutRes.then(value=>expect(value).to.equal(true));
         const completionRes: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
         completionRes.catch(value=>expect(value).to.equal(false));       
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
+=======
+
+        await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        failIfResolved(()=> Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234));
+        const allTransactions: Transaction[] = await Purchase.getAllTransactionsForUser(userId);
+>>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03:dev/Server/test/unit/purchase/apiFail.nottest.ts
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];
         expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
     });
 
-    it('payment system fails' , function(){
-        updateValues();
-        SupplySystem.willSucceed();
+    it('payment system fails' ,async function(){
+        const userId = uId--;
+
         PaymentSystem.willFail();
 
+<<<<<<< HEAD:dev/Server/test/unit/purchase/apiFail.test.ts
         const checkoutRes: Promise<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
         checkoutRes.then(value=>expect(value).to.equal(true));
         const completionRes: Promise<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
         completionRes.catch(value=>expect(value).to.equal(false));       
         const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
+=======
+        await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        failIfResolved(()=> Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234));
+        const allTransactions: Transaction[] = await Purchase.getAllTransactionsForUser(userId);
+>>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03:dev/Server/test/unit/purchase/apiFail.nottest.ts
         expect(allTransactions.length).to.equal(1);
         const t: Transaction = allTransactions[0];
         expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);

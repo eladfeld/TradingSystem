@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import {assert, expect} from 'chai';
 import { Store } from '../../../src/DomainLayer/store/Store';
 import { Appointment } from '../../../src/DomainLayer/user/Appointment';
 import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
@@ -6,104 +6,106 @@ import { ACTION, Permission } from '../../../src/DomainLayer/user/Permission';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isOk } from '../../../src/Result';
 import { StoreStub } from './StoreStub';
+import {failIfRejected, failIfResolved, failTest} from '../../testUtil';
+
+const HASHED_PASSWORD = "7110eda4d09e062aa5e4a390b0a572ac0d2c0220";
 
 describe('AppointmentManager tests' , function() {
 
-    it('appoint founder' , function() {
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('appoint founder' , async function() {
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        expect(isOk(MakeAppointment.appoint_founder(founder,store))).to.equal(true);
+        await failIfRejected(()=>MakeAppointment.appoint_founder(founder,store));
     })
 
-    it('try to appoint someone who didnt open the store as founder', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
-        let not_founder : Subscriber = new Subscriber("elad",13);
+    it('try to appoint someone who didnt open the store as founder', async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
+        let not_founder : Subscriber = new Subscriber("elad",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        let appointment = MakeAppointment.appoint_founder(not_founder,store);
-        expect(isOk(appointment)).to.equal(false);
+        await failIfResolved(()=>MakeAppointment.appoint_founder(not_founder,store))
     })
 
-    it('appoint manager', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('appoint manager', async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);   
-        let manager : Subscriber = new Subscriber("micha",13);
-        expect(isOk(MakeAppointment.appoint_manager(founder,store,manager))).to.equal(true);
+        await MakeAppointment.appoint_founder(founder,store);   
+        let manager : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
+        await failIfRejected(() => MakeAppointment.appoint_manager(founder,store,manager));
     })
 
-    it('appoint manager without permissions', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('appoint manager without permissions',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);  
-        let manager : Subscriber = new Subscriber("elad",13);
-        MakeAppointment.appoint_manager(founder,store,manager); // no permissions
-        let subscriber : Subscriber = new Subscriber("zuri",13);
-        expect(isOk(MakeAppointment.appoint_manager(manager,store,subscriber))).to.equal(false);
+        await MakeAppointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD,13);
+        await MakeAppointment.appoint_manager(founder,store,manager); // no permissions
+        let subscriber : Subscriber = new Subscriber("zuri", HASHED_PASSWORD,13);
+        await failIfResolved(() => MakeAppointment.appoint_manager(manager,store,subscriber));
     })
 
-    it('try to reappoint user', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('try to reappoint user',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        let manager : Subscriber = new Subscriber("elad",13);
-        MakeAppointment.appoint_manager(founder,store,manager);
-        expect(isOk(MakeAppointment.appoint_manager(founder,store,manager))).to.equal(false);
+        let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD,13);
+        await MakeAppointment.appoint_manager(founder,store,manager);
+        await failIfResolved(() => MakeAppointment.appoint_manager(founder,store,manager))
     })
 
-    it('try to reappoint founder as manager', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('try to reappoint founder as manager',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);  
-        let manager : Subscriber = new Subscriber("elad",13);
-        expect(isOk(MakeAppointment.appoint_manager(founder,store,founder))).to.equal(false);
+        await MakeAppointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD,13);
+        await failIfResolved(() => MakeAppointment.appoint_manager(founder,store,founder));
     })
 
-    it('appoint owner', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('appoint owner',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);   
-        let owner : Subscriber = new Subscriber("micha",13);
-        expect(isOk(MakeAppointment.appoint_manager(founder,store,owner))).to.equal(true);
+        await MakeAppointment.appoint_founder(founder,store);   
+        let owner : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
+        await failIfRejected(() => MakeAppointment.appoint_manager(founder,store,owner))
     })
 
-    it('appoint owner without permissions', function(){
-        let founder : Subscriber = new Subscriber("micha",22);
+    it('appoint owner without permissions',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,22);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);  
-        let owner : Subscriber = new Subscriber("elad",13);
-        MakeAppointment.appoint_manager(founder,store,owner); // no permissions
-        let subscriber : Subscriber = new Subscriber("zuri",13);
-        expect(isOk(MakeAppointment.appoint_owner(owner,store,subscriber))).to.equal(false);
+        await MakeAppointment.appoint_founder(founder,store);  
+        let owner : Subscriber = new Subscriber("elad",HASHED_PASSWORD,13);
+        await MakeAppointment.appoint_manager(founder,store,owner); // no permissions
+        let subscriber : Subscriber = new Subscriber("zuri",HASHED_PASSWORD,13);
+        await failIfResolved(() => MakeAppointment.appoint_owner(owner,store,subscriber))
     })
 
     
-    it('appoint manager to owner', function(){
-        let founder : Subscriber = new Subscriber("micha",13);
+    it('appoint manager to owner',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);  
-        let manager : Subscriber = new Subscriber("elad", 13);
-        MakeAppointment.appoint_manager(founder,store,manager); 
-        expect(isOk(MakeAppointment.appoint_owner(founder,store,manager))).to.equal(true);
+        await MakeAppointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
+        await MakeAppointment.appoint_manager(founder,store,manager);
+        await failIfResolved(() => MakeAppointment.appoint_owner(founder,store,manager))
     })
 
-    it('remove appontment good', function() {
-        let founder : Subscriber = new Subscriber("micha", 13);
+    it('remove appontment good',async function() {//here
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);  
-        let manager : Subscriber = new Subscriber("elad", 13);
-        MakeAppointment.appoint_manager(founder,store,manager);
-        MakeAppointment.removeAppointment(store.findAppointedBy(founder.getUserId(), manager.getUserId()));
+        await MakeAppointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
+        await MakeAppointment.appoint_manager(founder,store,manager);
+        await MakeAppointment.removeAppointment(store.findAppointedBy(founder.getUserId(), manager.getUserId()));
         expect(manager.getAppointments().length).to.equal(0);
     })
 
-    it('remove appontment bad', function(){
-        let founder : Subscriber = new Subscriber("micha", 13);
+    it('remove appontment bad',async function(){
+        let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
-        MakeAppointment.appoint_founder(founder,store);  
-        let manager : Subscriber = new Subscriber("elad", 13);
-        MakeAppointment.appoint_manager(founder,store,manager);
-        expect(isOk(MakeAppointment.removeAppointment(store.findAppointedBy(manager.getUserId(), founder.getUserId())))).to.equal(false);
+        await MakeAppointment.appoint_founder(founder,store);  
+        let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
+        await MakeAppointment.appoint_manager(founder,store,manager);
+        failIfResolved(() => MakeAppointment.removeAppointment(store.findAppointedBy(manager.getUserId(), founder.getUserId())));
     })
 
-
+    
 
 });

@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import { Store } from '../../../src/DomainLayer/store/Store';
 import { ShoppingBasket } from '../../../src/DomainLayer/user/ShoppingBasket';
 import { isOk } from '../../../src/Result';
+import { failIfResolved } from '../../testUtil';
 import { StoreStub } from './StoreStub';
 
 describe('shopping Basket tests' , function() {
@@ -11,32 +12,32 @@ describe('shopping Basket tests' , function() {
     shoppingBasket.setStore(stabStore);
 
     describe('add to cart' , function() {
-        it('add item to cart' , function(){
+        it('add item to cart' , async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(1,5);
+            await shoppingBasket.addProduct(1,5);
             expect((shoppingBasket.getProducts()).get(1)).to.equal(5);
         })
-        it('add non existent item to cart' , function(){
+        it('add non existent item to cart' , async function(){
             shoppingBasket.clear();
-            expect(isOk(shoppingBasket.addProduct(-1,18))).to.equal(false);
+            await failIfResolved(() => shoppingBasket.addProduct(-1,18))
         })
 
-        it('add non exsistent item to cart', function(){
+        it('add non exsistent item to cart', async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(-1,18)
+            await failIfResolved(()=> shoppingBasket.addProduct(-1,18))
             expect((shoppingBasket.getProducts()).get(-1)).to.equal(undefined)
         })
 
-        it('add item item to cart twice' , function(){
+        it('add item item to cart twice' , async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(1,3);
-            shoppingBasket.addProduct(1,5);
+            await shoppingBasket.addProduct(1,3);
+            await shoppingBasket.addProduct(1,5);
             expect((shoppingBasket.getProducts()).get(1)).to.equal(8);
         })
 
-        it('add negative quantity to cart' , function(){
+        it('add negative quantity to cart' , async function(){
             shoppingBasket.clear();
-            expect(isOk(shoppingBasket.addProduct(5,-3))).to.equal(false);
+            await failIfResolved(() => shoppingBasket.addProduct(5,-3));
         })
         
 
@@ -44,30 +45,30 @@ describe('shopping Basket tests' , function() {
 
     describe('edit cart' ,function () {
         
-        it('decrease quantity of item' , function(){
+        it('decrease quantity of item' , async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(1,3);
-            shoppingBasket.edit(1,2);
+            await shoppingBasket.addProduct(1,3);
+            await shoppingBasket.edit(1,2);
             expect((shoppingBasket.getProducts()).get(1)).to.equal(2);
         });
 
-        it('increase quantity of item' , function(){
+        it('increase quantity of item' , async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(1,3);
-            shoppingBasket.edit(1,5);
+            await shoppingBasket.addProduct(1,3);
+            await shoppingBasket.edit(1,5);
             expect((shoppingBasket.getProducts()).get(1)).to.equal(5);
         });
 
-        it('edit to negative quantity' , function(){
+        it('edit to negative quantity' , async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(1,3);
-            expect(isOk(shoppingBasket.edit(1,-5))).to.equal(false);
+            await shoppingBasket.addProduct(1,3);
+            await failIfResolved(() => shoppingBasket.edit(1,-5));
         });
 
-        it('edit to quantity 0' , function(){
+        it('edit to quantity 0' , async function(){
             shoppingBasket.clear();
-            shoppingBasket.addProduct(1,3);
-            shoppingBasket.edit(1,0);
+            await shoppingBasket.addProduct(1,3);
+            await shoppingBasket.edit(1,0);
             expect((shoppingBasket.getProducts().get(1))).to.equal(undefined);
         });
 

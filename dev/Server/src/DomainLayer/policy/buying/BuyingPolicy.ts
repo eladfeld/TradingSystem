@@ -40,19 +40,21 @@ export default class BuyingPolicy{
         return makeOk(BuyingPolicy.SUCCESS);
     }
 
-    public addPolicy = (predicate: any, policyInWords: string ):Result<string> =>{
+    public addPolicy = (predicate: any, policyInWords: string ):Promise<string> =>{
+        //TODO: #saveDB
         const predRes: Result<iPredicate> = PredicateParser.parse(predicate);
-        if(isFailure(predRes)) return predRes;
+        if(isFailure(predRes)) return Promise.reject(predRes.message);
         this.rules.set(this.nextId, new Rule(this.nextId,predRes.value, policyInWords));
         this.nextId++;
-        return makeOk("successfully added condition to the buying policy");
+        return Promise.resolve("successfully added condition to the buying policy");
     }
 
-    public removePolicy = (id: number):Result<string> =>{
+    public removePolicy = (id: number):Promise<string> =>{
+        //TODO: #saveDB
         const policy = this.rules.get(id);
-        if(policy === undefined)return makeFailure("polcy does not exist");
+        if(policy === undefined)return Promise.reject("polcy does not exist");
         this.rules.delete(id);
-        return makeOk(`Policy #${id}: ${policy.description} has been removed`);
+        return Promise.resolve(`Policy #${id}: ${policy.description} has been removed`);
     }
 
     public getPolicies = ():Rule[] =>{

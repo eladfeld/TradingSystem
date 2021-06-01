@@ -14,29 +14,37 @@ export class Inventory
         this.products = new Map<number, StoreProduct>();
     }
 
-    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0) : Result<number> {
+    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0) : Promise<number> {
         if (quantity < 0){
             Logger.log("Quantity must be non negative")
-            return makeFailure("Quantity must be non negative");
+            return Promise.reject("Quantity must be non negative");
         }
 
         if (price < 0){
             Logger.log("Price must be non negative")
-            return makeFailure("Price must be non negative");
+            return Promise.reject("Price must be non negative");
         }
 
         if(isOk(this.hasProductWithName(productName))){
             Logger.log("Product already exist in inventory!")
-            return makeFailure(`Product already exist in inventory! productName: ${productName}`);
+            return Promise.reject(`Product already exist in inventory! productName: ${productName}`);
         }
-        let product = ProductDB.getProductByName(productName)
-        if(product === undefined){
-            let product = new Product(productName, categories)
-        }
-        let productId = ProductDB.getProductByName(productName).getProductId()
-        let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
-        this.products.set(storeProduct.getProductId(), storeProduct);
-        return makeOk(productId);
+        let productp = ProductDB.getProductByName(productName)
+        return new Promise((resolve,reject) => {
+            productp.then( product => {
+                let productId = product.getProductId()
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                this.products.set(storeProduct.getProductId(), storeProduct);
+                resolve(productId);
+            })
+            .catch( _ => {
+                let product = new Product(productName, categories)
+                let productId = product.getProductId()
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                this.products.set(storeProduct.getProductId(), storeProduct);
+                resolve(productId);
+            })
+        })
     }
 
     public addProductQuantity(productId: number, quantity: number) : Result<string> {
@@ -49,14 +57,16 @@ export class Inventory
         return makeOk("Quantity was added");
     }
 
-    public setProductQuantity(productId: number, quantity: number) : Result<string> {
+    public setProductQuantity(productId: number, quantity: number) : Promise<string> {
         let product = this.products.get(productId);
         if(product === undefined){
             Logger.log("Product does not exist in inventory!")
-            return makeFailure("Product does not exist in inventory!");
+            return Promise.reject("Product does not exist in inventory!");
         }
+
+        //TODO: #saveDB
         product.setQuantity(quantity);
-        return makeOk("Quantity was set");
+        return Promise.resolve("Quantity was set");
     }
 
     public getProductQuantity(productId : number) : number {

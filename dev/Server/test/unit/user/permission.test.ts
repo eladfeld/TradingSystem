@@ -25,8 +25,4 @@ describe('permission tests' , function() {
         expect(permission.checkIfPermited(ACTION.APPOINT_OWNER)).to.equal(false);
     });
 
-
-    
-
-
 });
