@@ -4,16 +4,19 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, uniqueAviName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.3: register test' , function() {
 
     var service : Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function() {
-        //service.clear();
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('guest user register' , function() {

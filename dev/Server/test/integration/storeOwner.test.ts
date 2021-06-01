@@ -5,11 +5,18 @@ import { isFailure, isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { Register } from '../../src/DomainLayer/user/Register';
 import { APIsWillSucceed, failIfRejected, failIfResolved, failTestFromError, uniqueName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 
 describe('Store owner manage store inventory' , () => {
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('Owner adds valid product to inventory', async() => {

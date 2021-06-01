@@ -2,7 +2,7 @@ import {assert, expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { APIsWillSucceed, failTest } from '../testUtil';
+import { APIsWillSucceed, failTest, setReady, waitToRun } from '../testUtil';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { PATH_TO_SYSTEM_MANAGERS, setPathToSystemManagers } from '../../src/config';
@@ -10,9 +10,18 @@ import { PATH_TO_SYSTEM_MANAGERS, setPathToSystemManagers } from '../../src/conf
 
 // 
 describe('1.1 Ensure Proper Initialization' , function() {
-    beforeEach(function () {
-        APIsWillSucceed();
-        Service.uninitialize();
+
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>{
+            APIsWillSucceed();
+            Service.uninitialize();
+        });
+    });
+
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
    
     it('main success scenario - successfully init' ,function() {

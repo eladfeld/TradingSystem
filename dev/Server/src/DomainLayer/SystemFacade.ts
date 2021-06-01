@@ -420,7 +420,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let checkoutp = user.checkoutBasket(shopId, supply_address);
+            let checkoutp = user.checkoutBasket(shopId, shippingInfo);
             return new Promise((resolve,reject) => {
                 checkoutp.then( res => resolve(res) )
                 .catch(error => reject(error))
@@ -442,7 +442,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let checkoutp = user.checkoutSingleProduct(productId  , quantity,  supply_address, storeId , buyingOption.INSTANT);
+            let checkoutp = user.checkoutSingleProduct(productId  , quantity,  shippingInfo, storeId , buyingOption.INSTANT);
             return new Promise((resolve,reject) => {
                 checkoutp.then( msg => resolve(msg))
                 .catch(error => reject(error))
@@ -465,7 +465,7 @@ export class SystemFacade
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
-                let completep = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
+                let completep = store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
                 completep.then( complete => {
                     resolve(complete)
                 })

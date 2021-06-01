@@ -9,16 +9,19 @@ import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('3.2: open store test' , function() {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('open store good' ,async function() {

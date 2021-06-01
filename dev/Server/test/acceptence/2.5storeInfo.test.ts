@@ -4,21 +4,24 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
-import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName, waitToRun } from '../testUtil';
+import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName} from '../testUtil';
 import { enter_login, register_login, open_store } from './common';
-import {uniqueName, isReady, setReady, check} from '../testUtil';
+import {uniqueName, isReady,  check} from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.5: store info test' , function() {
     var service : Service = Service.get_instance();
 
 
     
-    beforeEach(async function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function() {
-
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('store info test good',async function () {

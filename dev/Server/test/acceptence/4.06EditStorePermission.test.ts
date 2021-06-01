@@ -5,16 +5,19 @@ import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueMosheName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('4.6: edit store permission', function () {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('avi opens store and appoints manager with all the permissions', async function () {
         let avi_sessionId = await service.enter();

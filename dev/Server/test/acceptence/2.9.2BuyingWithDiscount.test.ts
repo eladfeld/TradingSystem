@@ -9,16 +9,19 @@ import { tCompositePredicate, tPredicate, tSimplePredicate } from '../../src/Dom
 import { tConditionalDiscount, tUnconditionalDiscount } from '../../src/DomainLayer/discount/Discount';
 import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.9.2 Buying with discount', function () {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     //child should succeed, adult should fail
@@ -40,7 +43,7 @@ describe('2.9.2 Buying with discount', function () {
         await service.addDiscountPolicy(avi_sessionId,storeId,"10% off toys",discount);
         await service.addProductTocart(moshe_sessionId,storeId, legoId,10);
 
-        await service.checkoutBasket(moshe_sessionId, storeId, "8 Mile");
+        await service.checkoutBasket(moshe_sessionId, storeId, SHIPPING_INFO);
         await service.completeOrder(moshe_sessionId,storeId,PAYMENT_INFO,SHIPPING_INFO);
         const mosheHistoryStr = await service.getMyPurchaseHistory(moshe_sessionId);
         const mosheHistory = JSON.parse(mosheHistoryStr);
@@ -78,7 +81,7 @@ describe('2.9.2 Buying with discount', function () {
 
         //moshe should get discount but al shouldnt
         await service.addProductTocart(moshe_sessionId,storeId, legoId,10);
-        await service.checkoutBasket(moshe_sessionId, storeId, "8 Mile");
+        await service.checkoutBasket(moshe_sessionId, storeId, SHIPPING_INFO);
         await service.completeOrder(moshe_sessionId,storeId,PAYMENT_INFO,SHIPPING_INFO);
         const mosheHistoryStr = await service.getMyPurchaseHistory(moshe_sessionId);
         const mosheHistory = JSON.parse(mosheHistoryStr);
@@ -87,7 +90,7 @@ describe('2.9.2 Buying with discount', function () {
         expect(t_moshe.total).to.equal(90);
 
         await service.addProductTocart(al_sessionId,storeId, legoId,5);
-        await service.checkoutBasket(al_sessionId, storeId, "8 Mile");
+        await service.checkoutBasket(al_sessionId, storeId, SHIPPING_INFO);
         await service.completeOrder(al_sessionId,storeId,PAYMENT_INFO,SHIPPING_INFO);
         const alHistoryStr = await service.getMyPurchaseHistory(al_sessionId);
         const alHistory = JSON.parse(alHistoryStr);

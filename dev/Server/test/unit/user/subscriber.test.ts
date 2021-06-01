@@ -4,10 +4,20 @@ import { ManagerAppointment } from '../../../src/DomainLayer/user/ManagerAppoint
 import { OwnerAppointment } from '../../../src/DomainLayer/user/OwnerAppointment';
 import { ACTION, Permission } from '../../../src/DomainLayer/user/Permission';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
-import { HASHED_PASSWORD } from '../../testUtil';
+import { APIsWillSucceed, HASHED_PASSWORD } from '../../testUtil';
 import { StoreStub } from './StoreStub';
+import {setReady, waitToRun} from '../../testUtil';
 
 describe('subscriber tests' , function() {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
     it('add appointment test',function(){
         //this test has no logic just to check that add appointment works
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");

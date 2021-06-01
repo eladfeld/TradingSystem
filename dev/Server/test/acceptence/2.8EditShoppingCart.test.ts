@@ -7,16 +7,19 @@ import { isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
 import { register_login, open_store } from './common';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.8: Shopping Cart view and edit' , function() {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('shopping cart before and after delete' , async function()

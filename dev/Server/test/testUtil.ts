@@ -66,10 +66,15 @@ export const uniqueMegaName = () => {
 var ready: boolean = true;
 export const isReady = () => ready;
 export const setReady = (state: boolean) =>ready = state;
-export const waitToRun = async():Promise<void> =>{
+
+export const waitToRun =(cb:()=>any = ()=>{}):Promise<void> =>{
     // if(ready) return Promise.resolve();
     return new Promise((resolve, reject) =>{
-        if(ready) resolve();
+        if(ready){
+            resolve();
+            cb();
+            ready = false;
+        }
         else{
             setTimeout(async() =>{
                 await waitToRun();
@@ -77,8 +82,14 @@ export const waitToRun = async():Promise<void> =>{
             },10)
         }
     })
-
 }
+
+// before(function () {
+//     process.env.NODE_ENV = 'test';
+//     require('./MyBefore.ts');
+//   });
+
+
 export var check = function(done:Mocha.Done) {
     if (isReady()) done();
     else setTimeout( function(){ check(done) }, 10 );

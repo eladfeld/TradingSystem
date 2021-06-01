@@ -17,16 +17,19 @@ const payInfo : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMo
 const shippingInfo: tShippingInfo = {name:"shir", address:"rager", city:"beer sheva", country:"israel", zip:157};
 import { PAYMENT_INFO, SHIPPING_INFO } from './common';
 import { APIsWillSucceed, uniqueAviName, uniqueMegaName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('3.7: get subscriber history', function () {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('get personal purchase history',async function () {

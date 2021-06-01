@@ -11,16 +11,19 @@ declare interface PromiseConstructor {
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.9: buy products', function () {
     //setTestConfigurations();        //changing external APIs to mocks
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('buy shopping basket', async function () {
         let avi_sessionId = await service.enter()

@@ -5,10 +5,20 @@ import { ShoppingBasket } from '../../../src/DomainLayer/user/ShoppingBasket';
 import { ShoppingCart } from '../../../src/DomainLayer/user/ShoppingCart';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isOk } from '../../../src/Result';
-import { HASHED_PASSWORD } from '../../testUtil';
+import { APIsWillSucceed, HASHED_PASSWORD } from '../../testUtil';
 import { StoreStub } from './StoreStub';
+import {setReady, waitToRun} from '../../testUtil';
 
 describe('view shopping cart' , function() {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
     it("view shopping cart", async function(){
         let subscriber: Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
         let store = new StoreStub(subscriber.getUserId(),"Aluf hasport" , 123456, "Tel Aviv");

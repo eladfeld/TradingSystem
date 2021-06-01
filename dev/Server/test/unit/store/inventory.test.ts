@@ -2,9 +2,19 @@ import { expect, assert } from "chai"
 import { Inventory } from "../../../src/DomainLayer/store/Inventory"
 import { ProductDB } from "../../../src/DomainLayer/store/ProductDB"
 import { isOk } from "../../../src/Result"
-import { failIfRejected } from "../../testUtil"
+import { APIsWillSucceed, failIfRejected } from "../../testUtil"
+import {setReady, waitToRun} from '../../testUtil';
 
 describe('reserve product' , () => {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
 
     it('test reserve product', async() => {
         let inventory = new Inventory()

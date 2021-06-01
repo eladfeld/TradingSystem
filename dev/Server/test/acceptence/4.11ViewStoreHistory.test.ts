@@ -7,6 +7,7 @@ import { add_product, register_login, open_store } from './common';
 import { APIsWillSucceed, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {  PAYMENT_INFO, SHIPPING_INFO } from './common';
 
+import {setReady, waitToRun} from '../testUtil';
 
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
@@ -15,12 +16,14 @@ const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerus
 
 describe('4.11: view store buying history', function () {
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('viwe store history',async function () {
         let avi_sessionId = await service.enter();

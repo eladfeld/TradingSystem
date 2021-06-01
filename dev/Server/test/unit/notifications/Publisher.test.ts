@@ -1,13 +1,26 @@
 import {expect} from 'chai';
 import { Publisher } from '../../../src/DomainLayer/notifications/Publisher';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
-import {failIfAnyRejected, failIfRejected, failTest, HASHED_PASSWORD} from '../../testUtil';
+import {APIsWillSucceed, failIfAnyRejected, failIfRejected, failTest, HASHED_PASSWORD} from '../../testUtil';
+import {setReady, waitToRun} from '../../testUtil';
 
 describe('Publisher tests' , function() 
 {
     var publisher : Publisher = Publisher.get_instance();
     publisher.set_send_func((_userId:number,_message:{}) => Promise.reject());
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>{
+            APIsWillSucceed();
+            publisher.clear();
 
+        });
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
     beforeEach(function () {
         publisher.clear();
     })

@@ -10,16 +10,19 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
 import { fail } from 'assert';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.7: add to cart test' , function() {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
 
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('add to cart good' , async function() {
         const aviName = uniqueAviName();

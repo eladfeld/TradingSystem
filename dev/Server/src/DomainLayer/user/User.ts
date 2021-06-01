@@ -30,29 +30,17 @@ export class User implements iSubject
         return 0;
     }
 
-<<<<<<< HEAD
-    public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Result<boolean>
-=======
-    public checkoutBasket(shopId: number, supply_address: string): Promise<boolean>
->>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03
+    public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Promise<boolean>
     {
         return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, shippingInfo, this);
     }
 
-<<<<<<< HEAD
-    public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Result<string>
-    {
-        let store:Store =  StoreDB.getStoreByID(shopId);
-        return store.sellProduct(this.getUserId() , shippingInfo,productId, quantity, buying_option);
-    }
-    public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
-=======
-    public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Promise<string>
+    public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Promise<string>
     {
         let storep =  StoreDB.getStoreByID(shopId);
         return new Promise ((resolve,reject) => {
             storep.then (store => {
-                let sellp = store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
+                let sellp = store.sellProduct(this.getUserId() , shippingInfo,productId, quantity, buying_option);
                 sellp.then( msg => resolve(msg))
                 .catch( error => reject(error))
             })
@@ -61,7 +49,6 @@ export class User implements iSubject
     }       
     
     public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Promise<ShoppingBasket>
->>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03
     {
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }

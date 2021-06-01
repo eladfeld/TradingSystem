@@ -5,17 +5,21 @@ import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
 import { APIsWillSucceed, uniqueAviName, uniqueMegaName, uniqueMosheName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('4.9: get store staff', function () {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
-    afterEach(function () {
-        //service.clear();
-    });
 
     it('get staff', async function () {
         let moshe_sessionId = await service.enter();

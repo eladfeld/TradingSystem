@@ -10,24 +10,27 @@ import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
 import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
 import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
-<<<<<<< HEAD
 import { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
-import {setTestConfigurations} from '../../src/config';
 
 
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 
-=======
 import { APIsWillSucceed, failIfRejected, HASHED_PASSWORD, uniqueName } from '../testUtil';
->>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03
+import { SHIPPING_INFO } from '../acceptence/common';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('view store products' , () => {
-    setTestConfigurations();
 
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
     // it('view store without products', () => {
@@ -92,31 +95,6 @@ describe('search product in store' , () => {
     describe('buying against policy' , () => {
         it('buying against policy', async() => {
             Service.get_instance()
-<<<<<<< HEAD
-            let manager = Login.login('michael', '1234')
-            if(isOk(manager)){
-                let subsriber = new Subscriber('something', 13)
-                const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
-                store1.addCategoryToRoot('alcohol')
-                const user1Id: number = 100;
-                const user1Adrs: string = "8 Mile Road, Detroit";
-                let res = store1.addNewProduct(manager.value, 'Jack Daniels', ['alcohol'], 80, 20)
-                if (isOk(res)){
-                    const basket1a: ShoppingBasket = new ShoppingBasket (store1);
-                    basket1a.addProduct(res.value, 1);
-                    const policy:tPredicate = {type:"simple",operand1:0,operator:"<",operand2:1};
-                    const policyRes = store1.addBuyingPolicy(subsriber,"no one buys anything", policy);
-                    expect(isOk(policyRes)).to.equal(true);
-                    const buyingSubject = new BuyingSubject(subsriber, basket1a);
-
-                    let sellRes = store1.sellShoppingBasket(user1Id, shippingInfo,basket1a, buyingSubject, ()=>{})
-                    // expect(isFailure(sellRes)).to.equal(true)
-                }
-
-            } else {
-                expect(false).to.equal('buying against policy shouldve failed')
-            }
-=======
             let manager = await Login.login(uniqueName('michael'), '1234')
             let subsriber = new Subscriber(uniqueName('something'),HASHED_PASSWORD, 13)
             const store1: Store = new Store(subsriber.getUserId(),'store1', 12345678,"1 sunny ave");
@@ -129,8 +107,7 @@ describe('search product in store' , () => {
             const policy:tPredicate = {type:"simple",operand1:0,operator:"<",operand2:1};
             const policyRes = await store1.addBuyingPolicy(subsriber,"no one buys anything", policy);
             const buyingSubject = new BuyingSubject(subsriber, basket1a);
-            await store1.sellShoppingBasket(user1Id, user1Adrs,basket1a, buyingSubject, ()=>{})
->>>>>>> dd993e6468e277ff8968b6626d7b99ea3bd07b03
+            await store1.sellShoppingBasket(user1Id, SHIPPING_INFO,basket1a, buyingSubject, ()=>{})
         })
 
     })

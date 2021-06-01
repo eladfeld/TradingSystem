@@ -6,11 +6,21 @@ import { ACTION, Permission } from '../../../src/DomainLayer/user/Permission';
 import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
 import { isOk } from '../../../src/Result';
 import { StoreStub } from './StoreStub';
-import {failIfRejected, failIfResolved, failTest} from '../../testUtil';
+import {APIsWillSucceed, failIfRejected, failIfResolved, failTest} from '../../testUtil';
+import {setReady, waitToRun} from '../../testUtil';
 
 const HASHED_PASSWORD = "7110eda4d09e062aa5e4a390b0a572ac0d2c0220";
 
 describe('AppointmentManager tests' , function() {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
 
     it('appoint founder' , async function() {
         let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);

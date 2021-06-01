@@ -12,17 +12,20 @@ import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfRejected, uniqueAviName, uniqueMegaName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.6: find product', function () {
 
-    var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
-    });
 
+    var service: Service = Service.get_instance();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
     afterEach(function () {
-        //service.clear();
-        //Authentication.clean();
+        //console.log('finish');        
+        setReady(true);
     });
     it('find product by name', async function () {
         const aviName = uniqueAviName();

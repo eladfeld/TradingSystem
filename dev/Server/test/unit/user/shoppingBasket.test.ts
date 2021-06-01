@@ -2,10 +2,20 @@ import {expect} from 'chai';
 import { Store } from '../../../src/DomainLayer/store/Store';
 import { ShoppingBasket } from '../../../src/DomainLayer/user/ShoppingBasket';
 import { isOk } from '../../../src/Result';
-import { failIfResolved } from '../../testUtil';
+import { APIsWillSucceed, failIfResolved } from '../../testUtil';
 import { StoreStub } from './StoreStub';
+import {setReady, waitToRun} from '../../testUtil';
 
 describe('shopping Basket tests' , function() {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
     
     let stabStore : Store = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
     let shoppingBasket : ShoppingBasket = new ShoppingBasket(stabStore);

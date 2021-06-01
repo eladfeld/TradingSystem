@@ -2,11 +2,21 @@ import {expect} from 'chai';
 import { Login } from '../../../src/DomainLayer/user/Login';
 import { Register } from '../../../src/DomainLayer/user/Register';
 import { isOk } from '../../../src/Result';
-import { failIfRejected, failIfResolved, failTest } from '../../testUtil';
+import { APIsWillSucceed, failIfRejected, failIfResolved, failTest } from '../../testUtil';
+import {setReady, waitToRun} from '../../testUtil';
 
 
 
 describe('login test' , function() {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
     
     it('postive log in', async function(){
         try{

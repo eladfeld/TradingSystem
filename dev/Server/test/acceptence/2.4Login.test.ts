@@ -4,18 +4,21 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { APIsWillSucceed, check, setReady, uniqueAviName, uniqueName, waitToRun } from '../testUtil';
+import { APIsWillSucceed, check, uniqueAviName, uniqueName} from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.4: login system test' , function() {
 
     var service : Service = Service.get_instance();
 
-    beforeEach(async function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function() {
-
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('user login' ,async function() {

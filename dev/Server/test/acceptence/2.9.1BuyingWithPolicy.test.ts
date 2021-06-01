@@ -3,19 +3,22 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isFailure, isOk, Result } from '../../src/Result';
 import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
-import { register_login, open_store, register_login_with_age } from './common';
+import { register_login, open_store, register_login_with_age, SHIPPING_INFO } from './common';
 import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAviName, uniqueMegaName, uniqueName } from '../testUtil';
 import { tCompositePredicate, tPredicate, tSimplePredicate } from '../../src/DomainLayer/discount/logic/Predicate';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.9.1 Buying with respect to buying policy', function () {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     //child should succeed, adult should fail
@@ -52,8 +55,8 @@ describe('2.9.1 Buying with respect to buying policy', function () {
         await service.addProductTocart(child_sessionId,storeId, legoId,5);
         await service.addProductTocart(adult_sessionId,storeId, legoId,5);
 
-        await service.checkoutBasket(child_sessionId, storeId, "8 Mile")
-        await failIfResolved(()=>service.checkoutBasket(adult_sessionId, storeId, "8 Mile"))
+        await service.checkoutBasket(child_sessionId, storeId, SHIPPING_INFO)
+        await failIfResolved(()=>service.checkoutBasket(adult_sessionId, storeId, SHIPPING_INFO))
     })
 
     //checkout should be allowed with 1 playstation and then fail when he tries to checkout with 2
@@ -73,10 +76,10 @@ describe('2.9.1 Buying with respect to buying policy', function () {
         }
         await service.addBuyingPolicy(avi_sessionId, storeId, "max 1 playstation per customer",pred );
         await service.addProductTocart(moshe_sessionId,storeId, playstationId, 1);
-        await service.checkoutBasket(moshe_sessionId, storeId, "8 Mile");
+        await service.checkoutBasket(moshe_sessionId, storeId, SHIPPING_INFO);
         // await service.editCart(moshe_sessionId,storeId,playstationId,2);
         await service.addProductTocart(moshe_sessionId,storeId, playstationId, 2);
-        await failIfResolved(() => service.checkoutBasket(moshe_sessionId, storeId, "8 Mile"))
+        await failIfResolved(() => service.checkoutBasket(moshe_sessionId, storeId, SHIPPING_INFO))
     })
 
 });

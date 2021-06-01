@@ -5,10 +5,17 @@ import { ShoppingCart } from '../../src/DomainLayer/user/ShoppingCart';
 import { isOk } from '../../src/Result';
 import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAlufHasportName } from '../testUtil';
 import { StoreStub } from '../unit/user/StoreStub';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('shopping cart tests' , function() {
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
     it("add product to cart", async function(){
         let shoppingCart: ShoppingCart = new ShoppingCart();

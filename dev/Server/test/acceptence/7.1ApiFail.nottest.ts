@@ -15,16 +15,19 @@ const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerus
 
 
 import { APIsWillSucceed, failIfResolved, failTest, uniqueAviName, uniqueMegaName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('7.1: Api Fail', function () {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('supply fail', async function () {
         SupplySystem.willFail();

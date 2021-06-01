@@ -12,14 +12,17 @@ const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMon
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 
+import {setReady, waitToRun} from '../testUtil';
 describe('6.4: System Manager Get Info', function () {
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('system manager get store purchase history',async  function () {
         let avi_sessionId = await service.enter();
@@ -29,8 +32,10 @@ describe('6.4: System Manager Get Info', function () {
         let store =await open_store(service,avi_sessionId, avi, uniqueAlufHasportName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", ['Sweet'], 10, 15);
-        await service.checkoutSingleProduct(sys_manager_sessionId, apple, 5, store.getStoreId(), SHIPPING_INFO);
-        await service.completeOrder(sys_manager_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
+        //await service.checkoutSingleProduct(sys_manager_sessionId, apple, 5, store.getStoreId(), SHIPPING_INFO);
+        await service.addProductTocart(avi_sessionId,store.getStoreId(),apple,5)
+        await service.checkoutBasket(avi_sessionId,store.getStoreId(),SHIPPING_INFO);
+        await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
         await service.getStorePurchaseHistory(sys_manager_sessionId, store.getStoreId())
     })
 
@@ -44,7 +49,9 @@ describe('6.4: System Manager Get Info', function () {
         let store =await open_store(service,avi_sessionId, avi, uniqueAlufHasportName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", ['Sweet'], 10, 15);
-        await service.checkoutSingleProduct(ali_sessionId, apple, 5, store.getStoreId(), SHIPPING_INFO);
+        //await service.checkoutSingleProduct(ali_sessionId, apple, 5, store.getStoreId(), SHIPPING_INFO);
+        await service.addProductTocart(ali_sessionId,store.getStoreId(),apple,5)
+        await service.checkoutBasket(ali_sessionId,store.getStoreId(),SHIPPING_INFO);
         await service.completeOrder(ali_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
         await service.getSubscriberPurchaseHistory(sysm_sessionId, ali.getUserId())
     })

@@ -2,9 +2,19 @@ import { expect } from "chai";
 import { Store } from "../../../src/DomainLayer/store/Store";
 import { Subscriber } from "../../../src/DomainLayer/user/Subscriber";
 import { isFailure, isOk } from "../../../src/Result";
-import { failIfRejected, failIfResolved, failTestFromError } from "../../testUtil";
+import { APIsWillSucceed, failIfRejected, failIfResolved, failTestFromError } from "../../testUtil";
+import {setReady, waitToRun} from '../../testUtil';
 
 describe('category tests' , () => {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
+    
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
+    });
 
     it('add the same category twice', async() => {
         let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')

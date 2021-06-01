@@ -9,15 +9,18 @@ import { SystemFacade } from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { add_product, register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName, uniqueMegaName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('4.1: edit store inventory', function () {
     var service: Service = Service.get_instance();
-    beforeEach(function () {
-        APIsWillSucceed();
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        //service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('edit non existent product ',async function () {

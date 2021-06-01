@@ -30,7 +30,7 @@ class Purchase {
 
     constructor(){
         this.paymentSystem = APIAdapterFactory.getPaymentAdapter();
-        this.supplySystem = SUPPLY_SYSTEM;
+        this.supplySystem = APIAdapterFactory.getSupplyAdapter();
         this.cartCheckoutTimers = new Map();
     }
 
@@ -218,7 +218,10 @@ class Purchase {
     public getUserStoreHistory = (userId: number, storeId: number): Promise<Transaction[]> =>{
         return PurchaseDB.getUserStoreHistory(userId, storeId);
     }
-    public getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
+    public getPaymentTimeoutInMillis = ():number => {
+        console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
+        return PAYMENT_TIMEOUT_MILLISEC;
+    };
 
     public clear()
     {
