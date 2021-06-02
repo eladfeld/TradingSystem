@@ -5,10 +5,14 @@ A system allowing subscribers to buy and sell items. A full overview of the syst
 
 Variable | Type | Explanation
 ---------|--------|-----
-CHECKOUT_TIMEOUT | nmuber | max time between checkout and order completion
-CACHE_SIZE | number | size of the cache in bytes
+TEST_MODE | boolean | The system will use Test configuration values such as a shorter CHECKOUT_TIMEOUT and Test Components for the API adapters
+CHECKOUT_TIMEOUT | number | max time between checkout and order completion
+TEST_CHECKOUT_TIMEOUT | number | the value to be use for CHECKOUT_TIMEOUT during testing
 SHOULD_INIT_STATE | boolean |true if loading an initial state
 INITIAL_STATE | systemState | the initial state of the system if SHOULD_INIT_STATE = true
+PATH_TO_SYSTEM_MANAGERS | string | path to file containing information regarding the system managers
+PAYMENT_SYSTEM_URL | string | payment related requests will be sent to this endpoint
+SUPPLY_SYSTEM_URL | string | supply related requests will be sent to this endpoint
 
 
 # Initializing State

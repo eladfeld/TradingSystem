@@ -19,15 +19,13 @@ export const INITIAL_STATE = state;
 
 
 //API configurations
-export var PAYMENT_SYSTEM:iPaymentAdapter = new PaymentSystemAdapter();
-export var SUPPLY_SYSTEM:iSupplyAdapter = new SupplySystemAdapter();
 export const PAYMENT_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 export const SUPPLY_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 
 //Database configurations
 
 //Test Configurations
-export const TEST_CHECKOUT_TIMEOUT = 20000 //100;//100 ms
+export const TEST_CHECKOUT_TIMEOUT = 2000 //100;//100 ms
 
 //
 

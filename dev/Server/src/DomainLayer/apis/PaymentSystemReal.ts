@@ -2,6 +2,7 @@ import { request } from 'http';
 import axios from 'axios';
 import { tPaymentInfo } from '../purchase/Purchase';
 import { URLSearchParams } from "url"
+import { PAYMENT_SYSTEM_URL } from '../../config';
 
 
 
@@ -14,7 +15,7 @@ class PaymentSystemReal {
         var bodyFormData = new URLSearchParams();
         bodyFormData.append('action_type', 'handshake');
         const response = await axios({method: "post",
-        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        url: PAYMENT_SYSTEM_URL,
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
@@ -43,7 +44,7 @@ class PaymentSystemReal {
         bodyFormData.append('ccv', paymentInfo.cvv.toString())
         bodyFormData.append('id', paymentInfo.id.toString())
         const response = await axios({method: "post",
-        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        url: PAYMENT_SYSTEM_URL,
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
@@ -62,7 +63,7 @@ class PaymentSystemReal {
         bodyFormData.append('action_type', 'cancel_pay');
         bodyFormData.append('transaction_id', paymentId.toString())
         const response = await axios({method: "post",
-        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        url: PAYMENT_SYSTEM_URL,
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });

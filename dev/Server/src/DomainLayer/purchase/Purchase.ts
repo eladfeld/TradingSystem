@@ -1,10 +1,9 @@
-import {PAYMENT_SYSTEM, SUPPLY_SYSTEM, TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../config';
+import {TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../config';
 import Transaction, { TransactionStatus } from './Transaction';
 import { Publisher } from '../notifications/Publisher';
 import APIAdapterFactory from '../apis/APIAdapterFactory';
 import {iPaymentAdapter, iSupplyAdapter} from './iAPI';
 import { PurchaseDB } from '../../DataAccessLayer/DBinit';
-import {Result } from '../../Result';
 
 
 export const stringUtil = {
