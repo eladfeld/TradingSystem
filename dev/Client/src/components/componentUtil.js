@@ -7,7 +7,8 @@ export const initialAppState = {
     stores: [],
     storeInventory: undefined,
     staffToView: undefined,
-    wsConn: undefined
+    wsConn: undefined,
+    isStoreManager: false
 };
 
 export const unknownStatusMessage = (res) =>{

@@ -34,10 +34,10 @@ const btnstyle={margin:'8px 0'}
 
 
 
-export const AppointOwner = ({getAppState, setAppState}) => {
+export const DeleteManager = ({getAppState, setAppState}) => {
 
     const [_storeName, setStoreName] = useState("");
-    const [_ownerUsername, setOwnerUsername] = useState("");
+    const [_managerUsername, setManagerUsername] = useState("");
     const [_isSucsess, setIsSucsess] = useState(false);
     const [_hasProblem, setHasProblem] = useState(false);
     const [problem, setProblem] = useState("");
@@ -48,9 +48,9 @@ export const AppointOwner = ({getAppState, setAppState}) => {
 
     const classes = useStyles();
 
-    const appoint = async (newOwnerUsername) =>
+    const DeleteManager = async (managerToRemove) =>
     {
-        axios.post(`${SERVER_BASE_URL}appointStoreOwner`, {userId, storeId, newOwnerUsername})
+        axios.post(`${SERVER_BASE_URL}deleteManagerFromStore`, {userId, storeId, managerToRemove})
         .then(res => {
           if(res.status == 200){
             setIsSucsess(true);
@@ -66,7 +66,7 @@ export const AppointOwner = ({getAppState, setAppState}) => {
     }
     const clearFields = () =>
     {
-      setOwnerUsername("");
+        setManagerUsername("");
     }
 
   return (
@@ -80,16 +80,16 @@ export const AppointOwner = ({getAppState, setAppState}) => {
           </Button>
         }
       >
-        Owner Added sussfully!
+        manager deleted sussfully!
       </Alert> :
       _hasProblem ?
-      <Alert severity="warning">A problem accured while adding the owner: {problem}!</Alert>
+      <Alert severity="warning">A problem accured while deleting the manager: {problem}!</Alert>
 
 
       :<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
-                    <h2>Add new store owner</h2>
+                    <h2>delete store manager</h2>
                 </Grid>
                   <Grid container spacing={1} alignItems="flex-end">
                     <Grid item>
@@ -97,9 +97,9 @@ export const AppointOwner = ({getAppState, setAppState}) => {
                     </Grid>
                     <Grid item>
                       <TextField
-                          label='Owner username'
-                          placeholder='Enter new owner username'
-                          onChange={(event) => setOwnerUsername(event.target.value)}
+                          label='manager username'
+                          placeholder='Enter username to remove'
+                          onChange={(event) => setManagerUsername(event.target.value)}
                       fullWidth/>
                     </Grid>
                   </Grid>
@@ -107,9 +107,9 @@ export const AppointOwner = ({getAppState, setAppState}) => {
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(_ownerUsername)
+                        DeleteManager(_managerUsername)
                     }}
-                  fullWidth>add owner
+                  fullWidth>remove manager
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
                   onClick={(e) => clearFields()}
@@ -131,4 +131,4 @@ export const AppointOwner = ({getAppState, setAppState}) => {
   );
 }
 
-export default AppointOwner;
+export default DeleteManager;

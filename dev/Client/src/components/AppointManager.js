@@ -59,7 +59,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
           else if(res.status == 201)
           {
             setHasProblem(true);
-            setProblem(res.data.error);
+            setProblem(res.data);
             clearFields();
           }
         })

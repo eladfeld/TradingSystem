@@ -199,7 +199,7 @@ export class Service
         return this.facade.getStorePurchaseHistory(sessionId, storeId);
     }
 
-    public deleteManagerFromStore(sessionId: string, managerToDelete: number, storeId: number): Promise<string>
+    public deleteManagerFromStore(sessionId: string, managerToDelete: string, storeId: number): Promise<string>
     {
         return this.facade.deleteManagerFromStore(sessionId, managerToDelete, storeId);
     }

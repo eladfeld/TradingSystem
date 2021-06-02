@@ -318,9 +318,9 @@ const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction
 const deleteManagerFromStore = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
-    let managerToDelete: number = req.body.managerToDelete;
+    let managerToRemove: string = req.body.managerToRemove;
     let storeId: number = req.body.storeId;
-    service.deleteManagerFromStore(sessionId, managerToDelete, storeId)
+    service.deleteManagerFromStore(sessionId, managerToRemove, storeId)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }

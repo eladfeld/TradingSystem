@@ -26,7 +26,7 @@ import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { rejects } from "assert";
 import { StoreProduct } from "./store/StoreProduct";
-import { StoreDB } from "../DataAccessLayer/DBinit";
+import { StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS } from "../config";
 
 export class SystemFacade
@@ -754,23 +754,27 @@ export class SystemFacade
     }
 
     //++
-    public deleteManagerFromStore(sessionId: string, managerToDelete: number, storeId: number): Promise<string>
+    public deleteManagerFromStore(sessionId: string, managerName: string, storeId: number): Promise<string>
     {
-        Logger.log(`deleteManagerFromStore : sessionId:${sessionId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
+        Logger.log(`deleteManagerFromStore : sessionId:${sessionId},managerToDelete:${managerName}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
+        let managerp = subscriberDB.getSubscriberByUsername(managerName)
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
-            storep.then(store =>
-                {
-                    if(subscriber !== undefined && store !== undefined)
+            managerp.then( managerToDelete => {
+                storep.then(store =>
                     {
-                        let msgp: Promise<string> = store.deleteManager(subscriber, managerToDelete );
-                        msgp.then(msg => resolve(msg))
-                        .catch(error => reject(error))
-                    } 
-                    else reject("wrong parameter given");
-                })
-                .catch(error => reject(error))
+                        if(subscriber !== undefined && store !== undefined)
+                        {
+                            let msgp: Promise<string> = store.deleteManager(subscriber, managerToDelete.getUserId() );
+                            msgp.then(msg => resolve(msg))
+                            .catch(error => reject(error))
+                        } 
+                        else reject("wrong parameter given");
+                    })
+                    .catch(error => reject(error))
+            })
+            .catch( error => reject(error))
         })
     }
 
