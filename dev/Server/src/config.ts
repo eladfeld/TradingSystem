@@ -2,6 +2,7 @@ import SupplySystem from "./DomainLayer/apis/SupplySystem";
 import PaymentSystemAdapter from "./DomainLayer/purchase/PaymentSystemAdapter";
 import SupplySystemAdapter from "./DomainLayer/purchase/SupplySystemAdapter";
 import state from "./ServiceLayer/state/MyInitialState";
+import checkState from "./ServiceLayer/state/CheckState";
 import fakePaymentSystemAdapter from "./DomainLayer/purchase/fakePaymentSystemAdapter";
 import fakeSupplySystemAdapter from "./DomainLayer/purchase/fakeSupplySystemAdapter";
 import { iPaymentAdapter, iSupplyAdapter } from "./DomainLayer/purchase/iAPI";
@@ -15,7 +16,7 @@ export const CACHE_SIZE = -1;           //how much memory we want to cache (in b
 
 //init configurations
 export const SHOULD_INIT_STATE = true;    //initialize state from file?
-export const INITIAL_STATE = state;
+export const INITIAL_STATE = checkState;
 
 
 //API configurations
