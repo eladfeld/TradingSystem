@@ -21,6 +21,7 @@ export class Subscriber extends User
     private appointments: Appointment[];
     private history: SubscriberHistory;
     private pending_messages: string[];
+    private message_history: string[];
 
     public constructor(username: string, hashedPassword : string, age: number ){
         super();
@@ -28,7 +29,8 @@ export class Subscriber extends User
         this.hashPassword = hashedPassword;
         this.age = age;
         this.appointments = [];
-        this.pending_messages=[]
+        this.pending_messages=[];
+        this.message_history = [];
         this.history = new SubscriberHistory(this.userId)
     }
 
@@ -132,9 +134,20 @@ export class Subscriber extends User
         return false;
     }
 
-    public addMessage(message:string) : void
+    public addPendingMessage(message:string) : void
     {
         this.pending_messages.push(message);
+    }
+
+    public addMessageToHistory(message: string) : void
+    {
+        // TODO: #saveDB
+        this.message_history.push(message)
+    }
+
+    getMessageHistory() : string[]
+    {
+        return this.message_history;
     }
 
 
@@ -185,7 +198,7 @@ export class Subscriber extends User
         return this.appointments;
     }
 
-    public getMessages()
+    public getPendingMessages()
     {
         return this.pending_messages;
     }
