@@ -50,7 +50,7 @@ describe('Publisher tests' , function()
         let avi = new Subscriber("avi",HASHED_PASSWORD, 13);
         publisher.register_store(123,avi);
         await failIfAnyRejected(() =>publisher.notify_store_update(123,"hello"))    
-        expect(avi.getMessages().length).to.equal(0);
+        expect(avi.getPendingMessages().length).to.equal(0);
     });
 
     it('fail to send message',function() {
@@ -58,7 +58,7 @@ describe('Publisher tests' , function()
             let avi = new Subscriber("avi",HASHED_PASSWORD, 13);
             publisher.register_store(123,avi);
             publisher.notify_store_update(123,"hello")[0].then( _result => {
-                expect(avi.getMessages().length).to.equal(1)
+                expect(avi.getPendingMessages().length).to.equal(1)
             });        
         }catch(e){
             failTest(`${e}`);
@@ -72,7 +72,7 @@ describe('Publisher tests' , function()
             publisher.notify_store_update(123,"hello")[0].then( _ =>{
                 publisher.notify_store_update(123,"hello")[0].then( _ =>{
                     publisher.notify_store_update(123,"hello")[0].then (_ =>{
-                        expect(avi.getMessages().length).to.equal(3)
+                        expect(avi.getPendingMessages().length).to.equal(3)
                     });
                 });
             });
@@ -85,11 +85,11 @@ describe('Publisher tests' , function()
         try{
             publisher.set_send_func( (_userId:number,_message:{}) => Promise.resolve(""));
             let avi = new Subscriber("avi",HASHED_PASSWORD, 13);
-            avi.addMessage("hello");
-            avi.addMessage("hello");
-            avi.addMessage("hello");
+            avi.addPendingMessage("hello");
+            avi.addPendingMessage("hello");
+            avi.addPendingMessage("hello");
             let promises = publisher.send_pending_messages(avi);
-            Promise.all(promises).then( _=> expect(avi.getMessages().length).to.equal(0))
+            Promise.all(promises).then( _=> expect(avi.getPendingMessages().length).to.equal(0))
         }catch(e){
             failTest(`${e}`);
         }
