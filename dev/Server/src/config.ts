@@ -7,7 +7,7 @@ import fakePaymentSystemAdapter from "./DomainLayer/purchase/fakePaymentSystemAd
 import fakeSupplySystemAdapter from "./DomainLayer/purchase/fakeSupplySystemAdapter";
 import { iPaymentAdapter, iSupplyAdapter } from "./DomainLayer/purchase/iAPI";
 
-export var TEST_MODE = true;
+export var TEST_MODE = false;
 
 
 //program constants
@@ -26,7 +26,7 @@ export const SUPPLY_SYSTEM_URL = 'https://cs-bgu-wsep.herokuapp.com/';
 //Database configurations
 
 //Test Configurations
-export const TEST_CHECKOUT_TIMEOUT = 2000 //100;//100 ms
+export const TEST_CHECKOUT_TIMEOUT = 200000 //100;//100 ms
 
 //
 
