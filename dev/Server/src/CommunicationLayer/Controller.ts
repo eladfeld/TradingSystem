@@ -247,7 +247,7 @@ const editStoreInventory = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
-    service.editStoreInventory(sessionId, productId, quantity, storeId)
+    service.editStoreInventory(sessionId, storeId, productId, quantity)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }

@@ -15,9 +15,6 @@ import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
 
 
-import PaymentIcon from '@material-ui/icons/Payment';
-
-
 const useStyles = makeStyles((theme) => ({
     grow: {
       flexGrow: 1,
@@ -212,7 +209,6 @@ export const Products=({getAppState, setAppState})=>{
 }
 
 export const SearchByName=({getAppState, setAppState, intersect})=>{
-    const [productsByName, setProductsByName] = useState([])
     const [name, setName] = useState('')
     const [products_options , setProductsOptions] = useState(undefined)
     const userId = getAppState().userId;
@@ -227,11 +223,7 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
 
     const searchByName = async (productName) =>
     {
-        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
-        setProductsByName(JSON.parse(res.data)['products'])
-        if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0 ){
-            intersect(getAppState().products, productsByName)
-        }
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
     }
 
     return(
@@ -281,12 +273,7 @@ export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
 
     const searchByCategory = async (category) =>
     {
-        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} )
-        setProductsByCategory(JSON.parse(res.data)['products'])
-        if(productsByCategory !== null || productsByCategory !== undefined ){
-
-            intersect(getAppState().products, productsByCategory)
-        }
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
     }
 
     return(
@@ -397,7 +384,6 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
 
 export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
-    const [productsBelowPrice, setProductsBelowPrice] = useState([])
     const userId = getAppState().userId;
 
     const classes = useStyles();
@@ -408,11 +394,7 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
             alert("not a number")
         }
         else {
-            const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price })
-            setProductsBelowPrice(JSON.parse(res.data)['products'])
-            if(productsBelowPrice !== null && productsBelowPrice !== undefined && productsBelowPrice.length !== 0){
-                intersect(getAppState().products,  productsBelowPrice)
-            }
+            axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price }).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
         }
     }
     return(
@@ -439,7 +421,6 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
 
 export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
-    const [productsAbovePrice, setProductsAbovePrice] = useState([])
     const userId = getAppState().userId;
 
     const classes = useStyles();
@@ -450,11 +431,7 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
             alert("not a number")
         }
         else{
-            const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} )
-            setProductsAbovePrice(JSON.parse(res.data)['products'])
-            if(productsAbovePrice !== null && productsAbovePrice !== undefined && productsAbovePrice.length !== 0){
-                intersect(getAppState().products, productsAbovePrice)
-            }
+            axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
         }
     }
     return(
@@ -482,7 +459,6 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
 
 export const SearchByStore=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
-    const [productsByStore, setProductsByStore] = useState([])
     const [store_options , setStoreOptions] = useState(undefined)
     const userId = getAppState().userId;
 
@@ -497,11 +473,8 @@ export const SearchByStore=({getAppState, setAppState, intersect})=>{
 
     const SearchByStore = async (store) =>
     {
-        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} )
-        setProductsByStore(JSON.parse(res.data)['products'])
-        if(productsByStore !== null && productsByStore !== undefined && productsByStore.length !== 0){
-            intersect(getAppState().products, productsByStore)
-        }
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
+
     }
     return(
         <div>

@@ -197,7 +197,7 @@ export default function ManageStore({getAppState, setAppState}) {
             case "addproduct":
                 return <AddProduct getAppState={getAppState} setAppState={setAppState}></AddProduct>
             default:
-                return <h1>default</h1>
+                return <h1></h1>
         }
     }
 

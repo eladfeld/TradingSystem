@@ -1,14 +1,9 @@
-import {List, ListSubheader, ListItemText, Grid, Button } from '@material-ui/core';
-import PaymentIcon from '@material-ui/icons/Payment';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import {List, Button } from '@material-ui/core';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
-import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import Banner from './Banner';
 import history from '../history';
 import ProgressWheel from './ProgreeWheel';
-import CartItem from './CartItem';
 import StoreIcon from '@material-ui/icons/Store';
 
 const useStyles = makeStyles((theme) => ({
