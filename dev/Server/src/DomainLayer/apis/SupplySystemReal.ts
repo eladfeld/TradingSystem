@@ -1,6 +1,7 @@
 import { request } from 'http';
 import axios from 'axios';
 import { tShippingInfo } from '../purchase/Purchase';
+import { SUPPLY_SYSTEM_URL } from '../../config';
 
 
 
@@ -14,7 +15,7 @@ class SupplySystemReal {
         var bodyFormData = new URLSearchParams();
         bodyFormData.append('action_type', 'handshake');
         const response = await axios({method: "post",
-        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        url: SUPPLY_SYSTEM_URL,
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
@@ -39,7 +40,7 @@ class SupplySystemReal {
         bodyFormData.append('country', shippingInfo.country)
         bodyFormData.append('zip',shippingInfo.zip.toString())
         const response = await axios({method: "post",
-        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        url: SUPPLY_SYSTEM_URL,
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
@@ -59,7 +60,7 @@ class SupplySystemReal {
         bodyFormData.append('action_type', 'cancel_supply');
         bodyFormData.append('transaction_id', transactionId.toString())
         const response = await axios({method: "post",
-        url: `https://cs-bgu-wsep.herokuapp.com/`,
+        url: SUPPLY_SYSTEM_URL,
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });

@@ -344,10 +344,7 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     const enlist = async (strToSearch) => {
         setProductsByKeyword([])
         searchByName(strToSearch)
-        console.log('by name')
-
         searchByCategory(strToSearch)
-        console.log('by cat')
 
         productsByName !== null && productsByName !== undefined && productsByName.length !== 0 ? setProductsByKeyword(productsByCategory) :
         productsByCategory !== null && productsByCategory !== undefined && productsByCategory.length !== 0 ? setProductsByKeyword(productsByName) :

@@ -5,10 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
-import { useParams } from "react-router-dom";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Banner from './Banner';
 import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -20,13 +17,13 @@ import AppointOwner from './AppointOwner'
 import AppointManager from './AppointManager'
 import AddProduct from './AddProduct'
 import ManageCategories from './ManageCategories'
-
 import axios from 'axios';
 import { unknownStatusMessage } from './componentUtil';
 import Employees from './Employees';
 import ManagePolicies from './ManagePolicies';
 import BuyingPolicy from './buying_policy/BuyingPolicy';
 import DiscountPolicy from './discount_policy/DiscountPolicy';
+import DeleteManager from './RemoveManager';
 
 const useStyles = makeStyles({
   root: {
@@ -43,6 +40,7 @@ const getInventory = async(userId, storeId, setAppState) =>
 
 const ADD_BUYING_POLICY = "add_buying_policy";
 const ADD_DISCOUNT_POLICY = "add_discount_policy";
+const DELETE_MANAGER = "delete_manager"
 
 export default function ManageStore({getAppState, setAppState}) {
     const classes = useStyles();
@@ -99,6 +97,10 @@ export default function ManageStore({getAppState, setAppState}) {
     }
     const onAddDiscountClick = () =>{
         setPage(ADD_DISCOUNT_POLICY);
+    }
+
+    const onDeleteManagerClick = () =>{
+        setPage(DELETE_MANAGER)
     }
 
     const renderPage = () =>{
@@ -196,6 +198,8 @@ export default function ManageStore({getAppState, setAppState}) {
                 return <AppointManager getAppState={getAppState} setAppState={setAppState}></AppointManager>
             case "addproduct":
                 return <AddProduct getAppState={getAppState} setAppState={setAppState}></AddProduct>
+            case DELETE_MANAGER:
+                return <DeleteManager getAppState={getAppState} setAppState={setAppState}></DeleteManager>
             default:
                 return <h1></h1>
         }
@@ -227,13 +231,21 @@ export default function ManageStore({getAppState, setAppState}) {
                     </Typography>
                 </MenuItem>
             <MenuItem onClick={onAppointManagerClick} >
-                    <ListItemIcon>
-                        <PersonAddIcon fontSize="small" />
-                    </ListItemIcon>
-                    <Typography variant="inherit" noWrap>
-                        Appoint new manager
-                    </Typography>
-                </MenuItem>
+                <ListItemIcon>
+                    <PersonAddIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                    Appoint new manager
+                </Typography>
+            </MenuItem>
+            <MenuItem onClick={onDeleteManagerClick} >
+            <ListItemIcon>
+                <HighlightOffIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit" noWrap>
+                delete manager from store
+            </Typography>
+            </MenuItem>
             <MenuItem onClick={onAddProductClick}>
             <ListItemIcon>
                 <AddIcon fontSize="small" />

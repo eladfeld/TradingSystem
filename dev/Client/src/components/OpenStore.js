@@ -55,6 +55,7 @@ export const OpenStore = ({getAppState, setAppState}) => {
         axios.post(`${SERVER_BASE_URL}openStore`, {userId, storeName, bankAccountNumber, storeAddress})
         .then(res => {
           if(res.status == 200){
+            setAppState({IsStoreManager : true})
             setIsSucsess(true);
           }
           else if(res.status == 201)

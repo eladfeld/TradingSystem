@@ -3,8 +3,6 @@ import https from 'https';
 import express from 'express';
 import bodyParser from 'body-parser';
 import Config from './config/config';
-import {Logger} from '../Logger'
-import { config } from 'dotenv/types';
 import  Route from './Router'
 import fs  from 'fs';
 import path from 'path';
@@ -54,8 +52,6 @@ router.use((req, res, next) => {
 // create the server
 const httpServer = http.createServer(router);
 
-// httpServer.listen(Config.server.port, () => console.log(`Server is running on ${Config.server.hostname}:${Config.server.port}`));
-
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
     cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
@@ -82,9 +78,7 @@ wss.on("connection", WsConn => {
     
     WsConn.on("message", data => 
     {
-        console.log(data);
         let userId:number = Controller.getSubscriberId(String(data));
-        console.log(userId);
         if(userId > 0)
         {
             wssConnections.set(userId, WsConn);

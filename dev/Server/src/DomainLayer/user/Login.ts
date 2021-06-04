@@ -1,5 +1,4 @@
-import { makeFailure, makeOk, Result } from "../../Result";
-import { Logger } from "../../Logger";
+import { subscriberDB } from "../../DataAccessLayer/DBinit";
 import { Authentication } from "./Authentication";
 import { Subscriber } from "./Subscriber";
 
@@ -7,15 +6,17 @@ import { Subscriber } from "./Subscriber";
 export class Login
 {
 
-    public static login(username: string, password: string) : Result<Subscriber>
+    public static login(username: string, password: string) : Promise<Subscriber>
     {
-        if(Authentication.checkPassword(username, password))
-        {
-            return makeOk(Authentication.getSubscriberByName(username));
-        }
-        else
-        {
-            return makeFailure(`user ${username} couldn't log in with the given password!`);
-        }
+        let pass_check =  Authentication.checkPassword(username, password)
+        return new Promise ((resolve,reject) => {
+            pass_check.then( valid_pass => {
+                if(valid_pass)
+                    resolve(subscriberDB.getSubscriberByUsername(username))
+                else
+                    reject("login : invalid password")
+            })
+            .catch ( error => reject(error))
+        })
     }
 }

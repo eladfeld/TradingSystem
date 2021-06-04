@@ -8,7 +8,6 @@ const ManageSystemCloseStore = ({getAppState, setAppState}) =>{
     if(!stores)return <ProgressWheel/>;
 
     const onCloseStoreClick = async (storeName) =>{
-        console.log(`closed store ${storeName}`);
         // const closeStoreResponse = await axios.post(`${SERVER_BASE_URL}closeStore`, {userId, storeName})
         // switch(closeStoreResponse.status){
         //     case SERVER_RESPONSE_OK:

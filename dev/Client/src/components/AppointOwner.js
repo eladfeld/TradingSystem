@@ -2,12 +2,9 @@ import React, { useState } from 'react'
 import { makeStyles, MuiThemeProvider } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import StoreIcon from '@material-ui/icons/Store';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import HomeIcon from '@material-ui/icons/Home';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
-import Banner from './Banner'
 import axios from 'axios';
 import history from '../history';
 import Alert from '@material-ui/lab/Alert';
@@ -61,7 +58,7 @@ export const AppointOwner = ({getAppState, setAppState}) => {
           else if(res.status == 201)
           {
             setHasProblem(true);
-            setProblem(res.data.error);
+            setProblem(res.data);
             clearFields();
           }
         })

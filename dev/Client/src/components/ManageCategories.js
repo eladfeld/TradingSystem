@@ -74,8 +74,7 @@ export default function ManageCategories({getAppState, setAppState}) {
 
   const addCat = async () =>
   {
-      console.log(main_cat)
-      console.log(sub_cat)
+
       let category = ""
     if(main_cat === undefined || main_cat === null || main_cat === ""){
         category = sub_cat
@@ -122,7 +121,6 @@ export default function ManageCategories({getAppState, setAppState}) {
 
   return (
       <div>
-        <> {console.log(categories)} </>
       <Grid container>
         <Grid item xs={0} md={3}/>
         <Grid item xs={12} md={6}>

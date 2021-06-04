@@ -41,7 +41,6 @@ const Authentication=({getAppState, setAppState})=>{
             if (stores_res.status == SERVER_RESPONSE_OK)
             {
                 const stores = JSON.parse(stores_res.data).stores;
-                console.log(stores)
                 stores.length === 0 ?  setAppState({IsStoreManager : false}) :  setAppState({IsStoreManager : true})
             }
               

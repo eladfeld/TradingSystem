@@ -4,8 +4,10 @@ import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { isOk } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service'
 import { add_product, register_login, open_store } from './common';
-import {setTestConfigurations} from '../../src/config';
+import { APIsWillSucceed, uniqueAviName, uniqueMegaName } from '../testUtil';
+import {  PAYMENT_INFO, SHIPPING_INFO } from './common';
 
+import {setReady, waitToRun} from '../testUtil';
 
 const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
 
@@ -13,28 +15,28 @@ const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerus
 
 
 describe('4.11: view store buying history', function () {
-    setTestConfigurations();        //changing external APIs to mocks
     var service: Service = Service.get_instance();
-    beforeEach(function () {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('viwe store history',async function () {
         let avi_sessionId = await service.enter();
-        let avi =await register_login(service,avi_sessionId, "avi", "123456789");
-        let store = await open_store(service,avi_sessionId, avi, "Mega", 123456, "Tel Aviv");
+        let avi =await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
+        let store = await open_store(service,avi_sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
         
         console.log("----------------------------------------------------------------------------------");
         let banana = await add_product(service,avi_sessionId, avi, store, "banana", [], 1, 50);
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", [], 1, 10);
-        service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
-        service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
-        service.checkoutBasket(avi_sessionId, store.getStoreId(), shippingInfo);
-        service.completeOrder(avi_sessionId, store.getStoreId(), payInfo, shippingInfo);
-        service.getStorePurchaseHistory(avi_sessionId, store.getStoreId())
-        .then(_ => assert.ok(""))
-        .catch(_ => assert.fail())
+        await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
+        await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
+        await service.checkoutBasket(avi_sessionId, store.getStoreId(), SHIPPING_INFO);
+        await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO);
+        await service.getStorePurchaseHistory(avi_sessionId, store.getStoreId())
     })
 });

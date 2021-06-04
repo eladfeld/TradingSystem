@@ -18,9 +18,7 @@ const SystemTransactions = ({userId}) => {
             case SERVER_RESPONSE_OK:
               var t = response.data;
               if(typeof t === 'string'){
-                console.log('[t] was:',{t:t});
                 t = JSON.parse(t);
-                console.log('[t] is:',{t:t});
               }
               setTransaction(undefined);
               setTransactions(t);
@@ -37,7 +35,6 @@ const SystemTransactions = ({userId}) => {
     //search props
     const onSearchUserClick = async(text) =>{
         const response = await axios.post(SERVER_BASE_URL+'getSubscriberPurchaseHistory',{userId, subscriberToSeeId:Number(text)});
-        console.log('[t] user transactions data:', response.data)
         onSearchClick(response);
     }
     const onSearchStoreClick= async(text) =>{

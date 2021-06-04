@@ -23,7 +23,8 @@ export class Publisher
         if (Publisher.singleton === undefined)
         {
             Publisher.singleton = new Publisher();
-            Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
+            //Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
+            Publisher.singleton.send_message_func= (userId : number, message:{}) => {return Promise.resolve('just testing')};
         }
         return Publisher.singleton;
     }
@@ -61,10 +62,13 @@ export class Publisher
         return new Promise( (resolve,reject) => {
             let promise = this.send_message_func(subscriber.getUserId() , message);
 
-            // if fail message failed add message to subscriber queue
-            promise.catch( reason => {  
+            // if fail message failed add message to subscriber pending messages queue
+            promise.then( _ => {
+                subscriber.addMessageToHistory(message)
+            }).
+            catch( reason => {  
                 Logger.log(`publisher: can't send message, ${subscriber.getUsername()} is not logged in`);
-                subscriber.addMessage(message);
+                subscriber.addPendingMessage(message);
                 resolve();
                 return;
             })

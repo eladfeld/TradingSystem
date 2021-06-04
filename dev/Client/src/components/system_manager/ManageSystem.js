@@ -127,7 +127,6 @@ export default function ManageSystem({getAppState, setAppState}) {
                             case SERVER_RESPONSE_OK:
                                 var allComplaints = complaintsResponse.data;// JSON.parse(complaintsResponse.data);
                                 allComplaints = allComplaints.map(chat => chat[0]);//
-                                console.log('[t] all complaints', allComplaints);
                                 setAppState({complaints:allComplaints})
                                 setComplaints(RECEIVED);
                                 break;

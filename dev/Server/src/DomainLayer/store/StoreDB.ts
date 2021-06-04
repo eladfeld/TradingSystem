@@ -1,34 +1,41 @@
-import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { Store } from "./Store";
 import { StoreProductInfo } from "./StoreInfo";
+import { iStoreDB } from "../../DataAccessLayer/interfaces/iStoreDB";
 
-export class StoreDB
+export class StoreDummyDB implements iStoreDB
 {
 
-    private static stores: Store[]  = [];
+    private  stores: Store[]  = [];
 
-    public static addStore(store: Store): void
+    public  addStore(store: Store): void
     {
         this.stores.push(store);
     }
 
-    public static getStoreByID(storeId: number): Store
+    public  getStoreByID(storeId: number): Promise<Store>
     {
-        return this.stores.find(store => store.getStoreId() == storeId);
+        let store: Store =  this.stores.find(store => store.getStoreId() == storeId);
+        if (store)
+            return Promise.resolve(store)
+        return Promise.reject("store doesnt exist")
     }
 
-    public static deleteStore(storeId: number): void
+    public  deleteStore(storeId: number): void
     {
         this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
     }
 
-    public static getStoreByName(storeName: string): Store
+    public  getStoreByName(storeName: string): Promise<Store>
     {
-        return this.stores.find(store => store.getStoreName() == storeName);
+        //TODO: ask real data base
+        let store = this.stores.find(store => store.getStoreName() == storeName);
+        if (store)
+            return Promise.resolve(store)
+        return Promise.reject("store doesnt exist")
     }
 
-    public static getPruductInfoByName(productName: string): Result<string>{
+    public  getPruductInfoByName(productName: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -45,10 +52,10 @@ export class StoreDB
             }
         })
         Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getPruductInfoByCategory(category: string): Result<string>{
+    public  getPruductInfoByCategory(category: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -64,10 +71,10 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getProductInfoAbovePrice(price: number): Result<string>{
+    public  getProductInfoAbovePrice(price: number): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -83,10 +90,10 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getProductInfoBelowPrice(price: number): Result<string>{
+    public  getProductInfoBelowPrice(price: number): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -102,10 +109,10 @@ export class StoreDB
                                         })
             }
         })
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
 
-    public static getPruductInfoByStore(storeName: string): Result<string>{
+    public  getPruductInfoByStore(storeName: string): Promise<string>{
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
@@ -124,13 +131,14 @@ export class StoreDB
 
         Logger.log(`Getting products by store answer: ${JSON.stringify(products)}`)
 
-        return makeOk(JSON.stringify(products))
+        return Promise.resolve(JSON.stringify(products))
     }
     //------------------------------------------functions for tests-------------------------
 
-    public static clear()
+    public  clear()
     {
         this.stores = [];
     }
 
 }
+

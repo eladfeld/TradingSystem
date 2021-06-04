@@ -20,9 +20,7 @@ describe('rate product' , () => {
 })
 
 describe('set quantity' , () => {
-
     it('test set quantity', () => {
-
         let storeProduct = new StoreProduct(1, 'somthing', 30, 3, 30, ['Electric'])
         storeProduct.setQuantity(5)
         expect(storeProduct.getQuantity()).to.equal(5)

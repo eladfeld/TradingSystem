@@ -8,7 +8,6 @@ const ManageSubscribers = ({getAppState, subscriberNames, setSubscriberNames}) =
     if(!subscriberNames)return <ProgressWheel/>;
 
     const onRemoveSubscriberClick = async(subscriberName) =>{
-        console.log(`banned user ${subscriberName}`);
         // const banUserResponse = await axios.get(`${SERVER_BASE_URL}banUser`, {userId, subscriberName})
         // switch(banUserResponse.status){
         //     case SERVER_RESPONSE_OK:

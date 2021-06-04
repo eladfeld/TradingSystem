@@ -54,7 +54,7 @@ export default class StateInitializer{
             await this.openStores(service);
             await this.performTransactions(service);
             await this.fillCarts(service);
-            //await this.logoutUsers(service);
+            await this.logoutUsers(service);
             return true;
             
         } catch (error) {
@@ -114,6 +114,7 @@ export default class StateInitializer{
             const owners = storeState.employees.owners;
             for(var i=0; i<owners.length; i++){
                 const ownerState = owners[i];
+                this.sessions.get(ownerState.appointer),storeId,ownerState.name;
                 await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
             }
 
@@ -127,7 +128,7 @@ export default class StateInitializer{
             }
 
             //add buying policy
-            //convert fields
+            // convert fields
             storeState.buying_policies.forEach(policyState =>{
                 this.convertPredicate(storeName, policyState.rule);
             });
@@ -137,7 +138,8 @@ export default class StateInitializer{
             }
 
             //add discounts
-            //TODO: Implement
+
+
             storeState.discounts.forEach(discount => {
                 this.convertDiscount(storeName, discount.discount);
             })
@@ -145,6 +147,7 @@ export default class StateInitializer{
                 const discount = storeState.discounts[dIdx];
                 await service.addDiscountPolicy(founderSessionId, storeId,discount.name, discount.discount); 
             }
+
 
         }
 }

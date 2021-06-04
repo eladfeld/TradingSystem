@@ -9,7 +9,7 @@ export class StoreHistory
         this.storeId = storeId;
     }
 
-    public getPurchaseHistory() : Transaction[]{
+    public getPurchaseHistory() : Promise<Transaction[]>{
         return Purchase.getCompletedTransactionsForStore(this.storeId);
     }
 }

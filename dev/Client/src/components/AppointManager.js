@@ -50,7 +50,6 @@ export const AppointManager = ({getAppState, setAppState}) => {
 
     const appoint = async (newManagerUsername) =>
     {
-        console.log(newManagerUsername)
         axios.post(`${SERVER_BASE_URL}appointStoreManager`, {userId, storeId, newManagerUsername})
         .then(res => {
           if(res.status == 200){
@@ -59,7 +58,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
           else if(res.status == 201)
           {
             setHasProblem(true);
-            setProblem(res.data.error);
+            setProblem(res.data);
             clearFields();
           }
         })

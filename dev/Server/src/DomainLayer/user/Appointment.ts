@@ -24,10 +24,10 @@ export abstract class Appointment {
         this.permission = permission;
     }
 
-    editPermissions(permissionMask: number): Result<string> 
+    editPermissions(permissionMask: number): Promise<string> 
     {
         this.permission.setPermissions(permissionMask);
-        return makeOk("permission changed successfully");
+        return Promise.resolve("permission changed successfully");
     }
 
     public getStore(): Store {
