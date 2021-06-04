@@ -11,31 +11,37 @@ const CartItem = ({getAppState, setAppState, basket, product}) =>{
     const {userId, cart} = getAppState();
     const [quantity, setQuantity] = useState(product.quantity);
 
-    const onUpdateQuantityClick = async () =>{
-        if(!isNonNegativeInteger(quantity)){
+    const onUpdateQuantity = async (_quantity) =>{
+        if(!isNonNegativeInteger(_quantity)){
             setQuantity(product.quantity);
             alert('quantity must be a non-negative number');
             return;
         }
-        const response = await axios.post(SERVER_BASE_URL+'editCart',{
+        axios.post(SERVER_BASE_URL+'editCart',{
             userId,
             storeId: basket.storeId,
             productId: product.productId,
-            quantity: Number(quantity)
-        });
-        switch(response.status){
-            case SERVER_RESPONSE_OK:
-                cart.baskets.find(b => b.storeId === basket.storeId).products.find(p => p.productId === product.productId).quantity = quantity;
-                setAppState({cart});
-                return;
-            case SERVER_RESPONSE_BAD:
-                alert(response.data);
-                setQuantity(product.quantity);
-                return;
-            default:
-                alert(`unknown response code ${response.status}`);
-                return;
-        }    
+            quantity: Number(_quantity)
+        })
+        .then(response =>
+        {
+            switch(response.status){
+                case SERVER_RESPONSE_OK:
+                    cart.baskets.find(b => b.storeId === basket.storeId).products.find(p => p.productId === product.productId).quantity = _quantity;
+                    setAppState({cart});
+                    product.quantity = _quantity
+                    setQuantity(product.quantity);
+                    return;
+                case SERVER_RESPONSE_BAD:
+                    alert(response.data);
+                    setQuantity(product.quantity);
+                    return;
+                default:
+                    alert(`unknown response code ${response.status}`);
+                    return;
+            }  
+        }).catch(e => alert(e))
+  
     }
 
     return (
@@ -50,16 +56,12 @@ const CartItem = ({getAppState, setAppState, basket, product}) =>{
                 type="number"
                 id="outlined-size-small"
                 // defaultValue={quantity}
-                onChange = {(e) => setQuantity(e.target.value)}
+                onChange = {(e) => onUpdateQuantity(e.target.value)}
                 variant="outlined"
                 size="small"
                 color="secondary"
                 value = {quantity}
             />
-            <Button variant="contained" color="primary" startIcon={<DeleteIcon/>} 
-                    onClick={onUpdateQuantityClick}>
-                Update
-            </Button>
             </Grid>
         </Grid>
     </ListItem>

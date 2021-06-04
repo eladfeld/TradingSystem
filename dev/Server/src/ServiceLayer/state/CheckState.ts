@@ -21,7 +21,7 @@ const state:systemState = {
         }
     ],
     subscribers:[
-        sb.subscriber("u2"),
+        sb.subscriber("u2", "123", false, [sb.basket("s1", [sb.item("Bamba", 1)])] ),
         sb.subscriber("u3")
     ],
     history:[]

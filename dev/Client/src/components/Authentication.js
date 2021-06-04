@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Grid,Paper, TextField, Button, Typography, Link } from '@material-ui/core'
 import axios from 'axios';
 import history from '../history';
-import {SERVER_BASE_URL , SERVER_RESPONSE_OK} from '../constants'
+import {SERVER_BASE_URL , SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD} from '../constants'
 
 
 const onRegisterClick = async () =>
@@ -33,7 +33,11 @@ const Authentication=({getAppState, setAppState})=>{
                 setAppState({wsConn: ws})
             })
 
-            ws.addEventListener("message", e => alert(e.data))
+            ws.addEventListener("message", e => 
+            {
+                getAppState().notifications.push(e.data)
+                setAppState({notifications: getAppState().notifications})
+            })
             setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});
 
 
@@ -43,6 +47,22 @@ const Authentication=({getAppState, setAppState})=>{
                 const stores = JSON.parse(stores_res.data).stores;
                 stores.length === 0 ?  setAppState({IsStoreManager : false}) :  setAppState({IsStoreManager : true})
             }
+
+            axios.post(SERVER_BASE_URL+'/getCartInfo',{userId}).then(response =>
+                {
+                    switch(response.status){
+                        case SERVER_RESPONSE_OK:
+                            const cart = JSON.parse(response.data);
+                            setAppState({cart});
+                            break;
+                        case SERVER_RESPONSE_BAD:
+                            alert(response.data.message);
+                            break;
+                        default:
+                            alert(`unexpected response code: ${response.status}`);
+                            break;
+                    }
+                } )
               
               
             history.push('/welcome');

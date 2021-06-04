@@ -71,7 +71,6 @@ wss.on("connection", WsConn => {
             if (value == WsConn)
             {
                 wssConnections.delete(key)
-                console.log("deleted connection");
             }
         })
     })
@@ -92,17 +91,13 @@ const wssConnections: Map<number, WebSocket> = new Map();
 
 const messageSender = async (userId: number, message: string):Promise<string> =>
 {
-    // console.log("message sent :)");
     let ws = wssConnections.get(userId);
     if(ws !== undefined)
     {
         ws.send(message);
-        return new Promise((res, rej) => {
-            res( "fine")
-        })
+        return Promise.resolve("fine")
     }
-    // console.log("mesage didnt sent!");
-    return new Promise((res, rej ) =>rej("user not logged in"));
+    return Promise.reject("user not logged in");
 }
 
 Publisher.get_instance().set_send_func(messageSender)

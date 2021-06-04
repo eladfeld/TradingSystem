@@ -4,12 +4,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -19,8 +16,6 @@ import {Search} from './Search'
 import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
-import { Link } from 'react-router-dom';
-import * as AiIcons from 'react-icons/ai';
 import { initialAppState } from './componentUtil';
 
 const BASE_URL = SERVER_BASE_URL;
@@ -100,18 +95,41 @@ const useStyles = makeStyles((theme) => ({
 export default function Banner({getAppState, setAppState}) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notiEl, setNotiEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [sidebar, setSidebar] = useState(false);
   const showSidebar = () => setSidebar(!sidebar);
   const isMenuOpen = Boolean(anchorEl);
+  const isNotiOpen = Boolean(notiEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const {IsStoreManager} = getAppState();
+  const {IsStoreManager, notifications, cart} = getAppState();
+
+
+  const getTotalProducts = () =>
+  {
+    if(cart === undefined) {
+      return 0;
+    }
+    var total = 0;
+    cart.baskets.forEach(basket => total += basket.products.length);
+    return total;
+  }
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
+  };
+
+  const handleNotificationsOpen = (event) => {
+    setNotiEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setAppState({notifications:[]})
+    setNotiEl(null);
   };
 
   const handleMenuClose = () => {
@@ -235,6 +253,24 @@ export default function Banner({getAppState, setAppState}) {
     </Menu>
   );
 
+  const notiMenuId = 'notifications menu';
+
+  const renderNotifications = (
+    <Menu
+      anchorEl={notiEl}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      id={notiMenuId}
+      keepMounted
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={isNotiOpen}
+      onClose={handleNotificationsClose}
+    >
+      {notifications.map(noti =>
+        <MenuItem>{noti}</MenuItem>
+      )}
+    </Menu>
+  );
+
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -256,7 +292,7 @@ export default function Banner({getAppState, setAppState}) {
       </MenuItem>
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={0} color="secondary">
+          <Badge badgeContent={notifications.length} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -280,14 +316,6 @@ export default function Banner({getAppState, setAppState}) {
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
              {getAppState().username}
           </Typography>
@@ -296,7 +324,7 @@ export default function Banner({getAppState, setAppState}) {
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="view shopping cart" color="inherit" onClick={handleCartClick}>
-              <Badge badgeContent={0} color="secondary">
+              <Badge badgeContent={getTotalProducts()} color="secondary">
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
@@ -305,8 +333,15 @@ export default function Banner({getAppState, setAppState}) {
                 <MailIcon />
               </Badge>
             </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={0} color="secondary">
+            <IconButton 
+            aria-label="show 17 new notifications" 
+            color="inherit"
+            aria-controls={notiMenuId}
+            aria-haspopup="true"
+            onClick={handleNotificationsOpen}
+
+            >
+              <Badge badgeContent={notifications.length} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -336,6 +371,7 @@ export default function Banner({getAppState, setAppState}) {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      {renderNotifications}
     </div>
   );
 }

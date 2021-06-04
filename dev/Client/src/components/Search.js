@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import axios from 'axios';
-import {SERVER_BASE_URL} from '../constants'
 import { fade, makeStyles } from '@material-ui/core/styles';
 import Banner from './Banner';
 import {List, ListItemText, ListItem, Grid, Button, TextField, Paper } from '@material-ui/core';
@@ -13,6 +12,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
+import {SERVER_BASE_URL , SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD} from '../constants'
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -162,6 +163,23 @@ export const Products=({getAppState, setAppState})=>{
         const res = await axios.post(`${SERVER_BASE_URL}addProductTocart`, {userId, storeId, productId, quantity:1} )
         if(res.status === 200)
         {
+            //TODO: turn alerts into the nice material-ui ones!!!
+            
+            axios.post(SERVER_BASE_URL+'/getCartInfo',{userId}).then(response =>
+                {
+                    switch(response.status){
+                        case SERVER_RESPONSE_OK:
+                            const cart = JSON.parse(response.data);
+                            setAppState({cart});
+                            break;
+                        case SERVER_RESPONSE_BAD:
+                            alert(response.data.message);
+                            break;
+                        default:
+                            alert(`unexpected response code: ${response.status}`);
+                            break;
+                    }
+                } )
             alert("product added successfully")
         }
         else
@@ -170,13 +188,23 @@ export const Products=({getAppState, setAppState})=>{
         }
     }
     return(
-        <div>
-        <Grid item align='right'>
-            <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
-                    onClick={reset}>
-                clear
-            </Button>
-        </Grid>
+        <div> 
+            {
+                (products === undefined || products.length === 0 ) ? <h1></h1> :             
+                <Grid item align='right'>
+                    <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
+                        onClick={reset}>
+                        clear
+                    </Button>
+                </Grid>
+            }      
+            {/* <Grid item align='right'>
+                <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
+                        onClick={reset}>
+                    clear
+                </Button>
+            </Grid> */}
+
         <List className={classes.search} subheader={<li />} align='right' style={paperStyle}>
             {
             products === null || products === undefined ? <h1></h1> :
@@ -184,14 +212,19 @@ export const Products=({getAppState, setAppState})=>{
                 <li key={`${product.productName}`} className={classes.listSection}>
                 <ul className={classes.ul}>
                     <ListItem key={`item-${product.productName}`} align='center'>
-                        <Grid container align='right' style={paperStyle}>
-                            <Grid item xs={9} md={6} align='center'>
+                        <Grid container  align='right' style={paperStyle}>
+                            <Grid item align='left' xs={5} >
+                                <img length='100' height='100' src={"https://osemcat.signature-it.com/images/Fittings/osem-hq/Upload_Pictures/Prod_Pic/6901353/Catalog/6901353_7290000068787_L_1_Enlarge.jpg"}>
+                                    
+                                </img>
+                            </Grid>
+                            <Grid item xs={4} align='center'>
                                 <ListItemText primary={`name: ${product.productName}`} />
                                 <ListItemText primary={`price: ${product.price}$`} />
                                 <ListItemText primary={`store: ${product.storeName}`} />
                             </Grid>
-                            <Grid item xs={3} md={2} align='right'>
-                                <Button variant="contained" color="inherit" startIcon={<AddIcon/>}
+                            <Grid item xs={3} align='right'>
+                                <Button variant="contained" color="primary" startIcon={<AddIcon/>}
                                         onClick={() => addToCart(product.storeId, product.productId)}>
                                     add to cart
                                 </Button>
