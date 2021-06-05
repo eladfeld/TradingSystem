@@ -1,34 +1,29 @@
 import { Logger } from "../Logger";
 import { Store } from "./store/Store";
-import { Appointment } from "./user/Appointment";
 import { Login } from "./user/Login";
 import { Register } from "./user/Register";
 import { Subscriber } from "./user/Subscriber";
 import { PaymentMeans, SupplyInfo, User } from "./user/User";
-// import { isFailure,isOk, makeFailure, makeOk, Result } from "../Result";
 import fs from 'fs';
 import path, { resolve } from 'path'
 import { buyingOption } from "./store/BuyingOption";
 import { Authentication } from "./user/Authentication";
 import Purchase, { tPaymentInfo, tShippingInfo } from "./purchase/Purchase";
-import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
-import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
 import { Publisher } from "./notifications/Publisher";
 import { createHash } from 'crypto';
-import { SpellChecker } from "./apis/spellchecker";
 import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
-import { rejects } from "assert";
-import { StoreProduct } from "./store/StoreProduct";
 import { StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS } from "../config";
-
+import { ProductDB } from "../DataAccessLayer/DBinit";
+import * as connector from "../DataAccessLayer/connectDb"
+import { Sequelize } from "sequelize/types";
 export class SystemFacade
 {
 
@@ -43,11 +38,18 @@ export class SystemFacade
         return facade;
     }
 
+    private static instance: SystemFacade;
     public constructor()
     {
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
+        //User.initLastId();
+        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers() ))
+        {
+            Logger.error("system could not initialized properly!");
+            throw new Error("failed to init trading system. check api connections and system managers");
+        }
     }
 
     public async init(){
@@ -56,6 +58,15 @@ export class SystemFacade
             Logger.error("system could not initialized properly!");
             throw new Error("failed to init trading system. check api connections and system managers");
         }
+    }
+
+    public static async get_instance(): Promise<SystemFacade>{
+        if(this.instance == undefined){
+            await connector.initTables()
+            this.instance = new SystemFacade();
+            return this.instance;
+        }
+        return this.instance;
     }
 
     private async initSupplySystem() : Promise<boolean>
@@ -233,8 +244,11 @@ export class SystemFacade
 
                 this.logged_guest_users.set(sessionId,subscriber)
                 this.logged_subscribers.set(sessionId,subscriber);
-                if(subscriber.isSystemManager())
+                let ismanagerp = subscriber.isSystemManager()
+                ismanagerp.then (issysmanager => {
+                    if(issysmanager)
                     this.logged_system_managers.set(sessionId,subscriber);
+                })
                 resolve(subscriber);
             })
             .catch( error => {
@@ -467,7 +481,11 @@ export class SystemFacade
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
                 completep.then( complete => {
-                    resolve(complete)
+                    let deletep = user.deleteShoppingBasket(storeId)
+                    deletep.then ( _ => {
+                        resolve(complete)
+                    })
+                    .catch( error => reject(error))
                 })
                 .catch( error => reject(error))
             })
@@ -551,7 +569,7 @@ export class SystemFacade
 
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if (subscriber === undefined)
-            return Promise.reject("subscriber or store wasn't found")
+            return Promise.reject("subscriber wasn't found")
 
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
@@ -707,8 +725,8 @@ export class SystemFacade
                     issystemManagerp.then( ismanager => {
                         if (ismanager){
                             let historyp = watchee.getPurchaseHistory()
-                            historyp.then( history => { resolve(history) })
-                            .catch ( error => reject(error))
+                            historyp.then( history => { resolve(history) 
+                            }).catch ( error => reject(error))
                         }
                         else reject("user doesnt have permissions")
                     })
@@ -930,7 +948,7 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        // StoreDB.clear();
+        StoreDB.clear();
         ProductDB.clear();
         Purchase.clear();
     }

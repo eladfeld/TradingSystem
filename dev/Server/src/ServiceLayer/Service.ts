@@ -11,8 +11,6 @@ import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 
 export class Service
 {
-
-
     private static singletone: Service = undefined;
     private facade: SystemFacade;
 
@@ -34,11 +32,18 @@ export class Service
         return ['asd', 'bdsa', 'casd', 'ddsa'];
     }
 
-    public static get_instance() : Service
+    public static async get_instance() : Promise<Service>
     {
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
+            Service.singletone.facade = await SystemFacade.get_instance();
+            if(SHOULD_INIT_STATE){
+                setTimeout(async() =>{
+                    const res = await new StateInitializer().initState();
+                    console.log(`init state was successful: ${res}`)
+                }, 0);
+            }
         }
         return Service.singletone;
     }
@@ -62,9 +67,8 @@ export class Service
         return this.facade.closeStore(sessionId,storeName);
     }
 
-
     //returns a session id string
-    public async enter(): Promise<string>
+    public enter(): Promise<string>
     {
         return this.facade.enter();
     }
@@ -79,12 +83,12 @@ export class Service
         return this.facade.logout(sessionId)
     }
 
-    public async register(username: string, password: string, age: number): Promise<string>
+    public register(username: string, password: string, age: number): Promise<string>
     {
         return this.facade.register(username, password, age);
     }
 
-    public async login(sessionId: string, username: string, password: string): Promise<Subscriber>
+    public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         return this.facade.login(sessionId, username, password);
     }

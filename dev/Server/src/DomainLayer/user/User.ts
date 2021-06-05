@@ -1,10 +1,7 @@
-import { rejects } from 'assert';
-import { StoreDB } from '../../DataAccessLayer/DBinit';
-import { isOk, makeFailure, makeOk, Result } from '../../Result';
+import { StoreDB, subscriberDB } from '../../DataAccessLayer/DBinit';
 import iSubject from '../discount/logic/iSubject';
 import { tShippingInfo } from '../purchase/Purchase';
 import { buyingOption } from '../store/BuyingOption';
-import { Store } from '../store/Store';
 import { ShoppingBasket } from './ShoppingBasket';
 import { ShoppingCart} from './ShoppingCart'
 import { Subscriber } from './Subscriber';
@@ -25,14 +22,28 @@ export class User implements iSubject
         this.userId = User.lastId++;
     }
 
-    private static getLastId() : number
+    static getLastId() 
     {
         return 0;
+    }
+
+
+    public static async initLastId()
+    {
+        let id = await subscriberDB.getLastId()
+        User.lastId =  0;
     }
 
     public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Promise<boolean>
     {
         return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, shippingInfo, this);
+    }
+
+    public deleteShoppingBasket(storeId : number) : Promise<void>
+    {
+        // this is user so no need to delete from DB
+        this.shoppingCart.deleteShoppingBasket(storeId)
+        return Promise.resolve()
     }
 
     public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Promise<string>
@@ -92,4 +103,5 @@ export class User implements iSubject
     }
 
 }
+
 

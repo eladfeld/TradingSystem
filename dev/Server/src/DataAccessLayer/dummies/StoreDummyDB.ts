@@ -1,16 +1,18 @@
+import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Store } from "./Store";
-import { StoreProductInfo } from "./StoreInfo";
-import { iStoreDB } from "../../DataAccessLayer/interfaces/iStoreDB";
+import { Store } from "../../DomainLayer/store/Store";
+import { StoreProductInfo } from "../../DomainLayer/store/StoreInfo";
+import { iStoreDB } from "../interfaces/iStoreDB";
 
 export class StoreDummyDB implements iStoreDB
 {
 
     private  stores: Store[]  = [];
 
-    public  addStore(store: Store): void
+    public addStore(store: Store): Promise<void>
     {
         this.stores.push(store);
+        return Promise.resolve()
     }
 
     public  getStoreByID(storeId: number): Promise<Store>
@@ -21,9 +23,10 @@ export class StoreDummyDB implements iStoreDB
         return Promise.reject("store doesnt exist")
     }
 
-    public  deleteStore(storeId: number): void
+    public  deleteStore(storeId: number): Promise<void>
     {
         this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
+        return Promise.resolve()
     }
 
     public  getStoreByName(storeName: string): Promise<Store>
@@ -36,13 +39,11 @@ export class StoreDummyDB implements iStoreDB
     }
 
     public  getPruductInfoByName(productName: string): Promise<string>{
-        console.log("---------------------------------")
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByName(productName);
             for(let storeProduct of storeProducts){
-                console.log("------------------------");
                 products['products'].push({ 'productName':storeProduct.getName() ,
                                             'numberOfRaters':storeProduct.getNumOfRaters(),
                                             'rating':storeProduct.getProductRating(),

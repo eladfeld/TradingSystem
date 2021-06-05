@@ -1,5 +1,5 @@
+import { ProductDB } from "../../DataAccessLayer/DBinit";
 import { ID } from "./Common";
-import { ProductDB } from "./ProductDB";
 
 export class Product
 {

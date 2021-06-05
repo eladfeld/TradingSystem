@@ -1,10 +1,13 @@
 import { TEST_MODE } from "../config";
-import { StoreDummyDB } from "../DomainLayer/store/StoreDummyDB";
+import { StoreDummyDB } from "./dummies/StoreDummyDB";
 import { iStoreDB } from "./interfaces/iStoreDB";
 import { iSubscriberDB } from "./interfaces/iSubscriberDB";
-import { SubscriberDummyDB } from "./SubscriberDummyDb";
+import { SubscriberDummyDB } from "./dummies/SubscriberDummyDb";
 import { iPurchaseDB } from "./interfaces/iPurchaseDB";
-import { PurchaseDummyDB } from "../DomainLayer/purchase/PurchaseDummyDB";
+import { PurchaseDummyDB } from "./dummies/PurchaseDummyDB";
+import { ProductDummyDB } from "./dummies/ProductDummyDB";
+import { iProductDB } from "./interfaces/iProductDB";
+import { SubscriberDB } from "./dbs/SubscriberDB";
 
 
 const initSubscriberDB = () : iSubscriberDB => {
@@ -12,7 +15,7 @@ const initSubscriberDB = () : iSubscriberDB => {
         // TODO: change it to test db
         return new SubscriberDummyDB()
     else
-        return new SubscriberDummyDB()
+        return new SubscriberDB()
 } 
 
 const initStoreDB = () : iStoreDB => {
@@ -31,8 +34,18 @@ const initPurchaseDB = () : iPurchaseDB => {
         return new PurchaseDummyDB();
 }
 
+const initProductDB = () : iProductDB =>
+{
+    if (TEST_MODE)
+    // TODO: change it to test db
+        return new ProductDummyDB();
+    else
+        return new ProductDummyDB();
+}
+
 export const subscriberDB = initSubscriberDB();
 export const StoreDB = initStoreDB();
 export const PurchaseDB = initPurchaseDB();
+export const ProductDB = initProductDB();
 
 export default {subscriberDB, StoreDB , PurchaseDB};

@@ -21,7 +21,7 @@ export class MakeAppointment
         {
             // -1 meens 0xFFFFFFF -> so all bits in the mask are turn to 1 and all the actions are permited
             let allGrantedPermission: Permission = new Permission(-1);
-            let new_appointment = new OwnerAppointment(founder, store, founder, allGrantedPermission);
+            let new_appointment = new OwnerAppointment(founder.getUserId(), store.getStoreId(), founder.getUserId(), allGrantedPermission);
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
             return Promise.resolve("appointment made successfully");
@@ -44,7 +44,7 @@ export class MakeAppointment
             {
                 if(!appointee.isManager(store.getStoreId()))
                 {
-                    let new_appointment = new OwnerAppointment(appointer, store, appointee, new Permission(basic_owner_permissions));
+                    let new_appointment = new OwnerAppointment(appointer.getUserId(), store.getStoreId(), appointee.getUserId(), new Permission(basic_owner_permissions));
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
                     return Promise.resolve("owner appointed successfully!");
@@ -56,7 +56,7 @@ export class MakeAppointment
                     prev_permission.addPermissions(basic_owner_permissions);
                     appointee.deleteAppointment(store_app);
                     store.deleteAppointment(store_app);
-                    let new_appointment = new OwnerAppointment(appointer, store, appointee, prev_permission);
+                    let new_appointment = new OwnerAppointment(appointer.getUserId(), store.getStoreId(), appointee.getUserId(), prev_permission);
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
                     return Promise.reject("owner appointed successfully!");
@@ -80,7 +80,7 @@ export class MakeAppointment
 
             if ( !appointee.isOwner(store.getStoreId()) && !appointee.isManager(store.getStoreId())) //this 'if' deals with cyclic appointments
             {
-                let new_appointment = new ManagerAppointment(appointer, store, appointee, new Permission(basic_manager_permissions));
+                let new_appointment = new ManagerAppointment(appointer.getUserId(), store.getStoreId(), appointee.getUserId(), new Permission(basic_manager_permissions));
                 store.addAppointment(new_appointment);
                 appointee.addAppointment(new_appointment);
                 return Promise.resolve("manager appointed successfully!");
@@ -92,19 +92,22 @@ export class MakeAppointment
         return Promise.reject("unauthorized try to appoint manager");
     }
 
-    public static removeAppointment(appointment: Appointment): Promise<string> {
-        //TODO: #saveDB
+    public static removeAppointment(appointment: Appointment): Promise<string> 
+    {
         if (appointment === undefined) {
             return Promise.reject("bad argument");
         }
-        appointment.appointee.deleteAppointment(appointment);
-        appointment.store.deleteAppointment(appointment);
+        appointment.getAppointee().then ( appointee => appointee.deleteAppointment(appointment));
+        appointment.getStore().then (store=> store.deleteAppointment(appointment));
 
-        let appointee: Subscriber = appointment.appointee;
-
-        appointment.store.getAppointments().forEach(appointment => {
-            if (appointment.appointer === appointee) this.removeAppointment(appointment)
+        appointment.getAppointee().then(appointee => {
+            appointment.getStore().then(store => {store.getAppointments().forEach(appointment => {
+                if (appointment.getAppointerId() === appointee.getUserId()) 
+                    this.removeAppointment(appointment)
+                })
+            });
         })
-        return Promise.resolve("appointmetn removed");
+    return Promise.resolve("appointmetn removed");
     }
+        
 }

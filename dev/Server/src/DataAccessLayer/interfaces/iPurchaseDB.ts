@@ -17,4 +17,7 @@ export interface iPurchaseDB
     updateTransaction: (transaction: Transaction) => void;
 
     getUserStoreHistory: (userId: number, storeId:number) => Promise<Transaction[]> 
+
+    clear:() => void;
+
 }

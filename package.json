@@ -1,9 +1,16 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "react-icons": "^4.2.0",
     "typescript-require": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.2"
+=======
+    "mysql2": "^2.2.5",
+    "react-icons": "^4.2.0",
+    "sequelize": "^6.6.2",
+    "sqlite3": "^5.0.2"
+>>>>>>> dc1c97a2dc3c83543194e5fadddb7b0854d03b24
   }
 }
