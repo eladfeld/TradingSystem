@@ -17,6 +17,7 @@ import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import { initialAppState } from './componentUtil';
+import logo from '../background/logo.jpeg'
 
 const BASE_URL = SERVER_BASE_URL;
 
@@ -168,6 +169,8 @@ export default function Banner({getAppState, setAppState}) {
   };
 
 
+
+
   const handleCartClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
     switch(response.status){
@@ -199,6 +202,11 @@ export default function Banner({getAppState, setAppState}) {
         return;
     }
   };
+
+  const handleLogoClick = () =>
+  {
+    history.push('/welcome');
+  }
 
   const handleComplainClick  = () => {
     history.push('/complain');
@@ -320,6 +328,7 @@ export default function Banner({getAppState, setAppState}) {
              {getAppState().username}
           </Typography>
           <Search getAppState={getAppState} setAppState={setAppState}/>
+          <img onClick={handleLogoClick} style={{ marginLeft: '30rem' }} height='50' length='50' src={logo}></img>
 
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
