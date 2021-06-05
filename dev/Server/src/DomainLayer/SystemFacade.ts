@@ -18,7 +18,7 @@ import { createHash } from 'crypto';
 import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
-import { productDB, storeDB } from "../DataAccessLayer/DBinit";
+import { ProductDB, StoreDB } from "../DataAccessLayer/DBinit";
 import * as connector from "../DataAccessLayer/connectDb"
 import { Sequelize } from "sequelize/types";
 export class SystemFacade
@@ -191,7 +191,7 @@ export class SystemFacade
             if (user === undefined)
                 return Promise.reject("user is not logged in")
 
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then( store => {
                 let infop = store.getStoreInfoResult(user.getUserId())
@@ -208,35 +208,35 @@ export class SystemFacade
     public getPruductInfoByName(sessionId : string, productName: string): Promise<string>
     {
         Logger.log(`getPruductInfoByName : sessionId:${sessionId}, productName: ${productName}`);
-        return storeDB.getPruductInfoByName(productName);
+        return StoreDB.getPruductInfoByName(productName);
     }
 
     //++
     public getPruductInfoByCategory(sessionId : string, category: string): Promise<string>
     {
         Logger.log(`getPruductInfoByCategory : sessionId:${sessionId} , category:${category}`);
-        return storeDB.getPruductInfoByCategory(category);
+        return StoreDB.getPruductInfoByCategory(category);
     }
 
     //--
     public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoAbovePrice : userId:${userId} , price:${price}`);
-        return storeDB.getProductInfoAbovePrice(price);
+        return StoreDB.getProductInfoAbovePrice(price);
     }
 
     //--
     public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
-        return storeDB.getProductInfoAbovePrice(price);
+        return StoreDB.getProductInfoAbovePrice(price);
     }
 
     //--
     public getPruductInfoByStore(userId : number, store: string): Promise<string>
     {
         Logger.log(`getPruductInfoByStore : userId:${userId} , store:${store}`);
-        return storeDB.getPruductInfoByStore(store);
+        return StoreDB.getPruductInfoByStore(store);
     }
 
     //++
@@ -269,7 +269,7 @@ export class SystemFacade
         if (subscriber === undefined)
             return Promise.reject("user not found");
 
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise( (resolve,reject) => {
             storep.then( store => {
                 let addcatp = store.addCategoryToRoot(category)
@@ -299,7 +299,7 @@ export class SystemFacade
         if(subscriber === undefined)
             return Promise.reject("user not found");
 
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise( (resolve,reject) => {
             storep.then( store => {
                 let addcatp = store.addCategory(categoryFather, category)
@@ -401,7 +401,7 @@ export class SystemFacade
         if (user === undefined)
             return Promise.reject("user not found")
         
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, userAddress);
@@ -438,18 +438,15 @@ export class SystemFacade
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber !== undefined)
         {
-            let storep = storeDB.getStoreByName(storeName);
+            let storep = StoreDB.getStoreByName(storeName);
             return new Promise ((resolve,reject) => {
                 storep.then( _ => reject("storename used"))
                 .catch( _ => {
-                    let storePromise  = Store.createStore(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress)
-                    storePromise.then( store => {
-                        MakeAppointment.appoint_founder(subscriber, store);
-                        Publisher.get_instance().register_store(store.getStoreId(),subscriber);
-                        SpellCheckerAdapter.get_instance().add_storeName(storeName);
-                        resolve(store)
-                    })
-                    .catch( error => reject(error))
+                    let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
+                    MakeAppointment.appoint_founder(subscriber, store);
+                    Publisher.get_instance().register_store(store.getStoreId(),subscriber);
+                    SpellCheckerAdapter.get_instance().add_storeName(storeName);
+                    resolve(store)
                 })
             })
         }
@@ -468,7 +465,7 @@ export class SystemFacade
         if (subscriber === undefined)
             return Promise.reject("subscriber wasn't found");
 
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise ((resolve,reject) => {
             storep.then( store => {
                 let setp =  store.setProductQuantity(subscriber, productId, quantity);
@@ -499,7 +496,7 @@ export class SystemFacade
         if (subscriber === undefined)
             return Promise.reject("subscriber wasn't found")
 
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 let addp =store.addNewProduct(subscriber, productName, categories, price, quantity);
@@ -541,7 +538,7 @@ export class SystemFacade
         }
 
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then(store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -563,7 +560,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid policy number")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise ((resolve,reject) => {
             storep.then( store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -597,7 +594,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid discount name")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then(store =>
                 {
@@ -622,7 +619,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid policy number")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -685,7 +682,7 @@ export class SystemFacade
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if (subscriber === undefined)
             return Promise.reject("User not logged in");
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise ((resolve,reject) => {
             storep.then( store => {
                 let sysmanagerp = Authentication.isSystemManager(subscriber.getUserId());
@@ -704,7 +701,7 @@ export class SystemFacade
     {
         Logger.log(`deleteManagerFromStore : sessionId:${sessionId},managerToDelete:${managerToDelete}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then(store =>
                 {
@@ -725,7 +722,7 @@ export class SystemFacade
     {
         Logger.log(`editStaffPermission : sessionId:${sessionId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -750,7 +747,7 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         let newOwnerp = Authentication.getSubscriberByName(newOwnerUsername)
         return new Promise ((resolve,reject) => {
             newOwnerp.then ( newOwner => {
@@ -776,7 +773,7 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         let newManagerp = Authentication.getSubscriberByName(newManagerUsername)
         
         return new Promise ((resolve,reject) => {
@@ -797,7 +794,7 @@ export class SystemFacade
     public getStoreStaff(sessionId: string, storeId: number): Promise<string> {
         Logger.log(`getStoreStaff : sessionId:${sessionId} , storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 let getp = store.getStoreStaff(subscriber)
@@ -872,8 +869,8 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        storeDB.clear();
-        productDB.clear();
+        StoreDB.clear();
+        ProductDB.clear();
         Purchase.clear();
     }
 

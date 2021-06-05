@@ -7,7 +7,7 @@ import { ShoppingCart } from "../../DomainLayer/user/ShoppingCart";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
-import { storeDB, subscriberDB } from "../DBinit";
+import { StoreDB, subscriberDB } from "../DBinit";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
@@ -44,7 +44,7 @@ export class SubscriberDB implements iSubscriberDB
     public async addAppointment(userId: number, appointment: Appointment): Promise<void>
     {
 
-        let store = await storeDB.getStoreByID(appointment.getStoreId());
+        let store = await StoreDB.getStoreByID(appointment.getStoreId());
         await sequelize.models.Store.create({
             id: store.getStoreId(),
             storeName: store.getStoreName(),

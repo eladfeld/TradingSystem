@@ -2,7 +2,7 @@ import { Store } from "../../DomainLayer/store/Store";
 
 export interface iStoreDB
 {
-    addStore:(store: Store)=> Promise<number>;
+    addStore:(store: Store)=> Promise<void>;
     
     getStoreByID:(storeId: number)=> Promise<Store>;
 

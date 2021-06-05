@@ -4,11 +4,11 @@ import { compositeOpToString, simpleOpToString } from "./LogicalOperators";
 
 export interface iPredicate{
     //isValid: (f:(field: tSimpleOperand)=>boolean)=>boolean;
-    isSatisfied: (subject: iSubject)=>Promise<boolean>;
+    isSatisfied: (subject: iSubject)=>Result<boolean>;
     toObject: () => tPredicate;
 }
 export interface iValue{
-    calc: (basket: iSubject)=> Promise<number>;
+    calc: (basket: iSubject)=>number;
     toString: () => string;
     toValue: () => tSimpleOperand;
 }
@@ -59,12 +59,12 @@ export class SimplePredicate implements iPredicate{
         this.rater = rater;
     }
 
-    public isSatisfied = async (subject: iSubject):Promise<boolean> => {
-        const val1: number =await this.rand1.calc(subject);
-        if(val1 === undefined) return Promise.reject(`'${this.rand1.toString()}' is not a valid value for iSubject ${subject}`);
-        const val2: number =await this.rand2.calc(subject);
-        if(val2 === undefined) return Promise.reject(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
-        return Promise.resolve(this.rater(val1, val2));
+    public isSatisfied = (subject: iSubject):Result<boolean> => {
+        const val1: number = this.rand1.calc(subject);
+        if(val1 === undefined) return makeFailure(`'${this.rand1.toString()}' is not a valid value for iSubject ${subject}`);
+        const val2: number = this.rand2.calc(subject);
+        if(val2 === undefined) return makeFailure(`'${this.rand2.toString()}' is not a valid value for iSubject ${subject}`);
+        return makeOk(this.rater(val1, val2));
     } 
 
     public toObject = ():tSimplePredicate =>{
@@ -85,7 +85,7 @@ export class Field implements iValue{
         this.field = field;
     }
 
-    public calc = (subject: iSubject): Promise<number> => {
+    public calc = (subject: iSubject):number => {
         return subject.getValue(this.field);
     }   
     public toString = (): string => this.field;
@@ -99,8 +99,8 @@ export class Value implements iValue{
         this.value = value;
     }
 
-    public calc = (): Promise<number> => {
-        return Promise.resolve(this.value);
+    public calc = ():number => {
+        return this.value;
     }   
 
     public toString = ():string =>`${this.value}`;

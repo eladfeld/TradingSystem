@@ -1,19 +1,14 @@
-import { StoreProduct } from "../../DomainLayer/store/StoreProduct";
+import { Product } from "../../DomainLayer/store/Product";
 
 export interface iProductDB
 {
-    getProductByStoreId(storeId: number, productName: string): Promise<StoreProduct>;
-    updateProduct: (product: StoreProduct) => void;
+    addProduct: (product: Product) => void;
 
-    addProduct: (product: StoreProduct) => Promise<number> ;
+    addWitheredProduct: (wproduct: Product) => void;
 
-    getProductQuantity:(productId: number) => Promise<number>;
-    
-    getProductByName:(productName: string) => Promise<StoreProduct>;
+    getProductByName:(productName: string) => Promise<Product>;
 
-    getProductById:(productId: number) =>Promise<StoreProduct>;
-
-    getAllProductByStoreId: (storeId: number) => Promise<StoreProduct[]>;
+    getProductById:(productId: number) =>Promise<Product>;
 
     clear:() => void;
 }

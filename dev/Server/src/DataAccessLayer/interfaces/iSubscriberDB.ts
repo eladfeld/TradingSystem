@@ -33,6 +33,8 @@ export interface iSubscriberDB
 
     deletePendingMessages:(userId: number) => void;
 
+    
+
     clear:() => void;
     
 }

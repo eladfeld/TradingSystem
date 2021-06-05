@@ -1,16 +1,17 @@
 import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../../Logger";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
+import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
-import { productDB } from "../../DataAccessLayer/DBinit";
+import { ProductDB } from "../../DataAccessLayer/DBinit";
 
 export class Inventory
 {
 
-    private storeId: number
+    private products: Map<number, StoreProduct> // map productId to StoreProduct
 
-    public constructor(storeId: number){
-        this.storeId = storeId;
+    public constructor(){
+        this.products = new Map<number, StoreProduct>();
     }
 
     public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0) : Promise<number> {
@@ -24,107 +25,92 @@ export class Inventory
             return Promise.reject("Price must be non negative");
         }
 
-        let productp = productDB.getProductByName(productName)
+        if(isOk(this.hasProductWithName(productName))){
+            Logger.log("Product already exist in inventory!")
+            return Promise.reject(`Product already exist in inventory! productName: ${productName}`);
+        }
+        let productp = ProductDB.getProductByName(productName)
         return new Promise((resolve,reject) => {
             productp.then( product => {
-                Logger.log(`Product already exist in inventory! productName: ${productName}`);
-                reject('Product already exist in inventory!');
+                let productId = product.getProductId()
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                this.products.set(storeProduct.getProductId(), storeProduct);
+                resolve(productId);
             })
             .catch( _ => {
-                let storeProductp = StoreProduct.createProduct(productName,price, storeId,quantity, categories);
-                storeProductp.then(storeProduct =>
-                    {
-                        resolve(storeProduct.getProductId());
-                    })
-                    .catch(error => reject(error));
+                let product = new Product(productName, categories)
+                let productId = product.getProductId()
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                this.products.set(storeProduct.getProductId(), storeProduct);
+                resolve(productId);
             })
         })
     }
 
-    public addProductQuantity(productId: number, quantity: number) : Promise<string> {
-        let productp = productDB.getProductById(productId);
-        return new Promise((resolve,reject) => {
-            productp.then( product => {
-                product.addQuantity(quantity);
-                productDB.updateProduct(product)
-                return resolve("Quantity was added");
-            })
-            .catch( _ => {
-                Logger.log("Product does not exist in inventory!")
-                reject("Product does not exist in inventory!");
-            })
-        })
+    public addProductQuantity(productId: number, quantity: number) : Result<string> {
+        let product = this.products.get(productId);
+        if(product === undefined){
+            Logger.log("Product does not exist in inventory!")
+            return makeFailure("Product does not exist in inventory!");
+        }
+        product.addQuantity(quantity);
+        return makeOk("Quantity was added");
     }
 
     public setProductQuantity(productId: number, quantity: number) : Promise<string> {
-        let productp = productDB.getProductById(productId);
-        return new Promise((resolve,reject) => {
-            productp.then( product => {
-                product.setQuantity(quantity);
-                productDB.updateProduct(product)
-                return Promise.resolve("Quantity was set");
-                
-            })
-            .catch( _ => {
-                Logger.log("Product does not exist in inventory!")
-                return Promise.reject("Product does not exist in inventory!");
-            })
-        })
+        let product = this.products.get(productId);
+        if(product === undefined){
+            Logger.log("Product does not exist in inventory!")
+            return Promise.reject("Product does not exist in inventory!");
+        }
+
+        //TODO: #saveDB
+        product.setQuantity(quantity);
+        return Promise.resolve("Quantity was set");
     }
 
-    public isProductAvailable(productId: number, quantity: number) : Promise<boolean> {
-        let productp = productDB.getProductById(productId);
-        return new Promise((resolve,reject) => {
-            productp.then( product => {
-                if(product.getQuantity() >= quantity){
-                    resolve(true)
-                }
-                resolve(false)
-            }).catch( err => {
-                Logger.log("Product does not exist in inventory!")
-                reject(false);
-            })
-
-        })
+    public getProductQuantity(productId : number) : number {
+        return this.products.get(productId).getQuantity();
     }
 
-    public hasProductWithName(productName: string) : Promise<true> {
-        let productp = productDB.getProductByName(productName);
-        return new Promise((resolve,reject) => {
-            productp.then( product => {
-                    resolve(true)
-            }).catch( err => {
-                Logger.log("Doesn't have product with name")
-                reject(false);
-            })
-
-        })
+    public isProductAvailable(productId: number, quantity: number) : boolean {
+        //TODO: check synchronization accotding to the internet we don't need to sync in javascript
+        let product = this.products.get(productId);
+        if(product === undefined){
+            Logger.log("Product does not exist in inventory!")
+            return false;
+        }
+        if(product.getQuantity() >= quantity){
+            return true
+        }
+        return false
     }
 
-    public reserveProduct(productId: number, quantity: number): Promise<boolean> {
-        let isAvailablep = this.isProductAvailable(productId, quantity)
-        return new Promise((resolve,reject) => {
-            isAvailablep.then( isAvailable => {
-                if(isAvailable){
-                    let productp = productDB.getProductById(productId);
-                    productp.then(product => {
-                    product.setQuantity(product.getQuantity() - quantity);
-                    resolve(true)
-                    }).catch(err => reject(err))
-                } else {
-                    Logger.log("Product is not available")
-                    reject(false);
-                }
-            }).catch( err => {
-                Logger.log("Doesn't have product with name")
-                reject(false);
-            })
-
-        })
+    public hasProductWithName(productName: string) : Result<true> {
+        for(let product of this.products.values()){
+            if(product.getName() === productName){
+                return makeOk(true);
+            }
+        }
+        return makeFailure("Doesn't have product with name");
     }
 
-    public returnReservedProduct(productId: number, quantity: number): Promise<string> {
-        return this.addProductQuantity(productId, quantity)
+    public reserveProduct(productId: number, quantity: number): Result<boolean> {
+        if(!this.isProductAvailable(productId, quantity)){
+            return makeFailure("Product unavailable");
+        }
+        let product = this.products.get(productId);
+        product.setQuantity(product.getQuantity() - quantity);
+        return makeOk(true);
+    }
+
+    public returnReservedProduct(productId: number, quantity: number): Result<string> {
+        if(!this.products.has(productId)){
+            return makeFailure("No product with id" + ` ${productId}`+ " found");
+        }
+        let product = this.products.get(productId);
+        product.addQuantity(quantity);
+        return makeOk('Product returned');
     }
 
     private storeProductToInfo = (sp:StoreProduct):StoreProductInfo => {
@@ -139,72 +125,50 @@ export class Inventory
         sp.getCategories());
     }
 
-    public getProductsInfo(): Promise<StoreProductInfo[]> {
-        let storeProductsp: Promise<StoreProduct[]> = productDB.getAllProductByStoreId(this.storeId)
-        let storepInfos: StoreProductInfo[] = []
-        return new Promise((resolve,reject) => {
-            storeProductsp.then( storeProducts => {
-                for(let storeProduct of storeProducts){
-                    storepInfos.push(this.storeProductToInfo(storeProduct));
-                }
-                resolve(storepInfos)
-            }).catch(err => reject(err))
-        })
+    public getProductsInfo(): StoreProductInfo[] {
+        let storeProducts: StoreProductInfo[] = []
+        for(let storeProduct of this.products.values()){
+            storeProducts.push(this.storeProductToInfo(storeProduct));
+        }
+        return storeProducts
     }
 
-    public getProductInfoByName(productName:string): Promise<StoreProductInfo> {
-        let storeProductp: Promise<StoreProduct> = productDB.getProductByStoreId(this.storeId, productName)
-        return new Promise((resolve,reject) => {
-            storeProductp.then( storeProduct => {
-                resolve(this.storeProductToInfo(storeProduct))
-            }).catch(err => reject('coudlnt find product with name'))
-        })
+    public getProductInfoByName(productName:string): StoreProductInfo[]{
+        let storeProducts: StoreProductInfo[] = [];
+        for(let storeProduct of this.products.values()){
+            if(storeProduct.getName().includes(productName)){
+                storeProducts.push(this.storeProductToInfo(storeProduct));
+            }
+        }
+        return storeProducts;
     }
 
-    public getProductInfoByCategory(category: string): Promise<StoreProductInfo[]>{
-        let storeProductsp: Promise<StoreProduct[]> = productDB.getAllProductByStoreId(this.storeId)
-        let storeProductsInfo: StoreProductInfo[] = []
-        return new Promise((resolve,reject) => {
-            storeProductsp.then(storeProducts => {
-                for(let storeProduct of storeProducts){
-                    if(storeProduct.getCategories().find(productCategory=>category===productCategory)!= undefined){
-                        storeProductsInfo.push(this.storeProductToInfo(storeProduct));
-                    }
-                }
-                resolve(storeProductsInfo)
-            }).catch(err => reject(err))
-        })
+    public getProductInfoByCategory(category: string): StoreProductInfo[]{
+        let storeProducts: StoreProductInfo[] = [];
+        for(let storeProduct of this.products.values()){
+            if(storeProduct.getCategories().find(productCategory=>category===productCategory)!= undefined){
+                storeProducts.push(this.storeProductToInfo(storeProduct));
+            }
+        }
+        return storeProducts;
     }
 
-    public getProductInfoByFilter(filter: (x: StoreProduct) => boolean): Promise<StoreProductInfo[]>{
-        let storeProductsp: Promise<StoreProduct[]> = productDB.getAllProductByStoreId(this.storeId)
-        let storeProductsInfo: StoreProductInfo[] = []
-        return new Promise((resolve,reject) => {
-            storeProductsp.then(storeProducts => {
-                storeProductsInfo = storeProducts.filter(filter).map(storeProduct => {
-                  return this.storeProductToInfo(storeProduct)
-                })
-            resolve(storeProductsInfo)
-            }).catch(err => reject(err))
-        })
+    public getProductInfoByFilter(filter: (x: StoreProduct) => boolean): StoreProductInfo[]{
+        return Array.from(this.products.values()).filter(filter).map(storeProduct => {
+            return this.storeProductToInfo(storeProduct);
+        });
     }
 
-    public getProductPrice(productId: number): Promise<number>
+    public getProductPrice(productId: number): number{
+        let product = this.products.get(productId)
+        if(product === undefined){
+            return -1;
+        }
+        return product.getPrice()
+    }
+
+    public getProductById(productId : number) : StoreProduct
     {
-        let productp = productDB.getProductById(productId)
-        return new Promise((resolve, reject) => {
-            productp.then(product => {
-                if(product === undefined){
-                    resolve(-1);
-                }
-                else resolve(product.getPrice());
-            }).catch(error => reject(error))
-        })
-
-    }
-
-    public getProductById(productId : number) : Promise<StoreProduct>
-    {
-        return productDB.getProductById(productId);
+        return this.products.get(productId);
     }
 }

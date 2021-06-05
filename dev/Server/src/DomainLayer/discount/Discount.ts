@@ -9,7 +9,7 @@ export default abstract class Discount implements iDiscount{
     public static WHOLE_STORE: number = 0;
     protected ratio: number;
     protected category: string|number;
-    public getDiscount: (basket: iBasket, categorizer: iCategorizer) => Promise<number>;
+    public getDiscount: (basket: iBasket, categorizer: iCategorizer) => Result<number>;
     public toObj: () => tDiscount;
 
     constructor(ratio: number, category:string|number){
@@ -19,9 +19,9 @@ export default abstract class Discount implements iDiscount{
 
     public getRatio = () => this.ratio;
     public getCategory = () => this.category;
-    public getProductsInCategory = (categorizer: iCategorizer): Promise<number[]> => {
+    public getProductsInCategory = (categorizer: iCategorizer):number[] => {
         const c: string|number = this.category;
-        const output = (typeof c === 'number') ? Promise.resolve([c]) : categorizer.getProducts(c);
+        const output = (typeof c === 'number') ? [c] : categorizer.getProducts(c);
         return output;
     }
 

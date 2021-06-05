@@ -31,13 +31,13 @@ export default class BuyingPolicy{
     //possibly should return Result<Result<>>???
 
     //determines if the BuyingPolicy is obeyed (if and only if all Rules are satisfied)
-    public isSatisfied = async (buyingSubject: BuyingSubject): Promise<string> =>{
+    public isSatisfied = (buyingSubject: BuyingSubject): Result<string> =>{
         for(const [key, rule] of this.rules.entries()){
-            const res: boolean = await rule.predicate.isSatisfied(buyingSubject);
-            if(!res) return Promise.reject("");
+            const res: Result<boolean> =  rule.predicate.isSatisfied(buyingSubject);
+            if(isFailure(res)) return res;
             if(!res.value) return makeOk(rule.description);
         }
-        return Promise.resolve(BuyingPolicy.SUCCESS);
+        return makeOk(BuyingPolicy.SUCCESS);
     }
 
     public addPolicy = (predicate: any, policyInWords: string ):Promise<string> =>{

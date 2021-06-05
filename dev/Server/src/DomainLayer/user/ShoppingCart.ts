@@ -5,7 +5,7 @@ import { ShoppingBasket } from "./ShoppingBasket";
 import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
 import { rejects } from "assert";
-import { storeDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingCart
 {
@@ -41,7 +41,7 @@ export class ShoppingCart
     public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>
     {
         let basket: ShoppingBasket = this.baskets.get(storeId);
-        let storep = storeDB.getStoreByID(storeId);
+        let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then (store => {
                 if(basket === undefined)

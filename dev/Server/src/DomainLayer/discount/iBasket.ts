@@ -3,8 +3,8 @@ import iSubject from './logic/iSubject';
 
 export default interface iBasket extends iSubject{
     //should return the value associated with @field, otherwise return undefined
-    getValue: (field: string) => Promise<number>;
-    getItems: () => Promise<iProduct[]>;
+    getValue: (field: string) => number;
+    getItems: () => iProduct[];
 }
 
 
@@ -15,7 +15,7 @@ export class MyBasket implements iBasket{
     constructor(){}
     private basket: iProduct[] = [1,2,3,4].map(n => new MyProduct(n, n*10, n*100, `product #${n}`, [`category${n}`]));
     
-    getValue = async (field: string): Promise<number> => {
+    getValue = (field: string):number => {
         const strs: string[] = field.split("_");
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);
@@ -31,7 +31,7 @@ export class MyBasket implements iBasket{
         }
         return undefined;
     };
-    public getItems = async () => this.basket;
+    public getItems = () => this.basket;
 }
 
 //might be used for better predicate constraints

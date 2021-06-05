@@ -12,29 +12,23 @@ export default class ConditionalDiscount extends Discount{
         this.predicate = predicate;
     }
 
-    public getDiscount = async (basket: iBasket, categorizer: Categorizer):Promise<number> =>  {
-        const productsInCategoryp: Promise<number[]> = this.getProductsInCategory(categorizer);
-        return new Promise((resolve, reject) => {
-            productsInCategoryp.then(async productsInCategory => {
-                const discountsResults: Result<number>[] = (await basket.getItems()).map((prod) => {
-                    if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getProductId())){
-                        const predRes = this.predicate.isSatisfied(basket);
-                        if(isFailure(predRes))return predRes;
-                        if(predRes.value){
-                            return makeOk(prod.getQuantity()*this.ratio*prod.getPrice());
-                        }
-                    }
-                    return makeOk(0);
-                });
-                const res:Result<number[]> = ResultsToResult(discountsResults);
-                if(isFailure(res)) return reject(res.message);
-                var totalDiscount: number = 0;
-        
-                res.value.forEach((discount) => totalDiscount += discount);
-                resolve(totalDiscount);
-            })
-        })
-        
+    public getDiscount = (basket: iBasket, categorizer: Categorizer):Result<number> =>  {
+        const productsInCategory: number[] = this.getProductsInCategory(categorizer);
+        const discountsResults: Result<number>[] = basket.getItems().map((prod) => {
+            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getProductId())){
+                const predRes:Result<boolean> = this.predicate.isSatisfied(basket);
+                if(isFailure(predRes))return predRes;
+                if(predRes.value){
+                    return makeOk(prod.getQuantity()*this.ratio*prod.getPrice());
+                }
+            }
+            return makeOk(0);
+        });
+        const res:Result<number[]> = ResultsToResult(discountsResults);
+        if(isFailure(res))return res;
+        var totalDiscount: number = 0;
+        res.value.forEach((discount) => totalDiscount += discount);
+        return makeOk(totalDiscount);
     }
 
     public getPredicate = () => this.predicate;

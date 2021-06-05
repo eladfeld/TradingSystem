@@ -25,7 +25,7 @@ import iCategorizer from "../discount/Categorizer";
 
 import { StoreProduct } from "./StoreProduct";
 import UniversalPolicy from "../policy/buying/UniversalPolicy";
-import { productDB, storeDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB } from "../../DataAccessLayer/DBinit";
 
 
 export class Store implements iCategorizer
@@ -55,18 +55,9 @@ export class Store implements iCategorizer
     private storeHistory: StoreHistory;
     private categiries: TreeRoot<string>;
 
-    public constructor(storeId: number,
-        storeFounderId: number,
-        storeName: string,
-        bankAccount:number,
-        storeAddress: string,
-        appointments: Appointment[] = [],
-        storeClosed: boolean = false,
-        discountPolicy: DiscountPolicy = undefined,
-        buyingPolicy: BuyingPolicy = undefined)
+    public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = undefined, buyingPolicy: BuyingPolicy = undefined)
     {
-
-        this.storeId = storeId;
+        this.storeId = ID();
         this.storeName = storeName;
         this.storeFounderId = storeFounderId;
         if (discountPolicy === undefined){
@@ -79,63 +70,27 @@ export class Store implements iCategorizer
         } else {
             this.buyingPolicy = buyingPolicy
         }
-        this.inventory = new Inventory(storeId);
+        this.inventory = new Inventory();
         this.messages = new Map<number, string>()
         this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
         this.bankAccount = bankAccount;
         this.storeAddress = storeAddress;
-        this.storeClosed = storeClosed;
-        this.appointments = appointments;
+        this.storeClosed = false
+        this.appointments = []
         this.discounts = [];
         this.buyingOptions = [buyingOption.INSTANT];
         this.storeHistory = new StoreHistory(this.storeId);
         this.categiries = new TreeRoot<string>('root category');
+
+        StoreDB.addStore(this);
     }
-
-    public static rebuildStore(storeId: number, storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, appointments: Appointment[], storeClosed: boolean
-        ,buyingPolicy: BuyingPolicy, discountPolicy: DiscountPolicy, categiries: TreeRoot<string>): Store{
-        let store = new Store(
-            storeId,
-            storeFounderId,
-            storeName,
-            bankAccount,
-            storeAddress,
-            appointments=appointments,
-            storeClosed=storeClosed,
-            discountPolicy=discountPolicy,
-            buyingPolicy=buyingPolicy)
-            store.categiries = categiries
-
-        return store;
-    }
-
-
-    public static createStore(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string): Promise<Store> {
-        let store = new Store(1,
-            storeFounderId,
-            storeName,
-            bankAccount,
-            storeAddress)
-
-        return new Promise( (resolve,reject) => { storeDB.addStore(store).then((id: number) => {
-            store.setId(id);
-            resolve(store);
-        }).catch((error => reject(error)))
-       })
-    }
-
-    private setId(id: number){
-        this.storeId = id;
-    }
-
-
-    public getProducts = (categoryName: string): Promise<number[]> => {
+    public getProducts = (categoryName: string):number[] => {
         const category:TreeNode<string> = this.categiries.getChildNode(categoryName);
         if(!category){
-            return Promise.resolve([]);
+            return [];
         }
-        const productsp: Promise<StoreProductInfo[]> = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {     
+        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {     
             for(var i=0; i<prod.getCategories().length; i++){
                 const cat = prod.getCategories()[i];
                 if(category.value===cat || category.hasChildNode(cat)){
@@ -144,13 +99,8 @@ export class Store implements iCategorizer
             }
             return false;
         });
-        return new Promise((resolve, reject) => {
-            productsp.then(products => {
-                const prodIds:number[] = products.map((prod:StoreProductInfo) => prod.getProductId());
-                resolve(prodIds);
-            })
-        })
-
+        const prodIds:number[] = products.map((prod:StoreProductInfo) => prod.getProductId());
+        return prodIds;
     }
     public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
@@ -214,9 +164,9 @@ export class Store implements iCategorizer
         return this.storeHistory.getPurchaseHistory();
     }
 
-    public isProductAvailable(productId: number, quantity: number): Promise<boolean> {
+    public isProductAvailable(productId: number, quantity: number): boolean {
         if(this.storeClosed){
-            return Promise.resolve(false)
+            return false
         }
         return this.inventory.isProductAvailable(productId, quantity);
     }
@@ -271,7 +221,7 @@ export class Store implements iCategorizer
         return makeOk(this.buyingPolicy.getPolicies()); 
     }
 
-    public async sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Promise<boolean> {
+    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Promise<boolean> {
         if(this.storeClosed){
             return Promise.reject("Store is closed")
         }
@@ -285,23 +235,24 @@ export class Store implements iCategorizer
 
         let productList = shoppingBasket.getProducts();
         let reservedProducts = new Map <number, [number,string,number]> (); // id => [quantity, name, price]
+        let pricesToQuantity = new Map <number, number> ();
         var price: number = 0;
         for (let [id, quantity] of productList) {
-            //TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            let product = await productDB.getProductById(id);
-            let sellResult =  this.inventory.reserveProduct(id, quantity);
-            let productPrice = product.getPrice()
-            let pname = product.getName();
+            let sellResult = this.inventory.reserveProduct(id, quantity);
+            let productPrice = this.inventory.getProductPrice(id);
+            let storeproduct = this.inventory.getProductById(id);
+            let pname = storeproduct.getName();
             price += (productPrice * quantity);
-            if(sellResult && productPrice != -1){
+            if(isOk(sellResult) && sellResult.value && productPrice != -1){
                 reservedProducts.set(id,[quantity,pname,price]);
+                pricesToQuantity.set(productPrice,quantity);
             }
             else{
                 this.cancelReservedShoppingBasket(reservedProducts)
                 return Promise.reject(sellResult);
             }
         }
-        
+        //let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
         const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
         if(isFailure(discountRes)) return Promise.reject(discountRes.message);
         price -= discountRes.value;
@@ -380,7 +331,7 @@ export class Store implements iCategorizer
                 }
                 else{
                     this.storeClosed = true
-                    let deletestorep = storeDB.deleteStore(this.storeId)
+                    let deletestorep = StoreDB.deleteStore(this.storeId)
                     deletestorep.then( _ =>{
                         resolve("store deleted")
                     })
@@ -444,13 +395,8 @@ export class Store implements iCategorizer
         })
     }
 
-    public getStoreInfo(): Promise<StoreInfo> {
-        return new Promise((resolve,reject) => {
-            let products_infop = this.inventory.getProductsInfo()
-            products_infop.then( products_info => {
-                resolve(new StoreInfo(this.getStoreName(), this.getStoreId(),products_info , this.categiries))
-            })
-        })
+    public getStoreInfo(): StoreInfo {
+        return (new StoreInfo(this.getStoreName(), this.getStoreId(), this.inventory.getProductsInfo(), this.categiries))
     }
 
     public addAppointment(appointment : Appointment) : void
@@ -468,31 +414,31 @@ export class Store implements iCategorizer
         return this.appointments
     }
 
-    public searchByName(productName:string): Promise<StoreProductInfo>{
+    public searchByName(productName:string): StoreProductInfo[]{
         return this.inventory.getProductInfoByName(productName);
     }
 
-    public getProductsInfo(): Promise<StoreProductInfo[]> {
+    public getProductsInfo(): StoreProductInfo[]{
         return this.inventory.getProductInfoByFilter((_) => true);
     }
 
-    public searchByCategory(category: string): Promise<StoreProductInfo[]>{
+    public searchByCategory(category: string): StoreProductInfo[]{
         if(!this.categiries.hasChildNode(category)){
             Logger.log(`No category: ${category} in store: ${this.storeName}`);
-            return Promise.resolve([]);
+            return [];
         }
         return this.inventory.getProductInfoByCategory(category);
     }
 
-    public searchBelowPrice(price: number): Promise<StoreProductInfo[]> {
+    public searchBelowPrice(price: number): StoreProductInfo[]{
         return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getPrice() > price);
     }
 
-    public searchAbovePrice(price: number): Promise<StoreProductInfo[]> {
+    public searchAbovePrice(price: number): StoreProductInfo[]{
         return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getPrice() < price);
     }
 
-    public searchAboveRating(rating: number): Promise<StoreProductInfo[]> {
+    public searchAboveRating(rating: number): StoreProductInfo[]{
         return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getProductRating() < rating);
     }
 
@@ -684,11 +630,11 @@ export class Store implements iCategorizer
         return Promise.resolve('category was added')
     }
 
-    public getProductQuantity(productId : number) : Promise<number>{
-        return productDB.getProductQuantity(productId);
+    public getProductQuantity(productId : number) : number{
+        return this.inventory.getProductQuantity(productId);
     }
 
-    public getProductbyId( productId : number) : Promise<StoreProduct>{
+    public getProductbyId( productId : number) : StoreProduct{
         return this.inventory.getProductById(productId)
     }
 
