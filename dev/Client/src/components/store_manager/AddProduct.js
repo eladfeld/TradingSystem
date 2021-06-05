@@ -7,13 +7,12 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
-import Banner from './Banner'
 import axios from 'axios';
-import history from '../history';
+import history from '../../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../constants';
+import { SERVER_BASE_URL } from '../../constants';
 import CategoryIcon from '@material-ui/icons/Category';
-
+import ImageIcon from '@material-ui/icons/Image';
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -39,6 +38,7 @@ export const AddProduct = ({getAppState, setAppState}) => {
     const [categories, setCategories] = useState([]);
     const [quantity, setQuantity] = useState("");
     const [price, setPrice] = useState("");
+    const [image, setImage] = useState("");
     const [_isSucsess, setIsSucsess] = useState(false);
     const [_hasProblem, setHasProblem] = useState(false);
     const [problem, setProblem] = useState("");
@@ -49,7 +49,7 @@ export const AddProduct = ({getAppState, setAppState}) => {
 
     const appoint = async () =>
     {
-        axios.post(`${SERVER_BASE_URL}addNewProduct`, {userId, storeId, productName, categories, quantity, price})
+        axios.post(`${SERVER_BASE_URL}addNewProduct`, {userId, storeId, productName, categories, quantity, price, image})
         .then(res => {
           if(res.status == 200){
             setIsSucsess(true);
@@ -106,42 +106,55 @@ export const AddProduct = ({getAppState, setAppState}) => {
                     </Grid>
 
                     <Grid container spacing={1} alignItems="flex-end">
-                    <Grid item>
-                      <CategoryIcon />
-                    </Grid>
-                        <Grid item>
+                      <Grid item>
+                        <CategoryIcon />
+                      </Grid>
+                          <Grid item>
+                          <TextField style={{width:400}}
+                              label='Categories'
+                              placeholder='Enter product categories split by comma'
+                              onChange={(event) => setCategories(event.target.value.split(','))}
+                          fullWidth/>
+                          </Grid>
+                      </Grid>
+
+                      <Grid container spacing={1} alignItems="flex-end">
+                      <Grid item>
+                        <BarChartIcon />
+                      </Grid>
+                      <Grid item>
                         <TextField style={{width:400}}
-                            label='Categories'
-                            placeholder='Enter product categories split by comma'
-                            onChange={(event) => setCategories(event.target.value.split(','))}
+                            label='Quantity'
+                            placeholder='Enter product quantity available'
+                            onChange={(event) => setQuantity(event.target.value)}
                         fullWidth/>
+                      </Grid>
+                      </Grid>
+                      <Grid container spacing={1} alignItems="flex-end">
+
+                      <Grid item>
+                        <AttachMoneyIcon />
+                      </Grid>
+                      <Grid item>
+                        <TextField style={{width:400}}
+                            label='Price'
+                            placeholder='Enter product price'
+                            onChange={(event) => setPrice(event.target.value)}
+                        fullWidth/>
+                      </Grid>
+                      <Grid container spacing={1} alignItems="flex-end">
+
+                      <Grid item>
+                        <ImageIcon />
+                      </Grid>
+                      <Grid item>
+                          <TextField style={{width:400}}
+                              label='image'
+                              placeholder='Enter an image url or local path'
+                              onChange={(event) => setImage(event.target.value)}
+                          fullWidth/>
                         </Grid>
-                    </Grid>
-
-                    <Grid container spacing={1} alignItems="flex-end">
-                    <Grid item>
-                      <BarChartIcon />
-                    </Grid>
-                    <Grid item>
-                      <TextField style={{width:400}}
-                          label='Quantity'
-                          placeholder='Enter product quantity available'
-                          onChange={(event) => setQuantity(event.target.value)}
-                      fullWidth/>
-                    </Grid>
-                    </Grid>
-                    <Grid container spacing={1} alignItems="flex-end">
-
-                    <Grid item>
-                      <AttachMoneyIcon />
-                    </Grid>
-                    <Grid item>
-                      <TextField style={{width:400}}
-                          label='Price'
-                          placeholder='Enter product price'
-                          onChange={(event) => setPrice(event.target.value)}
-                      fullWidth/>
-                    </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
               <MuiThemeProvider theme={theme}>

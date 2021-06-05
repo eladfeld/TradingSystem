@@ -49,6 +49,7 @@ export class StoreDummyDB implements iStoreDB
                                             'storeName': store.getStoreName(),
                                             'storeId': store.getStoreId(),
                                             'productId': storeProduct.getProductId(),
+                                            'image': storeProduct.getImage()
                                         })
             }
         })
@@ -69,6 +70,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })
@@ -88,6 +91,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })
@@ -107,6 +112,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })
@@ -126,6 +133,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })

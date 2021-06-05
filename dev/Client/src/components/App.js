@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {Route, Router } from 'react-router-dom';
-
 import Authentication from './Authentication'
 import Enter from './Enter'
 import history from '../history';
@@ -8,15 +7,15 @@ import React from 'react';
 import Banner from './Banner';
 import Cart  from './Cart';
 import { Complain } from './Complain';
-import { OpenStore } from './OpenStore';
+import { OpenStore } from './store_manager/OpenStore';
 import Checkout from './Checkout';
 import { Search, SearchByName, SearchAbovePrice, SearchByStore, SearchBelowPrice, SearchByCategory, SearchByKeyword} from './Search'
 import { SERVER_BASE_URL } from '../constants';
 import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
 import Register from './Register';
-import ManageStores from './ManageStores'
-import ManageStore from './ManageStore'
+import ManageStores from './store_manager/ManageStores'
+import ManageStore from './store_manager/ManageStore'
 import ManageSystem from './system_manager/ManageSystem';
 import Inbox from './messaging/Inbox';
 

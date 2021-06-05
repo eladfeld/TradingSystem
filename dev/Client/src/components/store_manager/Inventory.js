@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Grid, TextField } from '@material-ui/core';
-import ProgressWheel from './ProgreeWheel';
+import ProgressWheel from '../ProgreeWheel';
 import EditInventory from './EditInventory';
 
 

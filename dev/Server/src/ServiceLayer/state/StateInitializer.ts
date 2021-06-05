@@ -106,7 +106,8 @@ export default class StateInitializer{
                 const quantityPurchased = this.getQuantityInHistory(storeName, itemState.name);
                 const quantityInCarts = this.getQuantityInCarts(storeName, itemState.name);
                 const totalQuantity = quantityState + quantityPurchased + quantityInCarts;
-                const itemId = await service.addNewProduct(founderSessionId, storeId, itemState.name, itemState.categories, itemState.price, totalQuantity);
+                const image = "https://osemcat.signature-it.com/images/Fittings/osem-hq/Upload_Pictures/Prod_Pic/6901353/Catalog/6901353_7290000068787_L_1_Enlarge.jpg";
+                const itemId = await service.addNewProduct(founderSessionId, storeId, itemState.name, itemState.categories, itemState.price, totalQuantity, image);
                 this.products.get(storeName).set(itemState.name, itemId);
             }
 

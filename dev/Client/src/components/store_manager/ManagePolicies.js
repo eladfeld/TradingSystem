@@ -7,10 +7,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import history from '../history';
-import Banner from './Banner';
+import history from '../../history';
+import Banner from '.././Banner';
 import { Button, Grid } from '@material-ui/core';
-import ProgressWheel from './ProgreeWheel';
+import ProgressWheel from '../ProgreeWheel';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {

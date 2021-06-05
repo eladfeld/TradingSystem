@@ -1,18 +1,12 @@
 import { SHOULD_INIT_STATE } from "../config";
 import { tDiscount } from "../DomainLayer/discount/Discount";
 import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
-import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
-import { Publisher } from "../DomainLayer/notifications/Publisher";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
 import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
-import { User } from "../DomainLayer/user/User";
-import { isOk, makeFailure, makeOk, Result} from "../Result";
-import { policyState } from "./state/StateBuilder";
 import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
-import { Session } from "inspector";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 
 export class Service
@@ -168,9 +162,9 @@ export class Service
         return this.facade.editStoreInventory(sessionId, storeId, productId, quantity);
     }
 
-    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
+    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0, image: string): Promise<number>
     {
-        return this.facade.addNewProduct(sessionId, storeId, productName, categories, price, quantity);
+        return this.facade.addNewProduct(sessionId, storeId, productName, categories, price, quantity, image);
     }
 
     public addCategory(sessionId: string, storeId: number, categoryFather:string, category: string): Promise<string>

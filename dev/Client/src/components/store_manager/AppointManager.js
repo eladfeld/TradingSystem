@@ -5,11 +5,10 @@ import Grid from '@material-ui/core/Grid';
 import HomeIcon from '@material-ui/icons/Home';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
-import Banner from './Banner'
 import axios from 'axios';
-import history from '../history';
+import history from '../../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../constants';
+import { SERVER_BASE_URL } from '../../constants';
 
 const theme = createMuiTheme({
   palette: {

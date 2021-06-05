@@ -7,17 +7,16 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Grid } from '@material-ui/core';
-import ProgressWheel from './ProgreeWheel';
+import ProgressWheel from '../ProgreeWheel';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import HomeIcon from '@material-ui/icons/Home';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
-import history from '../history';
+import history from '../../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../constants';
-import CategoryIcon from '@material-ui/icons/Category';
+import { SERVER_BASE_URL } from '../../constants';
 
 //style:
 const paperStyle={padding :20,height:'70vh',width:500, margin:"20px auto"}

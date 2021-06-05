@@ -1,9 +1,9 @@
 import {List, Button } from '@material-ui/core';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Banner from './Banner';
-import history from '../history';
-import ProgressWheel from './ProgreeWheel';
+import Banner from '../Banner';
+import history from '../../history';
+import ProgressWheel from '../ProgreeWheel';
 import StoreIcon from '@material-ui/icons/Store';
 
 const useStyles = makeStyles((theme) => ({

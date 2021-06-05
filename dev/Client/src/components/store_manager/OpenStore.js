@@ -2,13 +2,16 @@ import React, { useState } from 'react'
 import { makeStyles, MuiThemeProvider } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import StoreIcon from '@material-ui/icons/Store';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import HomeIcon from '@material-ui/icons/Home';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
+import Banner from '../Banner'
 import axios from 'axios';
-import history from '../history';
+import history from '../../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../constants';
+import { SERVER_BASE_URL } from '../../constants';
 
 const theme = createMuiTheme({
   palette: {
@@ -34,31 +37,31 @@ const btnstyle={margin:'8px 0'}
 
 
 
-export const AppointOwner = ({getAppState, setAppState}) => {
+export const OpenStore = ({getAppState, setAppState}) => {
 
     const [_storeName, setStoreName] = useState("");
-    const [_ownerUsername, setOwnerUsername] = useState("");
+    const [_storeBankAccount, setStoreBankAccount] = useState("");
+    const [_storeAddress, setStoreAddress] = useState("");
     const [_isSucsess, setIsSucsess] = useState(false);
     const [_hasProblem, setHasProblem] = useState(false);
     const [problem, setProblem] = useState("");
-    let storeId = getAppState().storeId
-    let userId = getAppState().userId
 
 
 
     const classes = useStyles();
 
-    const appoint = async (newOwnerUsername) =>
+    const open = async (userId, storeName, bankAccountNumber, storeAddress) =>
     {
-        axios.post(`${SERVER_BASE_URL}appointStoreOwner`, {userId, storeId, newOwnerUsername})
+        axios.post(`${SERVER_BASE_URL}openStore`, {userId, storeName, bankAccountNumber, storeAddress})
         .then(res => {
           if(res.status == 200){
+            setAppState({IsStoreManager : true})
             setIsSucsess(true);
           }
           else if(res.status == 201)
           {
             setHasProblem(true);
-            setProblem(res.data);
+            setProblem(res.data.error);
             clearFields();
           }
         })
@@ -66,12 +69,15 @@ export const AppointOwner = ({getAppState, setAppState}) => {
     }
     const clearFields = () =>
     {
-      setOwnerUsername("");
+      setStoreName("");
+      setStoreBankAccount("");
+      setStoreAddress("");
     }
 
   return (
       <div className={classes.margin}>
       <div>
+      <Banner getAppState={getAppState} setAppState={setAppState}/>
         {_isSucsess ?
         <Alert
         action={
@@ -80,36 +86,67 @@ export const AppointOwner = ({getAppState, setAppState}) => {
           </Button>
         }
       >
-        Owner Added sussfully!
+        Store created sussfully!
       </Alert> :
       _hasProblem ?
-      <Alert severity="warning">A problem accured while adding the owner: {problem}!</Alert>
+      <Alert severity="warning">A problem accured while opening the store: {problem}!</Alert>
 
 
       :<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
-                    <h2>Add new store owner</h2>
+                    <h2>Create new store</h2>
                 </Grid>
+                <Grid container spacing={1} alignItems="flex-end">
+                    <Grid item>
+                      <StoreIcon />
+                    </Grid>
+                    <Grid item>
+                <TextField
+                    label='Store name'
+                    placeholder='Enter store name'
+                    value={_storeName}
+                    onChange={(event) => setStoreName(event.target.value)}
+                fullWidth/>
+                </Grid>
+                </Grid>
+                  <Grid container spacing={1} alignItems="flex-end">
+                    <Grid item>
+                      <AttachMoneyIcon />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                          label='Bank account'
+                          placeholder='Enter bank account'
+                          value={_storeBankAccount}
+                          onChange={(event) => setStoreBankAccount(event.target.value)}
+                      fullWidth/>
+                    </Grid>
+                  </Grid>
                   <Grid container spacing={1} alignItems="flex-end">
                     <Grid item>
                       <HomeIcon />
                     </Grid>
                     <Grid item>
-                      <TextField
-                          label='Owner username'
-                          placeholder='Enter new owner username'
-                          onChange={(event) => setOwnerUsername(event.target.value)}
-                      fullWidth/>
+                        <TextField
+                        label='Address'
+                        placeholder='Enter address'
+                        value={_storeAddress}
+                        onChange={(event) => setStoreAddress(event.target.value)}
+                        fullWidth/>
                     </Grid>
-                  </Grid>
+                    </Grid>
               <MuiThemeProvider theme={theme}>
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(_ownerUsername)
+                        let userId = getAppState().userId;
+                        let storeName = _storeName;
+                        let bankAccountNumber = Number(_storeBankAccount);
+                        let storeAddress = _storeAddress;
+                        open(userId, storeName, bankAccountNumber, storeAddress)
                     }}
-                  fullWidth>add owner
+                  fullWidth>open store
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
                   onClick={(e) => clearFields()}
@@ -130,5 +167,3 @@ export const AppointOwner = ({getAppState, setAppState}) => {
   </div>
   );
 }
-
-export default AppointOwner;

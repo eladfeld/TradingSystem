@@ -6,9 +6,9 @@ import HomeIcon from '@material-ui/icons/Home';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
-import history from '../history';
+import history from '../../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../constants';
+import { SERVER_BASE_URL } from '../../constants';
 
 const theme = createMuiTheme({
   palette: {
@@ -34,10 +34,10 @@ const btnstyle={margin:'8px 0'}
 
 
 
-export const DeleteManager = ({getAppState, setAppState}) => {
+export const AppointOwner = ({getAppState, setAppState}) => {
 
     const [_storeName, setStoreName] = useState("");
-    const [_managerUsername, setManagerUsername] = useState("");
+    const [_ownerUsername, setOwnerUsername] = useState("");
     const [_isSucsess, setIsSucsess] = useState(false);
     const [_hasProblem, setHasProblem] = useState(false);
     const [problem, setProblem] = useState("");
@@ -48,9 +48,9 @@ export const DeleteManager = ({getAppState, setAppState}) => {
 
     const classes = useStyles();
 
-    const DeleteManager = async (managerToRemove) =>
+    const appoint = async (newOwnerUsername) =>
     {
-        axios.post(`${SERVER_BASE_URL}deleteManagerFromStore`, {userId, storeId, managerToRemove})
+        axios.post(`${SERVER_BASE_URL}appointStoreOwner`, {userId, storeId, newOwnerUsername})
         .then(res => {
           if(res.status == 200){
             setIsSucsess(true);
@@ -66,7 +66,7 @@ export const DeleteManager = ({getAppState, setAppState}) => {
     }
     const clearFields = () =>
     {
-        setManagerUsername("");
+      setOwnerUsername("");
     }
 
   return (
@@ -80,16 +80,16 @@ export const DeleteManager = ({getAppState, setAppState}) => {
           </Button>
         }
       >
-        manager deleted sussfully!
+        Owner Added sussfully!
       </Alert> :
       _hasProblem ?
-      <Alert severity="warning">A problem accured while deleting the manager: {problem}!</Alert>
+      <Alert severity="warning">A problem accured while adding the owner: {problem}!</Alert>
 
 
       :<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
-                    <h2>delete store manager</h2>
+                    <h2>Add new store owner</h2>
                 </Grid>
                   <Grid container spacing={1} alignItems="flex-end">
                     <Grid item>
@@ -97,9 +97,9 @@ export const DeleteManager = ({getAppState, setAppState}) => {
                     </Grid>
                     <Grid item>
                       <TextField
-                          label='manager username'
-                          placeholder='Enter username to remove'
-                          onChange={(event) => setManagerUsername(event.target.value)}
+                          label='Owner username'
+                          placeholder='Enter new owner username'
+                          onChange={(event) => setOwnerUsername(event.target.value)}
                       fullWidth/>
                     </Grid>
                   </Grid>
@@ -107,9 +107,9 @@ export const DeleteManager = ({getAppState, setAppState}) => {
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        DeleteManager(_managerUsername)
+                        appoint(_ownerUsername)
                     }}
-                  fullWidth>remove manager
+                  fullWidth>add owner
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
                   onClick={(e) => clearFields()}
@@ -131,4 +131,4 @@ export const DeleteManager = ({getAppState, setAppState}) => {
   );
 }
 
-export default DeleteManager;
+export default AppointOwner;

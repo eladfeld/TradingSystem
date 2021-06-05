@@ -536,9 +536,9 @@ export class SystemFacade
     }
 
     //++
-    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
+    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0, image: string): Promise<number>
     {
-        Logger.log(`addNewProduct : sessionId:${sessionId} , storeId:${storeId}, productName:${productName} , categories:${categories} , price:${price} , quantity:${quantity} `);
+        Logger.log(`addNewProduct : sessionId:${sessionId} , storeId:${storeId}, productName:${productName} , categories:${categories} , price:${price} , quantity:${quantity} image:${image}`);
         if(productName === '' || productName === undefined || productName === null){
             return Promise.reject("invalid product Name")
         }
@@ -556,7 +556,7 @@ export class SystemFacade
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
-                let addp =store.addNewProduct(subscriber, productName, categories, price, quantity);
+                let addp =store.addNewProduct(subscriber, productName, categories, price, quantity, image);
                 addp.then( productId => {
                     SpellCheckerAdapter.get_instance().add_productName(productName);
                     resolve(productId)

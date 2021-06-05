@@ -14,7 +14,7 @@ export class Inventory
         this.products = new Map<number, StoreProduct>();
     }
 
-    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0) : Promise<number> {
+    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0, image: string) : Promise<number> {
         if (quantity < 0){
             Logger.log("Quantity must be non negative")
             return Promise.reject("Quantity must be non negative");
@@ -33,14 +33,14 @@ export class Inventory
         return new Promise((resolve,reject) => {
             productp.then( product => {
                 let productId = product.getProductId()
-                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories, image);
                 this.products.set(storeProduct.getProductId(), storeProduct);
                 resolve(productId);
             })
             .catch( _ => {
                 let product = new Product(productName, categories)
                 let productId = product.getProductId()
-                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
+                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories, image);
                 this.products.set(storeProduct.getProductId(), storeProduct);
                 resolve(productId);
             })
@@ -122,7 +122,8 @@ export class Inventory
         sp.getQuantity(),
         sp.getProductRating(),
         sp.getNumOfRaters(),
-        sp.getCategories());
+        sp.getCategories(),
+        sp.getImage());
     }
 
     public getProductsInfo(): StoreProductInfo[] {

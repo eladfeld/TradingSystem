@@ -260,7 +260,8 @@ const addNewProduct = (req: Request, res: Response, next: NextFunction) =>
     let categories: string[] = req.body.categories;
     let quantity: number = req.body.quantity;
     let price: number = req.body.price;
-    service.addNewProduct(sessionId, storeId, productName, categories, price, quantity)
+    let image: string = req.body.image;
+    service.addNewProduct(sessionId, storeId, productName, categories, price, quantity, image)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json({error:message}))
 }

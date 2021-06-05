@@ -13,8 +13,9 @@ export class StoreProduct
     private productRating: number
     private numOfRaters: number
     private categories: string[];
+    private image: string;
 
-    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: string[])
+    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
     {
         this.productId = productId;
         this.name = name;
@@ -24,6 +25,12 @@ export class StoreProduct
         this.productRating = 0 // getting productRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
         this.categories = categories
+        this.image = image;
+    }
+
+    public getImage()
+    {
+        return this.image;
     }
 
     public getProductId()

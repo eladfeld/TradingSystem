@@ -36,11 +36,13 @@ export class StoreDummyDB implements iStoreDB
     }
 
     public  getPruductInfoByName(productName: string): Promise<string>{
+        console.log("---------------------------------")
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByName(productName);
             for(let storeProduct of storeProducts){
+                console.log("------------------------");
                 products['products'].push({ 'productName':storeProduct.getName() ,
                                             'numberOfRaters':storeProduct.getNumOfRaters(),
                                             'rating':storeProduct.getProductRating(),
@@ -48,6 +50,7 @@ export class StoreDummyDB implements iStoreDB
                                             'storeName': store.getStoreName(),
                                             'storeId': store.getStoreId(),
                                             'productId': storeProduct.getProductId(),
+                                            'image': storeProduct.getImage()
                                         })
             }
         })
@@ -68,6 +71,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })
@@ -87,6 +92,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })
@@ -106,6 +113,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })
@@ -125,6 +134,8 @@ export class StoreDummyDB implements iStoreDB
                 'storeName': store.getStoreName(),
                 'storeId': store.getStoreId(),
                 'productId': storeProduct.getProductId(),
+                'image': storeProduct.getImage()
+
                                         })
             }
         })

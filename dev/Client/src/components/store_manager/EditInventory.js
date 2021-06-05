@@ -8,9 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Box, Button, Grid, TextField } from '@material-ui/core';
-import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
+import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../../constants';
 import axios from 'axios';
-import { isNonNegativeInteger } from './componentUtil';
+import { isNonNegativeInteger } from '../componentUtil';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {

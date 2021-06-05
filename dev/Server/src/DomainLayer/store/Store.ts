@@ -169,7 +169,7 @@ export class Store implements iCategorizer
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(subscriber: Subscriber, productName: string, categories: string[], price: number, quantity = 0): Promise<number> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: string[], price: number, quantity = 0, image: string): Promise<number> {
         if(this.storeClosed){
             return Promise.reject("Store is closed")
         }
@@ -182,7 +182,7 @@ export class Store implements iCategorizer
             }
         }
 
-        return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity);
+        return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity, image);
     }
 
     public setProductQuantity(subscriber: Subscriber, productId: number, quantity: number): Promise<string> {

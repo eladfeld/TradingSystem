@@ -6,23 +6,23 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Banner from './Banner';
+import Banner from '.././Banner';
 import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import AddIcon from '@material-ui/icons/Add';
-import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../constants';
+import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../../constants';
 import AppointOwner from './AppointOwner'
 import AppointManager from './AppointManager'
 import AddProduct from './AddProduct'
 import ManageCategories from './ManageCategories'
 import axios from 'axios';
-import { unknownStatusMessage } from './componentUtil';
+import { unknownStatusMessage } from '../componentUtil';
 import Employees from './Employees';
 import ManagePolicies from './ManagePolicies';
-import BuyingPolicy from './buying_policy/BuyingPolicy';
-import DiscountPolicy from './discount_policy/DiscountPolicy';
+import BuyingPolicy from '../buying_policy/BuyingPolicy';
+import DiscountPolicy from '../discount_policy/DiscountPolicy';
 import DeleteManager from './RemoveManager';
 
 const useStyles = makeStyles({
