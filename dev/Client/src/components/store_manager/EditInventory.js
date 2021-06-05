@@ -11,6 +11,7 @@ import { Box, Button, Grid, TextField } from '@material-ui/core';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../../constants';
 import axios from 'axios';
 import { isNonNegativeInteger } from '../componentUtil';
+import Alert from '@material-ui/lab/Alert';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -41,10 +42,11 @@ export default function EditInventory({getAppState, setAppState, product, setPag
   const {inventory, userId, storeId} = getAppState(); 
   const [quantity, setQuantity] = useState(product.quantity)
   const onBackClick = () => {setPage("inventory")}
-
+  const [problem, setProblem] = useState("");
   const onUpdateQuantity = async (_quantity, productId) =>{
+
     if(!isNonNegativeInteger(_quantity)){
-        alert('quantity must be a non-negative number');
+        setProblem('quantity must be a non-negative number');
         return;
     }
     axios.post(SERVER_BASE_URL+'editStoreInventory',{
@@ -55,24 +57,34 @@ export default function EditInventory({getAppState, setAppState, product, setPag
         }).then(response =>{
             switch(response.status){
                 case SERVER_RESPONSE_OK:
-                    inventory.find(p => p.productId === productId).quantity = _quantity;
-                    product.quantity = _quantity;
-                    setQuantity(product.quantity);
-                    setAppState({inventory});
-                    return;
+                  inventory.find(p => p.productId === productId).quantity = _quantity;
+                  product.quantity = _quantity;
+                  setQuantity(product.quantity);
+                  setAppState({inventory});
+                  return;
                 case SERVER_RESPONSE_BAD:
-                    alert(response.data);
-                    setQuantity(product.quantity);
-                    return;
+                  setProblem(response.data);
+                  setQuantity(product.quantity);
+                  return;
                 default:
-                    alert(`unknown response code ${response.status}`);
-                    return;
+                  setProblem(`unknown response code ${response.status}`);
+                  return;
             }
         })
 
     }
   return (
     <div>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        } 
         <Grid container>
             <Grid item xs={0} sm={4} ></Grid>
             <Grid item xs={12} sm={4}>

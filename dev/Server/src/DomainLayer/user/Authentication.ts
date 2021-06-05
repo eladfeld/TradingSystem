@@ -1,6 +1,5 @@
 import { createHash } from 'crypto';
 import { subscriberDB } from '../../DataAccessLayer/DBinit';
-import { Logger } from '../../Logger';
 import { Subscriber } from './Subscriber'; 
 
 export class Authentication
@@ -29,7 +28,7 @@ export class Authentication
         let subp = subscriberDB.getSubscriberByUsername(username)
         return new Promise( (resolve,reject) => {
             subp.then( _ => {
-                reject("checkedUsedUserName:used username");
+                reject("username already in use");
             })
             .catch( _ => {
                 resolve(true)
@@ -55,7 +54,7 @@ export class Authentication
             subscriberp.then( subscriber =>{
                 if ( subscriber.getPassword() == hashedPass)
                     resolve(true);
-                else reject("checkPassword: password doesnt match")
+                else reject("username or password is invalid")
             })
             .catch( error => {
                 reject(error)

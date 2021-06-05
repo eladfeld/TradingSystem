@@ -13,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import TextInput from 'react-autocomplete-input';
 import 'react-autocomplete-input/dist/bundle.css';
 import {SERVER_BASE_URL , SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD} from '../constants'
+import Alert from '@material-ui/lab/Alert';
 
 
 
@@ -157,14 +158,14 @@ export const Products=({getAppState, setAppState})=>{
     const reset = () => setAppState({products:[]});
     const paperStyle={padding :20,width:400, margin:"20px auto"}
     const userId = getAppState().userId;
+    const [problem, setProblem] = useState("");
+    const [success, setSuccess] = useState("");
 
     const addToCart = async (storeId, productId) =>
     {
         const res = await axios.post(`${SERVER_BASE_URL}addProductTocart`, {userId, storeId, productId, quantity:1} )
         if(res.status === 200)
-        {
-            //TODO: turn alerts into the nice material-ui ones!!!
-            
+        {            
             axios.post(SERVER_BASE_URL+'/getCartInfo',{userId}).then(response =>
                 {
                     switch(response.status){
@@ -173,18 +174,18 @@ export const Products=({getAppState, setAppState})=>{
                             setAppState({cart});
                             break;
                         case SERVER_RESPONSE_BAD:
-                            alert(response.data.message);
+                            setProblem(response.data.message);
                             break;
                         default:
-                            alert(`unexpected response code: ${response.status}`);
+                            setProblem(`unexpected response code: ${response.status}`);
                             break;
                     }
                 } )
-            alert("product added successfully")
+                setSuccess("product added successfully")
         }
         else
         {
-            alert("could not add product")
+            setProblem("could not add product")
         }
     }
     return(
@@ -197,7 +198,30 @@ export const Products=({getAppState, setAppState})=>{
                         clear
                     </Button>
                 </Grid>
-            }      
+            }
+            {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+            } 
+            {   
+            success !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => 
+                {
+                    setSuccess("");
+                }}>
+                close
+                </Button>
+                }
+                severity="success"> {success}</Alert> : <a1></a1>
+            }
             {/* <Grid item align='right'>
                 <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
                         onClick={reset}>
@@ -415,13 +439,13 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
 export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
     const userId = getAppState().userId;
-
+    const [problem, setProblem] = useState("")
     const classes = useStyles();
 
     const SearchBelowPrice = async (price) =>
     {
         if(Number.isInteger(price)){
-            alert("not a number")
+            setProblem("not a number")
         }
         else {
             axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price }).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
@@ -430,6 +454,16 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
     return(
         <div>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        } 
         <Grid>
             <Grid align='center'>
                 <h2>Search Below price</h2>
@@ -452,13 +486,13 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
 export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
     const userId = getAppState().userId;
-
+    const [problem, setProblem] = useState("")
     const classes = useStyles();
 
     const SearchAbovePrice = async (price) =>
     {
         if(Number. isInteger(price)){
-            alert("not a number")
+            setProblem("not a number")
         }
         else{
             axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
@@ -467,6 +501,16 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
     return(
         <div>
         <Banner getAppState={getAppState} setAppState={setAppState}/>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        } 
         <Grid>
             <Grid align='center'>
                 <h2>Search above price</h2>

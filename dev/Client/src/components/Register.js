@@ -4,31 +4,13 @@ import axios from 'axios';
 import history from '../history';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../constants';
 import { unknownStatusMessage } from './componentUtil';
-
+import Alert from '@material-ui/lab/Alert';
 
 const onBackClick = () =>{
     history.push('/auth');
 }
 
-const onRegisterClick = async (username, password, confirmPassword, age) =>
-{
-    if(password !== confirmPassword) {
-        alert('passwords do not match');
-        return;
-    }
-    const response = await axios.post(`${SERVER_BASE_URL}register`, {username, password, age: Number(age)} );
-    switch(response.status){
-        case SERVER_RESPONSE_OK:
-            history.push('/auth');
-            return;
-        case SERVER_RESPONSE_BAD:
-            alert(response.data.error);
-            return;
-        default:
-            alert(unknownStatusMessage(response));
-            return;
-    }
-}
+
 
 
 
@@ -37,8 +19,7 @@ const Register=({getAppState, setAppState})=>{
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [age, setAge] = useState(0);
-    const {userId} = getAppState();
-
+    const [problem, setProblem] = useState("");
     const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
     //const avatarStyle={backgroundColor:'#1bbd7e'}
     const btnstyle={margin:'8px 0'}
@@ -48,9 +29,39 @@ const Register=({getAppState, setAppState})=>{
         history.push('/welcome');
     }
 
+    const onRegisterClick = async (username, password, confirmPassword, age) =>
+    {
+        if(password !== confirmPassword) {
+            setProblem('passwords do not match');
+            return;
+        }
+        const response = await axios.post(`${SERVER_BASE_URL}register`, {username, password, age: Number(age)} );
+        switch(response.status){
+            case SERVER_RESPONSE_OK:
+                history.push('/auth');
+                return;
+            case SERVER_RESPONSE_BAD:
+                setProblem(response.data.error);
+                return;
+            default:
+                setProblem(unknownStatusMessage(response));
+                return;
+        }
+    }
+
     return(
         <div>
-        <Grid>
+            {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+            }
+           <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
                     {/* <Avatar style={avatarStyle}><LockOutlinedIcon/></Avatar> */}

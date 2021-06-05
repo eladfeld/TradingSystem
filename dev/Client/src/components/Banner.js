@@ -18,16 +18,12 @@ import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 import { initialAppState } from './componentUtil';
 import logo from '../background/logo.jpeg'
+import Alert from '@material-ui/lab/Alert';
+import { Button } from '@material-ui/core';
 
 const BASE_URL = SERVER_BASE_URL;
 
 
-const getUsername =  async (userId) =>
-{
-  const res =  axios.post(`${SERVER_BASE_URL}getUsername`, {userId} )
-  .then()
-  return userId;
-}
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -104,7 +100,7 @@ export default function Banner({getAppState, setAppState}) {
   const isNotiOpen = Boolean(notiEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const {IsStoreManager, notifications, cart} = getAppState();
-
+  const [problem, setProblem] = useState("");
 
   const getTotalProducts = () =>
   {
@@ -157,14 +153,14 @@ export default function Banner({getAppState, setAppState}) {
       case SERVER_RESPONSE_OK:
         const stores = JSON.parse(response.data).stores;
         setAppState({stores});
-            history.push('/manageStores');
-            return;
+          history.push('/manageStores');
+          return;
         case SERVER_RESPONSE_BAD:
-            alert(response.data);
-            return;
+          setProblem(response.data);
+          return;
         default:
-            alert(`unexpected response code: ${response.status}`);
-            return;
+          setProblem(`unexpected response code: ${response.status}`);
+          return;
     }
   };
 
@@ -175,16 +171,16 @@ export default function Banner({getAppState, setAppState}) {
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
     switch(response.status){
         case SERVER_RESPONSE_OK:
-            const cart = JSON.parse(response.data);
-            setAppState({cart});
-            history.push('/cart');
-            return;
+          const cart = JSON.parse(response.data);
+          setAppState({cart});
+          history.push('/cart');
+          return;
         case SERVER_RESPONSE_BAD:
-            alert(response.data.message);
-            return;
+          setProblem(response.data.message);
+          return;
         default:
-            alert(`unexpected response code: ${response.status}`);
-            return;
+          setProblem(`unexpected response code: ${response.status}`);
+          return;
     }
   };
   const handleTransactionsClick = async () => {
@@ -195,10 +191,10 @@ export default function Banner({getAppState, setAppState}) {
         history.push('/mytransactions');
         return;
       case SERVER_RESPONSE_BAD:
-        alert(response.data.message);
+        setProblem(response.data.message);
         return;
       default:
-        alert(`unknown response code ${response.status}`);
+        setProblem(`unknown response code ${response.status}`);
         return;
     }
   };
@@ -231,7 +227,7 @@ export default function Banner({getAppState, setAppState}) {
   }
 
   const handleInboxClick = () => {
-    alert('inbox');
+    setProblem('inbox');
     //history.push('/inbox');
   }
   const menuId = 'primary-search-account-menu';
@@ -378,9 +374,20 @@ export default function Banner({getAppState, setAppState}) {
           </div>
         </Toolbar>
       </AppBar>
+      {
+          problem !== "" ?
+          <Alert
+          action={
+            <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+              close
+            </Button>
+          }
+          severity="warning"> {problem}</Alert> : <a1></a1>
+      }
       {renderMobileMenu}
       {renderMenu}
       {renderNotifications}
+
     </div>
   );
 }

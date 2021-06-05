@@ -6,10 +6,13 @@ import history from '../history';
 import { areNonNegativeIntegers, areNotEmptyStrings } from './componentUtil';
 import PaymentInfo from './PaymentInfo';
 import ShippingInfo from './ShippingInfo';
+import Alert from '@material-ui/lab/Alert';
 
 const Checkout = ({getAppState, setAppState}) =>{
     const [shippingInfo,setShippingInfo] = useState({});
     const [paymentInfo, setPaymentInfo] = useState({});
+    const [problem, setProblem] = useState("");
+    const [success, setSuccess] = useState("");
     const resetFields = () =>{
         setShippingInfo({});
         setPaymentInfo({});
@@ -26,11 +29,11 @@ const Checkout = ({getAppState, setAppState}) =>{
         const {cardNumber, expMonth, expYear, holder, cvv, id} = paymentInfo;
         const {name, address, city, country, zip} = shippingInfo;
         if(!areNotEmptyStrings([holder,name,address,city,country])){
-            alert("you must fill in all fields");
+            setProblem("all fields are mandatory");
             return;            
         }
         if(!areNonNegativeIntegers([cardNumber, expMonth, expYear, cvv, id, zip])){
-            alert("credit card info and zip code must be valid numbers");
+            setProblem("credit card info and zip code must be valid numbers");
             return;
         }
         //todo:remove
@@ -44,14 +47,13 @@ const Checkout = ({getAppState, setAppState}) =>{
                 cart.baskets = cart.baskets.filter(b => b.storeId !== basketAtCheckout);
                 resetFields();
                 setAppState({basketAtCheckout: undefined, cart});
-                alert('purchase was succesful!\nThank you, come again.');
-                history.push('/cart');
+                setSuccess('purchase was succesful!\nThank you, come again.');
                 return;
             case SERVER_RESPONSE_BAD:
-                alert(response.data);
+                setProblem(response.data);
                 return;
             default:
-                alert(`unexpected response code: ${response.status}`);
+                setProblem(`unexpected response code: ${response.status}`);
                 return;
         }
     }
@@ -59,7 +61,32 @@ const Checkout = ({getAppState, setAppState}) =>{
     const paperStyle={padding :20,height:"auto",width:"700px", margin:"20px auto"}
     const btnstyle={margin:'8px 0'}
     return(
-            <Paper elevation={10} style={paperStyle}>
+        <div>                
+            {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+            }
+
+            {   
+            success !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => 
+                {
+                    setSuccess("");
+                    history.push('/cart');
+                }}>
+                close
+                </Button>
+            }
+            severity="success"> {success}</Alert> : 
+            <Paper elevation={10} style={paperStyle}> 
                 <Grid align='center'>
                     <Typography variant="h3">Checkout</Typography>
                 </Grid>
@@ -77,6 +104,8 @@ const Checkout = ({getAppState, setAppState}) =>{
                 <Button type='submit' color='secondary' variant="contained" style={btnstyle}
                     onClick={onCancelClick} fullWidth>Cancel</Button>
             </Paper>
+            }
+        </div>
     );
 };
 

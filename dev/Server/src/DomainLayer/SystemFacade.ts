@@ -239,7 +239,7 @@ export class SystemFacade
             })
             .catch( error => {
                 Logger.log(`login => ${error}`);
-                reject(`login => ${error}`);
+                reject(`${error}`);
             })
         })
     }

@@ -57,11 +57,14 @@ export const OpenStore = ({getAppState, setAppState}) => {
           if(res.status == 200){
             setAppState({IsStoreManager : true})
             setIsSucsess(true);
+            setHasProblem(false);
+            clearFields();
           }
           else if(res.status == 201)
           {
             setHasProblem(true);
             setProblem(res.data.error);
+            setIsSucsess(false)
             clearFields();
           }
         })
@@ -87,12 +90,11 @@ export const OpenStore = ({getAppState, setAppState}) => {
         }
       >
         Store created sussfully!
-      </Alert> :
-      _hasProblem ?
-      <Alert severity="warning">A problem accured while opening the store: {problem}!</Alert>
-
-
-      :<Grid>
+      </Alert> : <a1></a1>}
+      {_hasProblem ?
+      <Alert severity="warning">A problem accured while opening the store: {problem}!</Alert> : <a1></a1>
+        }
+      <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
                     <h2>Create new store</h2>
@@ -153,7 +155,9 @@ export const OpenStore = ({getAppState, setAppState}) => {
                     fullWidth>clear
                   </Button>
                 <Typography >
-                    <Button onClick={() => {history.push('/welcome');}} >
+                    <Button onClick={() => {
+                      history.push('/welcome');
+                      }} >
                         back
                     </Button>
                 </Typography>
@@ -161,8 +165,6 @@ export const OpenStore = ({getAppState, setAppState}) => {
 
             </Paper>
         </Grid>
-                }
-
     </div>
   </div>
   );

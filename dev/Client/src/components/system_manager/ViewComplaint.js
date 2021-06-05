@@ -3,12 +3,16 @@ import React, { useState } from 'react';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../../constants';
 import ReadMessage from '../messaging/ReadMessage';
 import WriteMessage from '../messaging/WriteMessage';
+import Alert from '@material-ui/lab/Alert';
+import { Button } from '@material-ui/core';
 
 const ViewComplaint=({getAppState, setAppState, message})=>{
     const [isReadMode, setIsReadMode] = useState(true);
     const [replyMessage, setReplyMessage] = useState({title:`Reply: ${message.title}`, body:"", id:message.id})
     const {userId, complaints} = getAppState();
     const {id} = message;
+    const [problem, setProblem] = useState("");
+    const [success, setSuccess] = useState("");
 
     const onReplyClick = async() => {
         setIsReadMode(false);
@@ -24,10 +28,10 @@ const ViewComplaint=({getAppState, setAppState, message})=>{
                 setAppState({complaints: complaints.filter(c => c.id !== id)});
                 break;
             case SERVER_RESPONSE_BAD:
-                alert(`Could not send message.\n${response.data.message}`);
+                setProblem(`Could not send message.\n${response.data.message}`);
                 break;
             default:
-                alert(`Could not send message.`);
+                setProblem(`Could not send message.`);
                 break;
         }
         // const {complaints} = getAppState();
@@ -42,14 +46,14 @@ const ViewComplaint=({getAppState, setAppState, message})=>{
         })
         switch(response.status){
             case SERVER_RESPONSE_OK:
-                alert(response.data);
+                setSuccess(response.data);
                 setIsReadMode(true);
                 break;
             case SERVER_RESPONSE_BAD:
-                alert(`Could not send message.\n${response.data.message}`);
+                setProblem(`Could not send message.\n${response.data.message}`);
                 break;
             default:
-                alert(`Could not send message.`);
+                setProblem(`Could not send message.`);
                 break;
         }
         // setIsReadMode(true);
@@ -61,9 +65,35 @@ const ViewComplaint=({getAppState, setAppState, message})=>{
 
 
     return (
-        isReadMode ?
+        <div>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        }
+
+        {   
+            success !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => 
+                {
+                    setSuccess("");
+                }}>
+                close
+                </Button>
+                }
+            severity="success"> {success}</Alert> : <a1></a1>
+        }
+        {isReadMode ?
         <ReadMessage message={message} onReplyClick={onReplyClick} onDeleteClick={onDeleteClick}/> :
-        <WriteMessage getMessage={()=>replyMessage} setMessage={setReplyMessage} onSendClick={onSendReplyClick} onCancelClick={onCancelReplyClick}/>
+        <WriteMessage getMessage={()=>replyMessage} setMessage={setReplyMessage} onSendClick={onSendReplyClick} onCancelClick={onCancelReplyClick}/>}
+        </div>
     )
 
 }

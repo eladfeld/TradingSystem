@@ -5,13 +5,15 @@ import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../../
 import AbstractTable from '../AbstractTable';
 import SystemTransaction from './SystemTransaction';
 import UserStoreSearch from './UserStoreSearch';
-
+import Alert from '@material-ui/lab/Alert';
+import { Button } from '@material-ui/core';
 
 const SystemTransactions = ({userId}) => {
     // items: any;// columnNames: any;// renderRowCells: any;// rowToKey: any;// onRowClick: any;
 
     const [transaction, setTransaction] = useState(undefined);
     const [transactions, setTransactions] = useState([]);
+    const [problem, setProblem] = useState("");
 
     const onSearchClick = (response) => {
         switch(response.status){
@@ -24,11 +26,11 @@ const SystemTransactions = ({userId}) => {
               setTransactions(t);
               return;
             case SERVER_RESPONSE_BAD:
-              alert(response.data.message);
+                setProblem(response.data.message);
               return;
             default:
-              alert(response.data.message);
-              return;
+                setProblem(response.data.message);
+                return;
         }
     }
 
@@ -62,6 +64,17 @@ const SystemTransactions = ({userId}) => {
     const paperStyle={padding :20,height:"auto",width:"50vw", margin:"20px auto"}
 
     return(
+        <div>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        }
         <Paper style={paperStyle}>
             <UserStoreSearch onSearchUserClick={onSearchUserClick} onSearchStoreClick={onSearchStoreClick}/>
             {
@@ -76,8 +89,10 @@ const SystemTransactions = ({userId}) => {
                         xs={12} md={12}/>
             }
         </Paper>
+        </div>
 
-    )
+
+    );
 }
 
 export default SystemTransactions;

@@ -7,14 +7,15 @@ import { isNonNegativeInteger } from './componentUtil';
 
 
 
-const CartItem = ({getAppState, setAppState, basket, product}) =>{
+const CartItem = ({getAppState, setAppState, basket, product, setProblem}) =>{
     const {userId, cart} = getAppState();
     const [quantity, setQuantity] = useState(product.quantity);
 
     const onUpdateQuantity = async (_quantity) =>{
+        setProblem("");
         if(!isNonNegativeInteger(_quantity)){
             setQuantity(product.quantity);
-            alert('quantity must be a non-negative number');
+            setProblem('quantity must be a non-negative number');
             return;
         }
         axios.post(SERVER_BASE_URL+'editCart',{
@@ -33,14 +34,14 @@ const CartItem = ({getAppState, setAppState, basket, product}) =>{
                     setQuantity(product.quantity);
                     return;
                 case SERVER_RESPONSE_BAD:
-                    alert(response.data);
+                    setProblem(response.data);
                     setQuantity(product.quantity);
                     return;
                 default:
-                    alert(`unknown response code ${response.status}`);
+                    setProblem(`unknown response code ${response.status}`);
                     return;
             }  
-        }).catch(e => alert(e))
+        }).catch(e => setProblem(e))
   
     }
 

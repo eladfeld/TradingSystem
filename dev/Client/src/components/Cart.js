@@ -1,7 +1,6 @@
 import {List, ListSubheader, ListItemText, Grid, Button } from '@material-ui/core';
 import PaymentIcon from '@material-ui/icons/Payment';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import React from 'react';
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
@@ -9,6 +8,7 @@ import Banner from './Banner';
 import history from '../history';
 import ProgressWheel from './ProgreeWheel';
 import CartItem from './CartItem';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 const Cart = ({getAppState, setAppState}) => {
     const classes = useStyles();
     const {cart} = getAppState();
+    const [problem, setProblem] = useState("");
 
     const onCheckoutCartClick = async (storeId) =>{
         const {userId} = getAppState();
@@ -44,11 +45,11 @@ const Cart = ({getAppState, setAppState}) => {
                 history.push('/checkout');
                 return;
             case SERVER_RESPONSE_BAD:
-                alert(response.data);
+                setProblem(response.data);
                 //history.push('/checkout');//TODO: REMOVE LINE!
                 return;
             default:
-                alert(`unexpected response code: ${response.status}`);
+                setProblem(`unexpected response code: ${response.status}`);
                 return;
         }
     }
@@ -56,6 +57,16 @@ const Cart = ({getAppState, setAppState}) => {
     return (
         <div >
         <Banner getAppState={getAppState} setAppState={setAppState}/>
+        {
+          problem !== "" ?
+          <Alert
+          action={
+            <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+              close
+            </Button>
+          }
+          severity="error"> {problem}</Alert> : <a1></a1>
+        } 
         <List className={classes.root} subheader={<li />}>
         {
         cart === null || cart === undefined ? <ProgressWheel/> :
@@ -75,7 +86,7 @@ const Cart = ({getAppState, setAppState}) => {
                     </Grid>                    
                 </ListSubheader>
                 {basket.products.map((product) => (
-                    <CartItem getAppState={getAppState} setAppState={setAppState} basket={basket} product={product}/>
+                    <CartItem getAppState={getAppState} setAppState={setAppState} basket={basket} product={product} setProblem={setProblem}/>
                 ))}
             </ul>
             </li>

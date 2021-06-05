@@ -8,9 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import AddIcon from '@material-ui/icons/Add';
 import axios from 'axios';
 import { Grid } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import { Button } from '@material-ui/core';
 
 
 import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../../constants';
@@ -45,7 +46,7 @@ export default function ManageSystem({getAppState, setAppState}) {
     const [userNames, setUserNames] = useState(NOT_REQUESTED);
     const [complaints, setComplaints] = useState(NOT_REQUESTED);
     const [transactions, setTransactions] = useState(NOT_REQUESTED);
-
+    const [problem, setProblem] = useState("");
     const {userId} = getAppState();
 
 
@@ -84,11 +85,11 @@ export default function ManageSystem({getAppState, setAppState}) {
                                 setStores(RECEIVED);
                                 break;
                             case SERVER_RESPONSE_BAD:
-                                alert(storesResponse.data);
+                                setProblem(storesResponse.data);
                                 setStores(NOT_REQUESTED);
                                 break;
                             default:
-                                alert(unknownStatusMessage(storesResponse));
+                                setProblem(unknownStatusMessage(storesResponse));
                                 setStores(NOT_REQUESTED);
                                 break;
                         }
@@ -106,10 +107,10 @@ export default function ManageSystem({getAppState, setAppState}) {
                 //                 setUserNames(JSON.parse(userNamesResponse.data));
                 //                 break;
                 //             case SERVER_RESPONSE_BAD:
-                //                 alert(userNamesResponse.data);
+                //                 setProblem(userNamesResponse.data);
                 //                 break;
                 //             default:
-                //                 alert(unknownStatusMessage(userNamesResponse));
+                //                 setProblem(unknownStatusMessage(userNamesResponse));
                 //                 break;
                 //         }
                 //     }
@@ -131,11 +132,11 @@ export default function ManageSystem({getAppState, setAppState}) {
                                 setComplaints(RECEIVED);
                                 break;
                             case SERVER_RESPONSE_BAD:
-                                alert(complaintsResponse.data);
+                                setProblem(complaintsResponse.data);
                                 setComplaints(NOT_REQUESTED);
                                 break;
                             default:
-                                alert(unknownStatusMessage(complaintsResponse));
+                                setProblem(unknownStatusMessage(complaintsResponse));
                                 setComplaints(NOT_REQUESTED);
                                 break;
                         }
@@ -158,10 +159,10 @@ export default function ManageSystem({getAppState, setAppState}) {
                 //                 setComplaints([]);
                 //                 break;
                 //             case SERVER_RESPONSE_BAD:
-                //                 alert(transactionsResponse.data);
+                //                 setProblem(transactionsResponse.data);
                 //                 break;
                 //             default:
-                //                 alert(unknownStatusMessage(transactionsResponse));
+                //                 setProblem(unknownStatusMessage(transactionsResponse));
                 //                 break;
                 //         }
                 //     }
@@ -180,7 +181,17 @@ export default function ManageSystem({getAppState, setAppState}) {
 
   return (
       <div>
-          <Banner getAppState={getAppState} setAppState={setAppState}/>
+        <Banner getAppState={getAppState} setAppState={setAppState}/>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        } 
     <Grid container>
         <Grid item xs={1}>
             <Paper className={classes.root}>

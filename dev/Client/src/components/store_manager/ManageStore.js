@@ -24,6 +24,8 @@ import ManagePolicies from './ManagePolicies';
 import BuyingPolicy from '../buying_policy/BuyingPolicy';
 import DiscountPolicy from '../discount_policy/DiscountPolicy';
 import DeleteManager from './RemoveManager';
+import Alert from '@material-ui/lab/Alert';
+import { Button } from '@material-ui/core';
 
 const useStyles = makeStyles({
   root: {
@@ -53,7 +55,7 @@ export default function ManageStore({getAppState, setAppState}) {
     const [addProduct, setaddProduct] = useState(undefined);
     const [manageCategories, setmanageCategories] = useState(undefined);
     const [policies, setPolicies] = useState(undefined);
-
+    const [problem, setProblem] = useState("");
 
     const onInventoryClick =() =>{
         setPage("inventory");
@@ -117,10 +119,10 @@ export default function ManageStore({getAppState, setAppState}) {
                                 setInventory([]);
                                 break;
                             case SERVER_RESPONSE_BAD:
-                                alert(storeResponse.data);
+                                setProblem(storeResponse.data);
                                 break;
                             default:
-                                alert(unknownStatusMessage(storeResponse));
+                                setProblem(unknownStatusMessage(storeResponse));
                                 break;
                         }
                     }
@@ -138,10 +140,10 @@ export default function ManageStore({getAppState, setAppState}) {
                                 setmanageCategories([]);
                                 break;
                             case SERVER_RESPONSE_BAD:
-                                alert(storeResponse.data);
+                                setProblem(storeResponse.data);
                                 break;
                             default:
-                                alert(unknownStatusMessage(storeResponse));
+                                setProblem(unknownStatusMessage(storeResponse));
                                 break;
                         }
                     }
@@ -159,10 +161,10 @@ export default function ManageStore({getAppState, setAppState}) {
                                 setStaff([]);
                                 break;
                             case SERVER_RESPONSE_BAD:
-                                alert(staffResponse.data);
+                                setProblem(staffResponse.data);
                                 break;
                             default:
-                                alert(unknownStatusMessage(staffResponse));
+                                setProblem(unknownStatusMessage(staffResponse));
                                 break;
                         }
                     }
@@ -179,10 +181,10 @@ export default function ManageStore({getAppState, setAppState}) {
                             setAppState({buyingPolicies: policies})
                             break;
                         case SERVER_RESPONSE_BAD:
-                            alert(policiesResponse.data);
+                            setProblem(policiesResponse.data);
                             break;
                         default:
-                            alert(unknownStatusMessage(policiesResponse));
+                            setProblem(unknownStatusMessage(policiesResponse));
                             break;
                     }
                 }
@@ -208,6 +210,16 @@ export default function ManageStore({getAppState, setAppState}) {
   return (
     <div>
       <Banner getAppState={getAppState} setAppState={setAppState}/>
+      {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        } 
         <Paper className={classes.root}>
         <MenuList>
             <MenuItem onClick={onInventoryClick} >

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -9,6 +9,7 @@ import { Box, Button } from '@material-ui/core';
 import axios from 'axios';
 import { SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK } from '../../constants';
 import { unknownStatusMessage } from '../componentUtil';
+import Alert from '@material-ui/lab/Alert';
 
 
 const APPOINT_MANAGER     = 0;
@@ -51,6 +52,7 @@ export default function ManageEmployee({getAppState, setAppState, emp, storeId, 
   const {userId} = getAppState();
   //if(!emp.permissions) emp.permissions = 6;//TODO: REMOVE!
   const [mask, setMask] = React.useState(emp.permission);
+  const [problem, setProblem] = useState("");
   const switchCheck = (idx) => {
     var bit = 1 << idx;
     if(isChecked(idx)){
@@ -73,21 +75,30 @@ export default function ManageEmployee({getAppState, setAppState, emp, storeId, 
       });
       switch(response.status){
         case SERVER_RESPONSE_OK:
-            emp.permission = mask;
-            onEmpUpdate(emp);
-            
-            return;
+          emp.permission = mask;
+          onEmpUpdate(emp);
+          return;
         case SERVER_RESPONSE_BAD:
-            alert(response.data);
-            return;
+          setProblem(response.data);
+          return;
         default:
-            alert(unknownStatusMessage(response));
-            return;
+          setProblem(unknownStatusMessage(response));
+          return;
       }
   }
 
   return (
     <div className={classes.root}>
+        {
+            problem !== "" ?
+            <Alert
+            action={
+                <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+                close
+                </Button>
+            }
+            severity="error"> {problem}</Alert> : <a1></a1>
+        } 
       <FormControl component="fieldset" className={classes.formControl}>
         <FormLabel component="legend">Assign responsibility</FormLabel>
         <FormGroup>
