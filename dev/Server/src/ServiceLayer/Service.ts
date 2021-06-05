@@ -17,14 +17,6 @@ export class Service
     private constructor()
     {
         this.facade = new SystemFacade();
-        this.facade.init().then(_ =>{
-            if(SHOULD_INIT_STATE){
-                setTimeout(async() =>{
-                    const res = await new StateInitializer().initState();
-                    console.log(`init state was succesful: ${res}`)
-                }, 0);
-            }
-        })
     }
 
     public get_word_list(word: string): string[]
@@ -37,13 +29,14 @@ export class Service
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
-            Service.singletone.facade = await SystemFacade.get_instance();
-            if(SHOULD_INIT_STATE){
-                setTimeout(async() =>{
-                    const res = await new StateInitializer().initState();
-                    console.log(`init state was successful: ${res}`)
-                }, 0);
-            }
+            return Service.singletone.facade.init().then(_ =>{
+                if(SHOULD_INIT_STATE){
+                    setTimeout(async() =>{
+                        const res = await new StateInitializer().initState();
+                        console.log(`init state was succesful: ${res}`)
+                    }, 0);
+                }
+            }).then(() => Service.singletone)
         }
         return Service.singletone;
     }

@@ -15,7 +15,7 @@ import { Service } from '../ServiceLayer/Service';
 
 const initService = async ()=>
 {
-    Controller.initSystem();
+    await Controller.initSystem();
 }
 
 const run  = () =>
@@ -47,7 +47,7 @@ const run  = () =>
     router.use('/command', Route);
 
 
-    // Error handling 
+    // Error handling
     router.use((req, res, next) => {
         const error = new Error('command not found');
 
@@ -84,8 +84,8 @@ const options = {
                 }
             })
         })
-        
-        WsConn.on("message", data => 
+
+        WsConn.on("message", data =>
         {
             console.log(data);
             let userId:number = Controller.getSubscriberId(String(data));
@@ -95,7 +95,7 @@ const options = {
                 wssConnections.set(userId, WsConn);
             }
         })
-        
+
     });
 
 
@@ -118,5 +118,3 @@ const options = {
 }
 
 initService().then(run)
-
-

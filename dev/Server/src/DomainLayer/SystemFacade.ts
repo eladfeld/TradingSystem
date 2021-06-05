@@ -22,8 +22,7 @@ import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS } from "../config";
 import { ProductDB } from "../DataAccessLayer/DBinit";
-import * as connector from "../DataAccessLayer/connectDb"
-import { Sequelize } from "sequelize/types";
+import { initTables } from "../DataAccessLayer/connectDb";
 export class SystemFacade
 {
 
@@ -32,41 +31,20 @@ export class SystemFacade
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
     private static lastSessionId = 0;
 
-    public static AsyncConstructor = async():Promise<SystemFacade> => {
-        const facade: SystemFacade = new SystemFacade();
-        await facade.init();
-        return facade;
-    }
-
-    private static instance: SystemFacade;
     public constructor()
     {
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        //User.initLastId();
-        if(!(this.initPaymentSystem() && this.initSupplySystem() && this.initSystemManagers() ))
-        {
-            Logger.error("system could not initialized properly!");
-            throw new Error("failed to init trading system. check api connections and system managers");
-        }
     }
 
     public async init(){
+        await initTables()
         if(!((await this.initPaymentSystem()) && (await this.initSupplySystem()) && this.initSystemManagers()))
         {
             Logger.error("system could not initialized properly!");
             throw new Error("failed to init trading system. check api connections and system managers");
         }
-    }
-
-    public static async get_instance(): Promise<SystemFacade>{
-        if(this.instance == undefined){
-            await connector.initTables()
-            this.instance = new SystemFacade();
-            return this.instance;
-        }
-        return this.instance;
     }
 
     private async initSupplySystem() : Promise<boolean>
@@ -91,7 +69,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid message title")})
         if(!this.isNonEmptyString(body))
             return new Promise((resolve,reject) => { reject("invalid message body")})
-        
+
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -102,7 +80,7 @@ export class SystemFacade
     }
 
     public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
-        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);      
+        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -113,7 +91,7 @@ export class SystemFacade
     }
 
     public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
-        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);      
+        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -132,8 +110,8 @@ export class SystemFacade
         return ["feature","not", "yet", "supported"];
     }
     public closeStore = (sessionId:string, storeName:string):Promise<string> =>{
-        Logger.log(`closeStore : sessionId:${sessionId} storeName: ${storeName}`);  
-        if(!this.isNonEmptyString(storeName)) 
+        Logger.log(`closeStore : sessionId:${sessionId} storeName: ${storeName}`);
+        if(!this.isNonEmptyString(storeName))
             return new Promise((resolve,reject) => { reject("invalid storeName")});
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
@@ -208,7 +186,7 @@ export class SystemFacade
         if(age < 1 || age === undefined || age === null){
             return new Promise((resolve,reject) => { reject("invalid age")})
         }
-        
+
 
         let regp =Register.register(username, password, age);
         return new Promise ((resolve,reject) => {
@@ -265,7 +243,7 @@ export class SystemFacade
         if(storeId === undefined || storeId === null){
             return Promise.reject("invalid storeId")
         }
-        
+
         let user = this.logged_guest_users.get(sessionId)
             if (user === undefined)
                 return Promise.reject("user is not logged in")
@@ -359,7 +337,7 @@ export class SystemFacade
                 .catch( error => reject(error))
             })
             .catch( error => reject(error))
-        })        
+        })
     }
 
     //++
@@ -399,7 +377,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            return user.GetShoppingCart();   
+            return user.GetShoppingCart();
         }
         return Promise.reject("user not found");
     }
@@ -411,7 +389,7 @@ export class SystemFacade
         if(newQuantity < 0|| newQuantity === undefined || newQuantity === null){
             return Promise.reject("invalid quantity")
         }
-        
+
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -475,7 +453,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user === undefined)
             return Promise.reject("user not found")
-        
+
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
@@ -725,7 +703,7 @@ export class SystemFacade
                     issystemManagerp.then( ismanager => {
                         if (ismanager){
                             let historyp = watchee.getPurchaseHistory()
-                            historyp.then( history => { resolve(history) 
+                            historyp.then( history => { resolve(history)
                             }).catch ( error => reject(error))
                         }
                         else reject("user doesnt have permissions")
@@ -787,7 +765,7 @@ export class SystemFacade
                             let msgp: Promise<string> = store.deleteManager(subscriber, managerToDelete.getUserId() );
                             msgp.then(msg => resolve(msg))
                             .catch(error => reject(error))
-                        } 
+                        }
                         else reject("wrong parameter given");
                     })
                     .catch(error => reject(error))
@@ -854,7 +832,7 @@ export class SystemFacade
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
         let storep = StoreDB.getStoreByID(storeId);
         let newManagerp = Authentication.getSubscriberByName(newManagerUsername)
-        
+
         return new Promise ((resolve,reject) => {
             storep.then (store => {
                 newManagerp.then ( newmanager => {

@@ -3,7 +3,7 @@ export const Op = Sequelize.Op
 
 
 
-export const sequelize = new Sequelize('db', 'root', '1234', {
+export const sequelize = new Sequelize('db', 'root', '', {
     host: 'localhost',
     dialect: 'mysql',
     port: 3306, // this is the mysql port
