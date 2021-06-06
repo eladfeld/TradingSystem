@@ -149,6 +149,7 @@ export class SystemFacade
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
         loginStatsDB.updateLoginStats(userType.guest);
+        Publisher.get_instance().notify_login_update("$login_stats:guest")
         return new Promise( (resolve,reject) => {
             resolve(sessionId);
         })
@@ -231,16 +232,23 @@ export class SystemFacade
                     {
                         this.logged_system_managers.set(sessionId,subscriber);
                         loginStatsDB.updateLoginStats(userType.system_manager)
+                        Publisher.get_instance().notify_login_update("$login_stats:system_manager")
                     }
                     else{
                         let appointments = subscriber.getAppointments();
                         let ownerapps = appointments.filter((app => app.isOwner()))
-                        if (appointments.length == 0)
+                        if (appointments.length == 0){
                             loginStatsDB.updateLoginStats(userType.subscriber)
-                        else if (ownerapps.length != 0)
-                                loginStatsDB.updateLoginStats(userType.owner)
-                        else
-                                loginStatsDB.updateLoginStats(userType.manager)
+                            Publisher.get_instance().notify_login_update("$login_stats:subscriber")
+                        }
+                        else if (ownerapps.length != 0){
+                            loginStatsDB.updateLoginStats(userType.owner)
+                            Publisher.get_instance().notify_login_update("$login_stats:owner")
+                        }
+                        else{
+                            loginStatsDB.updateLoginStats(userType.manager)
+                            Publisher.get_instance().notify_login_update("$login_stats:manager")
+                        }
                     }
                 })
                 resolve(subscriber);
@@ -915,9 +923,24 @@ export class SystemFacade
         let sys_manager = this.logged_system_managers.get(sessionId)
         if (sys_manager !== undefined)
         {
+            if (this.isToday(from) || this.isToday(until))
+                Publisher.get_instance().register_login(sys_manager)
             return loginStatsDB.getLoginStats(from, until)
         }
         return Promise.reject("only system managers can ask login stats")
+    }
+
+    isToday(date : Date) : boolean
+    {
+        
+        let today = new Date()
+        console.log("today",today)
+        console.log("date",date)
+        if (date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear() &&
+                    date.getDate() === today.getDate())
+            return true;
+        return false
     }
 
     public getSubscriberId(sessionId: string): number {
