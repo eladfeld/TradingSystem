@@ -11,8 +11,8 @@ import { add_product, register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.1: edit store inventory', function () {
-    var service: Service = Service.get_instance();
+describe('4.1: edit store inventory',async function () {
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

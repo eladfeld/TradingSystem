@@ -8,6 +8,8 @@ import { PurchaseDummyDB } from "./dummies/PurchaseDummyDB";
 import { ProductDummyDB } from "./dummies/ProductDummyDB";
 import { iProductDB } from "./interfaces/iProductDB";
 import { SubscriberDB } from "./dbs/SubscriberDB";
+import { iLoginStatsDB } from "./interfaces/iLoginStatsDB";
+import { LoginStatsDummyDB } from "./dummies/LoginStatsDummyDB";
 
 
 const initSubscriberDB = () : iSubscriberDB => {
@@ -43,9 +45,19 @@ const initProductDB = () : iProductDB =>
         return new ProductDummyDB();
 }
 
+const initLoginStatsDB = () : iLoginStatsDB =>
+{
+    if (TEST_MODE)
+    // TODO: change it to test db
+        return new LoginStatsDummyDB();
+    else
+        return new LoginStatsDummyDB();
+}
+
 export const subscriberDB = initSubscriberDB();
 export const StoreDB = initStoreDB();
 export const PurchaseDB = initPurchaseDB();
 export const ProductDB = initProductDB();
+export const loginStatsDB = initLoginStatsDB();
 
-export default {subscriberDB, StoreDB , PurchaseDB};
+export default {subscriberDB, StoreDB , PurchaseDB, loginStatsDB};

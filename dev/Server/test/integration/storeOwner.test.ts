@@ -21,15 +21,15 @@ describe('Store owner manage store inventory' , () => {
 
     it('Owner adds valid product to inventory', async() => {
         const shirName = uniqueName("shir")
-        let service: Service = Service.get_instance()
+        let service: Service =await Service.get_instance()
         await failIfRejected(()=> service.register(shirName, "123",13));
         let subscriber = await failIfRejected(()=> Login.login(shirName,"123"));
             let store= new Store(subscriber.getUserId(), 'nike', 123, 'Herzelyia leyad bbb');
             try{
                 await store.addCategoryToRoot('Shirt');
                 await store.addCategoryToRoot('Pants');
-                await store.addNewProduct(subscriber, 'Dri-Fit Shirt', ['Shirt'], 100, 20);
-                await store.addNewProduct(subscriber, 'Dri-Fit Pants', ['Pants'], 100, 15);
+                await store.addNewProduct(subscriber, 'Dri-Fit Shirt', ['Shirt'], 100, 20,"");
+                await store.addNewProduct(subscriber, 'Dri-Fit Pants', ['Pants'], 100, 15,"");
             }catch(e){
                 failTestFromError(e);
             }   
@@ -41,11 +41,11 @@ describe('Store owner manage store inventory' , () => {
 
     it('Owner adds negative quantity of products to inventory', async() => {
         const shirName = uniqueName("shir");
-        let service: Service = Service.get_instance()
+        let service: Service =await Service.get_instance()
         await Register.register(shirName, "123", 13)
         let subscriber = await Login.login(shirName,"123")
         let store = new Store(subscriber.getUserId(), uniqueName('nike'), 123, 'Herzelyia leyad bbb')
-        await failIfResolved(()=> store.addNewProduct(subscriber, 'Dri-Fit Shirt', ['Shirt'], 100, -20))
+        await failIfResolved(()=> store.addNewProduct(subscriber, 'Dri-Fit Shirt', ['Shirt'], 100, -20,""))
     })
 
 });

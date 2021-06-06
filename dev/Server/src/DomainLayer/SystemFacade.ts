@@ -19,12 +19,14 @@ import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
-import { StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
+import { loginStatsDB, StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS } from "../config";
 import { ProductDB } from "../DataAccessLayer/DBinit";
 import { initTables } from "../DataAccessLayer/connectDb";
+import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 export class SystemFacade
 {
+    
 
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
@@ -146,6 +148,7 @@ export class SystemFacade
         let user: User = new User();
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
+        loginStatsDB.updateLoginStats(userType.guest);
         return new Promise( (resolve,reject) => {
             resolve(sessionId);
         })
@@ -225,7 +228,20 @@ export class SystemFacade
                 let ismanagerp = subscriber.isSystemManager()
                 ismanagerp.then (issysmanager => {
                     if(issysmanager)
-                    this.logged_system_managers.set(sessionId,subscriber);
+                    {
+                        this.logged_system_managers.set(sessionId,subscriber);
+                        loginStatsDB.updateLoginStats(userType.system_manager)
+                    }
+                    else{
+                        let appointments = subscriber.getAppointments();
+                        let ownerapps = appointments.filter((app => app.isOwner()))
+                        if (appointments.length == 0)
+                            loginStatsDB.updateLoginStats(userType.subscriber)
+                        else if (ownerapps.length != 0)
+                                loginStatsDB.updateLoginStats(userType.owner)
+                        else
+                                loginStatsDB.updateLoginStats(userType.manager)
+                    }
                 })
                 resolve(subscriber);
             })
@@ -894,7 +910,15 @@ export class SystemFacade
         return Promise.reject("subscriber not logged in");
     }
 
-
+    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats> 
+    {
+        let sys_manager = this.logged_system_managers.get(sessionId)
+        if (sys_manager !== undefined)
+        {
+            return loginStatsDB.getLoginStats(from, until)
+        }
+        return Promise.reject("only system managers can ask login stats")
+    }
 
     public getSubscriberId(sessionId: string): number {
         let subscriber = this.logged_subscribers.get(sessionId);

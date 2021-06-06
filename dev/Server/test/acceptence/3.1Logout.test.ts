@@ -11,8 +11,8 @@ import { enter_login } from './common';
 import { APIsWillSucceed, uniqueAlufHasportName, uniqueName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.1: Logout' , function() {
-    var service: Service = Service.get_instance();
+describe('3.1: Logout' ,async function() {
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

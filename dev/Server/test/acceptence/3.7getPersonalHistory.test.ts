@@ -19,9 +19,9 @@ import { PAYMENT_INFO, SHIPPING_INFO } from './common';
 import { APIsWillSucceed, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.7: get subscriber history', function () {
+describe('3.7: get subscriber history',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

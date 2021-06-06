@@ -1,17 +1,20 @@
+import { TEST_MODE } from "../config";
+
 export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
 
 
-export const sequelize = new Sequelize('db', 'root', '', {
+export const sequelize = new Sequelize('db', 'root', '1234', {
     host: 'localhost',
     dialect: 'mysql',
     port: 3306, // this is the mysql port
-    logging: true,
+    logging: false,
     define: {
       timestamps: false
     }
   });
+
 
 
 

@@ -13,9 +13,9 @@ const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMon
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.9: buy products', function () {
+describe('2.9: buy products',async function () {
     //setTestConfigurations();        //changing external APIs to mocks
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -30,8 +30,8 @@ describe('2.9: buy products', function () {
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
+        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
+        let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(avi_sessionId, store.getStoreId(), shippingInfo);
@@ -61,7 +61,7 @@ describe('2.9: buy products', function () {
         // avi opens store and adds 50 bananas to it
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
+        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
 
         // avi and ali both add 40 bananas to their basket
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 40);
@@ -96,7 +96,7 @@ describe('2.9: buy products', function () {
         
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet');
-        let banana_id = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 1)
+        let banana_id = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 1,"")
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana_id, 1)
         await service.addProductTocart(ali_sessionId, store.getStoreId(), banana_id, 1)
         await service.checkoutBasket(ali_sessionId, store.getStoreId(), SHIPPING_INFO)

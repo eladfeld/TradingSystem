@@ -4,6 +4,7 @@ import { Subscriber } from '../DomainLayer/user/Subscriber';
 import { SpellCheckerAdapter } from '../DomainLayer/SpellCheckerAdapter';
 import { tPredicate } from '../DomainLayer/discount/logic/Predicate';
 import { tDiscount } from '../DomainLayer/discount/Discount';
+import { promises } from 'dns';
 
 let service: Service = undefined;
 const OKSTATUS: number = 200;
@@ -548,6 +549,18 @@ const replyToComplaint = (req : Request, res: Response , next: NextFunction) =>{
     .catch(message => res.status(FAILSTATUS).json(message));
 }
 
+const getLoginStats = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId : string = req.body.sessionId
+    let from : Date = new Date(req.body.from)
+    let until : Date = new Date(req.body.until)
+    console.log(from)
+    console.log(until)
+    let getstatsp = service.getLoginStats(sessionId , from, until)
+    getstatsp.then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error));
+
+}
+
 
 
 export default {
@@ -601,5 +614,6 @@ export default {
     closeStore,
     deleteComplaint,
     replyToComplaint,
-    initSystem
+    initSystem,
+    getLoginStats
     };
