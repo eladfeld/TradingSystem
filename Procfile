@@ -1,1 +1,1 @@
-web: cd dev/Server && echo elad
+web: cd dev/Server && npm i && npm start
