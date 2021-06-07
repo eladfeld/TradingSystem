@@ -28,7 +28,7 @@ const StatsPanel = ({getAppState, setAppState}) =>{
     const onGetStatsClick = async() =>{
         //setAppState({stats: {guests:100, subscribers:200, owners:10, managers:30, system_managers:2}});
         const statsResponse = await axios.post(SERVER_BASE_URL+'/getLoginStats', {
-            userId,
+            sessionId : userId,
             from:fromDate.toString(),
             until: toDate.toString()
         });

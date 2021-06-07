@@ -149,7 +149,7 @@ export class SystemFacade
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
         loginStatsDB.updateLoginStats(userType.guest);
-        Publisher.get_instance().notify_login_update("$login_stats:guest")
+        Publisher.get_instance().notify_login_update("$login_stats:guests")
         return new Promise( (resolve,reject) => {
             resolve(sessionId);
         })
@@ -232,22 +232,22 @@ export class SystemFacade
                     {
                         this.logged_system_managers.set(sessionId,subscriber);
                         loginStatsDB.updateLoginStats(userType.system_manager)
-                        Publisher.get_instance().notify_login_update("$login_stats:system_manager")
+                        Publisher.get_instance().notify_login_update("$login_stats:system_managers")
                     }
                     else{
                         let appointments = subscriber.getAppointments();
                         let ownerapps = appointments.filter((app => app.isOwner()))
                         if (appointments.length == 0){
                             loginStatsDB.updateLoginStats(userType.subscriber)
-                            Publisher.get_instance().notify_login_update("$login_stats:subscriber")
+                            Publisher.get_instance().notify_login_update("$login_stats:subscribers")
                         }
                         else if (ownerapps.length != 0){
                             loginStatsDB.updateLoginStats(userType.owner)
-                            Publisher.get_instance().notify_login_update("$login_stats:owner")
+                            Publisher.get_instance().notify_login_update("$login_stats:owners")
                         }
                         else{
                             loginStatsDB.updateLoginStats(userType.manager)
-                            Publisher.get_instance().notify_login_update("$login_stats:manager")
+                            Publisher.get_instance().notify_login_update("$login_stats:managers")
                         }
                     }
                 })
@@ -920,6 +920,7 @@ export class SystemFacade
 
     getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats> 
     {
+        Logger.log(`getLoginStats: ${sessionId} , from:${from} , until:${until}`)
         let sys_manager = this.logged_system_managers.get(sessionId)
         if (sys_manager !== undefined)
         {

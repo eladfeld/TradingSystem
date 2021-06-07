@@ -550,6 +550,8 @@ const replyToComplaint = (req : Request, res: Response , next: NextFunction) =>{
 }
 
 const getLoginStats = (req : Request, res: Response , next: NextFunction) =>{
+    console.log(req.body)
+    console.log(req)
     let sessionId : string = req.body.sessionId
     let from : Date = new Date(req.body.from)
     let until : Date = new Date(req.body.until)

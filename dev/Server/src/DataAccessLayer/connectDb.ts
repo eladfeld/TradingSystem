@@ -5,8 +5,7 @@ export const Op = Sequelize.Op
 
 
 
-export const sequelize = 
-  TEST_MODE ? undefined :
+export const sequelize =
   new Sequelize('db', 'root', '1234', {
       host: 'localhost',
       dialect: 'mysql',
