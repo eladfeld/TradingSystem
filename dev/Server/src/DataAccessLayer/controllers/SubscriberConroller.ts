@@ -15,4 +15,6 @@ class SubscriverController implements iSubscriberDB
     addAppointment: (userId: number, appointment: Appointment) => Promise<void>;
     getAppointment: (userId: number, storeId: number) => Promise<Appointment>;
     deleteBasket: (userId: number, storeId: number) => void;
+    willFail =  () => {throw new Error("can not force subscriber db failure outside of test mode")};
+    willSucceed= () => {throw new Error("can not force subscriber db success outside of test mode")};
 }

@@ -24,5 +24,9 @@ export interface iSubscriberDB
     getAppointment:(userId : number, storeId : number) => Promise<Appointment>;
 
     deleteBasket:(userId: number, storeId: number) => void;
+
+    /* For testing purposes, real DB implementations should throw exception on calling these*/
+    willFail: () => void; 
+    willSucceed: () => void; 
     
 }

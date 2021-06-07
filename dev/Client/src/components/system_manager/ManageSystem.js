@@ -22,6 +22,7 @@ import ViewComplaints from './ViewComplaints';
 import SystemTransactions from './SystemTransactions';
 import ManageSubscribers from './ManageSubscribers';
 import Banner from '../Banner';
+import StatsPanel from './StatsPanel';
 
 const useStyles = makeStyles({
   root: {
@@ -33,6 +34,7 @@ const CLOSE_STORE = "close_store";
 const REMOVE_SUBSCRIBER = "remove_subscriber";
 const COMPLAINTS = "complaints";
 const TRANSACTIONS = "transactions";
+const STATISTICS = "statistics";
 
 const NOT_REQUESTED = undefined;
 const REQUESTED = null;
@@ -46,6 +48,7 @@ export default function ManageSystem({getAppState, setAppState}) {
     const [userNames, setUserNames] = useState(NOT_REQUESTED);
     const [complaints, setComplaints] = useState(NOT_REQUESTED);
     const [transactions, setTransactions] = useState(NOT_REQUESTED);
+    const [statistics, setStatistics] = useState(NOT_REQUESTED);
     const [problem, setProblem] = useState("");
     const {userId} = getAppState();
 
@@ -70,7 +73,10 @@ export default function ManageSystem({getAppState, setAppState}) {
         setPage(TRANSACTIONS);
     }
 
-
+    const onStatisticsClick =async() =>{
+        setStatistics(NOT_REQUESTED);
+        setPage(STATISTICS);
+    }
 
     const renderPage = () =>{
         switch(page){
@@ -174,6 +180,8 @@ export default function ManageSystem({getAppState, setAppState}) {
                     setTransactions(ph_system_transactions);
                 }
                 return <SystemTransactions userId={userId}/>         
+            case STATISTICS:
+                return <StatsPanel getAppState={getAppState} setAppState={setAppState}/>
             default:
                 return <div></div>;
         }
@@ -192,30 +200,34 @@ export default function ManageSystem({getAppState, setAppState}) {
             }
             severity="error"> {problem}</Alert> : <a1></a1>
         } 
-    <Grid container>
-        <Grid item xs={1}>
-            <Paper className={classes.root}>
-            <MenuList>
-                <MenuItem onClick={onCloseStoreClick} >
-                    <ListItemIcon><AssignmentIcon fontSize="small" /></ListItemIcon>
-                    <Typography variant="inherit">Close Store</Typography>
-                </MenuItem>
-                <MenuItem onClick={onRemoveSubscriberClick}>
-                    <ListItemIcon><PeopleIcon fontSize="small" /></ListItemIcon>
-                    <Typography variant="inherit">Remove Subscriber</Typography>
-                </MenuItem>
-                <MenuItem onClick={onComplaintsClick} >
-                    <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
-                    <Typography variant="inherit" noWrap>Complaints</Typography>
-                </MenuItem>
-                <MenuItem onClick={onTransactionsClick} >
-                    <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
-                    <Typography variant="inherit" noWrap>Transactions</Typography>
-                </MenuItem>
-            </MenuList>
+    <Grid container spacing={2}>
+        <Grid item xs={3}>
+            <Paper>
+                <MenuList>
+                    <MenuItem onClick={onCloseStoreClick} >
+                        <ListItemIcon><AssignmentIcon fontSize="small" /></ListItemIcon>
+                        <Typography variant="inherit">Close Store</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={onRemoveSubscriberClick}>
+                        <ListItemIcon><PeopleIcon fontSize="small" /></ListItemIcon>
+                        <Typography variant="inherit">Remove Subscriber</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={onComplaintsClick} >
+                        <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
+                        <Typography variant="inherit" noWrap>Complaints</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={onTransactionsClick} >
+                        <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
+                        <Typography variant="inherit" noWrap>Transactions</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={onStatisticsClick} >
+                        <ListItemIcon><PersonAddIcon fontSize="small" /></ListItemIcon>
+                        <Typography variant="inherit" noWrap>Statistics</Typography>
+                    </MenuItem>
+                </MenuList>
             </Paper>
         </Grid>
-        <Grid item xs={11}>
+        <Grid item xs={9}>
             {renderPage(page, getAppState, setAppState)}
         </Grid>
     </Grid>

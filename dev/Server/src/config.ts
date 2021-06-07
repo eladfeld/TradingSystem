@@ -16,7 +16,7 @@ export const CACHE_SIZE = -1;           //how much memory we want to cache (in b
 
 //init configurations
 export const SHOULD_INIT_STATE = true;    //initialize state from file?
-export const INITIAL_STATE = checkState;
+export const INITIAL_STATE = state;
 
 
 //API configurations
