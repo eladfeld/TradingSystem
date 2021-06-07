@@ -3,11 +3,11 @@ export const Op = Sequelize.Op
 
 
 
-export const sequelize = new Sequelize('db', 'root', '', {
+export const sequelize = new Sequelize('db', 'root', '1234', {
     host: 'localhost',
     dialect: 'mysql',
     port: 3306, // this is the mysql port
-    logging: true,
+    // logging: true,
     define: {
       timestamps: false
     }
@@ -24,6 +24,7 @@ const SystemManagersCache = require('./models/SystemManager')
 const Store = require('./models/Store')
 const Appointment = require('./models/Appointment')
 const StoreProduct = require('./models/StoreProduct')
+const Category = require('./models/Category')
 export async function initTables (){
 
     //TODO:delete when finshed working on db
@@ -31,11 +32,10 @@ export async function initTables (){
 
     console.log(sequelize.models)
     //store connections
-    // sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
-    // sequelize.models.Store.belongsTo(sequelize.models.Subscriber) // will add subscriberId (founder) to Store
-    // sequelize.models.Store.hasMany(sequelize.models.StoreProduct)
-    // sequelize.models.Product.hasMany(sequelize.models.StoreProduct)
-    // sequelize.models.Store.hasMany(sequelize.models.Category)
+    sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
+    sequelize.models.StoreProduct.belongsTo(sequelize.models.Store)
+    sequelize.models.Store.belongsTo(sequelize.models.Subscriber, {as: 'founder'}) // will add subscriberId (founder) to Store
+    sequelize.models.Store.hasMany(sequelize.models.Category)
     // sequelize.models.StoreProduct.hasMany(sequelize.models.Category)
     // sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     // sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)

@@ -1,4 +1,4 @@
-import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
@@ -55,7 +55,7 @@ export class Subscriber extends User
         let addp = this.shoppingCart.addProduct(storeId, productId, quantity);
         return new Promise ((resolve,reject) => {
             addp.then( shoppingbasket => {
-                subscriberDB.addProduct(this.userId,storeId, productId, quantity);
+                SubscriberDB.addProduct(this.userId,storeId, productId, quantity);
                 resolve(shoppingbasket)
             })
             .catch( error => reject(error))
@@ -81,7 +81,7 @@ export class Subscriber extends User
     public addAppointment(appointment: Appointment) : void
     {
         this.appointments.push(appointment);
-        subscriberDB.addAppointment(this.getUserId(),appointment)
+        SubscriberDB.addAppointment(this.getUserId(),appointment)
     }
 
     // returns an appointments of current user to storeId if exists
@@ -105,7 +105,7 @@ export class Subscriber extends User
         let editp = this.shoppingCart.editStoreCart(storeId, productId, quantity);
         return new Promise( (resolve,reject) => {
             editp.then ( msg => {
-                subscriberDB.updateCart(this.userId, storeId, productId, quantity)
+                SubscriberDB.updateCart(this.userId, storeId, productId, quantity)
                 resolve(msg)
             })
             editp.catch( error => {
@@ -117,7 +117,7 @@ export class Subscriber extends User
     public deleteAppointment(store_app: Appointment) 
     {
         this.appointments = this.appointments.filter(app => app !== store_app);
-        subscriberDB.deleteAppointment(store_app.appointee, store_app.appointer, store_app.store)
+        SubscriberDB.deleteAppointment(store_app.appointee, store_app.appointer, store_app.store)
     }
 
     public isSystemManager(): Promise<boolean>
@@ -144,7 +144,7 @@ export class Subscriber extends User
     public addPendingMessage(message:string) : void
     {
         this.pending_messages.push(message);
-        subscriberDB.addPendingMessage(this.getUserId() , message);
+        SubscriberDB.addPendingMessage(this.getUserId() , message);
     }
 
     public addMessageToHistory(message: string) : void
@@ -172,7 +172,7 @@ export class Subscriber extends User
     {
         let messages = this.pending_messages;
         this.pending_messages = [];
-        subscriberDB.deletePendingMessages(this.getUserId())
+        SubscriberDB.deletePendingMessages(this.getUserId())
         return messages;
     }
 
@@ -204,7 +204,7 @@ export class Subscriber extends User
     deleteShoppingBasket(storeId : number) : Promise<void>
     {
         this.shoppingCart.deleteShoppingBasket(storeId)
-        return subscriberDB.deleteBasket(this.getUserId(), storeId);
+        return SubscriberDB.deleteBasket(this.getUserId(), storeId);
     }
     
     public getPermission(storeId: number): number

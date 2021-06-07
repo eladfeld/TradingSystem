@@ -23,7 +23,7 @@ import iCategorizer from "../discount/Categorizer";
 
 import { StoreProduct } from "./StoreProduct";
 import UniversalPolicy from "../policy/buying/UniversalPolicy";
-import { StoreDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 
 
 export class Store implements iCategorizer
@@ -68,7 +68,6 @@ export class Store implements iCategorizer
         } else {
             this.buyingPolicy = buyingPolicy
         }
-        this.inventory = new Inventory();
         this.messages = new Map<number, string>()
         this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
@@ -79,10 +78,34 @@ export class Store implements iCategorizer
         this.discounts = [];
         this.buyingOptions = [buyingOption.INSTANT];
         this.storeHistory = new StoreHistory(this.storeId);
-        this.categiries = new TreeRoot<string>('root category');
-
-        StoreDB.addStore(this);
+        this.categiries = new TreeRoot<string>('General');
     }
+
+    public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>): Store
+    {
+        let store = new Store(storedb.founderId, storedb.storeName, storedb.bankAccount, storedb.storeAddress)
+        store.storeId = storedb.id
+        store.storeClosed = storedb.storeClosed;
+        store.numOfRaters = storedb.numOfRaters;
+        store.storeRating = storedb.storeRating;
+        store.appointments = appointments;
+        store.inventory = new Inventory(store.storeId, storeProducts);
+        store.categiries = categories
+
+        //TODO: add policies and categories!
+        return store;
+    }
+    
+    public static createStore(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string): Promise<Store> {
+        let store = new Store(storeFounderId,
+            storeName,
+            bankAccount,
+            storeAddress)
+            store.inventory = new Inventory(store.storeId, []);
+
+        return new Promise((resolve ,reject) => { StoreDB.addStore(store).then(() => resolve(store)).catch(err => reject(err))})
+    }
+
     public getProducts = (categoryName: string):number[] => {
         const category:TreeNode<string> = this.categiries.getChildNode(categoryName);
         if(!category){
@@ -388,7 +411,7 @@ export class Store implements iCategorizer
         return new Promise((resolve, reject) =>{
             ismanagerp.then( ismanager => {
                 if(!this.isOwner(userId) && !ismanager)
-                    reject("User not permitted6")
+                    reject("User not permitted")
                 resolve(JSON.stringify(this.getStoreInfo()))
             })
             .catch( error => reject(error))
@@ -509,27 +532,30 @@ export class Store implements iCategorizer
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToEditId);
         if(appointment !== undefined)
         {
+            SubscriberDB.updatePermission(this.storeId, managerToEditId, permissionMask)
             return appointment.editPermissions(permissionMask);
         }
         return Promise.reject("subscriber can't edit a manager he didn't appoint");
     }
 
-    public getStoreStaff(subscriber: Subscriber): Promise<string> {
+    public async getStoreStaff(subscriber: Subscriber): Promise<string> {
         if(!subscriber.checkIfPerrmited(ACTION.VIEW_STORE_STAFF, this)){
-            return Promise.reject('subscriber cant view store staff')
+            return Promise.reject('subscriber is not permitted to view store staff')
         }
         var staff : any = {}
         staff['subscribers']=[]
-        this.appointments.forEach((appointment) => {
-            let subscriberId = appointment.getAppointeeId()
-            staff['subscribers'].push(
-            {   'id':subscriber.getUserId() ,
-                'username': subscriber.getUsername(),
-                'permission': subscriber.getPermission(this.storeId),
-                'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
-            }
-                                        )
+        let staffPromises = this.appointments.map(appointment => SubscriberDB.getSubscriberById(appointment.getAppointeeId()));
+        let staffList = await Promise.all(staffPromises);
+        staffList.forEach(emp =>  
+            {           
+                staff['subscribers'].push(
+                {   'id':emp.getUserId() ,
+                    'username': emp.getUsername(),
+                    'permission': emp.getPermission(this.storeId),
+                    'title': this.isOwner(emp.getUserId()) ? "Owner" : "Manager",
+                })
         })
+
         return Promise.resolve(JSON.stringify(staff))
     }
 
@@ -612,6 +638,7 @@ export class Store implements iCategorizer
             return Promise.reject(`Category Father: ${categoryFather} does not exists in store: ${this.storeName}`)
         }
 
+        StoreDB.addCategory(this.storeId, category, categoryFather)
         let fatherNode = this.categiries.getChildNode(categoryFather)
         
         //TODO: #saveDB
@@ -625,7 +652,7 @@ export class Store implements iCategorizer
             return Promise.reject(`Category: ${category} already exists in store: ${this.storeName}`)
         }
 
-        //TODO: how to save category in db? #saveDB
+        StoreDB.addCategory(this.storeId, category, 'General')
         this.categiries.createChildNode(category);
         return Promise.resolve('category was added')
     }

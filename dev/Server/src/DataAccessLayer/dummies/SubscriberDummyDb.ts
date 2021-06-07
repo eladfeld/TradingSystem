@@ -65,6 +65,10 @@ export class SubscriberDummyDB implements iSubscriberDB
         return Promise.resolve()
     }
 
+    public updatePermission(storeId: number, managerToEditId: number,permissionMask:number){
+        return Promise.resolve();
+    }
+
 
     public async getSubscriberById(userId : number): Promise<Subscriber>
     {

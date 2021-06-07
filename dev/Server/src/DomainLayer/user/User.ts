@@ -1,4 +1,4 @@
-import { StoreDB, subscriberDB } from '../../DataAccessLayer/DBinit';
+import { StoreDB, SubscriberDB } from '../../DataAccessLayer/DBinit';
 import iSubject from '../discount/logic/iSubject';
 import { tShippingInfo } from '../purchase/Purchase';
 import { buyingOption } from '../store/BuyingOption';
@@ -14,7 +14,7 @@ export class User implements iSubject
 {
     protected shoppingCart: ShoppingCart;
     protected userId: number;
-    protected static lastId : number = User.getLastId();
+    protected static lastId: number = 0;
 
     public constructor()
     {
@@ -28,10 +28,9 @@ export class User implements iSubject
     }
 
 
-    public static async initLastId()
+    public static UserinitLastId()
     {
-        let id = await subscriberDB.getLastId()
-        User.lastId =  0;
+        SubscriberDB.getLastId().then(id => User.lastId = id);
     }
 
     public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Promise<boolean>

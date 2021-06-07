@@ -20,6 +20,8 @@ export interface iStoreDB
 
     getPruductInfoByStore:(storeName: string) => Promise<string>;
 
+    addCategory: (StoreId: number, category: string, father: string) => Promise<void>;
+
     clear:() => void;
 
 }

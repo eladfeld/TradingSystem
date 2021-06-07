@@ -7,23 +7,24 @@ import { iPurchaseDB } from "./interfaces/iPurchaseDB";
 import { PurchaseDummyDB } from "./dummies/PurchaseDummyDB";
 import { ProductDummyDB } from "./dummies/ProductDummyDB";
 import { iProductDB } from "./interfaces/iProductDB";
-import { SubscriberDB } from "./dbs/SubscriberDB";
+import { subscriberDB } from "./dbs/SubscriberDB";
+import { storeDB } from "./dbs/StoreDB";
+import { productDB } from "./dbs/ProductDB";
 
 
 const initSubscriberDB = () : iSubscriberDB => {
     if (TEST_MODE)
-        // TODO: change it to test db
-        return new SubscriberDummyDB()
+        return new SubscriberDummyDB();
     else
-        return new SubscriberDB()
+        return new subscriberDB();
 } 
 
 const initStoreDB = () : iStoreDB => {
     if (TEST_MODE)
     // TODO: change it to test db
-        return new StoreDummyDB()
+        return new StoreDummyDB();
     else
-        return new StoreDummyDB()
+        return new storeDB() ;
 }
 
 const initPurchaseDB = () : iPurchaseDB => {
@@ -40,10 +41,10 @@ const initProductDB = () : iProductDB =>
     // TODO: change it to test db
         return new ProductDummyDB();
     else
-        return new ProductDummyDB();
+        return new productDB();
 }
 
-export const subscriberDB = initSubscriberDB();
+export const SubscriberDB = initSubscriberDB();
 export const StoreDB = initStoreDB();
 export const PurchaseDB = initPurchaseDB();
 export const ProductDB = initProductDB();

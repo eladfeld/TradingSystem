@@ -1,10 +1,18 @@
+import { TreeRoot } from "../../DomainLayer/store/Common";
 import { Store } from "../../DomainLayer/store/Store";
+import { Appointment } from "../../DomainLayer/user/Appointment";
+import { ManagerAppointment } from "../../DomainLayer/user/ManagerAppointment";
+import { OwnerAppointment } from "../../DomainLayer/user/OwnerAppointment";
+import { Permission } from "../../DomainLayer/user/Permission";
+import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
+import { ProductDB } from "../DBinit";
 import { iStoreDB } from "../interfaces/iStoreDB";
+const Storedb = require('../models/Store')
 
-
-class StoreDB implements iStoreDB
+export class storeDB implements iStoreDB
 {
+
     public async addStore(store: Store): Promise<void>
     {
         await sequelize.models.Store.create({
@@ -14,13 +22,14 @@ class StoreDB implements iStoreDB
             numOfRaters: 0, //TODO: change
             bankAccount: store.getBankAccount(),
             storeAddress: store.getStoreAddress(),
-            storeClosed: store.getIsStoreClosed()
+            storeClosed: store.getIsStoreClosed(),
+            founderId: store.getStoreFounderId()
         })
     }
 
     public async getStoreByID(storeId: number): Promise<Store>
     {
-        let store = await sequelize.models.Store.findOne(
+        let storedb = await sequelize.models.Store.findOne(
             {
                 where:
                 {
@@ -29,19 +38,170 @@ class StoreDB implements iStoreDB
             }
         )
 
-        if(store !== null)
+        if(storedb !== null && storedb != [] && storedb !== undefined)
         {
+            let store = Store.rebuild(storedb, 
+                await this.getAppointmentByStoreId(storedb.id), 
+                await ProductDB.getAllProductsOfStore(storedb.id),
+                await this.getAllCategories(storedb.id));
+            return Promise.resolve(store);
+        }
+        return Promise.resolve(undefined);
+    }
+    public async deleteStore(storeId: number): Promise<void>
+    {
+        await sequelize.models.Store.destroy(
+            {
+                where:
+                {
+                    id: storeId
+                }
+            }
+        )
+    };
+
+    public async getStoreByName(storeName: string):Promise<Store>
+    {
+        let storedb = await sequelize.models.Store.findOne(
+            {
+                where:
+                {
+                    storeName: storeName
+                }
+            }
+        )
+
+        if(storedb !== null)
+        {
+            let store = Store.rebuild(storedb, 
+                await this.getAppointmentByStoreId(storedb.id), 
+                await ProductDB.getAllProductsOfStore(storedb.id),
+                await this.getAllCategories(storedb.id));
             return Promise.resolve(store);
         }
         return Promise.reject("store not found!");
     }
-    deleteStore: (storeId: number) => Promise<void>;
-    getStoreByName: (storeName: string) => Promise<Store>;
-    getPruductInfoByName: (productName: string) => Promise<string>;
+
+
+    public async getPruductInfoByName(productName: string):Promise<string>
+    {
+        let productsdb = await sequelize.models.StoreProduct.findAll({
+                where: {
+                    name: productName
+                },
+                include: {all: true}
+            })
+
+        var products : any = {}
+        products['products']=[]
+        console.log(productsdb)
+        for(let product of productsdb)
+        {
+            // console.log("=-===============", (await this.getStoreByID(product.storeId)).getStoreName())
+            products['products'].push({
+                'productName': product.name,
+                'numberOfRaters': product.numOfRaters,
+                'rating': product.productRating,
+                'price': product.price,
+                'storeName': product.Store.storeName,
+                'storeId': product.storeId,
+                'productId': product.id,
+                'image': product.image
+            })
+            console.log(product)
+        }
+        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
+        return Promise.resolve(JSON.stringify(products))
+    }
+
+    public async getPruductInfoByStore(storeName: string):Promise<string>
+    {
+        let productsdb = await sequelize.models.StoreProduct.findAll(
+            {
+                where:
+                {
+                    storeName: storeName
+                }
+            },
+            {
+                include: {all: true}
+            }
+        )
+        var products : any = {}
+        products['products']=[]
+        for(let product of productsdb)
+        {
+            products['products'].push({
+                'productName': product.name,
+                'numberOfRaters': product.numOfRaters,
+                'rating': product.productRating,
+                'price': product.price,
+                'storeName': product.store.storeName,
+                'storeId': product.storeId,
+                'productId': product.id,
+                'image': product.image
+            })
+        }
+        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
+        return Promise.resolve(JSON.stringify(products))
+    }
+
     getPruductInfoByCategory: (category: string) => Promise<string>;
     getProductInfoAbovePrice: (price: number) => Promise<string>;
     getProductInfoBelowPrice: (price: number) => Promise<string>;
-    getPruductInfoByStore: (storeName: string) => Promise<string>;
-    clear: () => void;
     
+    clear: () => void;
+
+    private async getAppointmentByStoreId(storeId : number) : Promise<Appointment[]>
+    {
+        let appointments = await sequelize.models.Appointment.findAll({
+            where:{
+                StoreId: storeId
+            }
+        })
+        Logger.log(`getting appointments response ${JSON.stringify(appointments)}`)
+        let apps: Appointment[] = appointments.map(
+            (app : any) => app.isManager ?
+            new ManagerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)) :
+            new OwnerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)))
+
+        return apps;
+    }
+    
+    public async addCategory(StoreId: number, category: string, father: string) : Promise<void>
+    {
+        await sequelize.models.Category.create({
+            StoreId: StoreId,
+            name: category,
+            father: father,
+        })
+    }
+
+    public async getAllCategories(StoreId: number) : Promise<TreeRoot<string>>
+    {
+        Logger.log(`getting categories StoreId: ${StoreId}`)
+        //TODO: fix
+        let categories = await sequelize.models.Category.findAll({
+            where: {
+                StoreId: StoreId,
+            }
+        })
+        let categiriesTree = new TreeRoot<string>('General');
+        
+        // Logger.log(`getting categories response: ${categories}`)
+        while(categories.length !== 0){
+            let inserted_categories: string[] = []
+            for(let category of categories){
+                let leaf = categiriesTree.getChildNode(category.father)
+                if (leaf != null){
+                    leaf.createChildNode(category.name);
+                    inserted_categories.push(category.name)   
+                }
+            }
+            categories = categories.filter( (cat: any) => inserted_categories.indexOf(cat.name) == -1)
+        }
+        Logger.log(`getting categories response: ${categiriesTree}`)
+        return categiriesTree;
+
+    }
 }

@@ -1,5 +1,4 @@
 import { Logger } from "../../Logger";
-import { makeFailure, makeOk, Result } from "../../Result";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { ManagerAppointment } from "./ManagerAppointment";

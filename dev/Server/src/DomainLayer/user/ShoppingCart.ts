@@ -1,13 +1,8 @@
-import { makeFailure, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Store } from "../store/Store";
 import { ShoppingBasket } from "./ShoppingBasket";
-import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
-import ts from "typescript";
 import { tShippingInfo } from "../purchase/Purchase";
-import { rejects } from "assert";
-import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingCart
 {
@@ -40,7 +35,7 @@ export class ShoppingCart
         return new Promise((resolve,reject) => {
             checkoutp.then( isSusccesfull => {
                 this.baskets.delete(storeId);
-                subscriberDB.deleteBasket(userId,storeId);
+                SubscriberDB.deleteBasket(userId,storeId);
                 resolve(isSusccesfull)
             })
             .catch( error => reject(error))

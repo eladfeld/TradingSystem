@@ -3,7 +3,7 @@ import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
-import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 
 
 
@@ -49,12 +49,12 @@ export abstract class Appointment {
 
     public getAppointee() : Promise<Subscriber>
     {
-        return subscriberDB.getSubscriberById(this.appointee);
+        return SubscriberDB.getSubscriberById(this.appointee);
     }
 
     public getAppointer() : Promise<Subscriber>
     {
-        return subscriberDB.getSubscriberById(this.appointer);
+        return SubscriberDB.getSubscriberById(this.appointer);
     }
 
     public getPermissions(): Permission {

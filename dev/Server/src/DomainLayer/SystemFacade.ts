@@ -19,7 +19,7 @@ import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
-import { StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
+import { StoreDB, SubscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS } from "../config";
 import { ProductDB } from "../DataAccessLayer/DBinit";
 import { initTables } from "../DataAccessLayer/connectDb";
@@ -495,11 +495,14 @@ export class SystemFacade
             return new Promise ((resolve,reject) => {
                 storep.then( _ => reject("storename used"))
                 .catch( _ => {
-                    let store: Store = new Store(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress);
-                    MakeAppointment.appoint_founder(subscriber, store);
-                    Publisher.get_instance().register_store(store.getStoreId(),subscriber);
-                    SpellCheckerAdapter.get_instance().add_storeName(storeName);
-                    resolve(store)
+                    let storePromise  = Store.createStore(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress)
+                    storePromise.then( store => {
+                        MakeAppointment.appoint_founder(subscriber, store);
+                        Publisher.get_instance().register_store(store.getStoreId(),subscriber);
+                        SpellCheckerAdapter.get_instance().add_storeName(storeName);
+                        resolve(store)
+                    })
+                    .catch( error => reject(error))
                 })
             })
         }
@@ -552,6 +555,10 @@ export class SystemFacade
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
+                if(store === undefined)
+                {
+                    resolve(-1);
+                }
                 let addp =store.addNewProduct(subscriber, productName, categories, price, quantity, image);
                 addp.then( productId => {
                     SpellCheckerAdapter.get_instance().add_productName(productName);
@@ -754,7 +761,7 @@ export class SystemFacade
     {
         Logger.log(`deleteManagerFromStore : sessionId:${sessionId},managerToDelete:${managerName}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let managerp = subscriberDB.getSubscriberByUsername(managerName)
+        let managerp = SubscriberDB.getSubscriberByUsername(managerName)
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             managerp.then( managerToDelete => {

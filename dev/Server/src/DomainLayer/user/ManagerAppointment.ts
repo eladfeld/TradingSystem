@@ -1,7 +1,5 @@
-import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { Permission } from "./Permission";
-import { Subscriber } from "./Subscriber";
 
 export class ManagerAppointment extends Appointment
 {

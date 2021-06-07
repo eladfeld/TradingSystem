@@ -1,7 +1,6 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { buyingOption } from "../store/BuyingOption";
-import { Product } from "../store/Product";
 import { Store } from "../store/Store";
 import iSubject from "../discount/logic/iSubject";
 import iBasket from "../discount/iBasket";
@@ -9,6 +8,7 @@ import { iProduct, MyProduct } from "../discount/iProduct";
 import BuyingSubject from "../policy/buying/BuyingSubject";
 import { tShippingInfo } from "../purchase/Purchase";
 import { ProductDB, StoreDB } from "../../DataAccessLayer/DBinit";
+import { StoreProduct } from "../store/StoreProduct";
 
 export class ShoppingBasket implements iBasket
 {
@@ -109,7 +109,7 @@ export class ShoppingBasket implements iBasket
         basket['storeId'] = this.store.getStoreId();
         basket['products']=[]
 
-        let productPromises: Promise<Product>[] = []
+        let productPromises: Promise<StoreProduct>[] = []
         this.products.forEach(function(quantity,productId,map){
             let product = ProductDB.getProductById(productId);
             productPromises.push(product);

@@ -6,6 +6,9 @@ import { iStoreDB } from "../interfaces/iStoreDB";
 
 export class StoreDummyDB implements iStoreDB
 {
+    public addCategory(StoreId: number, category: string, father: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
     private  stores: Store[]  = [];
 
@@ -20,7 +23,7 @@ export class StoreDummyDB implements iStoreDB
         let store: Store =  this.stores.find(store => store.getStoreId() == storeId);
         if (store)
             return Promise.resolve(store)
-        return Promise.reject("store doesnt exist")
+        return Promise.resolve(undefined);
     }
 
     public  deleteStore(storeId: number): Promise<void>

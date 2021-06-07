@@ -6,7 +6,6 @@ const StoreProduct = sequelize.define('StoreProduct', {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      primaryKey: true,
     },
     price: {
       type: DataTypes.INTEGER,
@@ -25,4 +24,8 @@ const StoreProduct = sequelize.define('StoreProduct', {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    image:{
+      type: DataTypes.STRING,
+      defaultValue: ""
+    }
   })

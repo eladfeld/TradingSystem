@@ -7,11 +7,11 @@ import { ShoppingCart } from "../../DomainLayer/user/ShoppingCart";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
-import { StoreDB, subscriberDB } from "../DBinit";
+import { StoreDB, SubscriberDB } from "../DBinit";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
-export class SubscriberDB implements iSubscriberDB
+export class subscriberDB implements iSubscriberDB
 {
 
     //add functions:
@@ -43,17 +43,22 @@ export class SubscriberDB implements iSubscriberDB
 
     public async addAppointment(userId: number, appointment: Appointment): Promise<void>
     {
+        // let store = await StoreDB.getStoreByID(appointment.getStoreId());
 
-        let store = await StoreDB.getStoreByID(appointment.getStoreId());
-        await sequelize.models.Store.create({
-            id: store.getStoreId(),
-            storeName: store.getStoreName(),
-            storeRating: store.getStoreRating(),
-            numOfRaters: 0, //TODO: change
-            bankAccount: store.getBankAccount(),
-            storeAddress: store.getStoreAddress(),
-            storeClosed: store.getIsStoreClosed()
-        })
+        // let storeDb = await sequelize.models.Store.findOne({where:{storeName: store.getStoreName()}})
+        // if(storeDb === null)
+        // {
+        //     await sequelize.models.Store.create({
+        //         id: store.getStoreId(),
+        //         storeName: store.getStoreName(),
+        //         storeRating: store.getStoreRating(),
+        //         numOfRaters: 0, //TODO: change
+        //         bankAccount: store.getBankAccount(),
+        //         storeAddress: store.getStoreAddress(),
+        //         storeClosed: store.getIsStoreClosed(),
+        //         founderId: store.getStoreFounderId()
+        //     })
+        // }
         await sequelize.models.Appointment.create({
             appointerId: appointment.appointer,
             StoreId: appointment.getStoreId(),
@@ -324,6 +329,22 @@ export class SubscriberDB implements iSubscriberDB
                 }
             } )
         return Promise.resolve()
+    }
+
+    
+    public async updatePermission(storeId: number, managerToEditId: number,permissionMask:number)
+    {
+        await sequelize.models.Appointment.update(
+        {
+            permissionsMask: permissionMask
+        },
+            {
+            where:
+            {
+                StoreId: storeId,
+                appointeeId: managerToEditId
+            }
+        })
     }
 
     public clear() {}

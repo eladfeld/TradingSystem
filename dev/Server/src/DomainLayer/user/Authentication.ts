@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { subscriberDB } from '../../DataAccessLayer/DBinit';
+import { SubscriberDB } from '../../DataAccessLayer/DBinit';
 import { Subscriber } from './Subscriber'; 
 
 export class Authentication
@@ -9,23 +9,23 @@ export class Authentication
     
     public static addSystemManager(sys_manager : Subscriber): Promise<void>
     {
-        return subscriberDB.addSystemManager(sys_manager);
+        return SubscriberDB.addSystemManager(sys_manager);
     }
 
     public static isSystemManager(userId : number) : Promise<boolean>
     {
-        return subscriberDB.isSystemManager(userId);
+        return SubscriberDB.isSystemManager(userId);
     }
 
     public static addSubscriber(username:string , password:string, age : number): Promise<void>
     {
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
-        return subscriberDB.addSubscriber(username, hashedPass, age)
+        return SubscriberDB.addSubscriber(username, hashedPass, age)
     }    
 
     public static checkedUsedUserName(username: string): Promise<boolean>
     {
-        let subp = subscriberDB.getSubscriberByUsername(username)
+        let subp = SubscriberDB.getSubscriberByUsername(username)
         return new Promise( (resolve,reject) => {
             subp.then( _ => {
                 reject("username already in use");
@@ -38,18 +38,18 @@ export class Authentication
 
     public static getSubscriberByName(username: string): Promise<Subscriber>
     {
-        return subscriberDB.getSubscriberByUsername(username);
+        return SubscriberDB.getSubscriberByUsername(username);
     }
 
     public static getSubscriberById(userId: number): Promise<Subscriber>
     {
-        return subscriberDB.getSubscriberById(userId);
+        return SubscriberDB.getSubscriberById(userId);
     }
 
     public static checkPassword(username: string, password: string) : Promise<boolean>
     {
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
-        let subscriberp = subscriberDB.getSubscriberByUsername(username);
+        let subscriberp = SubscriberDB.getSubscriberByUsername(username);
         return new Promise( (resolve,reject) => {
             subscriberp.then( subscriber =>{
                 if ( subscriber.getPassword() == hashedPass)

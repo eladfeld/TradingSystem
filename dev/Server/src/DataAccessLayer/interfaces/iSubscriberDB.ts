@@ -33,7 +33,7 @@ export interface iSubscriberDB
 
     deletePendingMessages:(userId: number) => void;
 
-    
+    updatePermission:(storeId: number, managerToEditId: number, permissionMask: number) => Promise<void>;
 
     clear:() => void;
     
