@@ -60,6 +60,8 @@ describe('Discount Tests - invalid inputs' , function() {
             }
         };
         const discountRes: Result<iDiscount> = DiscountParser.parse(disc);
+        console.log(`--------------\n`,discountRes);
+        console.log(`----------------------`);
         expect(isFailure(discountRes)).to.equal(true);
     });
 

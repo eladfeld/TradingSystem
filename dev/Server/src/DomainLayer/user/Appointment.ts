@@ -3,6 +3,7 @@ import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 
 
 
@@ -11,35 +12,49 @@ import { Subscriber } from "./Subscriber";
 
 export abstract class Appointment {
 
-    appointer: Subscriber;
-    appointee: Subscriber;
-    store: Store;
+    appointer: number;
+    appointee: number;
+    store: number;
     permission: Permission;
 
 
-    public constructor(appointer: Subscriber, store: Store, appointee: Subscriber, permission: Permission) {
+    public constructor(appointer: number, store: number, appointee: number, permission: Permission) {
         this.appointee = appointee;
         this.appointer = appointer;
         this.store = store;
         this.permission = permission;
     }
 
-    editPermissions(permissionMask: number): Result<string> 
+    editPermissions(permissionMask: number): Promise<string> 
     {
         this.permission.setPermissions(permissionMask);
-        return makeOk("permission changed successfully");
+        return Promise.resolve("permission changed successfully");
     }
 
-    public getStore(): Store {
+    public getStore(): Promise<Store> {
+        return StoreDB.getStoreByID(this.store);
+    }
+
+    public getStoreId() {
         return this.store;
     }
 
-    public getAppointee(): Subscriber {
+    public getAppointeeId(): number {
         return this.appointee;
     }
 
-    public getAppointer(): Subscriber {
+    public getAppointerId(): number {
         return this.appointer;
+    }
+
+    public getAppointee() : Promise<Subscriber>
+    {
+        return SubscriberDB.getSubscriberById(this.appointee);
+    }
+
+    public getAppointer() : Promise<Subscriber>
+    {
+        return SubscriberDB.getSubscriberById(this.appointer);
     }
 
     public getPermissions(): Permission {

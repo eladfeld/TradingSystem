@@ -4,6 +4,10 @@ import Controller from './Controller';
 const router = express.Router();
 
 router.get('/enter', Controller.enter);
+router.get('/getAllCategories', Controller.getAllCategories)
+router.get('/getProductNames', Controller.getProductNames)
+router.get('/getKeywords', Controller.getkeywords)
+router.get('/getStoreNames', Controller.getStoreNames)
 router.post('/register', Controller.register)
 router.post('/login', Controller.login)
 router.post('/exit', Controller.exit)
@@ -36,10 +40,22 @@ router.post('/getWordList', Controller.getWordList)
 router.post('/addDiscountPolicy', Controller.addDiscountPolicy)
 router.post('/addBuyingPolicy', Controller.addBuyingPolicy)
 router.post('/removeBuyingPolicy', Controller.removeBuyingPolicy)
+//router.post('/getBuyingPolicies', Controller.getBuyingPolicies)
 router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 router.post('/getUsername', Controller.getUsername)
 router.post('/getUserStores', Controller.getUserStores)
 router.post('/getMyPurchaseHistory', Controller.getMyPurchaseHistory)
+
+
+
+router.post('/complain', Controller.complain)
+router.post('/getUsersNames', Controller.getUserNames)
+router.post('/getSystemComplaints', Controller.getSystemComplaints)
+router.post('/getSystemTransactions', Controller.getSystemTransactions)
+router.post('/closeStore', Controller.closeStore)
+router.post('/deleteComplaint', Controller.deleteComplaint)
+router.post('/replyToComplaint', Controller.replyToComplaint)
+//router.post('/banUser', Controller.banUser)
 
 
 export = router;

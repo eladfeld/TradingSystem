@@ -1,10 +1,17 @@
 [
     {
         "username": "michael",
-        "hashpassword":  "7110eda4d09e062aa5e4a390b0a572ac0d2c0220"
+        "hashpassword":  "7110eda4d09e062aa5e4a390b0a572ac0d2c0220",
+        "age" : 25
     },
     {
         "username": "elad",
-        "hashpassword":  "7110eda4d09e062aa5e4a390b0a572ac0d2c0220"
+        "hashpassword":  "7110eda4d09e062aa5e4a390b0a572ac0d2c0220",
+        "age" : 25
+    },
+    {
+        "username": "u1",
+        "hashpassword":  "7110eda4d09e062aa5e4a390b0a572ac0d2c0220",
+        "age" : 25
     }
 ]

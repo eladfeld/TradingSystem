@@ -1,13 +1,16 @@
-import { isFailure, makeOk, Result } from "../../../Result";
+import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
+import iSubject from "../../discount/logic/iSubject";
 import PredicateParser from "../../discount/logic/parser";
 import { iPredicate } from "../../discount/logic/Predicate";
 import BuyingSubject from "./BuyingSubject";
 
 export class Rule{
+    public id: number;
     public predicate: iPredicate;               //the condition (i.e. 'no alcohol for minors', 'only babies can buy iPhones')    
     public description: string;                 //a message explaining the rule
 
-    constructor(predicate:iPredicate, description:string){
+    constructor(id:number, predicate:iPredicate, description:string){
+        this.id = id;
         this.predicate = predicate;             
         this.description = description;         
     }
@@ -16,6 +19,7 @@ export class Rule{
 export default class BuyingPolicy{
     private nextId: number = 1;                 //an id (unique to the store) for each rule in the policy
     private rules: Map<number,Rule>;            //the rules for buying at the store
+    public static SUCCESS: string = "buying policy is respected";
 
     constructor(){
         this.rules = new Map();
@@ -33,18 +37,30 @@ export default class BuyingPolicy{
             if(isFailure(res)) return res;
             if(!res.value) return makeOk(rule.description);
         }
-        return makeOk("success");
+        return makeOk(BuyingPolicy.SUCCESS);
     }
 
-    public addPolicy = (predicate: any, policyInWords: string ):Result<string> =>{
+    public addPolicy = (predicate: any, policyInWords: string ):Promise<string> =>{
+        //TODO: #saveDB
         const predRes: Result<iPredicate> = PredicateParser.parse(predicate);
-        if(isFailure(predRes)) return predRes;
-        this.rules.set(this.nextId++, new Rule(predRes.value, policyInWords));
-        return makeOk("successfully added condition to the buying policy");
+        if(isFailure(predRes)) return Promise.reject(predRes.message);
+        this.rules.set(this.nextId, new Rule(this.nextId,predRes.value, policyInWords));
+        this.nextId++;
+        return Promise.resolve("successfully added condition to the buying policy");
     }
 
-    public removePolicy = (id: number) =>{
+    public removePolicy = (id: number):Promise<string> =>{
+        //TODO: #saveDB
+        const policy = this.rules.get(id);
+        if(policy === undefined)return Promise.reject("polcy does not exist");
         this.rules.delete(id);
+        return Promise.resolve(`Policy #${id}: ${policy.description} has been removed`);
+    }
+
+    public getPolicies = ():Rule[] =>{
+        const output:Rule[] = [];
+        this.rules.forEach((rule:Rule, id:number)=>output.push(rule));
+        return output;
     }
 
 }

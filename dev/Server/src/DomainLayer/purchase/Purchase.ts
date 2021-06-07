@@ -1,13 +1,10 @@
-import PaymentSystemAdapter from './PaymentSystemAdapter';
-import SupplySystemAdapter from './SupplySystemAdapter';
-
+import {TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../config';
 import Transaction, { TransactionStatus } from './Transaction';
-import DbDummy from './DbDummy';
-import ShippingInfo from './ShippingInfo';
-import { isFailure, makeFailure, makeOk, Result } from '../../Result';
-import PaymentInfo from './PaymentInfo';
-import { TIMEOUT } from 'dns';
 import { Publisher } from '../notifications/Publisher';
+import APIAdapterFactory from '../apis/APIAdapterFactory';
+import {iPaymentAdapter, iSupplyAdapter} from './iAPI';
+import { PurchaseDB } from '../../DataAccessLayer/DBinit';
+
 
 export const stringUtil = {
     FAIL_RESERVE_MSG: "could not reserve shipment",
@@ -18,34 +15,39 @@ export const stringUtil = {
 };
 Object.freeze(stringUtil);
 
-export const PAYMENT_TIMEOUT_MILLISEC: number = 100000;
+export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
+export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
+export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
 
 
 class Purchase {
 
-    private supplySystem: SupplySystemAdapter;
-    private paymentSystem: PaymentSystemAdapter;
+    private supplySystem: iSupplyAdapter;
+    private paymentSystem: iPaymentAdapter;
     private cartCheckoutTimers: Map<number,Map<number, [ReturnType<typeof setTimeout>, () => void]>>;
-    private dbDummy: DbDummy;
-
+    //private dbDummy: PurchaseDB;
 
     constructor(){
-        this.paymentSystem = new PaymentSystemAdapter();
-        this.supplySystem = new SupplySystemAdapter();
+        this.paymentSystem = APIAdapterFactory.getPaymentAdapter();
+        this.supplySystem = APIAdapterFactory.getSupplyAdapter();
         this.cartCheckoutTimers = new Map();
-        this.dbDummy = new DbDummy();
     }
+
     private resetTimer = (userId:number, storeId: number, callback: ()=>void)=>{
         const timerId = setTimeout(callback, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, callback);
     }
     private terminateTransaction = (userId:number, storeId:number, storeCallback: () => void, status: number) => {
-        const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
-        if(!transaction) return;
-        storeCallback();
-        this.removeTimerAndCallback(userId, storeId);
-        transaction.setStatus(status);
-        this.dbDummy.updateTransaction(transaction);
+        const transactionp = PurchaseDB.getTransactionInProgress(userId, storeId);
+        transactionp.then(transaction =>
+            {
+                if(!transaction) return;
+                storeCallback();
+                this.removeTimerAndCallback(userId, storeId);
+                transaction.setStatus(status);
+                PurchaseDB.updateTransaction(transaction);
+            })
+
     }
 
     private onTransactionTimeout = (userId:number, storeId:number, storeCallback: () => void) => {
@@ -67,9 +69,10 @@ class Purchase {
     }
 
     //initiates a transaction between the store and the user that will be completed within 5 minutes, otherwise cancelled.
-    public checkout = (storeId: number, total: number, userId: number, 
-        products: Map<number, number>, onFail:()=>void):Result<boolean>=>{
-        const transaction: Transaction = new Transaction(userId, storeId, products, total);
+    public checkout = async(storeId: number, total: number, userId: number, 
+                products: Map<number, [number,string,number]>, storeName: string ,onFail:()=>void):Promise<boolean>=>{
+
+        const transaction: Transaction = new Transaction(userId, storeId, products, total,storeName);
         const [oldTimerId, oldOnFail] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId !== undefined){
             //a checkout is already in progress, cancel the old timer/order
@@ -78,48 +81,55 @@ class Purchase {
         }
 
         //allow payment within 5 minutes
-        this.dbDummy.storeTransaction(transaction);
+        PurchaseDB.storeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, onFail);
-        return makeOk(true);
+        return new Promise((res , rej) => {res(true)});;
     }
 
     //completes an existing transaction in progress. returns failure in the event that
     //1) no transaction is in progress, 2)Shipping issue 3) payment issue
-    public CompleteOrder = (userId: number, storeId: number, shippingInfo: ShippingInfo, paymentInfo: PaymentInfo, storeBankAccount: number) : Result<boolean> => {
+    public CompleteOrder = async (userId: number, storeId: number, shippingInfo: tShippingInfo, paymentInfo: tPaymentInfo, 
+                                    storeBankAccount: number) : Promise<boolean> => {
         //verify transaction in progress
         const [oldTimerId, oldCallback] = this.getTimerAndCallback(userId, storeId);
         if( oldTimerId === undefined){
             //no checkout is in progress, cancel the old timer/order
-            return makeFailure("No checkout in progress");
+            return new Promise((res , rej) => {rej("No checkout in progress")});
         }
         clearTimeout(oldTimerId);
-        const transaction: Transaction = this.dbDummy.getTransactionInProgress(userId, storeId);
+        const transaction: Transaction = await PurchaseDB.getTransactionInProgress(userId, storeId);
         //approve supply
-        const shipmentId: number = this.supplySystem.reserve(shippingInfo);
-        if(shipmentId < 0){
+        var shipmentId: number = -1;
+        try{
+            shipmentId  = await this.supplySystem.supply(shippingInfo);
+        }catch(e){}
+        if(shipmentId < 0){//shipment failed or threw error
             this.resetTimer(userId, storeId, oldCallback);
-            return makeFailure("could not ship items");
+            return new Promise((res , rej) => {rej("could not ship items")});
         }
         transaction.setShipmentId(shipmentId);
         //approve payment
-        const paymentRes: Result<number> = this.paymentSystem.transfer(paymentInfo, storeBankAccount, transaction.getTotal());
-        if(isFailure(paymentRes)){
-            this.supplySystem.cancelReservation(shipmentId);
+        var paymentRes: number = -1;
+        try{
+            paymentRes = await this.paymentSystem.transfer(paymentInfo);
+        }catch(e){}        
+        if(paymentRes < 0){//payment failed or threw error
+            this.supplySystem.cancelSupply(shipmentId);
             this.resetTimer(userId, storeId, oldCallback);
-            return paymentRes;
+            return new Promise((res , rej) => {rej("unable to complete money transfer")});
         }
         
-        transaction.setPaymentId(paymentRes.value);
-        transaction.setCardNumber(paymentInfo.getCardNumber());
+        transaction.setPaymentId(paymentRes);
+        transaction.setCardNumber(paymentInfo.cardNumber);
         transaction.setStatus(TransactionStatus.COMPLETE);
-        this.dbDummy.updateTransaction(transaction);
+        PurchaseDB.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
 
-        Publisher.get_instance().notify_store_update(storeId, `hello world`);
-        return makeOk(true);
+        Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
+        return new Promise((res , rej) => {res(true)});
     }
 
     
@@ -151,41 +161,70 @@ class Purchase {
     } 
 
 
-    public numTransactionsInProgress = (userId: number, storeId: number): number => {
-        const transactions: Transaction[] = this.dbDummy.getTransactionsInProgress(userId,storeId);
-        return transactions.length;
+    public numTransactionsInProgress = (userId: number, storeId: number): Promise<number> => {
+        const transactionsp = PurchaseDB.getTransactionsInProgress(userId,storeId);
+        return new Promise((resolve,reject) => {
+            transactionsp.then (transactions => {
+                resolve(transactions.length)
+            })
+            .catch(error => reject(error))
+        })        
     }
 
     public getAllTransactions = () => {
-        return this.dbDummy.getAllTransactions();
+        return PurchaseDB.getAllTransactions();
     }
-    public getTransactionInProgress = (userId: number, storeId: number): Transaction =>{
-        return this.dbDummy.getTransactionInProgress(userId, storeId);
-    }
-
-    public getCompletedTransactions = (userId: number, storeId: number): Transaction[] => {
-        return this.dbDummy.getCompletedTransactions().filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)));
+    public getTransactionInProgress = (userId: number, storeId: number): Promise<Transaction> =>{
+        return PurchaseDB.getTransactionInProgress(userId, storeId);
     }
 
-    public getCompletedTransactionsForUser = (userId: number): string => {
-        return JSON.stringify(this.dbDummy.getCompletedTransactions().filter(t => t.getUserId()==userId));
+    public getCompletedTransactions = (userId: number, storeId: number): Promise<Transaction[]> => {
+        let transp = PurchaseDB.getCompletedTransactions();
+        return new Promise((resolve, reject) =>{
+            transp.then(trans => resolve(trans.filter(t => ((t.getUserId()==userId) &&(t.getStoreId()==storeId)))))
+            .catch(error => reject(error))
+        })
     }
-    public getCompletedTransactionsForStore = (storeId: number): Transaction[] =>{
-        return this.dbDummy.getCompletedTransactions().filter(t => t.getStoreId()==storeId);
+        
+
+    public getCompletedTransactionsForUser = (userId: number): Promise<string> => {
+        let transp = PurchaseDB.getCompletedTransactions();
+        return new Promise((resolve, reject) =>{
+            transp.then(trans => resolve(JSON.stringify(trans.filter(t => t.getUserId()==userId))))
+        })
     }
 
-    public getAllTransactionsForUser = (userId: number): Transaction[] =>{
-        return this.dbDummy.getAllTransactions().filter(t => t.getUserId() === userId);
+    public getCompletedTransactionsForStore = (storeId: number): Promise<Transaction[]> =>{
+        let transp = PurchaseDB.getCompletedTransactions();
+        return new Promise((resolve, reject) =>{
+            transp.then(trans => resolve(trans.filter(t => t.getStoreId()==storeId)))
+            .catch(error => reject(error))
+        })
     }
+
+    public getAllTransactionsForUser = (userId: number): Promise<Transaction[]> =>{
+        let transp = PurchaseDB.getCompletedTransactions();
+        return new Promise((resolve, reject) =>{
+            transp.then(trans => resolve(trans.filter(t => t.getUserId() === userId)))
+            .catch(error => reject(error))
+        })
+    }
+    
     public getFailedTransactions = ():Transaction[] => {
         return null;
     }
-    public getPaymentTimeoutInMillis = ():number => {return PAYMENT_TIMEOUT_MILLISEC};
+    
+    public getUserStoreHistory = (userId: number, storeId: number): Promise<Transaction[]> =>{
+        return PurchaseDB.getUserStoreHistory(userId, storeId);
+    }
+    public getPaymentTimeoutInMillis = ():number => {
+        console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
+        return PAYMENT_TIMEOUT_MILLISEC;
+    };
 
     public clear()
     {
         this.cartCheckoutTimers = new Map();
-        this.dbDummy = new DbDummy();
     }
 }
 const INSTANCE :Purchase = new Purchase();

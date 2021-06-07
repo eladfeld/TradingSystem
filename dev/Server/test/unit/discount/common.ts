@@ -39,7 +39,7 @@ export class TestBasket implements iBasket{
         const strs: string[] = field.split("_");
         if(strs.length === 2){
             const id: number = parseInt(strs[0]);
-            const item: iProduct = this.basket.find(i => i.getId()==id);
+            const item: iProduct = this.basket.find(i => i.getProductId()==id);
             if(item === undefined) return undefined;
             switch(strs[1]){
                 case "price":

@@ -1,44 +1,45 @@
 import {expect} from 'chai';
-import { assert } from 'console';
 import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { isOk, Result } from '../../src/Result';
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
 import { register_login, open_store } from './common';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.8: Shopping Cart view and edit' , function() {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('shopping cart before and after delete' , async function()
     {
+        //this.timeout(30000)
+        const aviName = uniqueAviName();
+        const storeName = uniqueAlufHasportName();
+
         let sessionId = await service.enter()
-        let avi = await register_login(service,sessionId,"avi", "123456789");
-        let store1 = await open_store(service,sessionId,avi,"Aluf Hasport" , 123456 , "Tel Aviv" );
-        store1.addCategoryToRoot('Sweet')
-        store1.addCategoryToRoot('Computer')
-        let product1: Product = new Product("banana", ['Sweet']);
-        store1.addNewProduct(avi,product1.getName(),['Computer'],500,100);
-        service.addProductTocart(sessionId, store1.getStoreId() , product1.getProductId() , 10);
-        service.getCartInfo(sessionId)
-        .then(cart =>{
-            service.editCart(sessionId, store1.getStoreId(), product1.getProductId(), 0 );
-            service.getCartInfo(sessionId).
-            then(cart => {
-                let tester: any = JSON.parse(cart);
-                expect(tester['baskets'][0]['products'].length).to.equal(0);
-            })
-            .catch(_ => expect(false).to.eq(true))
-        })            
-        .catch(_ => expect(false).to.eq(true))
+        let avi = await register_login(service,sessionId,aviName, "123456789");
+        let store1 = await open_store(service,sessionId,avi,storeName , 123456 , "Tel Aviv" );
+        await store1.addCategoryToRoot('Sweet')
+        await store1.addCategoryToRoot('Computer')
+        let prodId = await store1.addNewProduct(avi,"banana",['Computer'],500,100);
+        await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10);
+        await service.getCartInfo(sessionId)
+        await service.editCart(sessionId, store1.getStoreId(), prodId, 0 );
+        let cart = await service.getCartInfo(sessionId);
+        let tester: any = JSON.parse(cart);
+        expect(tester['baskets'][0]['products'].length).to.equal(0);
 
     })
 });

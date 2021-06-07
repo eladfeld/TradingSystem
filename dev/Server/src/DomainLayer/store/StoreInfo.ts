@@ -1,4 +1,6 @@
-import { ID, TreeRoot } from "./Common";
+import { Logger } from "../../Logger";
+import { iProduct } from "../discount/iProduct";
+import { ID, TreeNode, TreeRoot } from "./Common";
 
 export class StoreInfo
 {
@@ -13,7 +15,17 @@ export class StoreInfo
         this.storeName = storeName;
         this.storeId = storeId;
         this.storeProducts = storeProducts;
-        this.categories = [new StoreCategoryInfo('Food', 'Apple')]
+        this.categories = StoreInfo.categiriesToList(categories.getRoot())
+        Logger.log(`StoreInfo categories list: ${JSON.stringify(this.categories)}`)
+    }
+
+    public static categiriesToList(category: TreeNode<string>): StoreCategoryInfo[] {
+        let list: StoreCategoryInfo[] = [];
+        for(let child of category.children.values()){
+            list.push(new StoreCategoryInfo(category.value, child.value))
+            list = list.concat(StoreInfo.categiriesToList(child))
+        }
+        return list
     }
 
     public getStoreProducts()
@@ -42,7 +54,7 @@ export class StoreInfo
 
 }
 
-export class StoreProductInfo
+export class StoreProductInfo implements iProduct
 {
 
     private productName: string;
@@ -50,10 +62,13 @@ export class StoreProductInfo
     private price: number;
     private storeId: number;
     private quantity: number;
-    private productRating: number
-    private numOfRaters: number
+    private productRating: number;
+    private numOfRaters: number;
+    private categories: string[];
+    private image: string;
 
-    public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number)
+
+    public constructor(productName: string, productId: number, price: number, storeId:number, quantity: number, productRating: number, numOfRaters: number, categories: string[], image: string)
     {
         this.productName = productName;
         this.productId = productId;
@@ -62,7 +77,17 @@ export class StoreProductInfo
         this.quantity = quantity;
         this.productRating = productRating;
         this.numOfRaters = numOfRaters;
+        this.categories = categories;
+        this.image = image;
+    }
 
+    public getImage()
+    {
+        return this.image;
+    }
+
+    getCategories = ():string[] => {
+        return this.categories;
     }
 
     public getProductId()

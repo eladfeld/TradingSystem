@@ -1,13 +1,19 @@
 import { Service } from '../ServiceLayer/Service';
 import {Request, Response, NextFunction} from 'express';
-import { isOk, Result } from '../Result';
 import { Subscriber } from '../DomainLayer/user/Subscriber';
-import PaymentInfo from '../DomainLayer/purchase/PaymentInfo';
-import { checkout } from './Router';
+import { SpellCheckerAdapter } from '../DomainLayer/SpellCheckerAdapter';
+import { tPredicate } from '../DomainLayer/discount/logic/Predicate';
+import { tDiscount } from '../DomainLayer/discount/Discount';
 
-const service: Service = Service.get_instance();
+let service: Service = undefined;
 const OKSTATUS: number = 200;
 const FAILSTATUS: number = 201;
+
+
+const initSystem = async () =>
+{
+    service = await Service.get_instance();
+}
 
 
 const enter = (req: Request, res: Response, next: NextFunction) =>
@@ -116,7 +122,7 @@ const getPruductInfoByName = (req: Request, res: Response, next: NextFunction) =
 const getPruductInfoByCategory = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
-    let productCategory: string = req.body.productCategory;
+    let productCategory: string = req.body.category;
     service.getPruductInfoByCategory(sessionId, productCategory)
     .then(product => res.status(OKSTATUS).json(product))
     .catch(message => res.status(FAILSTATUS).json(message))
@@ -187,8 +193,8 @@ const checkoutBasket = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let supplyAddress: string = req.body.supplyAddress;
-    let checkout_res = service.checkoutBasket(sessionId, storeId, supplyAddress)
+    let shippingInfo: any = req.body.supplyAddress;
+    let checkout_res = service.checkoutBasket(sessionId, storeId, shippingInfo)
     checkout_res.then(result => res.status(OKSTATUS).json(result))
     .catch( message =>res.status(FAILSTATUS).json(message))
 }
@@ -200,8 +206,8 @@ const checkoutSingleProduct = (req: Request, res: Response, next: NextFunction) 
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
     let storeId: number = req.body.storeId;
-    let supplyAddress: string = req.body.supplyAddress;
-    service.checkoutSingleProduct(sessionId, productId, quantity, storeId, supplyAddress)
+    let shippingInfo: any = req.body.supplyAddress;
+    service.checkoutSingleProduct(sessionId, productId, quantity, storeId, shippingInfo)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -211,10 +217,9 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
     let storeId: number = req.body.storeId;
-    let paymentInfoObj: any = req.body.paymentInfo;
-    let paymentInfo: PaymentInfo = new PaymentInfo(paymentInfoObj.cardNumber, paymentInfoObj.expiration, paymentInfoObj.cvv);
-    let userAddress: string = req.body.userAddress;
-    service.completeOrder(sessionId, storeId, paymentInfo, userAddress)
+    let paymentInfo: any = req.body.paymentInfo;
+    let shippingInfo: any = req.body.shippingInfo;
+    service.completeOrder(sessionId, storeId, paymentInfo, shippingInfo)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -244,7 +249,7 @@ const editStoreInventory = (req: Request, res: Response, next: NextFunction) =>
     let storeId: number = req.body.storeId;
     let productId: number = req.body.productId;
     let quantity: number = req.body.quantity;
-    service.editStoreInventory(sessionId, productId, quantity, storeId)
+    service.editStoreInventory(sessionId, storeId, productId, quantity)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -257,7 +262,8 @@ const addNewProduct = (req: Request, res: Response, next: NextFunction) =>
     let categories: string[] = req.body.categories;
     let quantity: number = req.body.quantity;
     let price: number = req.body.price;
-    service.addNewProduct(sessionId, storeId, productName, categories, price, quantity)
+    let image: string = req.body.image;
+    service.addNewProduct(sessionId, storeId, productName, categories, price, quantity, image)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json({error:message}))
 }
@@ -315,9 +321,9 @@ const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction
 const deleteManagerFromStore = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
-    let managerToDelete: number = req.body.managerToDelete;
+    let managerToRemove: string = req.body.managerToRemove;
     let storeId: number = req.body.storeId;
-    service.deleteManagerFromStore(sessionId, managerToDelete, storeId)
+    service.deleteManagerFromStore(sessionId, managerToRemove, storeId)
     .then(result => res.status(OKSTATUS).json(result))
     .catch(message => res.status(FAILSTATUS).json(message))
 }
@@ -399,45 +405,150 @@ const getUserStores = (req: Request , res:Response , next : NextFunction) =>
 
 const addDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountPolicy: any = req.body;
-
-    service.removeDiscountPolicy(discountPolicy);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let discountName: string = req.body.discountName;
+    let discount    : tDiscount = req.body.discount;
+    let promise = service.addDiscountPolicy(sessionId, storeId, discountName, discount);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 const addBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let buyingPolicy: any = req.body;
-
-    service.addBuyingPolicy(buyingPolicy);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyName  : string = req.body.policyName;
+    let policy: tPredicate = req.body.policy;
+    let promise = service.addBuyingPolicy(sessionId, storeId, policyName, policy);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountNumber: number = req.body.policyId;
-
-    service.removeBuyingPolicy(discountNumber);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyNumber: number = req.body.policyId;
+    let promise = service.removeBuyingPolicy(sessionId, storeId, policyNumber );
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
+// const getBuyingPolicies = (req: Request, res: Response, next: NextFunction) =>
+// {
+//     let sessionId   : string = req.body.userId;
+//     let storeId     : number = req.body.storeId;
+//     let promise = service.getBuyingPolicies(sessionId, storeId);
+//     promise
+//     .then(message => res.status(OKSTATUS).json(message))
+//     .catch(message => res.status(FAILSTATUS).json(message));
+// } 
 
 const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
-    let discountNumber: number = req.body.policyId;
-
-    service.removeDiscountPolicy(discountNumber);
+    let sessionId   : string = req.body.userId;
+    let storeId     : number = req.body.storeId;
+    let policyNumber: number = req.body.policyId;
+    let promise = service.removeDiscountPolicy(sessionId, storeId, policyNumber );
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
 }
 
 
-getUserStores
 const getSubscriberId = (sessionId: string): number =>
 {
     return service.getSubscriberId(sessionId);
 }
 
-
-const setServFunc = (func: (userId:number, message:string) => Promise<string>) =>
+// this function is to give the clients autocomplete data with catagories
+const getAllCategories = (req : Request, res: Response , next: NextFunction) =>
 {
-    service.set_send_func(func);
+    let catagories = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_categories());
+    res.status(OKSTATUS).json(catagories);
 }
+
+// this function is to give the clients autocomplete data with products
+const getProductNames = (req : Request, res: Response , next: NextFunction) =>
+{
+    let products = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_product_names());
+    res.status(OKSTATUS).json(products);
+}
+
+// this function is to give the clients autocomplete data with keywords
+const getkeywords = (req : Request, res: Response , next: NextFunction) =>
+{
+    let keywords = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_keywords());
+    res.status(OKSTATUS).json(keywords);
+}
+
+// this function is to give the clients autocomplete data with stores
+const getStoreNames = (req : Request, res: Response , next: NextFunction) =>
+{
+    let stores = JSON.stringify(SpellCheckerAdapter.get_instance().get_all_store_names());
+    res.status(OKSTATUS).json(stores);
+}
+
+
+
+//Need to support! here broooo
+const complain = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let message     : {title:string, body:string, authorName:string} = req.body.message;
+    let promise = service.complain(sessionId, message.title, message.body);
+    promise
+    .then(msg => res.status(OKSTATUS).json(msg))
+    .catch(msg => res.status(FAILSTATUS).json(msg));
+}
+const getUserNames = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let promise = service.getUsernames(sessionId);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
+}
+const getSystemComplaints = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let promise = service.getSystemComplaints(sessionId);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
+
+}
+const getSystemTransactions = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+
+}
+const closeStore = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let storeName   : string = req.body.storeName;
+    let promise = service.closeStore(sessionId, storeName);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
+}
+const deleteComplaint = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let messageId   : number = req.body.messageId;
+    let promise = service.deleteComplaint(sessionId, messageId);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
+}
+const replyToComplaint = (req : Request, res: Response , next: NextFunction) =>{
+    let sessionId   : string = req.body.userId;
+    let replyMsg    : {title:string, body:string, id:number} = req.body.message;//id of message being replied to
+    let promise = service.replyToComplaint(sessionId, replyMsg.title, replyMsg.body, replyMsg.id);
+    promise
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(message => res.status(FAILSTATUS).json(message));
+}
+
+
 
 export default {
     enter,
@@ -473,10 +584,22 @@ export default {
     addDiscountPolicy,
     addBuyingPolicy,
     removeBuyingPolicy,
+    // getBuyingPolicies,
     removeDiscountPolicy,
     getUsername,
     getUserStores,
     getMyPurchaseHistory,
     getSubscriberId,
-    setServFunc,
+    getAllCategories,
+    getProductNames,
+    getkeywords,
+    getStoreNames,
+    complain,
+    getUserNames,
+    getSystemComplaints,
+    getSystemTransactions,
+    closeStore,
+    deleteComplaint,
+    replyToComplaint,
+    initSystem
     };

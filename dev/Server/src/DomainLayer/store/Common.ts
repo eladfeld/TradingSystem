@@ -23,6 +23,9 @@ export class TreeRoot<T> {
         this.root = new TreeNode<T>(value, this);
     }
 
+    public getRoot(){
+        return this.root
+    }
     public createChildNode(value: T): TreeNode<T> {
         return this.root.createChildNode(value);
     }
@@ -40,6 +43,11 @@ export class TreeRoot<T> {
         }
         return this.root.getChildNode(value)
     }
+
+    public toString =() =>{
+        return this.root.toString();
+    }
+
 }
 
 
@@ -98,4 +106,27 @@ export class TreeNode<T> {
         }
         return null;
     }
+
+    public toString = ():string => {
+        return this.toStringRec(0);
+    }
+
+    public toStringRec = (depth:number):string =>{
+        var s: string = `${"\t".repeat(depth)}${this.value}\n`;
+        for(const [value, child] of this.children){
+            s += child.toStringRec(depth+1);
+        }
+        return s;
+    }
+
+
+    public forEach(func: (t:T) => void)
+    {
+        func(this.value);
+        for(let tree of this.children.values())
+        {
+            tree.forEach(func);
+        }
+    }
+
 }

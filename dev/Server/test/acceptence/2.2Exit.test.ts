@@ -2,26 +2,27 @@ import {expect} from 'chai';
 import { isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
+import { APIsWillSucceed } from '../testUtil';
 
+import {setReady, waitToRun} from '../testUtil';
 describe('2.2: exit system test' , function() {
 
     var service : Service = Service.get_instance();
-    beforeEach(function () {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function() {
-        service.clear();
+    afterEach(function () {
+        //console.log('finish');        
+        setReady(true);
     });
 
-    it('guest user exit system' , function() {
-        let res  = service.enter()
-        res.then(
-            id=>
-            {
-                service.exit(id);
-                expect(service.get_logged_guest_users().size).to.equal(0);   
-            }
-        )
+    it('guest user exit system' , async function() {
+        let id: string  = await service.enter()
+        let numUsers: number = service.get_logged_guest_users().size;
+        service.exit(id);
+        expect(service.get_logged_guest_users().size).to.equal(numUsers-1);           
     })
 
     it('exit 3 users' , function() {

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {Route, Router } from 'react-router-dom';
-
 import Authentication from './Authentication'
 import Enter from './Enter'
 import history from '../history';
@@ -8,17 +7,17 @@ import React from 'react';
 import Banner from './Banner';
 import Cart  from './Cart';
 import { Complain } from './Complain';
-import { OpenStore } from './OpenStore';
+import { OpenStore } from './store_manager/OpenStore';
 import Checkout from './Checkout';
 import { Search, SearchByName, SearchAbovePrice, SearchByStore, SearchBelowPrice, SearchByCategory, SearchByKeyword} from './Search'
 import { SERVER_BASE_URL } from '../constants';
 import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
 import Register from './Register';
-import ManageStores from './ManageStores'
-import ManageStore from './ManageStore'
-import { ROUTE_MANAGE_EMPLOYEE } from '../routes';
-import ManageEmployee from './ManageEmployee';
+import ManageStores from './store_manager/ManageStores'
+import ManageStore from './store_manager/ManageStore'
+import ManageSystem from './system_manager/ManageSystem';
+import Inbox from './messaging/Inbox';
 
 
 //import {BrowserRouter as Router, Route} from 'react-router-dom'
@@ -30,23 +29,18 @@ class App extends React.Component
   }
   getAppState = () => this.state;
   setAppState = (state) => this.setState(state);
+
+  
   intersect = (products, newProducts) => {
     if(products !== null && products !== undefined && products.length !== 0){
       let intersection = new Set([...products].filter(x => {
         return newProducts.reduce((acc, curr) => acc || x.productId === curr.productId, false)
       }));
-      console.log('intersection')
-      console.log(intersection)
-      console.log('products')
-      console.log(products)
-      console.log('newProducts')
-      console.log(newProducts)
       this.setAppState({products: Array.from(intersection)})
 
     }
     else{
       this.setAppState({products:newProducts})
-
     }
 }
   render(){
@@ -170,6 +164,18 @@ class App extends React.Component
             path= '/store/:storeId' exact
             render={(props) => (
               <ManageStore {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path= '/managesystem' exact
+            render={(props) => (
+              <ManageSystem {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path= '/inbox' exact
+            render={(props) => (
+              <Inbox {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>

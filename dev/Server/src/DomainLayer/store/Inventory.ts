@@ -1,42 +1,45 @@
 import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../../Logger";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { ProductDB } from "./ProductDB";
-import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
 
 export class Inventory
 {
 
     private products: Map<number, StoreProduct> // map productId to StoreProduct
+    private storeId: number
 
-    public constructor(){
+    public constructor(storeId: number, products: StoreProduct[]){
         this.products = new Map<number, StoreProduct>();
+        this.storeId = storeId;
+        for(let product of products){
+            this.products.set(product.getProductId(), product)
+        }
     }
 
-    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0) : Result<number> {
+    public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0, image: string) : Promise<number> {
         if (quantity < 0){
             Logger.log("Quantity must be non negative")
-            return makeFailure("Quantity must be non negative");
+            return Promise.reject("Quantity must be non negative");
         }
 
         if (price < 0){
             Logger.log("Price must be non negative")
-            return makeFailure("Price must be non negative");
+            return Promise.reject("Price must be non negative");
         }
 
         if(isOk(this.hasProductWithName(productName))){
             Logger.log("Product already exist in inventory!")
-            return makeFailure(`Product already exist in inventory! productName: ${productName}`);
+            return Promise.reject(`Product already exist in inventory! productName: ${productName}`);
         }
-        let product = ProductDB.getProductByName(productName)
-        if(product === undefined){
-            let product = new Product(productName, categories)
-        }
-        let productId = ProductDB.getProductByName(productName).getProductId()
-        let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories);
-        this.products.set(storeProduct.getProductId(), storeProduct);
-        return makeOk(productId);
+        let productp = StoreProduct.createProduct(productName,price, storeId,quantity, categories, image)
+        return new Promise((resolve,reject) => {
+            productp.then( product => {
+                this.products.set(product.getProductId(), product);
+                resolve(product.getProductId());
+            })
+            .catch( err => reject(err))
+        })
     }
 
     public addProductQuantity(productId: number, quantity: number) : Result<string> {
@@ -49,14 +52,16 @@ export class Inventory
         return makeOk("Quantity was added");
     }
 
-    public setProductQuantity(productId: number, quantity: number) : Result<string> {
+    public setProductQuantity(productId: number, quantity: number) : Promise<string> {
         let product = this.products.get(productId);
         if(product === undefined){
             Logger.log("Product does not exist in inventory!")
-            return makeFailure("Product does not exist in inventory!");
+            return Promise.reject("Product does not exist in inventory!");
         }
+
+        //TODO: #saveDB
         product.setQuantity(quantity);
-        return makeOk("Quantity was set");
+        return Promise.resolve("Quantity was set");
     }
 
     public getProductQuantity(productId : number) : number {
@@ -103,16 +108,23 @@ export class Inventory
         return makeOk('Product returned');
     }
 
+    private storeProductToInfo = (sp:StoreProduct):StoreProductInfo => {
+        return new StoreProductInfo(
+        sp.getName(),
+        sp.getProductId(),
+        sp.getPrice(),
+        sp.getStoreId(),
+        sp.getQuantity(),
+        sp.getProductRating(),
+        sp.getNumOfRaters(),
+        sp.getCategories(),
+        sp.getImage());
+    }
+
     public getProductsInfo(): StoreProductInfo[] {
         let storeProducts: StoreProductInfo[] = []
         for(let storeProduct of this.products.values()){
-            storeProducts.push(new StoreProductInfo(storeProduct.getName(),
-            storeProduct.getProductId(),
-            storeProduct.getPrice(),
-            storeProduct.getStoreId(),
-            storeProduct.getQuantity(),
-            storeProduct.getProductRating(),
-            storeProduct.getNumOfRaters()))
+            storeProducts.push(this.storeProductToInfo(storeProduct));
         }
         return storeProducts
     }
@@ -121,14 +133,7 @@ export class Inventory
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
             if(storeProduct.getName().includes(productName)){
-                storeProducts.push(new StoreProductInfo(storeProduct.getName(),
-                storeProduct.getProductId(),
-                storeProduct.getPrice(),
-                storeProduct.getStoreId(),
-                storeProduct.getQuantity(),
-                storeProduct.getProductRating(),
-                storeProduct.getNumOfRaters()));
-
+                storeProducts.push(this.storeProductToInfo(storeProduct));
             }
         }
         return storeProducts;
@@ -138,13 +143,7 @@ export class Inventory
         let storeProducts: StoreProductInfo[] = [];
         for(let storeProduct of this.products.values()){
             if(storeProduct.getCategories().find(productCategory=>category===productCategory)!= undefined){
-                storeProducts.push(new StoreProductInfo(storeProduct.getName(),
-                storeProduct.getProductId(),
-                storeProduct.getPrice(),
-                storeProduct.getStoreId(),
-                storeProduct.getQuantity(),
-                storeProduct.getProductRating(),
-                storeProduct.getNumOfRaters()));
+                storeProducts.push(this.storeProductToInfo(storeProduct));
             }
         }
         return storeProducts;
@@ -152,8 +151,8 @@ export class Inventory
 
     public getProductInfoByFilter(filter: (x: StoreProduct) => boolean): StoreProductInfo[]{
         return Array.from(this.products.values()).filter(filter).map(storeProduct => {
-            return new StoreProductInfo(storeProduct.getName(), storeProduct.getProductId(), storeProduct.getPrice(), storeProduct.getStoreId(), storeProduct.getQuantity(), storeProduct.getProductRating(), storeProduct.getNumOfRaters())
-        })
+            return this.storeProductToInfo(storeProduct);
+        });
     }
 
     public getProductPrice(productId: number): number{
@@ -162,5 +161,10 @@ export class Inventory
             return -1;
         }
         return product.getPrice()
+    }
+
+    public getProductById(productId : number) : StoreProduct
+    {
+        return this.products.get(productId);
     }
 }

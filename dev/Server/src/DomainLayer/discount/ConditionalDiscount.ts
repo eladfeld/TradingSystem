@@ -1,5 +1,5 @@
 import Categorizer from "./Categorizer";
-import Discount from "./Discount";
+import Discount, { tConditionalDiscount } from "./Discount";
 import {iPredicate} from "./logic/Predicate";
 import iBasket from "./iBasket";
 import { isFailure, makeOk, Result, ResultsToResult } from "../../Result";
@@ -15,7 +15,7 @@ export default class ConditionalDiscount extends Discount{
     public getDiscount = (basket: iBasket, categorizer: Categorizer):Result<number> =>  {
         const productsInCategory: number[] = this.getProductsInCategory(categorizer);
         const discountsResults: Result<number>[] = basket.getItems().map((prod) => {
-            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getId())){
+            if(this.isWholeStore(productsInCategory) || productsInCategory.includes(prod.getProductId())){
                 const predRes:Result<boolean> = this.predicate.isSatisfied(basket);
                 if(isFailure(predRes))return predRes;
                 if(predRes.value){
@@ -32,5 +32,14 @@ export default class ConditionalDiscount extends Discount{
     }
 
     public getPredicate = () => this.predicate;
+
+    public toObj = ():tConditionalDiscount =>{
+        return{
+            type:"conditional",
+            ratio:this.ratio,
+            category:this.category,
+            predicate:this.predicate.toObject()
+        }
+    }
 
 }

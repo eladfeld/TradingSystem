@@ -1,5 +1,6 @@
-import { isFailure, makeOk, Result } from "../../Result";
+import { isFailure, makeFailure, makeOk, Result } from "../../Result";
 import Categorizer from "./Categorizer";
+import { tDiscount } from "./Discount";
 import DiscountParser from "./DiscountParser";
 import iBasket from "./iBasket";
 import iDiscount from "./iDiscount";
@@ -7,7 +8,7 @@ import iDiscount from "./iDiscount";
 
 //The DiscountPolicy manages a data structure for all of a stores discounts
 //and can calculate the discount for a given iBasket.
-export default class DiscountPolicy implements iDiscount{
+export default class DiscountPolicy{
     private nextId: number = 1;
     private discounts: Map<number,iDiscount>;
 
@@ -23,19 +24,34 @@ export default class DiscountPolicy implements iDiscount{
             if(isFailure(discountRes)) return discountRes;
             acc += discountRes.value;
         }
+        
         return makeOk(acc);
     }
 
     //adds a new iDiscount to the policy. If @obj is invalid, returns Failure explaining why.
-    public addPolicy = (obj: any):Result<string> =>{
+    public addPolicy = (obj: any):Promise<string> =>{
+        //TODO: #saveDB
         const res: Result<iDiscount> = DiscountParser.parse(obj);
-        if(isFailure(res)) return res;
+        if(isFailure(res)) return Promise.reject(res.message);
         this.discounts.set(this.nextId++, res.value);
-        return makeOk("successfully added discount to the discount policy");
+        return Promise.resolve("successfully added discount to the discount policy");
     }
 
-    public removePolicy = (id: number) =>{
+    public removePolicy = (id: number):Promise<string> =>{
+        //TODO: #saveDB
+        const policy = this.discounts.get(id);
+        if(policy === undefined)return Promise.reject("polcy does not exist");
         this.discounts.delete(id);
+        return Promise.resolve(`Discount Policy #${id} has been removed`);
+    }
+
+    public toObjs = ():tStoreDiscount[] =>{
+        const output:tStoreDiscount[] = [];
+        this.discounts.forEach((discount:iDiscount, id:number) => {
+            output.push({id, discount:discount.toObj()});
+        });
+        return output;
     }
 
 }
+type tStoreDiscount = {id: number, discount: tDiscount}; 

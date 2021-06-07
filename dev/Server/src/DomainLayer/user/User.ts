@@ -1,9 +1,10 @@
-import { isOk, makeFailure, makeOk, Result } from '../../Result';
+import { StoreDB, SubscriberDB } from '../../DataAccessLayer/DBinit';
 import iSubject from '../discount/logic/iSubject';
+import { tShippingInfo } from '../purchase/Purchase';
 import { buyingOption } from '../store/BuyingOption';
-import { Store } from '../store/Store';
-import { StoreDB } from '../store/StoreDB';
+import { ShoppingBasket } from './ShoppingBasket';
 import { ShoppingCart} from './ShoppingCart'
+import { Subscriber } from './Subscriber';
 
 export type PaymentMeans = undefined;
 export type SupplyInfo = undefined;
@@ -13,7 +14,7 @@ export class User implements iSubject
 {
     protected shoppingCart: ShoppingCart;
     protected userId: number;
-    protected static lastId : number = User.getLastId();
+    protected static lastId: number = 0;
 
     public constructor()
     {
@@ -21,29 +22,50 @@ export class User implements iSubject
         this.userId = User.lastId++;
     }
 
-    private static getLastId() : number
+    static getLastId() 
     {
         return 0;
     }
 
-    public checkoutBasket(shopId: number, supply_address: string): Result<boolean>
+
+    public static UserinitLastId()
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, supply_address);
+        SubscriberDB.getLastId().then(id => User.lastId = id);
     }
 
-    public checkoutSingleProduct(productId :number , quantity: number, supply_address: string, shopId : number , buying_option : buyingOption) : Result<string>
+    public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Promise<boolean>
     {
-        let store:Store =  StoreDB.getStoreByID(shopId);
-        return store.sellProduct(this.getUserId() , supply_address,productId, quantity, buying_option);
+        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, shippingInfo, this);
     }
-    public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Result<string>
+
+    public deleteShoppingBasket(storeId : number) : Promise<void>
+    {
+        // this is user so no need to delete from DB
+        this.shoppingCart.deleteShoppingBasket(storeId)
+        return Promise.resolve()
+    }
+
+    public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Promise<string>
+    {
+        let storep =  StoreDB.getStoreByID(shopId);
+        return new Promise ((resolve,reject) => {
+            storep.then (store => {
+                let sellp = store.sellProduct(this.getUserId() , shippingInfo,productId, quantity, buying_option);
+                sellp.then( msg => resolve(msg))
+                .catch( error => reject(error))
+            })
+            .catch( error => reject(error))
+        })
+    }       
+    
+    public addProductToShoppingCart(storeId: number,  productId: number, quntity: number) : Promise<ShoppingBasket>
     {
         return this.shoppingCart.addProduct(storeId, productId, quntity);
     }
 
-    public GetShoppingCart(): Result<string>
+    public GetShoppingCart(): Promise<string>
     {
-        return makeOk(JSON.stringify(this.shoppingCart.getShoppingCart()));
+        return this.shoppingCart.getShoppingCart();
     }
 
     public getShoppingBasket(storeId: number): {}
@@ -56,12 +78,19 @@ export class User implements iSubject
         return this.userId;
     }
 
-    public editCart(storeId: number, productId: number, quantity: number): Result<string>
+    public editCart(storeId: number, productId: number, quantity: number): Promise<string>
     {
         return this.shoppingCart.editStoreCart(storeId, productId, quantity);
     }
 
-    getValue =  (field: string): number => undefined
+    getValue =  (field: string): number => {
+        if(this instanceof Subscriber){
+            return this.getAge();
+        }
+        else {
+            return -1;
+        }
+    }
 
     //---------------functions for tests-------------------
     public quantityInBasket(storeId : number , productId : number) : number
@@ -73,4 +102,5 @@ export class User implements iSubject
     }
 
 }
+
 

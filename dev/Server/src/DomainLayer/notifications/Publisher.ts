@@ -20,11 +20,11 @@ export class Publisher
 
     public static get_instance()
     {
-        Logger.log("Publisher.get instance")
         if (Publisher.singleton === undefined)
         {
             Publisher.singleton = new Publisher();
-            Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
+            //Publisher.singleton.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
+            Publisher.singleton.send_message_func= (userId : number, message:{}) => {return Promise.resolve('just testing')};
         }
         return Publisher.singleton;
     }
@@ -62,10 +62,13 @@ export class Publisher
         return new Promise( (resolve,reject) => {
             let promise = this.send_message_func(subscriber.getUserId() , message);
 
-            // if fail message failed add message to subscriber queue
-            promise.catch( reason => {  
+            // if fail message failed add message to subscriber pending messages queue
+            promise.then( _ => {
+                subscriber.addMessageToHistory(message)
+            }).
+            catch( reason => {  
                 Logger.log(`publisher: can't send message, ${subscriber.getUsername()} is not logged in`);
-                subscriber.addMessage(message);
+                subscriber.addPendingMessage(message);
                 resolve();
                 return;
             })
@@ -92,7 +95,7 @@ export class Publisher
     //when user is logging in we need to send him his pending messages
     public send_pending_messages(subscriber : Subscriber) : Promise<void>[]
     {
-        Logger.log(`Publisher.send_pending_messages  subscriber:${subscriber.getUserId()} `)
+        Logger.log(`Publisher.send_pending_messages  subscriber:${subscriber.getUsername()} `)
         let messages = subscriber.takeMessages();
         let promises : Promise<void>[] = [];
         messages.forEach(message => {

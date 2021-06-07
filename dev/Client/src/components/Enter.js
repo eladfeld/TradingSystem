@@ -3,6 +3,7 @@ import React from 'react'
 import axios from 'axios';
 import history from '../history';
 import { SERVER_BASE_URL } from '../constants';
+import { initialAppState } from './componentUtil';
 
 
 
@@ -22,7 +23,7 @@ const Enter = ({setAppState}) =>
 {
     instance.get(`${SERVER_BASE_URL}enter`)
     .then((res) => {
-        setAppState({userId: res.data.userId});
+        setAppState({... initialAppState, userId: res.data.userId});
         history.push('/auth');
     })
     .catch(error => {console.log(error);});

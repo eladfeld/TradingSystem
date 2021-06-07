@@ -1,72 +1,66 @@
 import {expect} from 'chai';
+import { PurchaseDB } from '../../../src/DataAccessLayer/DBinit';
+//import { config } from 'dotenv';
 import PaymentSystem from '../../../src/DomainLayer/apis/PaymentSystem';
 import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';
-import { PaymentInfo } from '../../../src/DomainLayer/purchase/PaymentInfo';
-import Purchase from '../../../src/DomainLayer/purchase/Purchase'
-import ShippingInfo from '../../../src/DomainLayer/purchase/ShippingInfo';
+import { Value } from '../../../src/DomainLayer/discount/logic/Predicate';
+import Purchase, { tPaymentInfo, tShippingInfo } from '../../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
-import { Product } from '../../../src/DomainLayer/store/Product';
-import { ProductDB } from '../../../src/DomainLayer/store/ProductDB';
-import { Store } from '../../../src/DomainLayer/store/Store';
-import { Appointment } from '../../../src/DomainLayer/user/Appointment';
-import { MakeAppointment } from '../../../src/DomainLayer/user/MakeAppointment';
-import { Subscriber } from '../../../src/DomainLayer/user/Subscriber';
-import { isFailure, isOk, Result } from '../../../src/Result';
+import { APIsWillSucceed, failIfResolved, setReady, waitToRun } from '../../testUtil';
 
 
 
 //checkout should have
 
 //checkout should have
-var userId: number = 1000;
-var storeId: number = 7653;
+var uId: number = -1000;
+var sId: number = -7653;
+var storeName: string = "Mega Bair";
 const userAdrs: string = "8 Mile Road, Detroit";
 const prod1Id: number=3000;
 const prod2Id: number=4000;
 const prod1Quantity: number=3;
 const prod2Quantity: number=4;
-
-const basket1a: Map<number, number> = new Map([[prod1Id,prod1Quantity]]);
-const basket1b: Map<number, number> = new Map([[prod2Id,prod2Quantity]]);
+const basket1a: Map<number, [number, string, number]> = new Map([[prod1Id,[1,"something",prod1Quantity]]]);
+const basket1b: Map<number, [number, string, number]> = new Map([[prod2Id,[2,"something else",prod2Quantity]]]);
 const [total1a, total1b]: [number, number] = [30, 40];
-const payInfo: PaymentInfo = new PaymentInfo(12346,123,456);
-const shippingInfo: ShippingInfo = new ShippingInfo("src", "dst");
+const payInfo : tPaymentInfo = { holder: "shir" , id:2080, cardNumber:123, expMonth:5, expYear:2024, cvv:123, toAccount: 1, amount: 100};
+const shippingInfo: tShippingInfo = {name:"shir", address:"rager", city:"beer sheva", country:"israel", zip:157};
 const cb: ()=>void = ()=>{};
 
-const updateValues = () => {
-    userId++;
-}
+
+
 
 describe('purchase with api fail tests' , function() {
 
-    it('supply system fails' , function(){
-        updateValues();
-        PaymentSystem.willSucceed();
-        SupplySystem.willFail();
-
-        const checkoutRes: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
-        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
-        expect(allTransactions.length).to.equal(1);
-        const t: Transaction = allTransactions[0];
-        expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
+    beforeEach(function () {
     });
 
-    it('payment system fails' , function(){
-        updateValues();
-        SupplySystem.willSucceed();
-        PaymentSystem.willFail();
+    beforeEach( () => {
+        console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
+    });
 
-        const checkoutRes: Result<boolean> = Purchase.checkout(storeId, total1a, userId, basket1a, cb);
-        expect(isOk(checkoutRes)).to.equal(true);
-        const completionRes: Result<boolean> = Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234);
-        expect(isFailure(completionRes)).to.equal(true);
-        const allTransactions: Transaction[] = Purchase.getAllTransactionsForUser(userId);
-        expect(allTransactions.length).to.equal(1);
-        const t: Transaction = allTransactions[0];
-        expect(t.getStatus()).to.equal(TransactionStatus.IN_PROGRESS);
+    afterEach(function () {
+        console.log('finish');   
+        APIsWillSucceed();
+        setReady(true);
+    });
+
+    it('supply system fails' , async function(){
+        const userId = uId--;
+        const storeId = sId--;
+        SupplySystem.willFail();
+        await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        failIfResolved(()=> Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234));
+    });
+
+    it('payment system fails' ,async function(){
+        const userId = uId--;
+        const storeId = sId--;
+        PaymentSystem.willFail();
+        await Purchase.checkout(storeId, total1a, userId, basket1a, storeName, cb);
+        failIfResolved(()=> Purchase.CompleteOrder(userId, storeId, shippingInfo, payInfo, 1234));
     });
 
 

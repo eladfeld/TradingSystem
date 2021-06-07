@@ -1,6 +1,7 @@
 import { isFailure, makeOk, Result, ResultsToResult } from "../../Result";
 import Categorizer from "./Categorizer";
 import { iComboPolicy } from "./ComboPolicies";
+import { tComboDiscount } from "./Discount";
 import iBasket from "./iBasket";
 import iDiscount from "./iDiscount";
 
@@ -23,5 +24,13 @@ export default class ComboDiscount implements iDiscount{
 
     public getPolicy = () => this.policy;
     public getDiscounts = () => this.discounts;
+
+    public toObj = ():tComboDiscount =>{
+        return{
+            type:"combo",
+            policy:this.policy.getSignature(),
+            discounts:this.discounts.map(d => d.toObj())
+        }
+    }
 
 }

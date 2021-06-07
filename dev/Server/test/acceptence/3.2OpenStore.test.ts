@@ -8,31 +8,33 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login } from './common';
+import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('3.2: open store test' , function() {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
-
+    
     afterEach(function () {
-        service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
 
     it('open store good' ,async function() {
         let sessionId = await service.enter()
-        let avi =await register_login(service,sessionId, "avi", "123456789");
-        let promise = service.openStore(sessionId , "Aluf Hasport" , 123456 , "Tel Aviv" );
-        promise.then( _ =>{ assert.ok(1)})
-        .catch( _ => {assert.fail})
+        let avi =await register_login(service,sessionId, uniqueAviName(), "123456789");
+        await service.openStore(sessionId , uniqueAlufHasportName() , 123456 , "Tel Aviv" );
     })
 
     it('open store with non exist subscriber' ,async function() {
         let sessionId = await service.enter()
-        let avi =await register_login(service,sessionId, "avi", "123456789");
-        let promise = service.openStore(sessionId + 1 , "Aluf Hasport" , 123456 , "Tel Aviv" );
-        promise.catch( _ => {assert.ok(1)})
-        .then( _ => {assert.fail()})
+        let avi =await register_login(service,sessionId, uniqueAviName(), "123456789");
+        await failIfResolved(()=> service.openStore(sessionId + 1 , uniqueAlufHasportName() , 123456 , "Tel Aviv" ));
+
     })
 
 });

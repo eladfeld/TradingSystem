@@ -1,58 +1,65 @@
 import { createHash } from 'crypto';
-import { Logger } from '../../Logger';
+import { SubscriberDB } from '../../DataAccessLayer/DBinit';
 import { Subscriber } from './Subscriber'; 
 
 export class Authentication
 {
-    private static subscribers: Subscriber[]  = [];
-    private static system_managers : Subscriber[] = [];
+    // private static subscribers: Subscriber[]  = [];
+    // private static system_managers : Subscriber[] = [];
     
-    public static addSystemManager(sys_manager : Subscriber):void
+    public static addSystemManager(sys_manager : Subscriber): Promise<void>
     {
-        this.subscribers.push(sys_manager);
-        this.system_managers.push(sys_manager);
+        return SubscriberDB.addSystemManager(sys_manager);
     }
 
-    public static isSystemManager(userId : number) : boolean
+    public static isSystemManager(userId : number) : Promise<boolean>
     {
-        let system_manager : Subscriber = this.system_managers.find( user => user.getUserId() === userId);
-        if (system_manager !== undefined )
-            return true;
-        return false;
+        return SubscriberDB.isSystemManager(userId);
     }
 
-    public static addSubscriber(subscriber: Subscriber , password:string): void
+    public static addSubscriber(username:string , password:string, age : number): Promise<void>
     {
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
-        subscriber.setPassword(hashedPass);
-        this.subscribers.push(subscriber);
+        return SubscriberDB.addSubscriber(username, hashedPass, age)
     }    
 
-    public static checkedUsedUserName(username: string): boolean
+    public static checkedUsedUserName(username: string): Promise<boolean>
     {
-        return this.subscribers.some( user => user.getUsername() === username )
+        let subp = SubscriberDB.getSubscriberByUsername(username)
+        return new Promise( (resolve,reject) => {
+            subp.then( _ => {
+                reject("username already in use");
+            })
+            .catch( _ => {
+                resolve(true)
+            })
+        })
     }
 
-    public static getSubscriberByName(username: string): Subscriber
+    public static getSubscriberByName(username: string): Promise<Subscriber>
     {
-        return this.subscribers.find(user => user.getUsername() === username);
+        return SubscriberDB.getSubscriberByUsername(username);
     }
 
-    public static getSubscriberById(userId: number): Subscriber
+    public static getSubscriberById(userId: number): Promise<Subscriber>
     {
-        return this.subscribers.find(user => user.getUserId() === userId);
+        return SubscriberDB.getSubscriberById(userId);
     }
 
-    public static checkPassword(username: string, password: string) :boolean
+    public static checkPassword(username: string, password: string) : Promise<boolean>
     {
         let hashedPass : string = createHash('sha1').update(password).digest('hex');
-        return this.subscribers.some( user => user.getUsername() === username && user.getPassword() === hashedPass )
-    }
-
-    public static clean(): void
-    {
-        this.subscribers = [];
-        this.system_managers.forEach(manager => this.subscribers.push(manager));
+        let subscriberp = SubscriberDB.getSubscriberByUsername(username);
+        return new Promise( (resolve,reject) => {
+            subscriberp.then( subscriber =>{
+                if ( subscriber.getPassword() == hashedPass)
+                    resolve(true);
+                else reject("username or password is invalid")
+            })
+            .catch( error => {
+                reject(error)
+            })
+        })
     }
 
 }

@@ -1,3 +1,6 @@
+import { TEST_MODE } from "../../config";
+import { tShippingInfo } from "../purchase/Purchase";
+
 class SupplySystem {
     private static nextReservationId: number = 1;
     private static nextSessionId: number = 1;
@@ -8,28 +11,24 @@ class SupplySystem {
         return SupplySystem.shouldSucceed ? SupplySystem.nextSessionId++ : -1;
     }
 
-
-    //reserves a shipment from @from to @to and @returns a unique shipment reservation number
-    //this reservation number is needed for canceling and supplying the reservation
-    static reserve = (from: string, to:string) : number => {
-        return SupplySystem.shouldSucceed ? SupplySystem.nextReservationId++ : -1;
-    }
-    
-
-    //cancels the shipping reservation with id @reservationId and @returns true if suceeded
-    //after calling this function, calling cancel/supply for the same reservation id will fail and return false
-    static cancelReservation = (reservationId: number) :boolean => {
-        return SupplySystem.shouldSucceed ? true : false;
-    }
-
     //finalizes the shipping order with reservation id @reservationId
     //after calling this function, calling cancel/supply for the same reservation id will fail and return false
-    static supply = (reservationId: number) : boolean => {
+    static supply = (shippingInfo:tShippingInfo) : number => {
+        return SupplySystem.shouldSucceed ? SupplySystem.nextReservationId++ : -1;;
+    }
+
+    static cancel = (reservationId: number) :boolean => {
         return SupplySystem.shouldSucceed ? true : false;
     }
 
-    static willSucceed = () => SupplySystem.shouldSucceed = true;
-    static willFail = () => SupplySystem.shouldSucceed = false;
+    static willSucceed = () => {
+        if(!TEST_MODE) throw new Error("Cant force success outside of test mode!");
+        SupplySystem.shouldSucceed = true;
+    }
+    static willFail = () => {
+        if(!TEST_MODE) throw new Error("Cant force failure outside of test mode!");
+        SupplySystem.shouldSucceed = false;
+    }
 }
 
 export default SupplySystem;

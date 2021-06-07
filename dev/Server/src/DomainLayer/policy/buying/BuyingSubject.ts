@@ -1,3 +1,4 @@
+import iBasket from "../../discount/iBasket";
 import iSubject from "../../discount/logic/iSubject";
 
 
@@ -5,9 +6,9 @@ import iSubject from "../../discount/logic/iSubject";
 export default class BuyingSubject implements iSubject{
 
     private user: iSubject;
-    private basket: iSubject;
+    private basket: iBasket;
 
-    constructor(user: iSubject, basket: iSubject){
+    constructor(user: iSubject, basket: iBasket){
         this.user = user;
         this.basket = basket;
     }
@@ -41,6 +42,6 @@ export default class BuyingSubject implements iSubject{
     };
 
     public getUser = ():iSubject => this.user;
-    public getBasket = ():iSubject => this.basket;
+    public getBasket = ():iBasket => this.basket;
 
 }

@@ -1,23 +1,22 @@
-import FakeSystemFacade from "../DomainLayer/FakeSystemFacade";
-import { Publisher } from "../DomainLayer/notifications/Publisher";
-import PaymentInfo from "../DomainLayer/purchase/PaymentInfo";
+import { SHOULD_INIT_STATE } from "../config";
+import { tDiscount } from "../DomainLayer/discount/Discount";
+import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
 import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
-import { User } from "../DomainLayer/user/User";
-import { isOk, makeFailure, makeOk, Result} from "../Result";
+import StateInitializer from './state/StateInitializer';
+import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
+import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 
 export class Service
 {
-
     private static singletone: Service = undefined;
     private facade: SystemFacade;
-    private send_message_func: (userId:number, message:string) => Promise<string>; //TODO:change this signature according to future changes in Communication layer
 
     private constructor()
     {
-        this.facade = new FakeSystemFacade().getFacade();
+        this.facade = new SystemFacade();
     }
 
     public get_word_list(word: string): string[]
@@ -25,24 +24,44 @@ export class Service
         return ['asd', 'bdsa', 'casd', 'ddsa'];
     }
 
-    public set_send_func( send_func: (userId:number,message:string) => Promise<string>) : void
-    {
-        Service.singletone.send_message_func = send_func;
-        Publisher.get_instance().set_send_func(send_func);
-    }
-
-    public static get_instance() : Service
+    public static async get_instance() : Promise<Service>
     {
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
-            Service.singletone.send_message_func= (userId : number, message:{}) => {throw 'send func not set yet'};
+            return Service.singletone.facade.init().then(_ =>{
+                if(SHOULD_INIT_STATE){
+                    setTimeout(async() =>{
+                        const res = await new StateInitializer().initState();
+                        console.log(`init state was succesful: ${res}`)
+                    }, 0);
+                }
+            }).then(() => Service.singletone)
         }
         return Service.singletone;
     }
 
-    //user enter the system
-    public async enter(): Promise<string>
+    public complain = (sessionId:string, title:string, body:string):Promise<string> =>{
+        return this.facade.complain(sessionId, title, body);
+    }
+    public getUsernames = (sessionId:string):Promise<string[]> =>{
+        return this.facade.getUsernames(sessionId);
+    }
+    public getSystemComplaints = (sessionId:string):Promise<tComplaint[][]> => {
+        return this.facade.getSystemComplaints(sessionId);
+    }
+    public deleteComplaint = (sessionId:string, messageId:number):Promise<string> =>{
+        return this.facade.deleteComplaint(sessionId, messageId);
+    }
+    public replyToComplaint = (sessionId:string, title:string, body:string, messageId:number):Promise<string> =>{
+        return this.facade.replyToComplaint(sessionId,title,body,messageId);
+    }
+    public closeStore = (sessionId:string, storeName:string):Promise<string> =>{
+        return this.facade.closeStore(sessionId,storeName);
+    }
+
+    //returns a session id string
+    public enter(): Promise<string>
     {
         return this.facade.enter();
     }
@@ -57,12 +76,12 @@ export class Service
         return this.facade.logout(sessionId)
     }
 
-    public async register(username: string, password: string, age: number): Promise<string>
+    public register(username: string, password: string, age: number): Promise<string>
     {
         return this.facade.register(username, password, age);
     }
 
-    public async login(sessionId: string, username: string, password: string): Promise<Subscriber>
+    public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         return this.facade.login(sessionId, username, password);
     }
@@ -113,19 +132,20 @@ export class Service
         return this.facade.editCart(sessionId, storeId, productId, newQuantity);
     }
 
-    public checkoutBasket(sessionId: string, shopId: number, supply_address: string ): Promise<boolean>
+    public checkoutBasket(sessionId: string, shopId: number, shippingInfo: tShippingInfo ): Promise<boolean>
     {
-        return this.facade.checkoutBasket(sessionId, shopId, supply_address);
+        return this.facade.checkoutBasket(sessionId, shopId, shippingInfo);
     }
 
-    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , supply_address: string): Promise<string>
+    public checkoutSingleProduct(sessionId : string, productId: number, quantity : number , storeId : number , shippingInfo:tShippingInfo): Promise<string>
     {
-        return this.facade.checkoutSingleProduct(sessionId, productId, quantity, storeId, supply_address);
+        return this.facade.checkoutSingleProduct(sessionId, productId, quantity, storeId, shippingInfo);
     }
 
-    public completeOrder(sessionId : string , storeId : number , paymentInfo : PaymentInfo, userAddress: string) : Promise<boolean>
+
+    public completeOrder(sessionId : string , storeId : number , paymentInfo : tPaymentInfo, shippingInfo:tShippingInfo) : Promise<boolean>
     {
-        return this.facade.completeOrder(sessionId, storeId,paymentInfo, userAddress);
+        return this.facade.completeOrder(sessionId, storeId,paymentInfo, shippingInfo);
     }
 
 
@@ -139,9 +159,9 @@ export class Service
         return this.facade.editStoreInventory(sessionId, storeId, productId, quantity);
     }
 
-    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0): Promise<number>
+    public addNewProduct(sessionId: string, storeId: number, productName: string, categories: string[], price: number, quantity = 0, image: string): Promise<number>
     {
-        return this.facade.addNewProduct(sessionId, storeId, productName, categories, price, quantity);
+        return this.facade.addNewProduct(sessionId, storeId, productName, categories, price, quantity, image);
     }
 
     public addCategory(sessionId: string, storeId: number, categoryFather:string, category: string): Promise<string>
@@ -170,7 +190,7 @@ export class Service
         return this.facade.getStorePurchaseHistory(sessionId, storeId);
     }
 
-    public deleteManagerFromStore(sessionId: string, managerToDelete: number, storeId: number): Promise<string>
+    public deleteManagerFromStore(sessionId: string, managerToDelete: string, storeId: number): Promise<string>
     {
         return this.facade.deleteManagerFromStore(sessionId, managerToDelete, storeId);
     }
@@ -203,21 +223,25 @@ export class Service
         return this.facade.getUserStores(sessionId);
     }
 
-    public addDiscountPolicy(buyingPolicy: any)
+    public addDiscountPolicy(sessionId: string, storeId: number, name: string, discount: tDiscount):Promise<string>
     {
-        throw new Error('Method not implemented.');
+        return this.facade.addDiscountPolicy(sessionId, storeId, name, discount);
     }
 
-    public addBuyingPolicy(buyingPolicy: any) {
-        throw new Error('Method not implemented.');
+    public addBuyingPolicy(sessionId:string, storeId:number, policyName: string, buyingPolicy: tPredicate):Promise<string> {
+        return this.facade.addBuyingPolicy(sessionId, storeId, policyName, buyingPolicy);
     }
 
-    public removeBuyingPolicy(discountNumber: number) {
-        throw new Error('Method not implemented.');
+    public removeBuyingPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeBuyingPolicy(sessionId, storeId, policyNumber);
     }
 
-    public removeDiscountPolicy(discountPolicy: any) {
-        throw new Error('Method not implemented.');
+    // public getBuyingPolicies(sessionId: string, storeId: number):Promise<policyState[]> {
+    //     return this.facade.getBuyingPolicies(sessiodId, storeId);
+    // }
+
+    public removeDiscountPolicy(sessionId:string, storeId:number, policyNumber: number):Promise<string> {
+        return this.facade.removeDiscountPolicy(sessionId, storeId, policyNumber);
     }
 
     public getSubscriberId(sessionId: string): number
@@ -245,6 +269,11 @@ export class Service
     public clear() : void
     {
         this.facade.clear();
+    }
+
+    public static uninitialize() : void
+    {
+        Service.singletone = undefined;
     }
 
 }

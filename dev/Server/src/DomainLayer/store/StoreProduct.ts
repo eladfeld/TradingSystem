@@ -1,6 +1,7 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Rating } from "./Common"
+import { ID, Rating } from "./Common"
+import { ProductDB } from "../../DataAccessLayer/DBinit";
 
 export class StoreProduct
 {
@@ -13,10 +14,11 @@ export class StoreProduct
     private productRating: number
     private numOfRaters: number
     private categories: string[];
+    private image: string;
 
-    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: string[])
+    public constructor(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
     {
-        this.productId = productId;
+        this.productId = ID();
         this.name = name;
         this.price = price;
         this.storeId = storeId;
@@ -24,6 +26,37 @@ export class StoreProduct
         this.productRating = 0 // getting productRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
         this.categories = categories
+        this.image = image;
+    }
+
+    public static createProduct(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string){
+        let product = new StoreProduct(
+            name,
+            price,
+            storeId,
+            quantity,
+            categories,
+            image,
+        )
+        return ProductDB.addProduct(product).then(_ => product).catch(err => err);
+    }
+
+    public static rebuildProduct(id: number, name: string, price: number, storeId: number, quantity:number, categories: string[], image: string){
+        let product = new StoreProduct(
+            name,
+            price,
+            storeId,
+            quantity,
+            categories,
+            image,
+        )
+        product.productId = id;
+        return product;
+    }
+
+    public getImage()
+    {
+        return this.image;
     }
 
     public getProductId()

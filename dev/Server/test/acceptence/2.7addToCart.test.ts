@@ -8,37 +8,45 @@ import { isFailure, isOk, Result } from '../../src/Result';
 import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
-import { assert } from 'console';
+import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
+import { fail } from 'assert';
+import {setReady, waitToRun} from '../testUtil';
 
 describe('2.7: add to cart test' , function() {
 
     var service: Service = Service.get_instance();
-    beforeEach(function () {
+    beforeEach( () => {
+        //console.log('start')
+        return waitToRun(()=>APIsWillSucceed());
     });
 
     afterEach(function () {
-        service.clear();
+        //console.log('finish');        
+        setReady(true);
     });
     it('add to cart good' , async function() {
+        const aviName = uniqueAviName();
+        const storeName = uniqueAlufHasportName();
         let sessionId = await service.enter();
-        let avi = await register_login(service,sessionId,"avi","123456789");
-        let store1 =await open_store(service,sessionId,avi , "Aluf Hasport" , 123456 , "Tel Aviv" );
-        store1.addCategoryToRoot('Sweet')
-        store1.addCategoryToRoot('Computer')
+        let avi = await register_login(service,sessionId,aviName,"123456789");
+        let store1 =await open_store(service,sessionId,avi , storeName , 123456 , "Tel Aviv" );
+        await service.addCategoryToRoot(sessionId, store1.getStoreId(),'Sweet')
+        await service.addCategoryToRoot(sessionId, store1.getStoreId(),'Computer')
         let product1: Product = new Product("banana", ['Sweet']);
-        store1.addNewProduct(avi,product1.getName(),['Computer'],500,100);
-        service.addProductTocart(sessionId, store1.getStoreId() , product1.getProductId() , 10)
-        .then( _ => expect(true).to.eq(true))
-        .catch( _ => expect(true).to.eq(false))
+        let prodId = await service.addNewProduct(sessionId, store1.getStoreId(), product1.getName(),['Computer'],500,100);
+        await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10)
     })
 
     it('add non existent product to cart' , async function() {
+        const aviName = uniqueAviName();
+        const storeName = uniqueAlufHasportName();
+
         let sessionId = await service.enter()
-        let avi = await register_login(service,sessionId,"avi","123456789");
-        let store1 =await open_store(service,sessionId,avi , "Aluf Hasport" , 123456 , "Tel Aviv" );
-        service.addProductTocart(sessionId, store1.getStoreId() , 1 , 10)
-        .then( _ => expect(true).to.eq(false))
-        .catch( _ => expect(true).to.eq(true))
+        let avi = await register_login(service,sessionId,aviName,"123456789");
+        let store1 =await open_store(service,sessionId,avi , storeName , 123456 , "Tel Aviv" );
+        await failIfResolved(()=> service.addProductTocart(sessionId, store1.getStoreId() , 1 , 10))
+        // .then( _ => expect(true).to.eq(false))
+        // .catch( _ => expect(true).to.eq(true))
     })
 
 

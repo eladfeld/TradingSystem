@@ -1,15 +1,14 @@
-import { DiscountPolicy } from "./DiscountPolicy";
-import { BuyingPolicy } from "./BuyingPolicy";
+import DiscountPolicy from "../discount/DiscountPolicy";
+import BuyingPolicy, { Rule } from "../policy/buying/BuyingPolicy";
 import { Inventory } from "./Inventory";
-import { TreeRoot, ID, Rating } from './Common'
+import { TreeRoot, ID, Rating, TreeNode } from './Common'
 import { Appointment } from "../user/Appointment";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { StoreDB } from "./StoreDB";
 import { StoreInfo, StoreProductInfo } from "./StoreInfo";
 import { buyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
-import Purchase from "../purchase/Purchase";
+import Purchase, { tPaymentInfo, tShippingInfo } from "../purchase/Purchase";
 import { discountOption, DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
@@ -17,11 +16,17 @@ import { StoreHistory } from "./StoreHistory";
 import Transaction from "../purchase/Transaction";
 import { MakeAppointment } from "../user/MakeAppointment";
 import { Logger } from "../../Logger";
-import PaymentInfo from "../purchase/PaymentInfo";
-import ShippingInfo from "../purchase/ShippingInfo";
+import { tPredicate } from "../discount/logic/Predicate";
+import { tDiscount } from "../discount/Discount";
+import BuyingSubject from "../policy/buying/BuyingSubject";
+import iCategorizer from "../discount/Categorizer";
+
+import { StoreProduct } from "./StoreProduct";
+import UniversalPolicy from "../policy/buying/UniversalPolicy";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 
 
-export class Store
+export class Store implements iCategorizer
 {
 
 
@@ -63,7 +68,6 @@ export class Store
         } else {
             this.buyingPolicy = buyingPolicy
         }
-        this.inventory = new Inventory();
         this.messages = new Map<number, string>()
         this.storeRating = 0 // getting storeRating with numOfRaters = 0 will return NaN
         this.numOfRaters = 0
@@ -74,9 +78,50 @@ export class Store
         this.discounts = [];
         this.buyingOptions = [buyingOption.INSTANT];
         this.storeHistory = new StoreHistory(this.storeId);
-        this.categiries = new TreeRoot<string>('root category');
+        this.categiries = new TreeRoot<string>('General');
+    }
 
-        StoreDB.addStore(this);
+    public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>): Store
+    {
+        let store = new Store(storedb.founderId, storedb.storeName, storedb.bankAccount, storedb.storeAddress)
+        store.storeId = storedb.id
+        store.storeClosed = storedb.storeClosed;
+        store.numOfRaters = storedb.numOfRaters;
+        store.storeRating = storedb.storeRating;
+        store.appointments = appointments;
+        store.inventory = new Inventory(store.storeId, storeProducts);
+        store.categiries = categories
+
+        //TODO: add policies and categories!
+        return store;
+    }
+    
+    public static createStore(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string): Promise<Store> {
+        let store = new Store(storeFounderId,
+            storeName,
+            bankAccount,
+            storeAddress)
+            store.inventory = new Inventory(store.storeId, []);
+
+        return new Promise((resolve ,reject) => { StoreDB.addStore(store).then(() => resolve(store)).catch(err => reject(err))})
+    }
+
+    public getProducts = (categoryName: string):number[] => {
+        const category:TreeNode<string> = this.categiries.getChildNode(categoryName);
+        if(!category){
+            return [];
+        }
+        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {     
+            for(var i=0; i<prod.getCategories().length; i++){
+                const cat = prod.getCategories()[i];
+                if(category.value===cat || category.hasChildNode(cat)){
+                    return true;
+                }
+            }
+            return false;
+        });
+        const prodIds:number[] = products.map((prod:StoreProductInfo) => prod.getProductId());
+        return prodIds;
     }
     public getBankAccount = () => this.bankAccount;
     public getStoreAddress = () => this.storeAddress;
@@ -136,7 +181,7 @@ export class Store
         return NaN
     }
 
-    public getPurchaseHistory() : Transaction[]{
+    public getPurchaseHistory() : Promise<Transaction[]>{
         return this.storeHistory.getPurchaseHistory();
     }
 
@@ -147,67 +192,105 @@ export class Store
         return this.inventory.isProductAvailable(productId, quantity);
     }
 
-    public addNewProduct(subscriber: Subscriber, productName: string, categories: string[], price: number, quantity = 0): Result<number> {
+    public addNewProduct(subscriber: Subscriber, productName: string, categories: string[], price: number, quantity = 0, image: string): Promise<number> {
         if(this.storeClosed){
-            return makeFailure("Store is closed")
+            return Promise.reject("Store is closed")
         }
-        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this) && !Authentication.isSystemManager(subscriber.getUserId())
-            && subscriber.getUserId() !== this.storeFounderId){
-            return makeFailure("User not permitted")
+        if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this) && subscriber.getUserId() !== this.storeFounderId){
+            return Promise.reject("User not permitted1")
         }
         for(let category of categories){
             if(!this.categiries.hasChildNode(category)){
-                return makeFailure("Got invalid category")
+                return Promise.reject("Got invalid category")
             }
         }
 
-        return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity);
+        return this.inventory.addNewProduct(productName, categories, this.storeId, price, quantity, image);
     }
 
-    public setProductQuantity(subscriber: Subscriber, productId: number, quantity: number): Result<string> {
+    public setProductQuantity(subscriber: Subscriber, productId: number, quantity: number): Promise<string> {
         if(this.storeClosed){
-            return makeFailure("Store is closed")
+            return Promise.reject("Store is closed")
         }
         if(!subscriber.checkIfPerrmited(ACTION.INVENTORY_EDITTION, this)){
-            return makeFailure("User not permitted")
+            return Promise.reject("User not permitted2")
         }
 
         return this.inventory.setProductQuantity(productId, quantity);
     }
 
-    public sellShoppingBasket(buyerId: number, userAddress: string, shoppingBasket: ShoppingBasket , onFail : ()=>void): Result<boolean> {
+    public addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Promise<string> {
+        if(this.storeClosed) return Promise.reject("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted")       
+        return this.buyingPolicy.addPolicy(policy, policyName);        
+    }
+
+    public removeBuyingPolicy(subscriber: Subscriber, policyNumber: number): Promise<string> {
+        if(this.storeClosed) 
+            return Promise.reject("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) 
+            return Promise.reject("User not permitted3")       
+        return this.buyingPolicy.removePolicy(policyNumber); 
+    }
+
+
+
+    public getBuyingPolicies(subscriber: Subscriber): Result<Rule[]> {
+        if(this.storeClosed) return makeFailure("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted4")       
+        return makeOk(this.buyingPolicy.getPolicies()); 
+    }
+
+    public sellShoppingBasket(buyerId: number, shippingInfo: tShippingInfo, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Promise<boolean> {
         if(this.storeClosed){
-            return makeFailure("Store is closed")
+            return Promise.reject("Store is closed")
         }
+        const policyRes = this.buyingPolicy.isSatisfied(buyingSubject);//TODO: FIX
+        if(isFailure(policyRes))return Promise.reject(policyRes.message);
+        if(policyRes.value !== BuyingPolicy.SUCCESS) return Promise.reject(policyRes.value);
+
+        const policyRes2 = UniversalPolicy.isSatisfied(buyingSubject);
+        if(isFailure(policyRes2))return Promise.reject(policyRes2.message);
+        else if(policyRes2.value !== BuyingPolicy.SUCCESS) return Promise.reject(policyRes2.value);
+
         let productList = shoppingBasket.getProducts();
-        let reservedProducts = new Map <number, number> ();
+        let reservedProducts = new Map <number, [number,string,number]> (); // id => [quantity, name, price]
         let pricesToQuantity = new Map <number, number> ();
+        var price: number = 0;
         for (let [id, quantity] of productList) {
             let sellResult = this.inventory.reserveProduct(id, quantity);
             let productPrice = this.inventory.getProductPrice(id);
+            let storeproduct = this.inventory.getProductById(id);
+            let pname = storeproduct.getName();
+            price += (productPrice * quantity);
             if(isOk(sellResult) && sellResult.value && productPrice != -1){
-                reservedProducts.set(id,quantity);
+                reservedProducts.set(id,[quantity,pname,price]);
                 pricesToQuantity.set(productPrice,quantity);
             }
             else{
                 this.cancelReservedShoppingBasket(reservedProducts)
-                return sellResult;
+                return Promise.reject(sellResult);
             }
         }
-        let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
-
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, reservedProducts, () => {
+        //let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
+        const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
+        if(isFailure(discountRes)) return Promise.reject(discountRes.message);
+        price -= discountRes.value;
+        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
          );
-        return makeOk(true);
+        return Promise.resolve(true);
     }
 
 
-    public cancelReservedShoppingBasket(reservedProducts: Map <number, number>) {
+    public cancelReservedShoppingBasket(reservedProducts: Map <number, [number,string,number]>) {
         return () => {
             if(reservedProducts !== undefined){
-                for (let [id, quantity] of reservedProducts.entries()) {
+                for (let [id, [quantity,name,price]] of reservedProducts.entries()) {
                     this.inventory.returnReservedProduct(id, quantity);
                 }
             }
@@ -216,62 +299,73 @@ export class Store
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
 
-    public sellProduct(buyerId: number,userAddr: string, productId: number, quantity: number, buyingOption: buyingOption): Result<string> {
+    public sellProduct(buyerId: number, shippingInfo: tShippingInfo, productId: number, quantity: number, buyingOption: buyingOption): Promise<string> {
         if(this.storeClosed){
-            return makeFailure("Store is closed")
+            return Promise.reject("Store is closed")
         }
         if(buyingOption < this.buyingOptionsMenu.length && buyingOption >= 0){
             //return this.buyingOptionsMenu[buyingOption](productId, quantity, buyerId, userAddr);
-            return this.buyInstant(productId,quantity,buyerId,userAddr);
+            return this.buyInstant(productId,quantity,buyerId,'shippingInfo');
         }
-        return makeFailure("Invalid buying option");
+        return Promise.reject("Invalid buying option");
     }
 
-    private buyInstant(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
-        if(!this.hasBuyingOption(buyingOption.INSTANT)){
-            return makeFailure("Store does not support instant buying option")
-        }
-        let sellResult = this.inventory.reserveProduct(productId, quantity);
-        if(isFailure(sellResult)){
-            return sellResult;
-        }
-        let productMap = new Map <number, number>(); // map price to quantity
-        let productPrice = this.inventory.getProductPrice(productId)
-        if(productPrice === -1){
-            return makeFailure("Product was not found")
-        }
-        productMap.set(productPrice, quantity);
-        let fixedPrice = this.applyDiscountPolicy(productMap);
+    private buyInstant(productId:number, quantity:number, buyerId: number, userAddress:string): Promise<string> {
+        // if(!this.hasBuyingOption(buyingOption.INSTANT)){
+        //     return Promise.reject("Store does not support instant buying option")
+        // }
+        // let sellResult = this.inventory.reserveProduct(productId, quantity);
+        // if(isFailure(sellResult)){
+        //     return Promise.reject(sellResult.message);
+        // }
+        // let productMap = new Map <number, number>(); // map price to quantity
+        // let productPrice = this.inventory.getProductPrice(productId)
+        // if(productPrice === -1){
+        //     return Promise.reject("Product was not found")
+        // }
+        // productMap.set(productPrice, quantity);
+        // let fixedPrice = this.applyDiscountPolicy(productMap);
 
-        Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.cancelReservedShoppingBasket(productMap));
-        return makeOk("Checkout passed to purchase");
+        // Purchase.checkout(this.storeId, fixedPrice, buyerId, productMap, this.storeName, this.cancelReservedShoppingBasket(productMap));
+        return Promise.resolve("Checkout passed to purchase");
     }
 
-    private buyOffer(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyOffer(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyBid(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyBid(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    private buyRaffle(productId:number, quantity:number, buyerId: number, userAddress:string): Result<string> {
+    private buyRaffle(productId:number, quantity:number, buyerId: number, shippingInfo:tShippingInfo): Result<string> {
         return makeFailure("Not implemented")
     }
 
-    public closeStore(userId: number): Result<string> {
+    public closeStore(userId: number): Promise<string> {
 
         // this is irreversible
-        if( this.isOwner(userId) && !Authentication.isSystemManager(userId)){
-            return makeFailure("User not permitted")
-        }
-        this.storeClosed = true
-        StoreDB.deleteStore(this.storeId)
+        let isSystemManagerp = Authentication.isSystemManager(userId)
+
+        return new Promise((resolve,reject) => {
+            isSystemManagerp.then( isSystemManager => {
+                if( this.isOwner(userId) && !isSystemManager){
+                    reject("User not permitted5")
+                }
+                else{
+                    this.storeClosed = true
+                    let deletestorep = StoreDB.deleteStore(this.storeId)
+                    deletestorep.then( _ =>{
+                        resolve("store deleted")
+                    })
+                }
+            })
+        })   
     }
 
     public getAppointmentById(userId: number): Appointment
     {
-        return this.appointments.find( appointment => appointment.appointee.getUserId() === userId);
+        return this.appointments.find( appointment => appointment.appointee === userId);
     }
 
     public isOwner(userId: number): boolean
@@ -312,11 +406,16 @@ export class Store
         return makeFailure("Not implemented")
     }
 
-    public getStoreInfoResult(userId: number): Result<string> {
-        if(!this.isOwner(userId) && !Authentication.isSystemManager(userId)){
-            return makeFailure("User not permitted")
-        }
-        return makeOk(JSON.stringify(this.getStoreInfo()))
+    public getStoreInfoResult(userId: number): Promise<string> {
+        let ismanagerp = Authentication.isSystemManager(userId);
+        return new Promise((resolve, reject) =>{
+            ismanagerp.then( ismanager => {
+                if(!this.isOwner(userId) && !ismanager)
+                    reject("User not permitted")
+                resolve(JSON.stringify(this.getStoreInfo()))
+            })
+            .catch( error => reject(error))
+        })
     }
 
     public getStoreInfo(): StoreInfo {
@@ -366,7 +465,7 @@ export class Store
         return this.inventory.getProductInfoByFilter((storeProduct) => storeProduct.getProductRating() < rating);
     }
 
-    public deleteManager(subscriber: Subscriber, managerToDelete: number): Result<string> {
+    public deleteManager(subscriber: Subscriber, managerToDelete: number): Promise<string> {
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToDelete);
         if(appointment !== undefined)
         {
@@ -374,7 +473,7 @@ export class Store
         }
         else
         {
-            return makeFailure("subscriber can't delete a manager he didn't appoint");
+            return Promise.reject("subscriber can't delete a manager he didn't appoint");
         }
     }
 
@@ -384,62 +483,97 @@ export class Store
 
     public findAppointedBy(appointer: number, appointee: number): Appointment {
         return this.appointments.find(appointment =>
-            appointment.getAppointee().getUserId() === appointee &&
-            appointment.getAppointer().getUserId() === appointer)
+            appointment.getAppointeeId() === appointee &&
+            appointment.getAppointerId() === appointer)
     }
 
-    public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Result<string>
+    public appointStoreOwner(appointer: Subscriber, appointee: Subscriber): Promise<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || Authentication.isSystemManager(appointer.getUserId())
-            || appointer.getUserId() === this.storeFounderId)
-        {
-            return MakeAppointment.appoint_owner(appointer, this, appointee);
-        }
-        return makeFailure("user is not permited to appoint store owner");
-
+        let ismanagerp = Authentication.isSystemManager(appointer.getUserId())
+        return new Promise( (resolve,reject) => {
+            ismanagerp.then( ismanager => {
+                if(appointer.checkIfPerrmited(ACTION.APPOINT_OWNER, this) || ismanager)
+                {
+                    let makeapp = MakeAppointment.appoint_owner(appointer, this, appointee);
+                    makeapp.then( msg => {
+                        resolve(msg)
+                    })
+                    .catch( error => {
+                        reject(error)
+                    })
+                }
+                else reject("user is not permited to appoint store owner")
+            })
+        })
     }
 
-    public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Result<string>
+    public appointStoreManager(appointer: Subscriber, appointee: Subscriber): Promise<string>
     {
-        if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || Authentication.isSystemManager(appointer.getUserId())
-            || appointer.getUserId() === this.storeFounderId)
-        {
-            return MakeAppointment.appoint_manager(appointer, this, appointee)
-        }
-        return makeFailure("user is not permited to appoint store manager");
+        let ismanagerp =Authentication.isSystemManager(appointer.getUserId())
+        return new Promise ((resolve,reject) => {
+            ismanagerp.then( ismanager => {
+                if(appointer.checkIfPerrmited(ACTION.APPOINT_MANAGER, this) || ismanager || appointer.getUserId() === this.storeFounderId)
+                {
+                    let makeapp = MakeAppointment.appoint_manager(appointer, this, appointee)
+                    makeapp.then( msg => {
+                        resolve(msg)
+                    })
+                    .catch( error => {
+                        reject(error)
+                    })
+                }
+                else reject("user is not permited to appoint store manager");
+            })
+        })
     }
 
-    public editStaffPermission(subscriber: Subscriber, managerToEditId: number, permissionMask: number): Result<string> {
+    public editStaffPermission(subscriber: Subscriber, managerToEditId: number, permissionMask: number): Promise<string> {
 
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToEditId);
         if(appointment !== undefined)
         {
+            SubscriberDB.updatePermission(this.storeId, managerToEditId, permissionMask)
             return appointment.editPermissions(permissionMask);
         }
-        return makeFailure("subscriber can't edit a manager he didn't appoint");
+        return Promise.reject("subscriber can't edit a manager he didn't appoint");
     }
 
-    public getStoreStaff(subscriber: Subscriber): Result<string> {
+    public async getStoreStaff(subscriber: Subscriber): Promise<string> {
         if(!subscriber.checkIfPerrmited(ACTION.VIEW_STORE_STAFF, this)){
-            return makeFailure('subscriber cant view store staff')
+            return Promise.reject('subscriber is not permitted to view store staff')
         }
         var staff : any = {}
         staff['subscribers']=[]
-        this.appointments.forEach((appointment) => {
-            let subscriber = appointment.getAppointee()
-            staff['subscribers'].push(
-            {   'id':subscriber.getUserId() ,
-                'username': subscriber.getUsername(),
-                'permission': subscriber.getPermission(this.storeId),
-                'title': this.isOwner(subscriber.getUserId()) ? "Owner" : "Manager",
-            }
-                                        )
+        let staffPromises = this.appointments.map(appointment => SubscriberDB.getSubscriberById(appointment.getAppointeeId()));
+        let staffList = await Promise.all(staffPromises);
+        staffList.forEach(emp =>  
+            {           
+                staff['subscribers'].push(
+                {   'id':emp.getUserId() ,
+                    'username': emp.getUsername(),
+                    'permission': emp.getPermission(this.storeId),
+                    'title': this.isOwner(emp.getUserId()) ? "Owner" : "Manager",
+                })
         })
-        return makeOk(JSON.stringify(staff))
+
+        return Promise.resolve(JSON.stringify(staff))
     }
 
+    public addDiscount(subscriber: Subscriber, name: string, discount: tDiscount): Promise<string> {
+        if(this.storeClosed) return Promise.reject("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted7");
+        return this.discountPolicy.addPolicy(discount);
+    }
 
-    public addDiscount(discount: DiscountOption)
+    public removeDiscountPolicy(subscriber: Subscriber, policyNumber: number): Promise<string> {
+        if(this.storeClosed) return Promise.reject("Store is closed");
+        const userId: number = subscriber.getUserId();
+        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted8")       
+        return this.discountPolicy.removePolicy(policyNumber); 
+    }
+
+    public addDiscount3(discount: DiscountOption)
     {
         this.discounts.push(discount)
     }
@@ -486,40 +620,53 @@ export class Store
         this.buyingOptions = this.buyingOptions.filter(option => option !== buyingOption);
     }
 
-    public completeOrder(userId : number , paymentInfo : PaymentInfo, userAddress: string) : Result<boolean>
+    public async completeOrder(userId : number , paymentInfo : tPaymentInfo, shippingInfo: tShippingInfo) : Promise<boolean>
     {
-        return Purchase.CompleteOrder(userId,
+        return await Purchase.CompleteOrder(userId,
             this.storeId,
-            new ShippingInfo(this.storeAddress, userAddress),
+            shippingInfo,
             paymentInfo,
             this.bankAccount);
     }
 
-    public addCategory(categoryFather: string, category: string): Result<string>{
+    public addCategory(categoryFather: string, category: string): Promise<string>{
         if(this.categiries.hasChildNode(category)){
-            return makeFailure(`Category: ${category} already exists in store: ${this.storeName}`)
+            return Promise.reject(`Category: ${category} already exists in store: ${this.storeName}`)
         }
 
         if(!this.categiries.hasChildNode(categoryFather)){
-            return makeFailure(`Category Father: ${categoryFather} does not exists in store: ${this.storeName}`)
+            return Promise.reject(`Category Father: ${categoryFather} does not exists in store: ${this.storeName}`)
         }
 
+        StoreDB.addCategory(this.storeId, category, categoryFather)
         let fatherNode = this.categiries.getChildNode(categoryFather)
+        
+        //TODO: #saveDB
         fatherNode.createChildNode(category)
-        return makeOk('category was added')
+        
+        return Promise.resolve('category was added')
     }
 
-    public addCategoryToRoot(category: string): Result<string>{
+    public addCategoryToRoot(category: string): Promise<string>{
         if(this.categiries.hasChildNode(category)){
-            return makeFailure(`Category: ${category} already exists in store: ${this.storeName}`)
+            return Promise.reject(`Category: ${category} already exists in store: ${this.storeName}`)
         }
 
+        StoreDB.addCategory(this.storeId, category, 'General')
         this.categiries.createChildNode(category);
-        return makeOk('category was added')
+        return Promise.resolve('category was added')
     }
 
     public getProductQuantity(productId : number) : number{
         return this.inventory.getProductQuantity(productId);
+    }
+
+    public getProductbyId( productId : number) : StoreProduct{
+        return this.inventory.getProductById(productId)
+    }
+
+    public getIsStoreClosed(){
+        return this.storeClosed;
     }
 
 }

@@ -4,12 +4,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -19,19 +16,14 @@ import {Search} from './Search'
 import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
-import { Link } from 'react-router-dom';
-import * as AiIcons from 'react-icons/ai';
 import { initialAppState } from './componentUtil';
+import logo from '../background/logo.jpeg'
+import Alert from '@material-ui/lab/Alert';
+import { Button } from '@material-ui/core';
 
 const BASE_URL = SERVER_BASE_URL;
 
 
-const getUsername =  async (userId) =>
-{
-  const res =  axios.post(`${SERVER_BASE_URL}getUsername`, {userId} )
-  .then()
-  return userId;
-}
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -82,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
       width: '20ch',
     },
   },
+
   sectionDesktop: {
     display: 'none',
     [theme.breakpoints.up('md')]: {
@@ -99,11 +92,25 @@ const useStyles = makeStyles((theme) => ({
 export default function Banner({getAppState, setAppState}) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notiEl, setNotiEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [sidebar, setSidebar] = useState(false);
   const showSidebar = () => setSidebar(!sidebar);
   const isMenuOpen = Boolean(anchorEl);
+  const isNotiOpen = Boolean(notiEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const {IsStoreManager, notifications, cart} = getAppState();
+  const [problem, setProblem] = useState("");
+
+  const getTotalProducts = () =>
+  {
+    if(cart === undefined) {
+      return 0;
+    }
+    var total = 0;
+    cart.baskets.forEach(basket => total += basket.products.length);
+    return total;
+  }
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -111,6 +118,15 @@ export default function Banner({getAppState, setAppState}) {
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
+  };
+
+  const handleNotificationsOpen = (event) => {
+    setNotiEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setAppState({notifications:[]})
+    setNotiEl(null);
   };
 
   const handleMenuClose = () => {
@@ -123,12 +139,13 @@ export default function Banner({getAppState, setAppState}) {
   };
 
   const handleManageSystemClick = () => {
-    handleMenuClose();
+    history.push('/managesystem');
   };
 
 
-  const {userId, isGuest, isSystemManager} = getAppState();
-
+  const {userId, isGuest} = getAppState();
+  const isSystemManager = true;
+  
 
   const handleManageStoresClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getUserStores',{userId});
@@ -136,36 +153,37 @@ export default function Banner({getAppState, setAppState}) {
       case SERVER_RESPONSE_OK:
         const stores = JSON.parse(response.data).stores;
         setAppState({stores});
-            history.push('/manageStores');
-            return;
+          history.push('/manageStores');
+          return;
         case SERVER_RESPONSE_BAD:
-            alert(response.data);
-            return;
+          setProblem(response.data);
+          return;
         default:
-            alert(`unexpected response code: ${response.status}`);
-            return;
+          setProblem(`unexpected response code: ${response.status}`);
+          return;
     }
   };
+
+
 
 
   const handleCartClick = async () => {
     const response = await axios.post(SERVER_BASE_URL+'/getCartInfo',{userId});
     switch(response.status){
         case SERVER_RESPONSE_OK:
-            const cart = JSON.parse(response.data);
-            setAppState({cart});
-            history.push('/cart');
-            return;
+          const cart = JSON.parse(response.data);
+          setAppState({cart});
+          history.push('/cart');
+          return;
         case SERVER_RESPONSE_BAD:
-            alert(response.data.message);
-            return;
+          setProblem(response.data.message);
+          return;
         default:
-            alert(`unexpected response code: ${response.status}`);
-            return;
+          setProblem(`unexpected response code: ${response.status}`);
+          return;
     }
   };
   const handleTransactionsClick = async () => {
-    console.log(`[T] transaction click userId: ${userId}`);
     const response = await axios.post(BASE_URL+'getMyPurchaseHistory',{userId});
     switch(response.status){
       case SERVER_RESPONSE_OK:
@@ -173,13 +191,18 @@ export default function Banner({getAppState, setAppState}) {
         history.push('/mytransactions');
         return;
       case SERVER_RESPONSE_BAD:
-        alert(response.data.message);
+        setProblem(response.data.message);
         return;
       default:
-        alert(`unknown response code ${response.status}`);
+        setProblem(`unknown response code ${response.status}`);
         return;
     }
   };
+
+  const handleLogoClick = () =>
+  {
+    history.push('/welcome');
+  }
 
   const handleComplainClick  = () => {
     history.push('/complain');
@@ -192,12 +215,20 @@ export default function Banner({getAppState, setAppState}) {
   const handleLogoutClick  = async () => {
     //handleMenuClose();
     await axios.post(BASE_URL+'logout',{userId});
+    const wsConn = getAppState().wsConn;
+    if (wsConn !== undefined)
+      wsConn.close();
     history.push('/');
     setAppState(initialAppState);
   };
 
   const handleSignInClick = () => {
     history.push('/auth');
+  }
+
+  const handleInboxClick = () => {
+    setProblem('inbox');
+    //history.push('/inbox');
   }
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -210,12 +241,12 @@ export default function Banner({getAppState, setAppState}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage System</MenuItem> : <div></div>}
+      {isSystemManager ? <MenuItem onClick={handleManageSystemClick}>Manage System</MenuItem> : <div></div>}
+      {IsStoreManager    ? <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem> : <div></div>}
       { isGuest ?
           <MenuItem onClick={handleSignInClick}>Sign in</MenuItem> :
         <div>
-          {isSystemManager ? <MenuItem onClick={handleMenuClose}>Manage Stores</MenuItem> : <div></div>}
-          <MenuItem onClick={handleManageStoresClick}>Manage stores</MenuItem>
+          
           <MenuItem onClick={handleCartClick}>Cart</MenuItem>
           <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
           <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
@@ -223,6 +254,24 @@ export default function Banner({getAppState, setAppState}) {
           <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
         </div>
       }
+    </Menu>
+  );
+
+  const notiMenuId = 'notifications menu';
+
+  const renderNotifications = (
+    <Menu
+      anchorEl={notiEl}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      id={notiMenuId}
+      keepMounted
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={isNotiOpen}
+      onClose={handleNotificationsClose}
+    >
+      {notifications.map(noti =>
+        <MenuItem>{noti}</MenuItem>
+      )}
     </Menu>
   );
 
@@ -238,7 +287,7 @@ export default function Banner({getAppState, setAppState}) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
+        <IconButton aria-label="show 4 new mails" color="inherit" onClick={handleInboxClick}>
           <Badge badgeContent={0} color="secondary">
             <MailIcon />
           </Badge>
@@ -247,7 +296,7 @@ export default function Banner({getAppState, setAppState}) {
       </MenuItem>
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={0} color="secondary">
+          <Badge badgeContent={notifications.length} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -271,33 +320,33 @@ export default function Banner({getAppState, setAppState}) {
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
              {getAppState().username}
           </Typography>
           <Search getAppState={getAppState} setAppState={setAppState}/>
+          <img onClick={handleLogoClick} style={{ marginLeft: '30rem' }} height='50' length='50' src={logo}></img>
 
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="view shopping cart" color="inherit" onClick={handleCartClick}>
-              <Badge badgeContent={0} color="secondary">
+              <Badge badgeContent={getTotalProducts()} color="secondary">
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={handleInboxClick}>
               <Badge badgeContent={0} color="secondary">
                 <MailIcon />
               </Badge>
             </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={0} color="secondary">
+            <IconButton 
+            aria-label="show 17 new notifications" 
+            color="inherit"
+            aria-controls={notiMenuId}
+            aria-haspopup="true"
+            onClick={handleNotificationsOpen}
+
+            >
+              <Badge badgeContent={notifications.length} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -325,8 +374,20 @@ export default function Banner({getAppState, setAppState}) {
           </div>
         </Toolbar>
       </AppBar>
+      {
+          problem !== "" ?
+          <Alert
+          action={
+            <Button color="inherit" size="small" onClick={() => {setProblem("")}}>
+              close
+            </Button>
+          }
+          severity="warning"> {problem}</Alert> : <a1></a1>
+      }
       {renderMobileMenu}
       {renderMenu}
+      {renderNotifications}
+
     </div>
   );
 }
