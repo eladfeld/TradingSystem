@@ -1,1 +1,1 @@
-web: cd dev/Server
+worker: cd dev/Server && echo elad
