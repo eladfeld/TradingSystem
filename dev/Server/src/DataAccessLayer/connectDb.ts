@@ -3,8 +3,8 @@ export const Op = Sequelize.Op
 
 
 
-export const sequelize = new Sequelize('db', 'root', '1234', {
-    host: 'localhost',
+export const sequelize = new Sequelize('T0fWZ940xw', 'T0fWZ940xw', 'ppAkeHJWsg', {
+    host: 'remotemysql.com',
     dialect: 'mysql',
     port: 3306, // this is the mysql port
     // logging: true,
