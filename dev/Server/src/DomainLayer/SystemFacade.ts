@@ -1,47 +1,37 @@
 import { Logger } from "../Logger";
 import { Store } from "./store/Store";
-import { Appointment } from "./user/Appointment";
 import { Login } from "./user/Login";
 import { Register } from "./user/Register";
 import { Subscriber } from "./user/Subscriber";
 import { PaymentMeans, SupplyInfo, User } from "./user/User";
-// import { isFailure,isOk, makeFailure, makeOk, Result } from "../Result";
 import fs from 'fs';
 import path, { resolve } from 'path'
 import { buyingOption } from "./store/BuyingOption";
 import { Authentication } from "./user/Authentication";
 import Purchase, { tPaymentInfo, tShippingInfo } from "./purchase/Purchase";
-import { PaymentInfo } from "./purchase/PaymentInfo";
 import Transaction from "./purchase/Transaction";
-import { ProductDB } from "./store/ProductDB";
 import { MakeAppointment } from "./user/MakeAppointment";
 import { Publisher } from "./notifications/Publisher";
 import { createHash } from 'crypto';
-import { SpellChecker } from "./apis/spellchecker";
 import { SpellCheckerAdapter } from "./SpellCheckerAdapter";
 import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
-import { rejects } from "assert";
-import { StoreProduct } from "./store/StoreProduct";
-import { StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
+import { loginStatsDB, StoreDB, subscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS } from "../config";
-
+import { ProductDB } from "../DataAccessLayer/DBinit";
+import { initTables } from "../DataAccessLayer/connectDb";
+import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 export class SystemFacade
 {
+    
 
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
     private logged_system_managers : Map<string,Subscriber>; // sessionId=>manager
     private static lastSessionId = 0;
-
-    public static AsyncConstructor = async():Promise<SystemFacade> => {
-        const facade: SystemFacade = new SystemFacade();
-        await facade.init();
-        return facade;
-    }
 
     public constructor()
     {
@@ -51,6 +41,7 @@ export class SystemFacade
     }
 
     public async init(){
+        await initTables()
         if(!((await this.initPaymentSystem()) && (await this.initSupplySystem()) && this.initSystemManagers()))
         {
             Logger.error("system could not initialized properly!");
@@ -80,7 +71,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid message title")})
         if(!this.isNonEmptyString(body))
             return new Promise((resolve,reject) => { reject("invalid message body")})
-        
+
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -91,7 +82,7 @@ export class SystemFacade
     }
 
     public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
-        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);      
+        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -102,7 +93,7 @@ export class SystemFacade
     }
 
     public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
-        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);      
+        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -121,8 +112,8 @@ export class SystemFacade
         return ["feature","not", "yet", "supported"];
     }
     public closeStore = (sessionId:string, storeName:string):Promise<string> =>{
-        Logger.log(`closeStore : sessionId:${sessionId} storeName: ${storeName}`);  
-        if(!this.isNonEmptyString(storeName)) 
+        Logger.log(`closeStore : sessionId:${sessionId} storeName: ${storeName}`);
+        if(!this.isNonEmptyString(storeName))
             return new Promise((resolve,reject) => { reject("invalid storeName")});
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
@@ -157,6 +148,8 @@ export class SystemFacade
         let user: User = new User();
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
+        loginStatsDB.updateLoginStats(userType.guest);
+        Publisher.get_instance().notify_login_update("$login_stats:guest")
         return new Promise( (resolve,reject) => {
             resolve(sessionId);
         })
@@ -197,7 +190,7 @@ export class SystemFacade
         if(age < 1 || age === undefined || age === null){
             return new Promise((resolve,reject) => { reject("invalid age")})
         }
-        
+
 
         let regp =Register.register(username, password, age);
         return new Promise ((resolve,reject) => {
@@ -233,8 +226,31 @@ export class SystemFacade
 
                 this.logged_guest_users.set(sessionId,subscriber)
                 this.logged_subscribers.set(sessionId,subscriber);
-                if(subscriber.isSystemManager())
-                    this.logged_system_managers.set(sessionId,subscriber);
+                let ismanagerp = subscriber.isSystemManager()
+                ismanagerp.then (issysmanager => {
+                    if(issysmanager)
+                    {
+                        this.logged_system_managers.set(sessionId,subscriber);
+                        loginStatsDB.updateLoginStats(userType.system_manager)
+                        Publisher.get_instance().notify_login_update("$login_stats:system_manager")
+                    }
+                    else{
+                        let appointments = subscriber.getAppointments();
+                        let ownerapps = appointments.filter((app => app.isOwner()))
+                        if (appointments.length == 0){
+                            loginStatsDB.updateLoginStats(userType.subscriber)
+                            Publisher.get_instance().notify_login_update("$login_stats:subscriber")
+                        }
+                        else if (ownerapps.length != 0){
+                            loginStatsDB.updateLoginStats(userType.owner)
+                            Publisher.get_instance().notify_login_update("$login_stats:owner")
+                        }
+                        else{
+                            loginStatsDB.updateLoginStats(userType.manager)
+                            Publisher.get_instance().notify_login_update("$login_stats:manager")
+                        }
+                    }
+                })
                 resolve(subscriber);
             })
             .catch( error => {
@@ -251,7 +267,7 @@ export class SystemFacade
         if(storeId === undefined || storeId === null){
             return Promise.reject("invalid storeId")
         }
-        
+
         let user = this.logged_guest_users.get(sessionId)
             if (user === undefined)
                 return Promise.reject("user is not logged in")
@@ -345,7 +361,7 @@ export class SystemFacade
                 .catch( error => reject(error))
             })
             .catch( error => reject(error))
-        })        
+        })
     }
 
     //++
@@ -385,7 +401,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            return user.GetShoppingCart();   
+            return user.GetShoppingCart();
         }
         return Promise.reject("user not found");
     }
@@ -397,7 +413,7 @@ export class SystemFacade
         if(newQuantity < 0|| newQuantity === undefined || newQuantity === null){
             return Promise.reject("invalid quantity")
         }
-        
+
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
@@ -461,13 +477,17 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user === undefined)
             return Promise.reject("user not found")
-        
+
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
                 completep.then( complete => {
-                    resolve(complete)
+                    let deletep = user.deleteShoppingBasket(storeId)
+                    deletep.then ( _ => {
+                        resolve(complete)
+                    })
+                    .catch( error => reject(error))
                 })
                 .catch( error => reject(error))
             })
@@ -551,7 +571,7 @@ export class SystemFacade
 
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if (subscriber === undefined)
-            return Promise.reject("subscriber or store wasn't found")
+            return Promise.reject("subscriber wasn't found")
 
         let storep = StoreDB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
@@ -707,8 +727,8 @@ export class SystemFacade
                     issystemManagerp.then( ismanager => {
                         if (ismanager){
                             let historyp = watchee.getPurchaseHistory()
-                            historyp.then( history => { resolve(history) })
-                            .catch ( error => reject(error))
+                            historyp.then( history => { resolve(history)
+                            }).catch ( error => reject(error))
                         }
                         else reject("user doesnt have permissions")
                     })
@@ -769,7 +789,7 @@ export class SystemFacade
                             let msgp: Promise<string> = store.deleteManager(subscriber, managerToDelete.getUserId() );
                             msgp.then(msg => resolve(msg))
                             .catch(error => reject(error))
-                        } 
+                        }
                         else reject("wrong parameter given");
                     })
                     .catch(error => reject(error))
@@ -836,7 +856,7 @@ export class SystemFacade
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
         let storep = StoreDB.getStoreByID(storeId);
         let newManagerp = Authentication.getSubscriberByName(newManagerUsername)
-        
+
         return new Promise ((resolve,reject) => {
             storep.then (store => {
                 newManagerp.then ( newmanager => {
@@ -898,7 +918,30 @@ export class SystemFacade
         return Promise.reject("subscriber not logged in");
     }
 
+    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats> 
+    {
+        let sys_manager = this.logged_system_managers.get(sessionId)
+        if (sys_manager !== undefined)
+        {
+            if (this.isToday(from) || this.isToday(until))
+                Publisher.get_instance().register_login(sys_manager)
+            return loginStatsDB.getLoginStats(from, until)
+        }
+        return Promise.reject("only system managers can ask login stats")
+    }
 
+    isToday(date : Date) : boolean
+    {
+        
+        let today = new Date()
+        console.log("today",today)
+        console.log("date",date)
+        if (date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear() &&
+                    date.getDate() === today.getDate())
+            return true;
+        return false
+    }
 
     public getSubscriberId(sessionId: string): number {
         let subscriber = this.logged_subscribers.get(sessionId);
@@ -930,7 +973,7 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        // StoreDB.clear();
+        StoreDB.clear();
         ProductDB.clear();
         Purchase.clear();
     }

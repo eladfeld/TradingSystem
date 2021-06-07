@@ -11,9 +11,9 @@ import { register_login } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.2: open store test' , function() {
+describe('3.2: open store test' ,async function() {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

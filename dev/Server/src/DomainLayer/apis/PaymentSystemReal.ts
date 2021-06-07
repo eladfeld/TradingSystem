@@ -25,11 +25,11 @@ class PaymentSystemReal {
                 return PaymentSystemReal.nextSessionId++;
             default:
                 return -1;
-        
-        }   
+
+        }
     }
 
-    
+
     //check response code status and if contains any data, no magic numbers
     //transfers @amount dollars to bank account number @toAccount
     //from credit card with number @cardNumber, expires at DD/MM/YYYY where @expiration=DDMMYYYY, and cvv of @cvv
@@ -52,7 +52,7 @@ class PaymentSystemReal {
             case "-1":
                 return -1;
             default:
-                return response.data; 
+                return response.data;
             }
     }
 
@@ -72,7 +72,7 @@ class PaymentSystemReal {
             case "-1":
                 return false;
             default:
-                return true; 
+                return true;
             }
     }
 

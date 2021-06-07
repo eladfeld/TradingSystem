@@ -8,25 +8,17 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
+import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 
 export class Service
 {
-
-
+    
     private static singletone: Service = undefined;
     private facade: SystemFacade;
 
     private constructor()
     {
         this.facade = new SystemFacade();
-        this.facade.init().then(_ =>{
-            if(SHOULD_INIT_STATE){
-                setTimeout(async() =>{
-                    const res = await new StateInitializer().initState();
-                    console.log(`init state was succesful: ${res}`)
-                }, 0);
-            }
-        })
     }
 
     public get_word_list(word: string): string[]
@@ -34,11 +26,19 @@ export class Service
         return ['asd', 'bdsa', 'casd', 'ddsa'];
     }
 
-    public static get_instance() : Service
+    public static async get_instance() : Promise<Service>
     {
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
+            return Service.singletone.facade.init().then(_ =>{
+                if(SHOULD_INIT_STATE){
+                    setTimeout(async() =>{
+                        const res = await new StateInitializer().initState();
+                        console.log(`init state was succesful: ${res}`)
+                    }, 0);
+                }
+            }).then(() => Service.singletone)
         }
         return Service.singletone;
     }
@@ -62,9 +62,8 @@ export class Service
         return this.facade.closeStore(sessionId,storeName);
     }
 
-
     //returns a session id string
-    public async enter(): Promise<string>
+    public enter(): Promise<string>
     {
         return this.facade.enter();
     }
@@ -79,12 +78,12 @@ export class Service
         return this.facade.logout(sessionId)
     }
 
-    public async register(username: string, password: string, age: number): Promise<string>
+    public register(username: string, password: string, age: number): Promise<string>
     {
         return this.facade.register(username, password, age);
     }
 
-    public async login(sessionId: string, username: string, password: string): Promise<Subscriber>
+    public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
         return this.facade.login(sessionId, username, password);
     }
@@ -250,6 +249,11 @@ export class Service
     public getSubscriberId(sessionId: string): number
     {
         return this.facade.getSubscriberId(sessionId);
+    }
+
+    getLoginStats(sessionId : string, from:Date, until:Date) : Promise<login_stats>
+    {
+        return this.facade.getLoginStats(sessionId , from, until)
     }
 
 

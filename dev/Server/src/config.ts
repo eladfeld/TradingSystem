@@ -7,7 +7,7 @@ import fakePaymentSystemAdapter from "./DomainLayer/purchase/fakePaymentSystemAd
 import fakeSupplySystemAdapter from "./DomainLayer/purchase/fakeSupplySystemAdapter";
 import { iPaymentAdapter, iSupplyAdapter } from "./DomainLayer/purchase/iAPI";
 
-export var TEST_MODE = false;
+export var TEST_MODE = true;
 
 
 //program constants

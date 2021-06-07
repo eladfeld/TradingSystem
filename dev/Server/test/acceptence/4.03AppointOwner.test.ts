@@ -11,9 +11,9 @@ import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueMosheName, uniqueName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.3: Appoint Owner tests', function () {
+describe('4.3: Appoint Owner tests',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

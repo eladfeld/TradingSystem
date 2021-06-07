@@ -9,9 +9,9 @@ import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName } from '../testUt
 import { register_login, open_store } from './common';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.8: Shopping Cart view and edit' , function() {
+describe('2.8: Shopping Cart view and edit' ,async function() {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -33,7 +33,7 @@ describe('2.8: Shopping Cart view and edit' , function() {
         let store1 = await open_store(service,sessionId,avi,storeName , 123456 , "Tel Aviv" );
         await store1.addCategoryToRoot('Sweet')
         await store1.addCategoryToRoot('Computer')
-        let prodId = await store1.addNewProduct(avi,"banana",['Computer'],500,100);
+        let prodId = await store1.addNewProduct(avi,"banana",['Computer'],500,100,"");
         await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10);
         await service.getCartInfo(sessionId)
         await service.editCart(sessionId, store1.getStoreId(), prodId, 0 );

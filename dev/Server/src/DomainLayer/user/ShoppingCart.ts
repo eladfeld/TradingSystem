@@ -11,6 +11,7 @@ import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingCart
 {
+
     private baskets : Map<number , ShoppingBasket>; // {} <storeId, ShoppingBasket>
 
     public constructor()
@@ -18,6 +19,15 @@ export class ShoppingCart
         this.baskets = new Map();
     }
 
+ 
+    public static rebuildShoppingCart(baskets: ShoppingBasket[])
+    {
+        let cart = new ShoppingCart();
+        baskets.map(basket => cart.baskets.set(basket.getStoreId(), basket))
+        return cart;
+    }
+
+    
     public checkoutBasket(userId: number, user: iSubject, storeId : number, shippingInfo: tShippingInfo, userSubject: iSubject) : Promise<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
@@ -70,6 +80,11 @@ export class ShoppingCart
         if (basket === undefined)
             return Promise.reject("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
+    }
+
+    deleteShoppingBasket(storeId : number) : void
+    {
+        this.baskets.delete(storeId);
     }
 
     getBasketById(storeId: number): {}

@@ -2,11 +2,11 @@ import { Store } from "../../DomainLayer/store/Store";
 
 export interface iStoreDB
 {
-    addStore:(store: Store)=> void;
+    addStore:(store: Store)=> Promise<void>;
     
     getStoreByID:(storeId: number)=> Promise<Store>;
 
-    deleteStore:(storeId: number) => void;
+    deleteStore:(storeId: number) => Promise<void>;
 
     getStoreByName:(storeName: string) => Promise<Store>;
 
@@ -19,4 +19,7 @@ export interface iStoreDB
     getProductInfoBelowPrice: (price: number) => Promise<string>;
 
     getPruductInfoByStore:(storeName: string) => Promise<string>;
+
+    clear:() => void;
+
 }

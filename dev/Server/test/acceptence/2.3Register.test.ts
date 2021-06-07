@@ -6,9 +6,9 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, uniqueAviName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.3: register test' , function() {
+describe('2.3: register test' ,async function() {
 
-    var service : Service = Service.get_instance();
+    var service : Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
