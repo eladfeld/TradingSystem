@@ -60,7 +60,7 @@ const StatsPanel = ({getAppState, setAppState}) =>{
                 <Grid item xs={3}/>
             </Grid>
             {
-                stats ? <MyBarChart getAppState={getAppState}/> : <h1>Search for stats</h1>
+                stats ? <MyBarChart getAppState={getAppState}/> : <div/>
             }
         </Paper>
     );

@@ -375,7 +375,6 @@ export default function Banner({getAppState, setAppState}) {
           </div>
         </Toolbar>
       </AppBar>
-      <SearchMarket/>
       {
           problem !== "" ?
           <Alert

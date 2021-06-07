@@ -1,10 +1,10 @@
 import SearchBar from "./SearchBar"
-import SearchOptions from "./SearchOptions";
+// import SearchOptions from "./SearchOptions";
 
 const SearchMarket = () =>{
     return(
         <div>
-            <SearchOptions/>
+            {/* <SearchOptions/> */}
             <SearchBar/>
         </div>
     );
