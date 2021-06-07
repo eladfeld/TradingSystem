@@ -1,1 +1,1 @@
-web: ./dev/Server npm run start 
+web: cd dev/Server
