@@ -13,6 +13,12 @@ import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 export class SubscriberDB implements iSubscriberDB
 {
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 
     //add functions:
 
