@@ -1,3 +1,5 @@
+import iDiscount from "../../DomainLayer/discount/iDiscount";
+import { Rule } from "../../DomainLayer/policy/buying/BuyingPolicy";
 import { Store } from "../../DomainLayer/store/Store";
 
 export interface iStoreDB
@@ -21,6 +23,10 @@ export interface iStoreDB
     getPruductInfoByStore:(storeName: string) => Promise<string>;
 
     addCategory: (StoreId: number, category: string, father: string) => Promise<void>;
+
+    addPolicy: (storeId: number, rule: Rule) => Promise<void>;
+
+    addDiscountPolicy: (id: number, discount: iDiscount, storeId: number) => Promise<void>
 
     clear:() => void;
 

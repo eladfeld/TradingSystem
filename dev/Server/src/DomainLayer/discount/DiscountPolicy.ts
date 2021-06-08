@@ -1,4 +1,6 @@
-import { isFailure, makeFailure, makeOk, Result } from "../../Result";
+import { StoreDB } from "../../DataAccessLayer/DBinit";
+import { storeDB } from "../../DataAccessLayer/dbs/StoreDB";
+import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import Categorizer from "./Categorizer";
 import { tDiscount } from "./Discount";
 import DiscountParser from "./DiscountParser";
@@ -16,6 +18,22 @@ export default class DiscountPolicy{
         this.discounts = new Map();
     }
 
+    public static rebuild(discounts: any[]) :DiscountPolicy
+    {
+        let discountPolicy = new DiscountPolicy();
+        for(let discount of discounts)
+        {
+            let disRes = DiscountParser.parse(discount.discount);
+            if(isOk(disRes))
+            {
+                let dis = disRes.value;
+                discountPolicy.discounts.set(discount.id, dis);
+            }
+        }
+        return discountPolicy;
+    }
+
+
     //returns the best discount that the basket can recieve according to the policy
     public getDiscount = (basket: iBasket, categorizer: Categorizer): Result<number> =>{
         var acc: number =0;
@@ -29,11 +47,14 @@ export default class DiscountPolicy{
     }
 
     //adds a new iDiscount to the policy. If @obj is invalid, returns Failure explaining why.
-    public addPolicy = (obj: any):Promise<string> =>{
+    public addPolicy = (obj: any, storeId: number):Promise<string> =>{
         //TODO: #saveDB
         const res: Result<iDiscount> = DiscountParser.parse(obj);
         if(isFailure(res)) return Promise.reject(res.message);
-        this.discounts.set(this.nextId++, res.value);
+        let discount = res.value
+        this.discounts.set(this.nextId, discount);
+        StoreDB.addDiscountPolicy(this.nextId, discount, storeId)
+        this.nextId++;
         return Promise.resolve("successfully added discount to the discount policy");
     }
 

@@ -260,6 +260,7 @@ export class subscriberDB implements iSubscriberDB
                 StoreId: storeId
             }
         });
+
         let basketId = basket.id;
         await sequelize.models.BasketProduct.destroy(
             {

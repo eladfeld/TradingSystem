@@ -3,6 +3,8 @@ import { Logger } from "../../Logger";
 import { Store } from "../../DomainLayer/store/Store";
 import { StoreProductInfo } from "../../DomainLayer/store/StoreInfo";
 import { iStoreDB } from "../interfaces/iStoreDB";
+import { Rule } from "../../DomainLayer/policy/buying/BuyingPolicy";
+import iDiscount from "../../DomainLayer/discount/iDiscount";
 
 export class StoreDummyDB implements iStoreDB
 {
@@ -16,6 +18,16 @@ export class StoreDummyDB implements iStoreDB
     {
         this.stores.push(store);
         return Promise.resolve()
+    }
+
+    public addPolicy(storeId: number, rule: Rule): Promise<void>
+    {
+        return Promise.resolve();
+    }
+
+    public addDiscountPolicy(id: number, discount: iDiscount, storeId: number): Promise<void>
+    {
+        return Promise.resolve();
     }
 
     public  getStoreByID(storeId: number): Promise<Store>

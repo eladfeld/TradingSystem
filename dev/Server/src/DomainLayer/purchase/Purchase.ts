@@ -218,7 +218,7 @@ class Purchase {
         return PurchaseDB.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {
-        console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
+        // console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
         return PAYMENT_TIMEOUT_MILLISEC;
     };
 
