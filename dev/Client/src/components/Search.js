@@ -222,12 +222,6 @@ export const Products=({getAppState, setAppState})=>{
                 }
                 severity="success"> {success}</Alert> : <a1></a1>
             }
-            {/* <Grid item align='right'>
-                <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
-                        onClick={reset}>
-                    clear
-                </Button>
-            </Grid> */}
 
         <List className={classes.search} subheader={<li />} align='right' style={paperStyle}>
             {

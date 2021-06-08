@@ -33,9 +33,16 @@ export class User implements iSubject
         SubscriberDB.getLastId().then(id => User.lastId = id);
     }
 
-    public checkoutBasket(shopId: number, shippingInfo: tShippingInfo): Promise<boolean>
+    public checkoutBasket(storeId: number, shippingInfo: tShippingInfo): Promise<boolean>
     {
-        return this.shoppingCart.checkoutBasket(this.getUserId(), this, shopId, shippingInfo, this);
+        let checkoutp = this.shoppingCart.checkoutBasket(this.getUserId(), this, storeId, shippingInfo, this);
+        return new Promise((resolve,reject) => {
+            checkoutp.then( isSusccesfull => {
+                this.shoppingCart.getBaskets().delete(storeId);
+                resolve(isSusccesfull)
+            })
+            .catch( error => reject(error))
+        })
     }
 
     public deleteShoppingBasket(storeId : number) : Promise<void>

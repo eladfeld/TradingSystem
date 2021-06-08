@@ -1,5 +1,5 @@
-import { isFailure, makeFailure, makeOk, Result } from "../../../Result";
-import iSubject from "../../discount/logic/iSubject";
+import { StoreDB } from "../../../DataAccessLayer/DBinit";
+import { isFailure, isOk, makeFailure, makeOk, Result } from "../../../Result";
 import PredicateParser from "../../discount/logic/parser";
 import { iPredicate } from "../../discount/logic/Predicate";
 import BuyingSubject from "./BuyingSubject";
@@ -25,6 +25,21 @@ export default class BuyingPolicy{
         this.rules = new Map();
     }
 
+    public static rebuild(policies: any[]): BuyingPolicy
+    {
+        let buyingPolicy = new BuyingPolicy();
+        for(let policy of policies)
+        {
+            let predRes = PredicateParser.parse(policy.predicate)
+            if(isOk(predRes))
+            {
+                let rule = new Rule(policy.id, predRes.value ,policy.name);
+                buyingPolicy.rules.set(rule.id, rule);
+            }
+        }
+        return buyingPolicy
+    }
+
     //TODO: figure out...
     //the problem: there are 3 possibilities. 1) rule is satisfied, 2) rule is not satisfied, 3) issue with calculation
     // 1=> makeOK, 3 => makeFailue, 2 => ???
@@ -40,11 +55,12 @@ export default class BuyingPolicy{
         return makeOk(BuyingPolicy.SUCCESS);
     }
 
-    public addPolicy = (predicate: any, policyInWords: string ):Promise<string> =>{
-        //TODO: #saveDB
+    public addPolicy = (predicate: any, policyInWords: string, storeId: number ):Promise<string> =>{
         const predRes: Result<iPredicate> = PredicateParser.parse(predicate);
         if(isFailure(predRes)) return Promise.reject(predRes.message);
-        this.rules.set(this.nextId, new Rule(this.nextId,predRes.value, policyInWords));
+        let rule = new Rule(this.nextId,predRes.value, policyInWords)
+        this.rules.set(this.nextId, rule);
+        StoreDB.addPolicy(storeId, rule);
         this.nextId++;
         return Promise.resolve("successfully added condition to the buying policy");
     }

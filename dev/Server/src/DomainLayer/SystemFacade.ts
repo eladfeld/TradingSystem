@@ -459,7 +459,8 @@ export class SystemFacade
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
                 completep.then( complete => {
-                    let deletep = user.deleteShoppingBasket(storeId)
+                    console.log("complete",complete)
+                    let deletep =  Promise.resolve()//user.deleteShoppingBasket(storeId)TODO: delete
                     deletep.then ( _ => {
                         resolve(complete)
                     })

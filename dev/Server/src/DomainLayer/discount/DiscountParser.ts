@@ -41,11 +41,13 @@ class Parser{
         const type: string = d.type;
         if(!type) return makeFailure(`type undefined in ${d}`);
         if(typeof type !== 'string') return makeFailure('type is not a string');
-
+        
         switch (d.type) {
             case "unconditional":   
                 var category: tSimpleOperand = d.category;
-                var ratio: number = (typeof d.ratio === 'number')? d.ratio : Number(d.ratio);                
+                var ratio: number = (typeof d.ratio === 'number')? d.ratio : Number(d.ratio);
+                console.log(category, ratio)
+                
                 if(category===undefined || ratio===undefined)return makeFailure(`category or ratio not defined in ${d}`);
                 if((typeof ratio !== 'number') || isNaN(ratio)) return makeFailure(`${ratio} is not a valid ratio (must be number) in:\n${d}`)
                 if(ratio > 1 || ratio < 0) return makeFailure(`discount ratio must be between 0 and 1`);

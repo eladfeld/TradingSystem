@@ -1,5 +1,6 @@
 import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 import { Logger } from "../../Logger";
+import { tShippingInfo } from "../purchase/Purchase";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { Authentication } from "./Authentication";
@@ -82,6 +83,19 @@ export class Subscriber extends User
     {
         this.appointments.push(appointment);
         SubscriberDB.addAppointment(this.getUserId(),appointment)
+    }
+
+    public checkoutBasket(storeId: number, shippingInfo: tShippingInfo): Promise<boolean>
+    {
+        let checkoutp = this.shoppingCart.checkoutBasket(this.getUserId(), this, storeId, shippingInfo, this);
+        return new Promise((resolve,reject) => {
+            checkoutp.then( isSusccesfull => {
+                this.shoppingCart.getBaskets().delete(storeId);
+                SubscriberDB.deleteBasket(this.userId, storeId);
+                resolve(isSusccesfull)
+            })
+            .catch( error => reject(error))
+        })
     }
 
     // returns an appointments of current user to storeId if exists

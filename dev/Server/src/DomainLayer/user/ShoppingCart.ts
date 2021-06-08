@@ -31,15 +31,7 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return Promise.reject("no such shopping basket");
         }
-        let checkoutp = basket.checkout(userId, user, shippingInfo, userSubject);
-        return new Promise((resolve,reject) => {
-            checkoutp.then( isSusccesfull => {
-                this.baskets.delete(storeId);
-                SubscriberDB.deleteBasket(userId,storeId);
-                resolve(isSusccesfull)
-            })
-            .catch( error => reject(error))
-        })
+        return basket.checkout(userId, user, shippingInfo, userSubject);
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>

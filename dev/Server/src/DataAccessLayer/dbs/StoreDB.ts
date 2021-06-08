@@ -1,3 +1,6 @@
+import DiscountPolicy from "../../DomainLayer/discount/DiscountPolicy";
+import iDiscount from "../../DomainLayer/discount/iDiscount";
+import BuyingPolicy, { Rule } from "../../DomainLayer/policy/buying/BuyingPolicy";
 import { TreeRoot } from "../../DomainLayer/store/Common";
 import { Store } from "../../DomainLayer/store/Store";
 import { Appointment } from "../../DomainLayer/user/Appointment";
@@ -27,6 +30,26 @@ export class storeDB implements iStoreDB
         })
     }
 
+    public async addPolicy(storeId: number, rule: Rule): Promise<void>
+    {
+        await sequelize.models.BuyingPolicy.create({
+            id: rule.id,
+            name: rule.description,
+            predicate: rule.predicate.toObject(),
+            StoreId: storeId
+        })
+    }
+
+    public async addDiscountPolicy(id: number, discount: iDiscount, storeId: number): Promise<void>
+    {
+        await sequelize.models.DiscountPolicy.create({
+            id: id,
+            discount: discount.toObj(),
+            StoreId: storeId
+        })
+    }
+
+
     public async getStoreByID(storeId: number): Promise<Store>
     {
         let storedb = await sequelize.models.Store.findOne(
@@ -43,7 +66,9 @@ export class storeDB implements iStoreDB
             let store = Store.rebuild(storedb, 
                 await this.getAppointmentByStoreId(storedb.id), 
                 await ProductDB.getAllProductsOfStore(storedb.id),
-                await this.getAllCategories(storedb.id));
+                await this.getAllCategories(storedb.id),
+                await this.getDiscountPolicyByStoreId(storedb.id),
+                await this.getBuyingPoliciesByStoreId(storedb.id));
             return Promise.resolve(store);
         }
         return Promise.resolve(undefined);
@@ -76,10 +101,32 @@ export class storeDB implements iStoreDB
             let store = Store.rebuild(storedb, 
                 await this.getAppointmentByStoreId(storedb.id), 
                 await ProductDB.getAllProductsOfStore(storedb.id),
-                await this.getAllCategories(storedb.id));
+                await this.getAllCategories(storedb.id),
+                await this.getDiscountPolicyByStoreId(storedb.id),
+                await this.getBuyingPoliciesByStoreId(storedb.id));
             return Promise.resolve(store);
         }
         return Promise.reject("store not found!");
+    }
+
+    private async getBuyingPoliciesByStoreId(storeId: number): Promise<BuyingPolicy>
+    {
+        let policies = await sequelize.models.BuyingPolicy.findAll({
+            where:{
+                StoreId: storeId
+            }
+        })
+        return BuyingPolicy.rebuild(policies);
+    }
+
+    private async getDiscountPolicyByStoreId(storeId: number): Promise<DiscountPolicy>
+    {
+        let discounts = await sequelize.models.DiscountPolicy.findAll({
+            where:{
+                StoreId: storeId
+            }
+        })
+        return DiscountPolicy.rebuild(discounts);
     }
 
 
@@ -94,17 +141,15 @@ export class storeDB implements iStoreDB
 
         var products : any = {}
         products['products']=[]
-        console.log(productsdb)
         for(let product of productsdb)
         {
-            // console.log("=-===============", (await this.getStoreByID(product.storeId)).getStoreName())
             products['products'].push({
                 'productName': product.name,
                 'numberOfRaters': product.numOfRaters,
                 'rating': product.productRating,
                 'price': product.price,
                 'storeName': product.Store.storeName,
-                'storeId': product.storeId,
+                'storeId': product.StoreId,
                 'productId': product.id,
                 'image': product.image
             })
@@ -137,7 +182,7 @@ export class storeDB implements iStoreDB
                 'rating': product.productRating,
                 'price': product.price,
                 'storeName': product.store.storeName,
-                'storeId': product.storeId,
+                'storeId': product.StoreId,
                 'productId': product.id,
                 'image': product.image
             })
@@ -188,7 +233,6 @@ export class storeDB implements iStoreDB
         })
         let categiriesTree = new TreeRoot<string>('General');
         
-        // Logger.log(`getting categories response: ${categories}`)
         while(categories.length !== 0){
             let inserted_categories: string[] = []
             for(let category of categories){
@@ -200,7 +244,6 @@ export class storeDB implements iStoreDB
             }
             categories = categories.filter( (cat: any) => inserted_categories.indexOf(cat.name) == -1)
         }
-        Logger.log(`getting categories response: ${categiriesTree}`)
         return categiriesTree;
 
     }

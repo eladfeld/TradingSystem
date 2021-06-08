@@ -81,9 +81,9 @@ export class Store implements iCategorizer
         this.categiries = new TreeRoot<string>('General');
     }
 
-    public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>): Store
+    public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>,discountPolicy:DiscountPolicy, buyingPolicy: BuyingPolicy): Store
     {
-        let store = new Store(storedb.founderId, storedb.storeName, storedb.bankAccount, storedb.storeAddress)
+        let store = new Store(storedb.founderId, storedb.storeName, storedb.bankAccount, storedb.storeAddress, discountPolicy, buyingPolicy)
         store.storeId = storedb.id
         store.storeClosed = storedb.storeClosed;
         store.numOfRaters = storedb.numOfRaters;
@@ -91,8 +91,6 @@ export class Store implements iCategorizer
         store.appointments = appointments;
         store.inventory = new Inventory(store.storeId, storeProducts);
         store.categiries = categories
-
-        //TODO: add policies and categories!
         return store;
     }
     
@@ -223,7 +221,7 @@ export class Store implements iCategorizer
         if(this.storeClosed) return Promise.reject("Store is closed");
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted")       
-        return this.buyingPolicy.addPolicy(policy, policyName);        
+        return this.buyingPolicy.addPolicy(policy, policyName, this.storeId);        
     }
 
     public removeBuyingPolicy(subscriber: Subscriber, policyNumber: number): Promise<string> {
@@ -563,7 +561,7 @@ export class Store implements iCategorizer
         if(this.storeClosed) return Promise.reject("Store is closed");
         const userId: number = subscriber.getUserId();
         if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted7");
-        return this.discountPolicy.addPolicy(discount);
+        return this.discountPolicy.addPolicy(discount, this.storeId);
     }
 
     public removeDiscountPolicy(subscriber: Subscriber, policyNumber: number): Promise<string> {

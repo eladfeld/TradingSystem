@@ -72,24 +72,18 @@ const options = {
     const wss = new WebSocket.Server({server});
 
     wss.on("connection", WsConn => {
-        console.log("new Client connected!")
-
         WsConn.on("close", ()=>{
-            console.log("Client has disconnected!")
             wssConnections.forEach ( (value,key) => {
                 if (value == WsConn)
                 {
                     wssConnections.delete(key)
-                    console.log("deleted connection");
                 }
             })
         })
 
         WsConn.on("message", data =>
         {
-            console.log(data);
             let userId:number = Controller.getSubscriberId(String(data));
-            console.log(userId);
             if(userId > 0)
             {
                 wssConnections.set(userId, WsConn);
