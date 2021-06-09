@@ -9,7 +9,7 @@ import { buyingOption } from "./BuyingOption";
 import { ShoppingBasket } from "../user/ShoppingBasket";
 import { Authentication } from "../user/Authentication";
 import Purchase, { tPaymentInfo, tShippingInfo } from "../purchase/Purchase";
-import { discountOption, DiscountOption } from "./DiscountOption";
+import { DiscountOption } from "./DiscountOption";
 import { Subscriber } from "../user/Subscriber";
 import { ACTION } from "../user/Permission";
 import { StoreHistory } from "./StoreHistory";
@@ -52,6 +52,7 @@ export class Store implements iCategorizer
     private buyingOptions: buyingOption[];
     private storeHistory: StoreHistory;
     private categiries: TreeRoot<string>;
+    private recieveOffers: boolean;
 
     public constructor(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string, discountPolicy: DiscountPolicy = undefined, buyingPolicy: BuyingPolicy = undefined)
     {
@@ -79,6 +80,7 @@ export class Store implements iCategorizer
         this.buyingOptions = [buyingOption.INSTANT];
         this.storeHistory = new StoreHistory(this.storeId);
         this.categiries = new TreeRoot<string>('General');
+        this.recieveOffers = false;
     }
 
     public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>,discountPolicy:DiscountPolicy, buyingPolicy: BuyingPolicy): Store
@@ -93,7 +95,7 @@ export class Store implements iCategorizer
         store.categiries = categories
         return store;
     }
-    
+
     public static createStore(storeFounderId: number,storeName: string, bankAccount:number, storeAddress: string): Promise<Store> {
         let store = new Store(storeFounderId,
             storeName,
@@ -109,7 +111,7 @@ export class Store implements iCategorizer
         if(!category){
             return [];
         }
-        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {     
+        const products: StoreProductInfo[] = this.inventory.getProductInfoByFilter((prod:StoreProduct) => {
             for(var i=0; i<prod.getCategories().length; i++){
                 const cat = prod.getCategories()[i];
                 if(category.value===cat || category.hasChildNode(cat)){
@@ -220,17 +222,17 @@ export class Store implements iCategorizer
     public addBuyingPolicy(subscriber: Subscriber, policyName: string, policy: tPredicate): Promise<string> {
         if(this.storeClosed) return Promise.reject("Store is closed");
         const userId: number = subscriber.getUserId();
-        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted")       
-        return this.buyingPolicy.addPolicy(policy, policyName, this.storeId);        
+        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted")
+        return this.buyingPolicy.addPolicy(policy, policyName, this.storeId);
     }
 
     public removeBuyingPolicy(subscriber: Subscriber, policyNumber: number): Promise<string> {
-        if(this.storeClosed) 
+        if(this.storeClosed)
             return Promise.reject("Store is closed");
         const userId: number = subscriber.getUserId();
-        if(!this.isManager(userId) && !this.isOwner(userId)) 
-            return Promise.reject("User not permitted3")       
-        return this.buyingPolicy.removePolicy(policyNumber); 
+        if(!this.isManager(userId) && !this.isOwner(userId))
+            return Promise.reject("User not permitted3")
+        return this.buyingPolicy.removePolicy(policyNumber);
     }
 
 
@@ -238,8 +240,8 @@ export class Store implements iCategorizer
     public getBuyingPolicies(subscriber: Subscriber): Result<Rule[]> {
         if(this.storeClosed) return makeFailure("Store is closed");
         const userId: number = subscriber.getUserId();
-        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted4")       
-        return makeOk(this.buyingPolicy.getPolicies()); 
+        if(!this.isManager(userId) && !this.isOwner(userId)) return makeFailure("User not permitted4")
+        return makeOk(this.buyingPolicy.getPolicies());
     }
 
     public sellShoppingBasket(buyerId: number, shippingInfo: tShippingInfo, shoppingBasket: ShoppingBasket, buyingSubject:BuyingSubject , onFail : ()=>void): Promise<boolean> {
@@ -358,7 +360,7 @@ export class Store implements iCategorizer
                     })
                 }
             })
-        })   
+        })
     }
 
     public getAppointmentById(userId: number): Appointment
@@ -544,8 +546,8 @@ export class Store implements iCategorizer
         staff['subscribers']=[]
         let staffPromises = this.appointments.map(appointment => SubscriberDB.getSubscriberById(appointment.getAppointeeId()));
         let staffList = await Promise.all(staffPromises);
-        staffList.forEach(emp =>  
-            {           
+        staffList.forEach(emp =>
+            {
                 staff['subscribers'].push(
                 {   'id':emp.getUserId() ,
                     'username': emp.getUsername(),
@@ -567,8 +569,8 @@ export class Store implements iCategorizer
     public removeDiscountPolicy(subscriber: Subscriber, policyNumber: number): Promise<string> {
         if(this.storeClosed) return Promise.reject("Store is closed");
         const userId: number = subscriber.getUserId();
-        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted8")       
-        return this.discountPolicy.removePolicy(policyNumber); 
+        if(!this.isManager(userId) && !this.isOwner(userId)) return Promise.reject("User not permitted8")
+        return this.discountPolicy.removePolicy(policyNumber);
     }
 
     public addDiscount3(discount: DiscountOption)
@@ -638,10 +640,10 @@ export class Store implements iCategorizer
 
         StoreDB.addCategory(this.storeId, category, categoryFather)
         let fatherNode = this.categiries.getChildNode(categoryFather)
-        
+
         //TODO: #saveDB
         fatherNode.createChildNode(category)
-        
+
         return Promise.resolve('category was added')
     }
 
