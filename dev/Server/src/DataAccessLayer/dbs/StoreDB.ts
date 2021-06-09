@@ -22,7 +22,7 @@ export class storeDB implements iStoreDB
             id: store.getStoreId(),
             storeName: store.getStoreName(),
             storeRating: store.getStoreRating(),
-            numOfRaters: 0, //TODO: change
+            numOfRaters: 0,
             bankAccount: store.getBankAccount(),
             storeAddress: store.getStoreAddress(),
             storeClosed: store.getIsStoreClosed(),
@@ -63,12 +63,13 @@ export class storeDB implements iStoreDB
 
         if(storedb !== null && storedb != [] && storedb !== undefined)
         {
-            let store = Store.rebuild(storedb, 
-                await this.getAppointmentByStoreId(storedb.id), 
+            let store = Store.rebuild(storedb,
+                await this.getAppointmentByStoreId(storedb.id),
                 await ProductDB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
-                await this.getBuyingPoliciesByStoreId(storedb.id));
+                await this.getBuyingPoliciesByStoreId(storedb.id),
+                storedb.recieveOffers);
             return Promise.resolve(store);
         }
         return Promise.resolve(undefined);
@@ -98,12 +99,13 @@ export class storeDB implements iStoreDB
 
         if(storedb !== null)
         {
-            let store = Store.rebuild(storedb, 
-                await this.getAppointmentByStoreId(storedb.id), 
+            let store = Store.rebuild(storedb,
+                await this.getAppointmentByStoreId(storedb.id),
                 await ProductDB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
-                await this.getBuyingPoliciesByStoreId(storedb.id));
+                await this.getBuyingPoliciesByStoreId(storedb.id),
+                storedb.recieveOffers);
             return Promise.resolve(store);
         }
         return Promise.reject("store not found!");
@@ -194,7 +196,7 @@ export class storeDB implements iStoreDB
     getPruductInfoByCategory: (category: string) => Promise<string>;
     getProductInfoAbovePrice: (price: number) => Promise<string>;
     getProductInfoBelowPrice: (price: number) => Promise<string>;
-    
+
     clear: () => void;
 
     private async getAppointmentByStoreId(storeId : number) : Promise<Appointment[]>
@@ -212,7 +214,7 @@ export class storeDB implements iStoreDB
 
         return apps;
     }
-    
+
     public async addCategory(StoreId: number, category: string, father: string) : Promise<void>
     {
         await sequelize.models.Category.create({
@@ -232,19 +234,45 @@ export class storeDB implements iStoreDB
             }
         })
         let categiriesTree = new TreeRoot<string>('General');
-        
+
         while(categories.length !== 0){
             let inserted_categories: string[] = []
             for(let category of categories){
                 let leaf = categiriesTree.getChildNode(category.father)
                 if (leaf != null){
                     leaf.createChildNode(category.name);
-                    inserted_categories.push(category.name)   
+                    inserted_categories.push(category.name)
                 }
             }
             categories = categories.filter( (cat: any) => inserted_categories.indexOf(cat.name) == -1)
         }
         return categiriesTree;
 
+    }
+
+    public async updateStoreRecievesOffers(storeId: number, recieveOffers: boolean): Promise<void>
+    {
+        await sequelize.models.Store.update(
+            {recieveOffers: recieveOffers},
+            {
+                where:
+                {
+                    id: storeId
+                }
+            } )
+    }
+
+    public async getRecievingOffers(storeId: number): Promise<boolean>
+    {
+        let storedb = await sequelize.models.Store.findOne(
+            {
+                where:
+                {
+                    id: storeId
+                }
+            }
+        )
+
+        return storedb.recieveOffers;
     }
 }

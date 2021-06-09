@@ -8,6 +8,9 @@ import iDiscount from "../../DomainLayer/discount/iDiscount";
 
 export class StoreDummyDB implements iStoreDB
 {
+    getRecievingOffers: (storeId: number) => Promise<boolean>;
+    updateStoreRecievesOffers: (storeId: number, arg1: boolean) => Promise<void>;
+
     public addCategory(StoreId: number, category: string, father: string): Promise<void> {
         return Promise.resolve(undefined);
     }

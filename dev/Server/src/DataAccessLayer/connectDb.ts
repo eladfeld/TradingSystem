@@ -3,8 +3,8 @@ export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
 
-//           
-SQLconnector                           
+//
+SQLconnector
 export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
@@ -31,6 +31,8 @@ const BuyingPolicy = require('./models/BuyingPolicy')
 const DiscountPolicy = require('./models/DiscountPolicy')
 const Transaction = require('./models/Transaction')
 const TransactionItem = require('./models/TransactionItem')
+const Offer = require('./models/Offer')
+
 export async function initTables (){
 
     //TODO:delete when finshed working on db
@@ -43,6 +45,8 @@ export async function initTables (){
     // sequelize.models.StoreProduct.hasMany(sequelize.models.Category)
     sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)
+    sequelize.models.Store.hasMany(sequelize.models.Offer)
+    sequelize.models.StoreProduct.hasMany(sequelize.models.Offer)
 
 
     //Subscriber connections
@@ -53,6 +57,7 @@ export async function initTables (){
     sequelize.models.BasketProduct.belongsTo(sequelize.models.ShoppingBasket)
     sequelize.models.BasketProduct.belongsTo(sequelize.models.StoreProduct)
     sequelize.models.ShoppingBasket.belongsTo(sequelize.models.Store)
+    sequelize.models.Subscriber.hasMany(sequelize.models.Offer)
 
     // //Appointment conections
     sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointer'})

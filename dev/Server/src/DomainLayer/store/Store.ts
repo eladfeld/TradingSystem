@@ -83,7 +83,7 @@ export class Store implements iCategorizer
         this.recieveOffers = false;
     }
 
-    public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>,discountPolicy:DiscountPolicy, buyingPolicy: BuyingPolicy): Store
+    public static rebuild(storedb: any, appointments: Appointment[], storeProducts: StoreProduct[], categories: TreeRoot<string>,discountPolicy:DiscountPolicy, buyingPolicy: BuyingPolicy, recieveOffers: boolean): Store
     {
         let store = new Store(storedb.founderId, storedb.storeName, storedb.bankAccount, storedb.storeAddress, discountPolicy, buyingPolicy)
         store.storeId = storedb.id
@@ -92,7 +92,8 @@ export class Store implements iCategorizer
         store.storeRating = storedb.storeRating;
         store.appointments = appointments;
         store.inventory = new Inventory(store.storeId, storeProducts);
-        store.categiries = categories
+        store.categiries = categories;
+        store.recieveOffers = recieveOffers;
         return store;
     }
 

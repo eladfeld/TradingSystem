@@ -4,8 +4,12 @@ import { Store } from "../../DomainLayer/store/Store";
 
 export interface iStoreDB
 {
+    getRecievingOffers: (storeId: number)=> Promise<boolean>
+
+    updateStoreRecievesOffers: (storeId: number, recieveOffers: boolean) => Promise<void>;
+
     addStore:(store: Store)=> Promise<void>;
-    
+
     getStoreByID:(storeId: number)=> Promise<Store>;
 
     deleteStore:(storeId: number) => Promise<void>;

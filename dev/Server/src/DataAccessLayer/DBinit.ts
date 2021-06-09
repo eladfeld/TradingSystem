@@ -11,6 +11,9 @@ import { subscriberDB } from "./dbs/SubscriberDB";
 import { storeDB } from "./dbs/StoreDB";
 import { productDB } from "./dbs/ProductDB";
 import { purchaseDB } from "./dbs/PurchaseDB";
+import { offerDB } from "./dbs/OfferDB";
+import { iOfferDB } from "./interfaces/iOfferDB";
+import { OfferDummyDB } from "./dummies/OfferDummyDB";
 
 
 const initSubscriberDB = () : iSubscriberDB => {
@@ -18,7 +21,7 @@ const initSubscriberDB = () : iSubscriberDB => {
         return new SubscriberDummyDB();
     else
         return new subscriberDB();
-} 
+}
 
 const initStoreDB = () : iStoreDB => {
     if (TEST_MODE)
@@ -45,9 +48,19 @@ const initProductDB = () : iProductDB =>
         return new productDB();
 }
 
+const initOfferDB = () : iOfferDB =>
+{
+    if (TEST_MODE)
+    // TODO: change it to test db
+        return new OfferDummyDB();
+    else
+        return new offerDB();
+}
+
 export const SubscriberDB = initSubscriberDB();
 export const StoreDB = initStoreDB();
 export const PurchaseDB = initPurchaseDB();
 export const ProductDB = initProductDB();
+export const OfferDB = initOfferDB();
 
 export default {subscriberDB, StoreDB , PurchaseDB};
