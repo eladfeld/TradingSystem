@@ -2,9 +2,8 @@ import { SQLconnector } from '../../config'
 export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
-
-//           
-SQLconnector                           
+          
+                           
 export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,

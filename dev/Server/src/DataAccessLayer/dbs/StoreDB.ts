@@ -32,12 +32,25 @@ export class storeDB implements iStoreDB
 
     public async addPolicy(storeId: number, rule: Rule): Promise<void>
     {
-        await sequelize.models.BuyingPolicy.create({
-            id: rule.id,
-            name: rule.description,
-            predicate: rule.predicate.toObject(),
-            StoreId: storeId
-        })
+        console.log(rule);
+        try{
+            await sequelize.models.BuyingPolicy.create({
+                id: rule.id,
+                name: rule.description,
+                predicate: rule.predicate.toObject(),
+                StoreId: storeId
+            },
+            {
+                where:
+                {
+                    id: rule.id
+                }
+            })
+        }
+        catch(e)
+        {
+            return Promise.resolve()
+        }
     }
 
     public async addDiscountPolicy(id: number, discount: iDiscount, storeId: number): Promise<void>
@@ -52,6 +65,7 @@ export class storeDB implements iStoreDB
 
     public async getStoreByID(storeId: number): Promise<Store>
     {
+        console.log(storeId);
         let storedb = await sequelize.models.Store.findOne(
             {
                 where:
@@ -60,7 +74,7 @@ export class storeDB implements iStoreDB
                 }
             }
         )
-
+        console.log(storedb)
         if(storedb !== null && storedb != [] && storedb !== undefined)
         {
             let store = Store.rebuild(storedb, 

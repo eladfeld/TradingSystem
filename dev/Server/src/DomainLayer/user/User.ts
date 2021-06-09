@@ -14,7 +14,7 @@ export class User implements iSubject
 {
     protected shoppingCart: ShoppingCart;
     protected userId: number;
-    protected static lastId: number = 0;
+    protected static lastId: number =0 ;
 
     public constructor()
     {
@@ -22,9 +22,11 @@ export class User implements iSubject
         this.userId = User.lastId++;
     }
 
-    static getLastId() 
+    static initLastId() 
     {
-        return 0;
+        SubscriberDB.getLastId().then(id =>{
+             User.lastId = id
+            });
     }
 
 

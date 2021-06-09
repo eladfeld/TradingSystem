@@ -193,7 +193,7 @@ export class Subscriber extends User
     public async getStores() : Promise<{}>
     {
         Logger.log(`getting stores of user app: ${JSON.stringify(this.appointments)}`)
-
+            console.log(this.appointments);
         let stores: Promise<{}>[] =[]
         this.appointments.forEach( appointment =>{
             stores.push( new Promise<{}>(async (resolve, reject) => {
@@ -202,12 +202,14 @@ export class Subscriber extends User
             }))
         })
 
-        return Promise.all(stores).then(s => {
-            let jsonStores = JSON.stringify({stores:s})
-            Logger.log(`stores of user: ${jsonStores}`)
-            return jsonStores
+        return new Promise((resolve,reject) => {
+                Promise.all(stores).then(s => {
+                let jsonStores = JSON.stringify({stores:s})
+                Logger.log(`stores of user: ${jsonStores}`)
+                resolve(jsonStores)
+                })
+                .catch( error => reject(error))
         })
-
     }
 
     public getPurchaseHistory()
