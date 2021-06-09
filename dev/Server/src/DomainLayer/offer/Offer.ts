@@ -1,4 +1,5 @@
 import { OfferDB } from "../../DataAccessLayer/DBinit";
+import { ID } from "../store/Common";
 
 export enum OfferStatus{
     PENDING = "PENDING",
@@ -31,6 +32,7 @@ export class Offer {
 
     private constructor(userId: number, username: string, storeId: number, productId:number, productName: string, offerPrice: number)
     {
+        this.offerId = ID();
         this.userId = userId;
         this.username = username;
         this.storeId = storeId;
