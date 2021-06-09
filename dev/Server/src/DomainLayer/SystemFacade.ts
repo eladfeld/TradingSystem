@@ -20,7 +20,7 @@ import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { StoreDB, SubscriberDB } from "../DataAccessLayer/DBinit";
-import { PATH_TO_SYSTEM_MANAGERS } from "../config";
+import { PATH_TO_SYSTEM_MANAGERS } from "../../config";
 import { ProductDB } from "../DataAccessLayer/DBinit";
 import { initTables } from "../DataAccessLayer/connectDb";
 export class SystemFacade

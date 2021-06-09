@@ -17,7 +17,7 @@
 
 //import state from './InitialState';
 import { errorMonitor } from 'events';
-import { INITIAL_STATE } from '../../config';
+import { INITIAL_STATE } from '../../../config';
 import ConditionalDiscount from '../../DomainLayer/discount/ConditionalDiscount';
 import { StoreCategoryInfo } from '../../DomainLayer/store/StoreInfo';
 import { Service } from '../Service';

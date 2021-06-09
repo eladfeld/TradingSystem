@@ -1,7 +1,6 @@
-import { request } from 'http';
 import axios from 'axios';
 import { tShippingInfo } from '../purchase/Purchase';
-import { SUPPLY_SYSTEM_URL } from '../../config';
+import { SUPPLY_SYSTEM_URL } from '../../../config';
 
 
 

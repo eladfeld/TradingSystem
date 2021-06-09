@@ -1,4 +1,4 @@
-import { TEST_MODE } from "../config";
+import { TEST_MODE } from "../../config";
 import { StoreDummyDB } from "./dummies/StoreDummyDB";
 import { iStoreDB } from "./interfaces/iStoreDB";
 import { iSubscriberDB } from "./interfaces/iSubscriberDB";
@@ -10,6 +10,7 @@ import { iProductDB } from "./interfaces/iProductDB";
 import { subscriberDB } from "./dbs/SubscriberDB";
 import { storeDB } from "./dbs/StoreDB";
 import { productDB } from "./dbs/ProductDB";
+import { purchaseDB } from "./dbs/PurchaseDB";
 
 
 const initSubscriberDB = () : iSubscriberDB => {
@@ -32,7 +33,7 @@ const initPurchaseDB = () : iPurchaseDB => {
     // TODO: change it to test db
         return new PurchaseDummyDB();
     else
-        return new PurchaseDummyDB();
+        return new purchaseDB();
 }
 
 const initProductDB = () : iProductDB =>

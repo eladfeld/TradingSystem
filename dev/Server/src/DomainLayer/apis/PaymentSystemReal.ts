@@ -1,8 +1,7 @@
-import { request } from 'http';
 import axios from 'axios';
 import { tPaymentInfo } from '../purchase/Purchase';
 import { URLSearchParams } from "url"
-import { PAYMENT_SYSTEM_URL } from '../../config';
+import { PAYMENT_SYSTEM_URL } from '../../../config';
 
 
 

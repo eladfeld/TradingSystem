@@ -1,12 +1,14 @@
+import { SQLconnector } from '../../config'
 export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
 
-
-export const sequelize = new Sequelize('T0fWZ940xw', 'T0fWZ940xw', 'ppAkeHJWsg', {
-    host: 'remotemysql.com',
-    dialect: 'mysql',
-    port: 3306, // this is the mysql port
+//           
+SQLconnector                           
+export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
+    host: SQLconnector.host,
+    dialect: SQLconnector.dialect,
+    port: SQLconnector.port, // this is the mysql port
     // logging: true,
     define: {
       timestamps: false
@@ -27,6 +29,8 @@ const StoreProduct = require('./models/StoreProduct')
 const Category = require('./models/Category')
 const BuyingPolicy = require('./models/BuyingPolicy')
 const DiscountPolicy = require('./models/DiscountPolicy')
+const Transaction = require('./models/Transaction')
+const TransactionItem = require('./models/TransactionItem')
 export async function initTables (){
 
     //TODO:delete when finshed working on db
@@ -54,6 +58,12 @@ export async function initTables (){
     sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointer'})
     sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointee'})
     sequelize.models.Appointment.belongsTo(sequelize.models.Store)
+
+
+    //Transaction connections
+    sequelize.models.Transaction.hasMany(sequelize.models.TransactionItem)
+    sequelize.models.TransactionItem.belongsTo(sequelize.models.Transaction)
+
     await sequelize.sync()
 
 }

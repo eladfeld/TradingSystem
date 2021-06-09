@@ -8,7 +8,6 @@ export const TransactionStatus = {
 Object.freeze(TransactionStatus);
 
 class Transaction {
-
     private transcationId: number;//
     private userId: number;//
     private storeId: number;//
@@ -61,6 +60,17 @@ class Transaction {
         this.storeName = storeName
     }
 
+
+    static rebuild(tranc: any, items: any): Transaction {
+        let trancaction = new Transaction(tranc.userId, tranc.storeId, new Map(), tranc.total, tranc.storeName);
+
+        for(let item of items)
+        {
+            trancaction.items.set(item.ProductId, [item.quantity, item.name, item.price])
+        }
+        return trancaction;
+    }
+
     setShipmentId = (shipmentId: number):void => {this.shipmentId = shipmentId;}
     setPaymentId = (paymentId: number):void => {this.paymentId = paymentId;}
     setStatus = (status: number) =>{this.status = status;}
@@ -68,10 +78,12 @@ class Transaction {
 
     getTotal = (): number => this.total;
     getId = () : number => this.transcationId;
+    getCardNumber = () : number => this.cardNumber;
     getShipmentId = () : number => this.shipmentId;
     getPaymentId = () : number => this.paymentId;
     getUserId = () : number => this.userId;
     getStoreId = () : number => this.storeId;
+    getStoreName = () : string => this.storeName;
     getItems = () : Map<number, [number,string,number]> => this.items;
     getStatus = () : number => this.status;
     getTime = () : number => this.time;

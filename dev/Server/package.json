@@ -4,10 +4,9 @@
   "description": "Workshop for software engineering",
   "main": "index.js",
   "scripts": {
-    "start": "npm i && node src/CommunicationLayer/Server.ts",
     "test": "mocha --require ts-node/register test/**/*.test.ts test/**/*.test.ts",
     "coverage": "nyc npm run test",
-    "start": "ts-node src/CommunicationLayer/Server.ts"
+    "start": "nodemon src/CommunicationLayer/Server.ts"
   },
   "keywords": [],
   "author": "",

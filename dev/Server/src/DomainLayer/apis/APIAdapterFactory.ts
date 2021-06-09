@@ -1,4 +1,4 @@
-import { TEST_MODE } from "../../config"
+import { TEST_MODE } from "../../../config"
 import fakePaymentSystemAdapter from "../purchase/fakePaymentSystemAdapter";
 import fakeSupplySystemAdapter from "../purchase/fakeSupplySystemAdapter"
 import { iPaymentAdapter, iSupplyAdapter } from "../purchase/iAPI"

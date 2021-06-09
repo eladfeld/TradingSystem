@@ -1,4 +1,3 @@
-import { TEST_MODE } from "../../config";
 import { Appointment } from "../../DomainLayer/user/Appointment";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";

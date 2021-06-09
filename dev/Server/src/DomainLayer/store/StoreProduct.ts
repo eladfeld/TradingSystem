@@ -94,6 +94,8 @@ export class StoreProduct
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
+        
+        console.log(`new quantitty was set ${quantity}`)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 

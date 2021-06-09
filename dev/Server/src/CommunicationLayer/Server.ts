@@ -2,14 +2,13 @@ import http from 'http';
 import https from 'https';
 import express from 'express';
 import bodyParser from 'body-parser';
-import Config from './config/config';
+import Config from '../../config'
 import  Route from './Router'
 import fs  from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import Controller from './Controller';
 import { Publisher } from '../DomainLayer/notifications/Publisher';
-import { Service } from '../ServiceLayer/Service';
 
 
 

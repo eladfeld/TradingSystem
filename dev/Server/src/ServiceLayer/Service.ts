@@ -1,4 +1,4 @@
-import { SHOULD_INIT_STATE } from "../config";
+import { SHOULD_INIT_STATE } from "../../config";
 import { tDiscount } from "../DomainLayer/discount/Discount";
 import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
 import Transaction from "../DomainLayer/purchase/Transaction";

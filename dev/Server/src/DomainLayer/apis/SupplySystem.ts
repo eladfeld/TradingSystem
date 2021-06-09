@@ -1,4 +1,4 @@
-import { TEST_MODE } from "../../config";
+import { TEST_MODE } from "../../../config";
 import { tShippingInfo } from "../purchase/Purchase";
 
 class SupplySystem {

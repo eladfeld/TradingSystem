@@ -1,5 +1,6 @@
 import { iPurchaseDB } from "../interfaces/iPurchaseDB";
 import Transaction, { TransactionStatus } from "../../DomainLayer/purchase/Transaction";
+import { sequelize } from "../connectDb";
 
 export class PurchaseDummyDB implements iPurchaseDB{
     private transactions: Transaction[];
@@ -12,16 +13,13 @@ export class PurchaseDummyDB implements iPurchaseDB{
         return Promise.resolve([...this.transactions]);
     }
 
-    storeCompletedTransaction = (transaction: Transaction) =>{
-        this.transactions.push(transaction);
-    }
-
     getCompletedTransactions = (): Promise<Transaction[]> => {
         return Promise.resolve(this.transactions.filter(t => t.getStatus() == TransactionStatus.COMPLETE));
     }
 
-    storeTransaction = (transaction: Transaction) =>{
+    storeTransaction = async (transaction: Transaction) =>{
         this.transactions.push(transaction);
+        return Promise.resolve()
     }
 
     getTransactionInProgress = (userId: number, storeId: number): Promise<Transaction> =>{
@@ -39,6 +37,7 @@ export class PurchaseDummyDB implements iPurchaseDB{
         const ts: Transaction[] = this.transactions.filter(t => t.getId() !== transaction.getId());
         ts.push(transaction);
         this.transactions = ts;
+        return Promise.resolve()
     }
 
     public clear()
