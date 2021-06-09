@@ -157,7 +157,8 @@ export class purchaseDB implements iPurchaseDB
 
     public async updateTransaction(transaction: Transaction): Promise<void>
     {
-        await sequelize.models.Transaction.update({
+        await sequelize.models.Transaction.update(
+            {
             userId: transaction.getUserId(),
             storeId: transaction.getStoreId(),
             storeName: transaction.getStoreName(),
@@ -167,7 +168,8 @@ export class purchaseDB implements iPurchaseDB
             time: transaction.getTime(),
             shipmentId: transaction.getShipmentId(),
             paymentId: transaction.getPaymentId()
-        },{
+            },
+            {
             where:
             {
                 id: transaction.getId()

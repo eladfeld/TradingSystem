@@ -44,7 +44,7 @@ export async function initTables (){
     sequelize.models.Store.hasMany(sequelize.models.Category)
     sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)
-    // sequelize.models.StoreProduct.hasMany(sequelize.models.ProductToCategory)
+    sequelize.models.StoreProduct.hasMany(sequelize.models.ProductToCategory)
 
     //Subscriber connections
     sequelize.models.Subscriber.hasMany(sequelize.models.PendingMessage)

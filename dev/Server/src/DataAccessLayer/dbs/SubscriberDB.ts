@@ -134,7 +134,7 @@ export class subscriberDB implements iSubscriberDB
 
     public async isSystemManager(subscriberId: number) : Promise<boolean> {
         
-        let sys_manager = await sequelize.models.SystemManager.findOne({where : {subscriberId : subscriberId}})
+        let sys_manager = await sequelize.models.SystemManager.findOne({where : {SubscriberId : subscriberId}})
         if (sys_manager === null )
         {
             Logger.log(`SubscriberDb.isSystemManager ${subscriberId} => not system manager`)
@@ -225,9 +225,12 @@ export class subscriberDB implements iSubscriberDB
         })
         Logger.log(`getting appointments response ${JSON.stringify(appointments)}`)
         let apps: Appointment[] = appointments.map(
-            (app : any) => app.isManager ?
+            (app : any) => {
+                console.log(app)
+                
+                return app.isManager ?
             new ManagerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)) :
-            new OwnerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)))
+            new OwnerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask))})
 
         return apps;
     }

@@ -39,8 +39,12 @@ export class SystemFacade
     }
 
     public async init(){
-        await initTables()
-        if(!((await this.initPaymentSystem()) && (await this.initSupplySystem()) && this.initSystemManagers()))
+        //await initTables()
+        await User.initLastId();
+        let init_managers =true;//await this.initSystemManagers();
+        let init_supply = await this.initSupplySystem();
+        let init_payment =  await this.initPaymentSystem()
+        if(!((init_managers && init_supply  && init_payment)))
         {
             Logger.error("system could not initialized properly!");
             throw new Error("failed to init trading system. check api connections and system managers");
