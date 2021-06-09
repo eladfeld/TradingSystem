@@ -63,8 +63,8 @@ export class storeDB implements iStoreDB
 
         if(storedb !== null && storedb != [] && storedb !== undefined)
         {
-            let store = Store.rebuild(storedb, 
-                await this.getAppointmentByStoreId(storedb.id), 
+            let store = Store.rebuild(storedb,
+                await this.getAppointmentByStoreId(storedb.id),
                 await ProductDB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
@@ -98,8 +98,8 @@ export class storeDB implements iStoreDB
 
         if(storedb !== null)
         {
-            let store = Store.rebuild(storedb, 
-                await this.getAppointmentByStoreId(storedb.id), 
+            let store = Store.rebuild(storedb,
+                await this.getAppointmentByStoreId(storedb.id),
                 await ProductDB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
@@ -194,7 +194,7 @@ export class storeDB implements iStoreDB
     getPruductInfoByCategory: (category: string) => Promise<string>;
     getProductInfoAbovePrice: (price: number) => Promise<string>;
     getProductInfoBelowPrice: (price: number) => Promise<string>;
-    
+
     clear: () => void;
 
     private async getAppointmentByStoreId(storeId : number) : Promise<Appointment[]>
@@ -212,7 +212,7 @@ export class storeDB implements iStoreDB
 
         return apps;
     }
-    
+
     public async addCategory(StoreId: number, category: string, father: string) : Promise<void>
     {
         await sequelize.models.Category.create({
@@ -222,24 +222,34 @@ export class storeDB implements iStoreDB
         })
     }
 
+    private async getCategory(categoryName: string, storeId:number): Promise<string>
+    {
+        let category = await sequelize.models.DiscountPolicy.findOne({
+            where:{
+                name: categoryName,
+                StoreId: storeId,
+            }
+        })
+        return category;
+    }
+
     public async getAllCategories(StoreId: number) : Promise<TreeRoot<string>>
     {
         Logger.log(`getting categories StoreId: ${StoreId}`)
-        //TODO: fix
         let categories = await sequelize.models.Category.findAll({
             where: {
                 StoreId: StoreId,
             }
         })
         let categiriesTree = new TreeRoot<string>('General');
-        
+
         while(categories.length !== 0){
             let inserted_categories: string[] = []
             for(let category of categories){
                 let leaf = categiriesTree.getChildNode(category.father)
                 if (leaf != null){
                     leaf.createChildNode(category.name);
-                    inserted_categories.push(category.name)   
+                    inserted_categories.push(category.name)
                 }
             }
             categories = categories.filter( (cat: any) => inserted_categories.indexOf(cat.name) == -1)
@@ -247,4 +257,26 @@ export class storeDB implements iStoreDB
         return categiriesTree;
 
     }
+
+    public async getCategoriesOfProduct(productId: number) : Promise<string[]>
+    {
+        let productToCategories = await sequelize.models.ProductToCategory.findAll({
+            where: {
+                StoreProductId: productId,
+            }
+        })
+        return productToCategories.map((p2c: any) => p2c.category)
+
+    }
+
+    public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
+    {
+        await sequelize.models.ProductToCategory.create({
+            StoreProductId: productId,
+            category: category,
+            StoreId: storeId,
+        })
+
+    }
+
 }

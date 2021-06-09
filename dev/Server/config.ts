@@ -56,7 +56,7 @@ export var PATH_TO_SYSTEM_MANAGERS = 'src/systemManagers.json';
 
 
 /************* FUNCTIONS FOR TESTING PURPOSES ONLY *********** */
-export const setPathToSystemManagers = (newPath:string) =>{ 
+export const setPathToSystemManagers = (newPath:string) =>{
     PATH_TO_SYSTEM_MANAGERS = newPath;
 }
 
@@ -79,7 +79,7 @@ class SqlConnector
     dialect: string;
     port: number;
 
-    static factory(): SqlConnector 
+    static factory(): SqlConnector
     {
         let connector = new SqlConnector();
         if(sqlMode === REMOTE_MODE)
@@ -94,7 +94,7 @@ class SqlConnector
         else if(sqlMode === LOCALHOST_MODE)
         {
             connector.username= 'root'
-            connector.password= '1234'
+            connector.password= ''
             connector.database= 'db'
             connector.host= 'localhost'
             connector.dialect= 'mysql'

@@ -3,8 +3,8 @@ export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
 
-//           
-SQLconnector                           
+//
+SQLconnector
 export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
@@ -31,6 +31,8 @@ const BuyingPolicy = require('./models/BuyingPolicy')
 const DiscountPolicy = require('./models/DiscountPolicy')
 const Transaction = require('./models/Transaction')
 const TransactionItem = require('./models/TransactionItem')
+const ProductToCategory = require('./models/ProductToCategory')
+
 export async function initTables (){
 
     //TODO:delete when finshed working on db
@@ -40,10 +42,9 @@ export async function initTables (){
     sequelize.models.StoreProduct.belongsTo(sequelize.models.Store)
     sequelize.models.Store.belongsTo(sequelize.models.Subscriber, {as: 'founder'}) // will add subscriberId (founder) to Store
     sequelize.models.Store.hasMany(sequelize.models.Category)
-    // sequelize.models.StoreProduct.hasMany(sequelize.models.Category)
     sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)
-
+    // sequelize.models.StoreProduct.hasMany(sequelize.models.ProductToCategory)
 
     //Subscriber connections
     sequelize.models.Subscriber.hasMany(sequelize.models.PendingMessage)
