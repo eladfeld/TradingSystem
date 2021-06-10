@@ -1,3 +1,5 @@
+import { PurchaseDB } from "../../DataAccessLayer/DBinit";
+
 export const TransactionStatus = {
     IN_PROGRESS: 0,
     CANCELLED: 1,
@@ -8,7 +10,6 @@ export const TransactionStatus = {
 Object.freeze(TransactionStatus);
 
 class Transaction {
-
     private transcationId: number;//
     private userId: number;//
     private storeId: number;//
@@ -22,6 +23,21 @@ class Transaction {
     private paymentId: number;//
     
     private static nextId = 1;
+
+    public static async initLastTransactionId() 
+    {
+        let lastIdPromise = PurchaseDB.getLastTransactionId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                Transaction.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
+    }
 
     asJson = () => {
         var obj : any = {}
@@ -61,6 +77,17 @@ class Transaction {
         this.storeName = storeName
     }
 
+
+    static rebuild(tranc: any, items: any): Transaction {
+        let trancaction = new Transaction(tranc.userId, tranc.storeId, new Map(), tranc.total, tranc.storeName);
+        trancaction.transcationId = tranc.id;
+        for(let item of items)
+        {
+            trancaction.items.set(item.ProductId, [item.quantity, item.name, item.price])
+        }
+        return trancaction;
+    }
+
     setShipmentId = (shipmentId: number):void => {this.shipmentId = shipmentId;}
     setPaymentId = (paymentId: number):void => {this.paymentId = paymentId;}
     setStatus = (status: number) =>{this.status = status;}
@@ -68,14 +95,16 @@ class Transaction {
 
     getTotal = (): number => this.total;
     getId = () : number => this.transcationId;
+    getCardNumber = () : number => this.cardNumber;
     getShipmentId = () : number => this.shipmentId;
     getPaymentId = () : number => this.paymentId;
     getUserId = () : number => this.userId;
     getStoreId = () : number => this.storeId;
+    getStoreName = () : string => this.storeName;
     getItems = () : Map<number, [number,string,number]> => this.items;
     getStatus = () : number => this.status;
     getTime = () : number => this.time;
-
+    
     toJSON = () => {
         var obj : any = {};
         obj['transcationId'] = this.transcationId;

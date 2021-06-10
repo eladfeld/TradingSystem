@@ -1,4 +1,4 @@
-import {TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../config';
+import {TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../../config';
 import Transaction, { TransactionStatus } from './Transaction';
 import { Publisher } from '../notifications/Publisher';
 import APIAdapterFactory from '../apis/APIAdapterFactory';
@@ -218,7 +218,7 @@ class Purchase {
         return PurchaseDB.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {
-        console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
+        // console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
         return PAYMENT_TIMEOUT_MILLISEC;
     };
 

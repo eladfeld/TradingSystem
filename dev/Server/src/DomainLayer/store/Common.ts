@@ -1,7 +1,26 @@
 // Use:
 //
+
+import { StoreDB } from "../../DataAccessLayer/DBinit";
+
 //     var privateID = ID();
 let current_id: number = 0 //TODO: get biggest id from DB
+
+export function initLastStoreId(): Promise<number> 
+{
+    let lastIdPromise = StoreDB.getLastStoreId();
+
+    return new Promise((resolve, reject) => {
+        lastIdPromise
+        .then(id => {
+            if(isNaN(id)) id = 0;
+            current_id = id;
+            resolve(id);
+        })
+        .catch(e => reject("problem with user id "))
+    })
+}
+
 export var ID = function () {
     return current_id++;
   };
@@ -23,6 +42,9 @@ export class TreeRoot<T> {
         this.root = new TreeNode<T>(value, this);
     }
 
+    public getRoot(){
+        return this.root
+    }
     public createChildNode(value: T): TreeNode<T> {
         return this.root.createChildNode(value);
     }
@@ -44,6 +66,7 @@ export class TreeRoot<T> {
     public toString =() =>{
         return this.root.toString();
     }
+
 }
 
 
@@ -114,4 +137,15 @@ export class TreeNode<T> {
         }
         return s;
     }
+
+
+    public forEach(func: (t:T) => void)
+    {
+        func(this.value);
+        for(let tree of this.children.values())
+        {
+            tree.forEach(func);
+        }
+    }
+
 }

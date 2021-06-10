@@ -15,7 +15,9 @@ const res = UniversalPolicy.addPolicy(
         sb.simplePred("u_age",">=",18)  
     ]),
     "Must be 18 or older to buy alcohol"
-);
-
-
+, -1);
+res.then( _ => console.log("a"))
+.catch( error => {
+    console.log("already inserted policy")
+})
 export default UniversalPolicy;

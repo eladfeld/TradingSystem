@@ -10,13 +10,17 @@ export class Register
         return new Promise( (resolve,reject) => {
             used_usernamep.then( _ => {
                 if (this.checkPassword(password)) {
-                    //console.log(`register of ${username} with ${password} succeeded`)
-                    Authentication.addSubscriber(username, password, age)
-                    resolve("registered")
+                    // console.log(`register of ${username} with ${password} succeeded`)
+                    let addp = Authentication.addSubscriber(username, password, age)
+                    addp.then(_ => {
+                        resolve("registered")
+                    })
+                    .catch(error => reject(error))
                 }
                 else 
-                    //console.log(`register of ${username} with ${password} failed`)
+                {
                     reject("invalid password")
+                }
             })
             .catch( error => reject(error))
         })

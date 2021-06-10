@@ -1,16 +1,12 @@
-import { makeFailure, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Store } from "../store/Store";
 import { ShoppingBasket } from "./ShoppingBasket";
-import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
-import ts from "typescript";
 import { tShippingInfo } from "../purchase/Purchase";
-import { rejects } from "assert";
-import { StoreDB, subscriberDB } from "../../DataAccessLayer/DBinit";
+import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
 
 export class ShoppingCart
 {
+
     private baskets : Map<number , ShoppingBasket>; // {} <storeId, ShoppingBasket>
 
     public constructor()
@@ -18,6 +14,15 @@ export class ShoppingCart
         this.baskets = new Map();
     }
 
+ 
+    public static rebuildShoppingCart(baskets: ShoppingBasket[])
+    {
+        let cart = new ShoppingCart();
+        baskets.map(basket => cart.baskets.set(basket.getStoreId(), basket))
+        return cart;
+    }
+
+    
     public checkoutBasket(userId: number, user: iSubject, storeId : number, shippingInfo: tShippingInfo, userSubject: iSubject) : Promise<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
@@ -26,15 +31,7 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return Promise.reject("no such shopping basket");
         }
-        let checkoutp = basket.checkout(userId, user, shippingInfo, userSubject);
-        return new Promise((resolve,reject) => {
-            checkoutp.then( isSusccesfull => {
-                this.baskets.delete(storeId);
-                subscriberDB.deleteBasket(userId,storeId);
-                resolve(isSusccesfull)
-            })
-            .catch( error => reject(error))
-        })
+        return basket.checkout(userId, user, shippingInfo, userSubject);
     }
 
     public addProduct(storeId:number, productId:number, quantity:number) : Promise<ShoppingBasket>
@@ -70,6 +67,11 @@ export class ShoppingCart
         if (basket === undefined)
             return Promise.reject("shopping basket doesnt exist");
         return basket.edit(productId,newQuantity);
+    }
+
+    deleteShoppingBasket(storeId : number) : void
+    {
+        this.baskets.delete(storeId);
     }
 
     getBasketById(storeId: number): {}

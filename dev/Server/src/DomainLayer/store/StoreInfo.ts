@@ -1,5 +1,6 @@
+import { Logger } from "../../Logger";
 import { iProduct } from "../discount/iProduct";
-import { ID, TreeRoot } from "./Common";
+import { ID, TreeNode, TreeRoot } from "./Common";
 
 export class StoreInfo
 {
@@ -14,7 +15,17 @@ export class StoreInfo
         this.storeName = storeName;
         this.storeId = storeId;
         this.storeProducts = storeProducts;
-        this.categories = [new StoreCategoryInfo('Food', 'Apple')]
+        this.categories = StoreInfo.categiriesToList(categories.getRoot())
+        Logger.log(`StoreInfo categories list: ${JSON.stringify(this.categories)}`)
+    }
+
+    public static categiriesToList(category: TreeNode<string>): StoreCategoryInfo[] {
+        let list: StoreCategoryInfo[] = [];
+        for(let child of category.children.values()){
+            list.push(new StoreCategoryInfo(category.value, child.value))
+            list = list.concat(StoreInfo.categiriesToList(child))
+        }
+        return list
     }
 
     public getStoreProducts()

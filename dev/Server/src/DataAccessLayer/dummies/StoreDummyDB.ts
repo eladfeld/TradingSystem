@@ -1,16 +1,50 @@
+import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Store } from "./Store";
-import { StoreProductInfo } from "./StoreInfo";
-import { iStoreDB } from "../../DataAccessLayer/interfaces/iStoreDB";
+import { Store } from "../../DomainLayer/store/Store";
+import { StoreProductInfo } from "../../DomainLayer/store/StoreInfo";
+import { iStoreDB } from "../interfaces/iStoreDB";
+import { Rule } from "../../DomainLayer/policy/buying/BuyingPolicy";
+import iDiscount from "../../DomainLayer/discount/iDiscount";
 
 export class StoreDummyDB implements iStoreDB
 {
+    getCategoriesOfProduct: (productId: number) => Promise<string[]>;
+    addCategoriesOfProduct: (productId: number, category: string, storeId: number) => Promise<void>;
+    public addCategory(StoreId: number, category: string, father: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    public getLastStoreId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
+    public getLastBuyingId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
+    public getLastDiscountId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
 
     private  stores: Store[]  = [];
 
-    public  addStore(store: Store): void
+    public addStore(store: Store): Promise<void>
     {
         this.stores.push(store);
+        return Promise.resolve()
+    }
+
+    public addPolicy(storeId: number, rule: Rule): Promise<void>
+    {
+        return Promise.resolve();
+    }
+
+    public addDiscountPolicy(id: number, discount: iDiscount, storeId: number): Promise<void>
+    {
+        return Promise.resolve();
     }
 
     public  getStoreByID(storeId: number): Promise<Store>
@@ -18,12 +52,13 @@ export class StoreDummyDB implements iStoreDB
         let store: Store =  this.stores.find(store => store.getStoreId() == storeId);
         if (store)
             return Promise.resolve(store)
-        return Promise.reject("store doesnt exist")
+        return Promise.resolve(undefined);
     }
 
-    public  deleteStore(storeId: number): void
+    public  deleteStore(storeId: number): Promise<void>
     {
         this.stores = this.stores.filter(store => store.getStoreId() !== storeId);
+        return Promise.resolve()
     }
 
     public  getStoreByName(storeName: string): Promise<Store>
@@ -36,13 +71,11 @@ export class StoreDummyDB implements iStoreDB
     }
 
     public  getPruductInfoByName(productName: string): Promise<string>{
-        console.log("---------------------------------")
         var products : any = {}
         products['products']=[]
         this.stores.forEach((store) => {
             let storeProducts: StoreProductInfo[] = store.searchByName(productName);
             for(let storeProduct of storeProducts){
-                console.log("------------------------");
                 products['products'].push({ 'productName':storeProduct.getName() ,
                                             'numberOfRaters':storeProduct.getNumOfRaters(),
                                             'rating':storeProduct.getProductRating(),

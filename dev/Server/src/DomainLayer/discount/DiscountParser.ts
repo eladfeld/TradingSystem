@@ -41,7 +41,7 @@ class Parser{
         const type: string = d.type;
         if(!type) return makeFailure(`type undefined in ${d}`);
         if(typeof type !== 'string') return makeFailure('type is not a string');
-
+        
         switch (d.type) {
             case "unconditional":   
                 var category: tSimpleOperand = d.category;

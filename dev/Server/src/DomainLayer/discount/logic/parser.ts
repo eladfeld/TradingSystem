@@ -2,7 +2,7 @@ import { isFailure, makeFailure, makeOk, Result, ResultsToResult } from "../../.
 import { getCompositeOperator, getSimpleOperator } from "./LogicalOperators";
 import { CompositePredicate, Field, iPredicate, iValue, SimplePredicate, tPredicate, Value } from "./Predicate";
 
-class Parser{
+export class Parser{
     constructor(){
         
     }

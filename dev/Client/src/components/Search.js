@@ -121,17 +121,17 @@ export const Search=({getAppState, setAppState, intersect})=>{
 
     return(
         <div>
-            <IconContext.Provider value={{ color: '#fff' }}>
+            <IconContext.Provider value={{ color: '#000000' }}>
             <div>
                 <Link to='#' className='menu-bars'>
-                    <SearchIcon onClick={showSidebar} color='secondary'/>
+                    <SearchIcon onClick={showSidebar}/>
                 </Link>
             </div>
                 <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
                     <ul className='nav-menu-items' onClick={showSidebar}>
                         <li className='navbar-toggle'>
                         <Link to='#' className='menu-bars'>
-                            <AiIcons.AiOutlineClose />
+                            <AiIcons.AiFillBackward />
                         </Link>
                         </li>
                         {SidebarData.map((item, index) => {
@@ -222,12 +222,6 @@ export const Products=({getAppState, setAppState})=>{
                 }
                 severity="success"> {success}</Alert> : <a1></a1>
             }
-            {/* <Grid item align='right'>
-                <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
-                        onClick={reset}>
-                    clear
-                </Button>
-            </Grid> */}
 
         <List className={classes.search} subheader={<li />} align='right' style={paperStyle}>
             {
@@ -256,7 +250,7 @@ export const Products=({getAppState, setAppState})=>{
 
                         </Grid>
                     </ListItem>
-                    
+
                 </ul>
                 </li>
             ))}
@@ -319,7 +313,7 @@ export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
     const userId = getAppState().userId;
     const classes = useStyles();
 
-    
+
     if (category_options === undefined)
     {
         const catagories = axios.get(`${SERVER_BASE_URL}getAllCategories`);

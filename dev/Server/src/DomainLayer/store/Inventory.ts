@@ -1,17 +1,20 @@
 import { StoreProduct } from "./StoreProduct";
 import { Logger } from "../../Logger";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
-import { ProductDB } from "./ProductDB";
-import { Product } from "./Product";
 import { StoreProductInfo } from "./StoreInfo";
 
 export class Inventory
 {
 
     private products: Map<number, StoreProduct> // map productId to StoreProduct
+    private storeId: number
 
-    public constructor(){
+    public constructor(storeId: number, products: StoreProduct[]){
         this.products = new Map<number, StoreProduct>();
+        this.storeId = storeId;
+        for(let product of products){
+            this.products.set(product.getProductId(), product)
+        }
     }
 
     public addNewProduct(productName: string, categories: string[], storeId: number, price: number, quantity = 0, image: string) : Promise<number> {
@@ -29,21 +32,13 @@ export class Inventory
             Logger.log("Product already exist in inventory!")
             return Promise.reject(`Product already exist in inventory! productName: ${productName}`);
         }
-        let productp = ProductDB.getProductByName(productName)
+        let productp = StoreProduct.createProduct(productName,price, storeId,quantity, categories, image)
         return new Promise((resolve,reject) => {
             productp.then( product => {
-                let productId = product.getProductId()
-                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories, image);
-                this.products.set(storeProduct.getProductId(), storeProduct);
-                resolve(productId);
+                this.products.set(product.getProductId(), product);
+                resolve(product.getProductId());
             })
-            .catch( _ => {
-                let product = new Product(productName, categories)
-                let productId = product.getProductId()
-                let storeProduct = new StoreProduct(productId,productName,price, storeId,quantity, categories, image);
-                this.products.set(storeProduct.getProductId(), storeProduct);
-                resolve(productId);
-            })
+            .catch( err => reject(err))
         })
     }
 
@@ -95,6 +90,7 @@ export class Inventory
         return makeFailure("Doesn't have product with name");
     }
 
+    //TODO: #saveDB
     public reserveProduct(productId: number, quantity: number): Result<boolean> {
         if(!this.isProductAvailable(productId, quantity)){
             return makeFailure("Product unavailable");

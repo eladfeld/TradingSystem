@@ -1,6 +1,7 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
-import { Rating } from "./Common"
+import { ID, Rating } from "./Common"
+import { ProductDB } from "../../DataAccessLayer/DBinit";
 
 export class StoreProduct
 {
@@ -14,10 +15,25 @@ export class StoreProduct
     private numOfRaters: number
     private categories: string[];
     private image: string;
+    private static nextId:number = 0;
 
-    public constructor(productId: number, name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
+    public static initLastProductId(){
+        let lastIdPromise = ProductDB.getLastProductId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                StoreProduct.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
+    }
+
+    constructor(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
     {
-        this.productId = productId;
+        this.productId = StoreProduct.nextId;
         this.name = name;
         this.price = price;
         this.storeId = storeId;
@@ -26,6 +42,31 @@ export class StoreProduct
         this.numOfRaters = 0
         this.categories = categories
         this.image = image;
+    }
+
+    public static createProduct(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string){
+        let product = new StoreProduct(
+            name,
+            price,
+            storeId,
+            quantity,
+            categories,
+            image,
+        )
+        return ProductDB.addProduct(product).then(_ => product).catch(err => err);
+    }
+
+    public static rebuildProduct(id: number, name: string, price: number, storeId: number, quantity:number, categories: string[], image: string){
+        let product = new StoreProduct(
+            name,
+            price,
+            storeId,
+            quantity,
+            categories,
+            image,
+        )
+        product.productId = id;
+        return product;
     }
 
     public getImage()
@@ -68,6 +109,8 @@ export class StoreProduct
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
+        
+        console.log(`new quantitty was set ${quantity}`)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 

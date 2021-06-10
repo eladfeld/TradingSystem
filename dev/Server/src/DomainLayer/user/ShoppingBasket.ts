@@ -1,19 +1,17 @@
 import { isOk, makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { buyingOption } from "../store/BuyingOption";
-import { Product } from "../store/Product";
-import { ProductDB } from "../store/ProductDB";
 import { Store } from "../store/Store";
-import { PaymentMeans, SupplyInfo } from "./User";
 import iSubject from "../discount/logic/iSubject";
 import iBasket from "../discount/iBasket";
 import { iProduct, MyProduct } from "../discount/iProduct";
 import BuyingSubject from "../policy/buying/BuyingSubject";
 import { tShippingInfo } from "../purchase/Purchase";
+import { ProductDB, StoreDB } from "../../DataAccessLayer/DBinit";
+import { StoreProduct } from "../store/StoreProduct";
 
 export class ShoppingBasket implements iBasket
 {
-
     private store : Store ;
     private products: Map<number,number>;    //key: productId, value: quantity
 
@@ -21,6 +19,13 @@ export class ShoppingBasket implements iBasket
     {
         this.products = new Map();
         this.store = store;
+    }
+
+    public static async rebuildShoppingBasket(storeId: number, products: Map<number, number>)
+    {
+        let basket = new ShoppingBasket(await StoreDB.getStoreByID(storeId));
+        basket.products = products;
+        return basket;
     }
 
     public getItems = () : iProduct[] =>{
@@ -104,7 +109,7 @@ export class ShoppingBasket implements iBasket
         basket['storeId'] = this.store.getStoreId();
         basket['products']=[]
 
-        let productPromises: Promise<Product>[] = []
+        let productPromises: Promise<StoreProduct>[] = []
         this.products.forEach(function(quantity,productId,map){
             let product = ProductDB.getProductById(productId);
             productPromises.push(product);

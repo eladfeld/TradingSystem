@@ -13,3 +13,5 @@
 dev/src/**/*.js
 dev/test/**/*.js
 oldReadme.md
+~*.docx
+~*.tmp

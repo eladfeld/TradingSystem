@@ -1,5 +1,6 @@
-import { iPurchaseDB } from "../../DataAccessLayer/interfaces/iPurchaseDB";
-import Transaction, { TransactionStatus } from "./Transaction";
+import { iPurchaseDB } from "../interfaces/iPurchaseDB";
+import Transaction, { TransactionStatus } from "../../DomainLayer/purchase/Transaction";
+import { sequelize } from "../connectDb";
 
 export class PurchaseDummyDB implements iPurchaseDB{
     private transactions: Transaction[];
@@ -8,20 +9,22 @@ export class PurchaseDummyDB implements iPurchaseDB{
         this.transactions = [];
     }
 
-    getAllTransactions = () : Promise<Transaction[]> => {
-        return Promise.resolve([...this.transactions]);
+    public getLastTransactionId(): Promise<number>
+    {
+        return Promise.resolve(1);
     }
 
-    storeCompletedTransaction = (transaction: Transaction) =>{
-        this.transactions.push(transaction);
+    getAllTransactions = () : Promise<Transaction[]> => {
+        return Promise.resolve([...this.transactions]);
     }
 
     getCompletedTransactions = (): Promise<Transaction[]> => {
         return Promise.resolve(this.transactions.filter(t => t.getStatus() == TransactionStatus.COMPLETE));
     }
 
-    storeTransaction = (transaction: Transaction) =>{
+    storeTransaction = async (transaction: Transaction) =>{
         this.transactions.push(transaction);
+        return Promise.resolve()
     }
 
     getTransactionInProgress = (userId: number, storeId: number): Promise<Transaction> =>{
@@ -39,10 +42,12 @@ export class PurchaseDummyDB implements iPurchaseDB{
         const ts: Transaction[] = this.transactions.filter(t => t.getId() !== transaction.getId());
         ts.push(transaction);
         this.transactions = ts;
+        return Promise.resolve()
     }
 
-    public static clear()
+    public clear()
     {
+        this.transactions = [];
     }
 
     getUserStoreHistory = (userId: number, storeId:number) : Promise<Transaction[]> => {

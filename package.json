@@ -1,9 +1,19 @@
 {
+  "name": "trading_system",
+  "version": "1.0.0",
+  "description": "Workshop for software engineering",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd dev/Server && npm start",
+    "test": "mocha --require ts-node/register test/**/*.test.ts test/**/*.test.ts",
+    "coverage": "nyc npm run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "react-icons": "^4.2.0",
-    "typescript-require": "^0.3.0"
+
   },
   "devDependencies": {
-    "@types/mocha": "^8.2.2"
   }
 }

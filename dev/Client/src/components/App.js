@@ -32,6 +32,7 @@ class App extends React.Component
 
   
   intersect = (products, newProducts) => {
+    console.log(newProducts)
     if(products !== null && products !== undefined && products.length !== 0){
       let intersection = new Set([...products].filter(x => {
         return newProducts.reduce((acc, curr) => acc || x.productId === curr.productId, false)
