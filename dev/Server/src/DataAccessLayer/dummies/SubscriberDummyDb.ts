@@ -13,6 +13,12 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     }
 
+
+    public addMessageToHistory(message: string, userId: number): Promise<void>
+    {
+        return Promise.resolve()
+    }
+
     public deleteAppointment(appointee: number, appointer: number, storeId: number) : void
     {
         //do nothing here, since we don't have an actual db and the subscriber already did this in memory

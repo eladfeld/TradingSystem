@@ -39,7 +39,8 @@ export const CHECKOUT_TIMEOUT = 3000000;//5 minutes
 export const CACHE_SIZE = -1;           //how much memory we want to cache (in bytes?)
 
 //init configurations
-export const SHOULD_INIT_STATE = false;    //initialize state from file?
+export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
+export const SHOULD_INIT_STATE = true;    //initialize state from file?
 export const INITIAL_STATE = checkState;
 
 
@@ -94,7 +95,7 @@ class SqlConnector
         else if(sqlMode === LOCALHOST_MODE)
         {
             connector.username= 'root'
-            connector.password= ''
+            connector.password= '1234'
             connector.database= 'db'
             connector.host= 'localhost'
             connector.dialect= 'mysql'

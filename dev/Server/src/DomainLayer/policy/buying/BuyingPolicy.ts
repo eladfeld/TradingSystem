@@ -8,7 +8,7 @@ export class Rule{
     public id: number;
     public predicate: iPredicate;               //the condition (i.e. 'no alcohol for minors', 'only babies can buy iPhones')    
     public description: string;                 //a message explaining the rule
-
+    
     constructor(id:number, predicate:iPredicate, description:string){
         this.id = id;
         this.predicate = predicate;             
@@ -17,12 +17,27 @@ export class Rule{
 }
 
 export default class BuyingPolicy{
-    private nextId: number = 1;                 //an id (unique to the store) for each rule in the policy
     private rules: Map<number,Rule>;            //the rules for buying at the store
     public static SUCCESS: string = "buying policy is respected";
+    private static nextId: number = 0;
 
     constructor(){
         this.rules = new Map();
+    }
+
+    public static initLastBuyingId(): Promise<number> 
+    {
+        let lastIdPromise = StoreDB.getLastBuyingId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                BuyingPolicy.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
     }
 
     public static rebuild(policies: any[]): BuyingPolicy
@@ -58,11 +73,13 @@ export default class BuyingPolicy{
     public addPolicy = (predicate: any, policyInWords: string, storeId: number ):Promise<string> =>{
         const predRes: Result<iPredicate> = PredicateParser.parse(predicate);
         if(isFailure(predRes)) return Promise.reject(predRes.message);
-        let rule = new Rule(this.nextId,predRes.value, policyInWords)
-        this.rules.set(this.nextId, rule);
-        StoreDB.addPolicy(storeId, rule);
-        this.nextId++;
-        return Promise.resolve("successfully added condition to the buying policy");
+        let rule = new Rule(BuyingPolicy.nextId,predRes.value, policyInWords)
+        this.rules.set(BuyingPolicy.nextId, rule);
+        let addPolicyPromise = StoreDB.addPolicy(storeId, rule);
+        BuyingPolicy.nextId++;
+        return new Promise((resolve, reject) => addPolicyPromise
+        .then(_ =>resolve("successfully added condition to the buying policy")).
+        catch(e => reject(e)));
     }
 
     public removePolicy = (id: number):Promise<string> =>{

@@ -1,4 +1,4 @@
-import { SQLconnector } from '../../config'
+import { SHOULD_RESET_DATABASE, SQLconnector } from '../../config'
 export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
@@ -32,11 +32,12 @@ const DiscountPolicy = require('./models/DiscountPolicy')
 const Transaction = require('./models/Transaction')
 const TransactionItem = require('./models/TransactionItem')
 const ProductToCategory = require('./models/ProductToCategory')
+const MessageHistory = require('./models/MessageHistory')
 
 export async function initTables (){
 
-    //TODO:delete when finshed working on db
-    await sequelize.queryInterface.dropAllTables()
+    if (SHOULD_RESET_DATABASE)
+      await sequelize.queryInterface.dropAllTables()
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
     sequelize.models.StoreProduct.belongsTo(sequelize.models.Store)
@@ -48,6 +49,7 @@ export async function initTables (){
 
     //Subscriber connections
     sequelize.models.Subscriber.hasMany(sequelize.models.PendingMessage)
+    sequelize.models.Subscriber.hasMany(sequelize.models.MessageHistory)
     sequelize.models.Subscriber.hasMany(sequelize.models.ShoppingBasket)
     sequelize.models.ShoppingBasket.hasMany(sequelize.models.BasketProduct)
     sequelize.models.SystemManager.belongsTo(sequelize.models.Subscriber)

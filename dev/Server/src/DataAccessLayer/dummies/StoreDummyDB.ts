@@ -14,6 +14,21 @@ export class StoreDummyDB implements iStoreDB
         return Promise.resolve(undefined);
     }
 
+    public getLastStoreId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
+    public getLastBuyingId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
+    public getLastDiscountId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
     private  stores: Store[]  = [];
 
     public addStore(store: Store): Promise<void>

@@ -7,6 +7,8 @@ export interface iSubscriberDB
 {
     getLastId() : Promise<number>
 
+    addMessageToHistory:(message: string, userId: number) => Promise<void>;
+
     addSubscriber: (username: string, password: string, age: number) => Promise<void>
 
     addSystemManager: (subscriber: Subscriber) => Promise<void>;

@@ -19,8 +19,7 @@ export class Register
                 }
                 else 
                 {
-                    // console.log(`register of ${username} with ${password} failed`)
-                    reject("invalid passwordddd")
+                    reject("invalid password")
                 }
             })
             .catch( error => reject(error))

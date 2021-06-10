@@ -6,6 +6,12 @@ export interface iStoreDB
 {
     addStore:(store: Store)=> Promise<void>;
 
+    getLastStoreId:() => Promise<number>;
+
+    getLastDiscountId:() => Promise<number>;
+
+    getLastBuyingId:()=> Promise<number>;
+
     getStoreByID:(storeId: number)=> Promise<Store>;
 
     deleteStore:(storeId: number) => Promise<void>;

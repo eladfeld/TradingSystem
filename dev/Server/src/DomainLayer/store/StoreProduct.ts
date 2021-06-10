@@ -15,10 +15,25 @@ export class StoreProduct
     private numOfRaters: number
     private categories: string[];
     private image: string;
+    private static nextId:number = 0;
 
-    public constructor(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
+    public static initLastProductId(){
+        let lastIdPromise = ProductDB.getLastProductId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                StoreProduct.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
+    }
+
+    constructor(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
     {
-        this.productId = ID();
+        this.productId = StoreProduct.nextId;
         this.name = name;
         this.price = price;
         this.storeId = storeId;

@@ -5,6 +5,15 @@ import { iPurchaseDB } from "../interfaces/iPurchaseDB";
 
 export class purchaseDB implements iPurchaseDB
 {
+    
+    public async getLastTransactionId(): Promise<number>
+    {
+        let lastId = await sequelize.models.Transaction.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
+    }
+
     public async getAllTransactions(): Promise<Transaction[]>
     {
         let transactionsDB = await sequelize.models.Transaction.findAll()

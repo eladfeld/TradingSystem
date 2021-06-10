@@ -16,23 +16,47 @@ const Storedb = require('../models/Store')
 export class storeDB implements iStoreDB
 {
 
+    //add functions:
     public async addStore(store: Store): Promise<void>
     {
-        await sequelize.models.Store.create({
-            id: store.getStoreId(),
-            storeName: store.getStoreName(),
-            storeRating: store.getStoreRating(),
-            numOfRaters: 0, //TODO: change
-            bankAccount: store.getBankAccount(),
-            storeAddress: store.getStoreAddress(),
-            storeClosed: store.getIsStoreClosed(),
-            founderId: store.getStoreFounderId()
-        })
+        try{
+            await sequelize.models.Store.create({
+                id: store.getStoreId(),
+                storeName: store.getStoreName(),
+                storeRating: store.getStoreRating(),
+                numOfRaters: 0, //TODO: change
+                bankAccount: store.getBankAccount(),
+                storeAddress: store.getStoreAddress(),
+                storeClosed: store.getIsStoreClosed(),
+                founderId: store.getStoreFounderId()
+            })
+            return Promise.resolve();
+        }
+        catch(e)
+        {
+            return Promise.reject("store with the same id exists,")
+        }
+    }
+
+    public async addCategory(StoreId: number, category: string, father: string) : Promise<void>
+    {
+        try{
+            await sequelize.models.Category.create({
+                StoreId: StoreId,
+                name: category,
+                father: father,
+            })
+            return Promise.resolve();
+        }
+        catch(e)
+        {
+            return Promise.reject("category with the same id is alread exists!");
+        }
+
     }
 
     public async addPolicy(storeId: number, rule: Rule): Promise<void>
     {
-        console.log(rule);
         try{
             await sequelize.models.BuyingPolicy.create({
                 id: rule.id,
@@ -46,26 +70,84 @@ export class storeDB implements iStoreDB
                     id: rule.id
                 }
             })
+            return Promise.resolve();
         }
         catch(e)
         {
-            return Promise.resolve()
+            //"policy with the same id already exists!"
+            return Promise.reject( e)
         }
     }
 
     public async addDiscountPolicy(id: number, discount: iDiscount, storeId: number): Promise<void>
     {
-        await sequelize.models.DiscountPolicy.create({
-            id: id,
-            discount: discount.toObj(),
-            StoreId: storeId
-        })
+        try{
+            await sequelize.models.DiscountPolicy.create({
+                id: id,
+                discount: discount.toObj(),
+                StoreId: storeId
+            })
+            return Promise.resolve()
+        }
+        catch(e)
+        {
+            console.log(e)
+            return Promise.reject(e)
+        }
+
+    }
+
+
+    public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
+    {
+        try{
+            await sequelize.models.ProductToCategory.create({
+                StoreProductId: productId,
+                category: category,
+                StoreId: storeId,
+            })
+            return Promise.resolve()
+        }
+        catch(e)
+        {
+            console.log(e)
+            return Promise.reject("category with the id alreay exists!")
+        }
+    }
+
+
+
+    //get functions:
+    
+    public async getLastStoreId() : Promise<number>
+    {
+        let lastId = await sequelize.models.Store.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
+    }
+
+    
+    public async getLastDiscountId() : Promise<number>
+    {
+        let lastId = await sequelize.models.DiscountPolicy.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
+    }
+    
+    
+    public async getLastBuyingId() : Promise<number>
+    {
+        let lastId = await sequelize.models.BuyingPolicy.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
     }
 
 
     public async getStoreByID(storeId: number): Promise<Store>
     {
-        console.log(storeId);
         let storedb = await sequelize.models.Store.findOne(
             {
                 where:
@@ -74,7 +156,6 @@ export class storeDB implements iStoreDB
                 }
             }
         )
-        console.log(storedb)
         if(storedb !== null && storedb != [] && storedb !== undefined)
         {
             let store = Store.rebuild(storedb,
@@ -167,7 +248,6 @@ export class storeDB implements iStoreDB
                 'productId': product.id,
                 'image': product.image
             })
-            console.log(product)
         }
         Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
         return Promise.resolve(JSON.stringify(products))
@@ -209,7 +289,6 @@ export class storeDB implements iStoreDB
     getProductInfoAbovePrice: (price: number) => Promise<string>;
     getProductInfoBelowPrice: (price: number) => Promise<string>;
 
-    clear: () => void;
 
     private async getAppointmentByStoreId(storeId : number) : Promise<Appointment[]>
     {
@@ -227,14 +306,7 @@ export class storeDB implements iStoreDB
         return apps;
     }
 
-    public async addCategory(StoreId: number, category: string, father: string) : Promise<void>
-    {
-        await sequelize.models.Category.create({
-            StoreId: StoreId,
-            name: category,
-            father: father,
-        })
-    }
+
 
     private async getCategory(categoryName: string, storeId:number): Promise<string>
     {
@@ -282,15 +354,5 @@ export class storeDB implements iStoreDB
         return productToCategories.map((p2c: any) => p2c.category)
 
     }
-
-    public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
-    {
-        await sequelize.models.ProductToCategory.create({
-            StoreProductId: productId,
-            category: category,
-            StoreId: storeId,
-        })
-
-    }
-
+    clear: () => void;
 }

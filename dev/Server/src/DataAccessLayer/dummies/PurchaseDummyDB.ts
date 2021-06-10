@@ -9,6 +9,11 @@ export class PurchaseDummyDB implements iPurchaseDB{
         this.transactions = [];
     }
 
+    public getLastTransactionId(): Promise<number>
+    {
+        return Promise.resolve(1);
+    }
+
     getAllTransactions = () : Promise<Transaction[]> => {
         return Promise.resolve([...this.transactions]);
     }

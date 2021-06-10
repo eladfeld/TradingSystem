@@ -1,3 +1,5 @@
+import { PurchaseDB } from "../../DataAccessLayer/DBinit";
+
 export const TransactionStatus = {
     IN_PROGRESS: 0,
     CANCELLED: 1,
@@ -21,6 +23,21 @@ class Transaction {
     private paymentId: number;//
     
     private static nextId = 1;
+
+    public static async initLastTransactionId() 
+    {
+        let lastIdPromise = PurchaseDB.getLastTransactionId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                Transaction.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
+    }
 
     asJson = () => {
         var obj : any = {}

@@ -163,7 +163,7 @@ export class Subscriber extends User
 
     public addMessageToHistory(message: string) : void
     {
-        // TODO: #saveDB
+        SubscriberDB.addMessageToHistory(message, this.getUserId())
         this.message_history.push(message)
     }
 
@@ -193,7 +193,6 @@ export class Subscriber extends User
     public async getStores() : Promise<{}>
     {
         Logger.log(`getting stores of user app: ${JSON.stringify(this.appointments)}`)
-            console.log(this.appointments);
         let stores: Promise<{}>[] =[]
         this.appointments.forEach( appointment =>{
             stores.push( new Promise<{}>(async (resolve, reject) => {

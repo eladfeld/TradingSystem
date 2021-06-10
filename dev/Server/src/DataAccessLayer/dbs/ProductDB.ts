@@ -7,8 +7,18 @@ import { iProductDB } from "../interfaces/iProductDB";
 
 export class productDB implements iProductDB
 {
+    public async getLastProductId(): Promise<number>
+    {
+        let lastId = await sequelize.models.StoreProduct.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
+    }
+
+
     public async addProduct(product: StoreProduct): Promise<void>
     {
+ 
         let prod = await sequelize.models.StoreProduct.create({
             id: product.getProductId(),
             name: product.getName(),

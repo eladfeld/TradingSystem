@@ -22,11 +22,19 @@ export class User implements iSubject
         this.userId = User.lastId++;
     }
 
-    static initLastId() 
+    static initLastId(): Promise<number> 
     {
-        SubscriberDB.getLastId().then(id =>{
-             User.lastId = id
-            });
+        let lastIdPromise = SubscriberDB.getLastId();
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                User.lastId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with user id "))
+        })
     }
 
 
