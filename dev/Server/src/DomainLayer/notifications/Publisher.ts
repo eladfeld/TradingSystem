@@ -7,10 +7,12 @@ export class Publisher
     private static singleton : Publisher = undefined;
     private send_message_func : (userId : number, message:string) => Promise<string>;
     private store_subscribers:Map<number,Subscriber[]>; //key=storeId , value = registered subscribers
+    private login_subscribers: Subscriber[]; // subscribers(system managers) that needs to get notified when someone logins for login_stats
 
     private constructor() 
     {
         this.store_subscribers = new Map();
+        this.login_subscribers = []
     }
 
     public set_send_func(send_message : (userId : number, message:string) => Promise<string>) : void
@@ -27,6 +29,13 @@ export class Publisher
             Publisher.singleton.send_message_func= (userId : number, message:{}) => {return Promise.resolve('just testing')};
         }
         return Publisher.singleton;
+    }
+
+    // register to login events for login_stats
+    public register_login(sys_manager : Subscriber) : void
+    {
+        Logger.log(`Publisher.register_login sys_manager:${sys_manager.getUsername()} `)
+        this.login_subscribers.push(sys_manager)
     }
 
     // start listening to messages about this store
@@ -46,6 +55,11 @@ export class Publisher
         }
     }
 
+    public unregister_login(sys_manager : Subscriber) : void
+    {
+        this.login_subscribers = this.login_subscribers.filter(sub => sub.getUserId() !== sys_manager.getUserId());
+    }
+
     // stop listening to messages for this store
     public unregister_store(storeId:number, sub_to_delete:Subscriber) : void
     {
@@ -54,6 +68,35 @@ export class Publisher
         let deleted_user = registered.filter( sub => sub.getUserId() !== sub_to_delete.getUserId());
         this.store_subscribers.set(storeId , deleted_user);
     }
+
+    public notify_login_update(msg : string) : Promise<void>[]
+    {
+        Logger.log(`Publisher.notify_login_update message:${msg} `)
+        let promises : Promise<void>[] = [];
+        this.login_subscribers.forEach( sys_manager => {
+            let promise = this.send_message(sys_manager, msg)
+            promises.push(promise)
+        })
+        return promises;
+    }
+
+    // ask the publisher to deliver a message to all listening clients
+    public notify_store_update(storeId : number , message:string) : Promise<void>[]
+    {
+        Logger.log(`Publisher.notify_store_update  storeId:${storeId} , message:${message} `)
+        let promises : Promise<void>[] = [];
+        let subscribers = this.store_subscribers.get(storeId);
+        if (subscribers !== undefined)
+        {
+            subscribers.forEach(subscriber => { 
+                let promise = this.send_message(subscriber,message)
+                promises.push(promise)
+            });
+        }
+        return promises;
+    }
+
+    
 
     //send message to specific subscriber
     public send_message(subscriber:Subscriber , message:string) : Promise<void>
@@ -73,23 +116,6 @@ export class Publisher
                 return;
             })
         })
-    }
-
-    // ask the publisher to deliver a message to all listening clients
-    public notify_store_update(storeId : number , message:string) : Promise<void>[]
-    {
-        Logger.log(`Publisher.notify_store_update  storeId:${storeId} , message:${message} `)
-        let promises : Promise<void>[] = [];
-        let subscribers = this.store_subscribers.get(storeId);
-        if (subscribers !== undefined)
-        {
-            
-            subscribers.forEach(subscriber => { 
-                let promise = this.send_message(subscriber,message)
-                promises.push(promise)
-            });
-        }
-        return promises;
     }
 
     //when user is logging in we need to send him his pending messages

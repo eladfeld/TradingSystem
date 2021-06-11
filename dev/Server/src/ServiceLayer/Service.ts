@@ -8,9 +8,11 @@ import { Subscriber } from "../DomainLayer/user/Subscriber";
 import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
+import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 
 export class Service
 {
+    
     private static singletone: Service = undefined;
     private facade: SystemFacade;
 
@@ -247,6 +249,11 @@ export class Service
     public getSubscriberId(sessionId: string): number
     {
         return this.facade.getSubscriberId(sessionId);
+    }
+
+    getLoginStats(sessionId : string, from:Date, until:Date) : Promise<login_stats>
+    {
+        return this.facade.getLoginStats(sessionId , from, until)
     }
 
 

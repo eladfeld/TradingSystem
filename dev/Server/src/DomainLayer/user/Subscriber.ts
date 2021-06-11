@@ -1,4 +1,4 @@
-import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
 import { Logger } from "../../Logger";
 import { tShippingInfo } from "../purchase/Purchase";
 import { Store } from "../store/Store";
@@ -56,7 +56,7 @@ export class Subscriber extends User
         let addp = this.shoppingCart.addProduct(storeId, productId, quantity);
         return new Promise ((resolve,reject) => {
             addp.then( shoppingbasket => {
-                SubscriberDB.addProduct(this.userId,storeId, productId, quantity);
+                DB.addProductToCart(this.userId,storeId, productId, quantity);
                 resolve(shoppingbasket)
             })
             .catch( error => reject(error))
@@ -82,7 +82,7 @@ export class Subscriber extends User
     public addAppointment(appointment: Appointment) : void
     {
         this.appointments.push(appointment);
-        SubscriberDB.addAppointment(this.getUserId(),appointment)
+        DB.addAppointment(this.getUserId(),appointment)
     }
 
     public checkoutBasket(storeId: number, shippingInfo: tShippingInfo): Promise<boolean>
@@ -91,7 +91,7 @@ export class Subscriber extends User
         return new Promise((resolve,reject) => {
             checkoutp.then( isSusccesfull => {
                 this.shoppingCart.getBaskets().delete(storeId);
-                SubscriberDB.deleteBasket(this.userId, storeId);
+                DB.deleteBasket(this.userId, storeId);
                 resolve(isSusccesfull)
             })
             .catch( error => reject(error))
@@ -119,7 +119,7 @@ export class Subscriber extends User
         let editp = this.shoppingCart.editStoreCart(storeId, productId, quantity);
         return new Promise( (resolve,reject) => {
             editp.then ( msg => {
-                SubscriberDB.updateCart(this.userId, storeId, productId, quantity)
+                DB.updateCart(this.userId, storeId, productId, quantity)
                 resolve(msg)
             })
             editp.catch( error => {
@@ -131,7 +131,7 @@ export class Subscriber extends User
     public deleteAppointment(store_app: Appointment) 
     {
         this.appointments = this.appointments.filter(app => app !== store_app);
-        SubscriberDB.deleteAppointment(store_app.appointee, store_app.appointer, store_app.store)
+        DB.deleteAppointment(store_app.appointee, store_app.appointer, store_app.store)
     }
 
     public isSystemManager(): Promise<boolean>
@@ -158,12 +158,12 @@ export class Subscriber extends User
     public addPendingMessage(message:string) : void
     {
         this.pending_messages.push(message);
-        SubscriberDB.addPendingMessage(this.getUserId() , message);
+        DB.addPendingMessage(this.getUserId() , message);
     }
 
     public addMessageToHistory(message: string) : void
     {
-        SubscriberDB.addMessageToHistory(message, this.getUserId())
+        DB.addMessageToHistory(message, this.getUserId())
         this.message_history.push(message)
     }
 
@@ -186,7 +186,7 @@ export class Subscriber extends User
     {
         let messages = this.pending_messages;
         this.pending_messages = [];
-        SubscriberDB.deletePendingMessages(this.getUserId())
+        DB.deletePendingMessages(this.getUserId())
         return messages;
     }
 
@@ -196,7 +196,7 @@ export class Subscriber extends User
         let stores: Promise<{}>[] =[]
         this.appointments.forEach( appointment =>{
             stores.push( new Promise<{}>(async (resolve, reject) => {
-                let storeName = (await StoreDB.getStoreByID(appointment.getStoreId())).getStoreName()
+                let storeName = (await DB.getStoreByID(appointment.getStoreId())).getStoreName()
                 resolve({storeId: appointment.getStoreId(), storeName: storeName , permissions: appointment.getPermissions()})
             }))
         })
@@ -219,7 +219,7 @@ export class Subscriber extends User
     deleteShoppingBasket(storeId : number) : Promise<void>
     {
         this.shoppingCart.deleteShoppingBasket(storeId)
-        return SubscriberDB.deleteBasket(this.getUserId(), storeId);
+        return DB.deleteBasket(this.getUserId(), storeId);
     }
     
     public getPermission(storeId: number): number

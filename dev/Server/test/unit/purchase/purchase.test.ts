@@ -6,8 +6,6 @@ import Purchase from '../../../src/DomainLayer/purchase/Purchase'
 import Transaction, { TransactionStatus } from '../../../src/DomainLayer/purchase/Transaction';
 import { isFailure, Result } from '../../../src/Result';
 import { APIsWillSucceed, failIfResolved, failTest, setReady, uniqueMegaName, waitToRun } from '../../testUtil';
-import { TEST_CHECKOUT_TIMEOUT } from '../../../src/config';
-import { PurchaseDB } from '../../../src/DataAccessLayer/DBinit';
 
 
 

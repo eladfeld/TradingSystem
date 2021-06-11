@@ -16,7 +16,7 @@ const res = UniversalPolicy.addPolicy(
     ]),
     "Must be 18 or older to buy alcohol"
 , -1);
-res.then( _ => console.log("a"))
+res.then( _ => console.log(""))
 .catch( error => {
     console.log("already inserted policy")
 })

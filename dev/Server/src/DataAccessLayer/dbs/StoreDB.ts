@@ -9,7 +9,7 @@ import { OwnerAppointment } from "../../DomainLayer/user/OwnerAppointment";
 import { Permission } from "../../DomainLayer/user/Permission";
 import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
-import { ProductDB } from "../DBinit";
+import { DB } from "../DBfacade";
 import { iStoreDB } from "../interfaces/iStoreDB";
 const Storedb = require('../models/Store')
 
@@ -100,6 +100,7 @@ export class storeDB implements iStoreDB
 
     public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
     {
+        console.log("pid",productId, "category",category, "storeId",storeId)
         try{
             await sequelize.models.ProductToCategory.create({
                 StoreProductId: productId,
@@ -160,7 +161,7 @@ export class storeDB implements iStoreDB
         {
             let store = Store.rebuild(storedb,
                 await this.getAppointmentByStoreId(storedb.id),
-                await ProductDB.getAllProductsOfStore(storedb.id),
+                await DB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
                 await this.getBuyingPoliciesByStoreId(storedb.id));
@@ -195,7 +196,7 @@ export class storeDB implements iStoreDB
         {
             let store = Store.rebuild(storedb,
                 await this.getAppointmentByStoreId(storedb.id),
-                await ProductDB.getAllProductsOfStore(storedb.id),
+                await DB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
                 await this.getBuyingPoliciesByStoreId(storedb.id));

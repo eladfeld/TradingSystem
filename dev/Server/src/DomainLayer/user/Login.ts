@@ -1,4 +1,4 @@
-import { SubscriberDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
 import { Authentication } from "./Authentication";
 import { Subscriber } from "./Subscriber";
 
@@ -12,7 +12,7 @@ export class Login
         return new Promise ((resolve,reject) => {
             pass_check.then( valid_pass => {
                 if(valid_pass)
-                    resolve(SubscriberDB.getSubscriberByUsername(username))
+                    resolve(DB.getSubscriberByUsername(username))
                 else
                     reject("login : invalid password")
             })

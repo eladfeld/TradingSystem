@@ -26,6 +26,7 @@ const Checkout = ({getAppState, setAppState}) =>{
         history.push('/cart');
     }
     const onCompleteClick = async () =>{
+        setProblem("")
         const {cardNumber, expMonth, expYear, holder, cvv, id} = paymentInfo;
         const {name, address, city, country, zip} = shippingInfo;
         if(!areNotEmptyStrings([holder,name,address,city,country])){
@@ -36,7 +37,7 @@ const Checkout = ({getAppState, setAppState}) =>{
             setProblem("credit card info and zip code must be valid numbers");
             return;
         }
-        //todo:remove
+        //TODO:remove
         paymentInfo.amount = '12345';
         paymentInfo.toAccount = '54321';
 

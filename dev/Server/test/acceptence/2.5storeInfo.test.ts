@@ -9,8 +9,8 @@ import { enter_login, register_login, open_store } from './common';
 import {uniqueName, isReady,  check} from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.5: store info test' , function() {
-    var service : Service = Service.get_instance();
+describe('2.5: store info test' ,async function() {
+    var service : Service =await Service.get_instance();
 
 
     
@@ -34,8 +34,8 @@ describe('2.5: store info test' , function() {
         let store2 =await service.openStore(sessionId, storeName_2, 123456, "Tel Aviv");
         store1.addCategoryToRoot('Food')
         store2.addCategoryToRoot('Food')
-        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10);
-        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20);
+        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10,"");
+        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20,"");
         service.getStoreInfo(sessionId, store1.getStoreId())
         .then( _ => assert.ok(1))
         .catch( _ => assert.fail(""))
@@ -52,8 +52,8 @@ describe('2.5: store info test' , function() {
         let store2 =await service.openStore(sessionId, storeName_2, 123456, "Tel Aviv");
         store1.addCategoryToRoot('Food')
         store2.addCategoryToRoot('Food')
-        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10);
-        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20);
+        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10,"");
+        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20,"");
         service.getStoreInfo(sessionId + 1, store1.getStoreId())
         .then( _ => assert.fail())
         .catch( _ => assert.ok(1))

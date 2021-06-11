@@ -1,4 +1,5 @@
 import {assert, expect} from 'chai';
+import { DB } from '../src/DataAccessLayer/DBfacade';
 import PaymentSystem from '../src/DomainLayer/apis/PaymentSystem';
 import SupplySystem from '../src/DomainLayer/apis/SupplySystem';
 
@@ -42,6 +43,7 @@ export const failIfAnyRejected = async (foo:()=>Promise<any>[]) =>{
 export const APIsWillSucceed = () =>{
     PaymentSystem.willSucceed();
     SupplySystem.willSucceed();
+    DB.willSucceed();
 }
 
 var testId: number = 0;
