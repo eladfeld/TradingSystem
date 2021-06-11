@@ -104,5 +104,13 @@ class SqlConnector
         return connector;
     }
 }
-
 export const SQLconnector = SqlConnector.factory();
+
+// cache configutaions:
+export const SHOULD_USE_CACHE = true;
+
+export const SUBSCRIBERS_CACHE_SIZE = 100
+export const STORE_CACHE_SIZE = 100
+export const PRODUCT_CACHE_SIZE = 200
+export const TRANSACTIONS_CACHE_SIZE = 200
+
