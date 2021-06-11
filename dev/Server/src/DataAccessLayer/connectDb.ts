@@ -34,7 +34,7 @@ const Transaction = require('./models/Transaction')
 const TransactionItem = require('./models/TransactionItem')
 const ProductToCategory = require('./models/ProductToCategory')
 const MessageHistory = require('./models/MessageHistory')
-
+const LoginStts = require('./models/LoginStats')
 export async function initTables (){
 
     if (SHOULD_RESET_DATABASE)

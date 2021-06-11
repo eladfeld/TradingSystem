@@ -41,7 +41,7 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
         else
         {
             this.subscriberDB = new subscriberDB();
-            this.loginDB = new LoginStatsDummyDB(); //TODO:Change to DB
+            this.loginDB = new LoginStatsDB();
             this.productDB = new productDB();
             this.purchaseDB = new purchaseDB();
             this.storeDB = new storeDB();

@@ -18,7 +18,6 @@ export class productDB implements iProductDB
 
     public async addProduct(product: StoreProduct): Promise<void>
     {
-        console.log(product)
         let prod = await sequelize.models.StoreProduct.create({
             id: product.getProductId(),
             name: product.getName(),
