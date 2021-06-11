@@ -8,7 +8,6 @@ import { ShoppingCart } from "../../DomainLayer/user/ShoppingCart";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
-import { StoreDB, SubscriberDB } from "../DBinit";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
@@ -28,13 +27,19 @@ export class subscriberDB implements iSubscriberDB
             return Promise.reject("message with the same id is already exists")
         }
     }
+    
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 
     //add functions:
 
     public async addSubscriber(username: string, password: string, age: number) : Promise<void>
     {
         let subscriber = new Subscriber(username, password, age);
-        console.log(subscriber)
         try{
             await sequelize.models.Subscriber.create({
                 id: subscriber.getUserId(),
@@ -91,7 +96,7 @@ export class subscriberDB implements iSubscriberDB
     }
 
 
-    public async addProduct(subscriberId: number, storeId: number, productId: number, quantity: number): Promise<void>
+    public async addProductToCart(subscriberId: number, storeId: number, productId: number, quantity: number): Promise<void>
     {
 
         let basket = await sequelize.models.ShoppingBasket.findOne({
@@ -161,10 +166,10 @@ export class subscriberDB implements iSubscriberDB
     //get functions:
 
 
-    public async getLastId() : Promise<number>
+    public async getLastUserId() : Promise<number>
     {
         let lastId = await sequelize.models.Subscriber.max('id')
-        if (lastId === null)
+        if (Number.isNaN(lastId))
             return 0;
         return lastId + 1
     }

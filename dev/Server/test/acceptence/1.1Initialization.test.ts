@@ -5,7 +5,7 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, failTest, setReady, waitToRun } from '../testUtil';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
-import { PATH_TO_SYSTEM_MANAGERS, setPathToSystemManagers } from '../../src/config';
+import { PATH_TO_SYSTEM_MANAGERS, setPathToSystemManagers } from '../../config';
 // import fs from '../../../Client/node_modules/fs-extra/lib/fs/index.js'
 
 // 

@@ -1,4 +1,4 @@
-import { PurchaseDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
 
 export const TransactionStatus = {
     IN_PROGRESS: 0,
@@ -26,7 +26,7 @@ class Transaction {
 
     public static async initLastTransactionId() 
     {
-        let lastIdPromise = PurchaseDB.getLastTransactionId()
+        let lastIdPromise = DB.getLastTransactionId()
 
         return new Promise((resolve, reject) => {
             lastIdPromise

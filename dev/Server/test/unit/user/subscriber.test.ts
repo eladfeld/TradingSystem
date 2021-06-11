@@ -22,7 +22,7 @@ describe('subscriber tests' , function() {
         //this test has no logic just to check that add appointment works
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         let subscriber1 : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
-        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1.getUserId(),store.getStoreId(),subscriber1.getUserId(),new Permission(0));
         subscriber1.addAppointment(appointment1);
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.getAppointments().length).to.equal(2);
@@ -33,8 +33,8 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         let subscriber1 : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
         let subscriber2 : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
-        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber2,new Permission(0));
-        let appointment2 : Appointment = new ManagerAppointment(subscriber2,store,subscriber2,new Permission(0));
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1.getUserId(),store.getStoreId(),subscriber2.getUserId(),new Permission(0));
+        let appointment2 : Appointment = new ManagerAppointment(subscriber2.getUserId(),store.getStoreId(),subscriber2.getUserId(),new Permission(0));
         subscriber1.addAppointment(appointment1);
         subscriber1.addAppointment(appointment2);
         subscriber1.deleteAppointment(appointment1);
@@ -45,7 +45,7 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
-        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(0));
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1.getUserId(),store.getStoreId(),subscriber1.getUserId(),new Permission(0));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.isOwner(444)).to.equal(true);
     })
@@ -54,7 +54,7 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
-        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER));
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1.getUserId(),store.getStoreId(),subscriber1.getUserId(),new Permission(ACTION.APPOINT_MANAGER));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.checkIfPerrmited(ACTION.APPOINT_MANAGER,store)).to.equal(true);
     })
@@ -63,7 +63,7 @@ describe('subscriber tests' , function() {
         let store : StoreStub = new StoreStub(123,"Aluf Hasport" , 123456 , "Tel Aviv");
         store.setStoreId(444);
         let subscriber1 : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
-        let appointment1 : Appointment = new OwnerAppointment(subscriber1,store,subscriber1,new Permission(ACTION.APPOINT_MANAGER));
+        let appointment1 : Appointment = new OwnerAppointment(subscriber1.getUserId(),store.getStoreId(),subscriber1.getUserId(),new Permission(ACTION.APPOINT_MANAGER));
         subscriber1.addAppointment(appointment1);
         expect(subscriber1.checkIfPerrmited(ACTION.APPOINT_OWNER,store)).to.equal(false);
     })

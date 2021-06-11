@@ -37,7 +37,7 @@ export async function open_store(service:Service , sessionId:string , founder : 
 
 export async function add_product(service : Service , sessionId:string, user:Subscriber ,store : Store, productName: string, categories: string[], price: number, quantity?: number) : Promise<number>
 {
-    let product = await service.addNewProduct(sessionId , store.getStoreId() ,productName , categories , price , quantity);
+    let product = await service.addNewProduct(sessionId , store.getStoreId() ,productName , categories , price , quantity,"");
     return product;
 
 }

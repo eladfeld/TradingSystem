@@ -7,8 +7,8 @@ import iBasket from "../discount/iBasket";
 import { iProduct, MyProduct } from "../discount/iProduct";
 import BuyingSubject from "../policy/buying/BuyingSubject";
 import { tShippingInfo } from "../purchase/Purchase";
-import { ProductDB, StoreDB } from "../../DataAccessLayer/DBinit";
 import { StoreProduct } from "../store/StoreProduct";
+import { DB } from "../../DataAccessLayer/DBfacade";
 
 export class ShoppingBasket implements iBasket
 {
@@ -23,7 +23,7 @@ export class ShoppingBasket implements iBasket
 
     public static async rebuildShoppingBasket(storeId: number, products: Map<number, number>)
     {
-        let basket = new ShoppingBasket(await StoreDB.getStoreByID(storeId));
+        let basket = new ShoppingBasket(await DB.getStoreByID(storeId));
         basket.products = products;
         return basket;
     }
@@ -111,7 +111,7 @@ export class ShoppingBasket implements iBasket
 
         let productPromises: Promise<StoreProduct>[] = []
         this.products.forEach(function(quantity,productId,map){
-            let product = ProductDB.getProductById(productId);
+            let product = DB.getProductById(productId);
             productPromises.push(product);
         })
 

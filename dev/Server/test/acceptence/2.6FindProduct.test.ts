@@ -2,7 +2,6 @@ import { assert, expect } from 'chai';
 import { servicesVersion } from 'typescript';
 import Purchase from '../../src/DomainLayer/purchase/Purchase';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
-import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Login } from '../../src/DomainLayer/user/Login';
@@ -14,10 +13,10 @@ import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfRejected, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.6: find product', function () {
+describe('2.6: find product',async function () {
 
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -34,8 +33,8 @@ describe('2.6: find product', function () {
         let avi = await register_login(service,sessionId,aviName,"123456");
         let store =await open_store(service,sessionId,avi,megaName,123456,"Tel Aviv");
         await store.addCategoryToRoot('Food')
-        let banana = service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Food'], 156, 50);
-        let apple = service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Food'], 1, 10);
+        let banana = service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Food'], 156, 50,"");
+        let apple = service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Food'], 1, 10,"");
         let products = await service.getPruductInfoByName(sessionId, "banana")
         //console.log('[t] res:',JSON.parse(products));
         expect(JSON.parse(products)['products'].length).to.greaterThanOrEqual(1)
@@ -52,10 +51,10 @@ describe('2.6: find product', function () {
         await store.addCategoryToRoot('Sweet')
         await store.addCategoryToRoot('Sport')
         await store.addCategoryToRoot('Electric')
-        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 156, 50);
-        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
-        let ball = await service.addNewProduct(sessionId, store.getStoreId(), "ball", ['Sport'], 3, 44);
-        let pc = await service.addNewProduct(sessionId, store.getStoreId(), "pc", ['Electric'], 2442, 123);
+        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 156, 50,"");
+        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
+        let ball = await service.addNewProduct(sessionId, store.getStoreId(), "ball", ['Sport'], 3, 44,"");
+        let pc = await service.addNewProduct(sessionId, store.getStoreId(), "pc", ['Electric'], 2442, 123,"");
         let products = await service.getPruductInfoByCategory(sessionId, 'Sweet');
         expect(JSON.parse(products)['products'].length).to.equal(2)
         // .then(products => expect(JSON.parse(products)['products'].length).to.equal(2))

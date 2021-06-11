@@ -1,14 +1,15 @@
 // Use:
 //
 
-import { StoreDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
+
 
 //     var privateID = ID();
 let current_id: number = 0 //TODO: get biggest id from DB
 
 export function initLastStoreId(): Promise<number> 
 {
-    let lastIdPromise = StoreDB.getLastStoreId();
+    let lastIdPromise = DB.getLastStoreId();
 
     return new Promise((resolve, reject) => {
         lastIdPromise

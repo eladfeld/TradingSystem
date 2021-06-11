@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Login } from '../../src/DomainLayer/user/Login';
@@ -12,9 +11,9 @@ import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName }
 import { fail } from 'assert';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.7: add to cart test' , function() {
+describe('2.7: add to cart test' ,async function() {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -32,8 +31,7 @@ describe('2.7: add to cart test' , function() {
         let store1 =await open_store(service,sessionId,avi , storeName , 123456 , "Tel Aviv" );
         await service.addCategoryToRoot(sessionId, store1.getStoreId(),'Sweet')
         await service.addCategoryToRoot(sessionId, store1.getStoreId(),'Computer')
-        let product1: Product = new Product("banana", ['Sweet']);
-        let prodId = await service.addNewProduct(sessionId, store1.getStoreId(), product1.getName(),['Computer'],500,100);
+        let prodId = await service.addNewProduct(sessionId, store1.getStoreId(), "banana", ['Computer'],500,100, "");
         await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10)
     })
 

@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import { PurchaseDB } from '../../../src/DataAccessLayer/DBinit';
 //import { config } from 'dotenv';
 import PaymentSystem from '../../../src/DomainLayer/apis/PaymentSystem';
 import SupplySystem from '../../../src/DomainLayer/apis/SupplySystem';

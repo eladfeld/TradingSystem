@@ -44,14 +44,13 @@ class SupplySystemReal {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
         
-        //const response =await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "supply", name: shippingInfo.name, address:shippingInfo.address, city:shippingInfo.city, country:shippingInfo.country, zip:shippingInfo.zip});
-        switch(response.data){
-            case "-1":
-                return -1;
-            default:
-                return response.data;
-        
-        } 
+        var resData = Number(response.data);
+        if (resData > 0){
+            return response.data;
+        }
+        else{
+            return -1;
+        }
     }
 
     static cancelSupply = async(transactionId:number) : Promise<boolean> => {
@@ -64,13 +63,13 @@ class SupplySystemReal {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
         //const response =await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "cancel_supply", transaction_id: transactionId});
-        switch(response.data){
-            case "-1":
-                return false;
-            default:
-                return true;
-        
-        } 
+        var resData = Number(response.data);
+        if (resData == 1){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
 }

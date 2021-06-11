@@ -2,15 +2,18 @@ import { Appointment } from "../../DomainLayer/user/Appointment";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
+const DISCONNECTED_ERROR = "Database is disconnected";
+
 export class SubscriberDummyDB implements iSubscriberDB
 {
 
     private subscribers: Subscriber[];
     private systemManagers: Subscriber[];
+    private isConnected: boolean;
     constructor(){
         this.subscribers=[]
         this.systemManagers = []
-
+        this.isConnected = true;
     }
 
 
@@ -34,7 +37,7 @@ export class SubscriberDummyDB implements iSubscriberDB
         //do nothing here, since we don't have an actual db and the subscriber already did this in memory
     }
 
-    public getLastId(): Promise<number> 
+    public getLastUserId(): Promise<number> 
     {
         return Promise.resolve(0);
     }
@@ -55,10 +58,11 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     public async isSystemManager(userId: number): Promise<boolean> 
     {
+        if(!this.isConnected)return Promise.reject(DISCONNECTED_ERROR);
         return this.systemManagers.some(sub => sub.getUserId() === userId);
     }
 
-    public addProduct(subscriberId: number, storeId: number, productId: number, quantity : number) 
+    public addProductToCart(subscriberId: number, storeId: number, productId: number, quantity : number) 
     {
         //do nothing here, since we don't have an actual db and the subscriber already did this in memory
         return Promise.resolve()
@@ -77,6 +81,7 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     public async getSubscriberById(userId : number): Promise<Subscriber>
     {
+        if(!this.isConnected)return Promise.reject(DISCONNECTED_ERROR);
         let sub = this.subscribers.find( sub => sub.getUserId() === userId)
         if (sub !== undefined)
             return sub;
@@ -85,6 +90,7 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     public async getSubscriberByUsername(username: string): Promise<Subscriber>
     {
+        if(!this.isConnected)return Promise.reject(DISCONNECTED_ERROR);
         let sub = this.subscribers.find( sub => sub.getUsername() === username)
         if(sub) return Promise.resolve(sub);
         return new Promise((resolve, reject) => reject("getSubscriverByUsername: subscriber not found"))
@@ -92,6 +98,7 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     public async addAppointment(userId : number, appointment : Appointment) : Promise<void>
     {
+        if(!this.isConnected)return Promise.reject(DISCONNECTED_ERROR);
         let sub = this.subscribers.find( sub => sub.getUserId() == userId )
         if (sub !== undefined)
         {
@@ -103,6 +110,7 @@ export class SubscriberDummyDB implements iSubscriberDB
 
     public async getAppointment(userId : number, storeId : number) : Promise<Appointment>
     {
+        if(!this.isConnected)return Promise.reject(DISCONNECTED_ERROR);
         let sub = this.subscribers.find( sub => sub.getUserId() == userId )
         if (sub !== undefined)
         {
@@ -120,6 +128,15 @@ export class SubscriberDummyDB implements iSubscriberDB
     {
         this.subscribers = [];
         this.systemManagers = [];
+    }
+
+    /********************** Functions for tests ************************/
+    public willFail = () =>{
+        this.isConnected = false;
+    }
+
+    public willSucceed = () =>{
+        this.isConnected = true;
     }
 }
 

@@ -1,5 +1,5 @@
 import { rejects } from "assert";
-import { StoreDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
 import { storeDB } from "../../DataAccessLayer/dbs/StoreDB";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../Result";
 import Categorizer from "./Categorizer";
@@ -21,7 +21,7 @@ export default class DiscountPolicy{
 
     public static initLastDiscountId(): Promise<number> 
     {
-        let lastIdPromise = StoreDB.getLastDiscountId();
+        let lastIdPromise = DB.getLastDiscountId();
 
         return new Promise((resolve, reject) => {
             lastIdPromise
@@ -68,7 +68,7 @@ export default class DiscountPolicy{
         if(isFailure(res)) return Promise.reject(res.message);
         let discount = res.value
         this.discounts.set(DiscountPolicy.nextId, discount);
-        let addPolicyPromise = StoreDB.addDiscountPolicy(DiscountPolicy.nextId, discount, storeId)
+        let addPolicyPromise = DB.addDiscountPolicy(DiscountPolicy.nextId, discount, storeId)
         DiscountPolicy.nextId++;
         return new Promise((resolve, reject) => {
         addPolicyPromise.then( _ => resolve("successfully added discount to the discount policy"))

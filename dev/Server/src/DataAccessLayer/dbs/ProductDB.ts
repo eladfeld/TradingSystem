@@ -1,7 +1,7 @@
 import { StoreProduct } from "../../DomainLayer/store/StoreProduct";
 import { categories } from "../../ServiceLayer/state/InitialStateConstants";
 import { sequelize } from "../connectDb";
-import { StoreDB } from "../DBinit";
+import { DB } from "../DBfacade";
 import { iProductDB } from "../interfaces/iProductDB";
 
 
@@ -18,7 +18,7 @@ export class productDB implements iProductDB
 
     public async addProduct(product: StoreProduct): Promise<void>
     {
- 
+        console.log(product)
         let prod = await sequelize.models.StoreProduct.create({
             id: product.getProductId(),
             name: product.getName(),
@@ -29,10 +29,9 @@ export class productDB implements iProductDB
             image: product.getImage(),
             StoreId: product.getStoreId(),
         })
-
         // checking that store has categories in Store.addNewProduct
         for(let category of product.getCategories()){
-            await StoreDB.addCategoriesOfProduct(product.getProductId(), category, product.getStoreId())
+            await DB.addCategoriesOfProduct(product.getProductId(), category, product.getStoreId())
         }
     }
 
@@ -55,7 +54,7 @@ export class productDB implements iProductDB
                 productdb.price,
                 productdb.StoreId,
                 productdb.quantity,
-                await StoreDB.getCategoriesOfProduct(productdb.id),
+                await DB.getCategoriesOfProduct(productdb.id),
                 productdb.image,
 
             );
@@ -84,7 +83,7 @@ export class productDB implements iProductDB
                 productdb.price,
                 productdb.StoreId,
                 productdb.quantity,
-                await StoreDB.getCategoriesOfProduct(productdb.id),
+                await DB.getCategoriesOfProduct(productdb.id),
                 productdb.image,
 
             ));

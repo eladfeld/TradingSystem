@@ -1,4 +1,4 @@
-import { StoreDB, SubscriberDB } from '../../DataAccessLayer/DBinit';
+import { DB } from '../../DataAccessLayer/DBfacade';
 import iSubject from '../discount/logic/iSubject';
 import { tShippingInfo } from '../purchase/Purchase';
 import { buyingOption } from '../store/BuyingOption';
@@ -24,7 +24,7 @@ export class User implements iSubject
 
     static initLastId(): Promise<number> 
     {
-        let lastIdPromise = SubscriberDB.getLastId();
+        let lastIdPromise = DB.getLastUserId();
 
         return new Promise((resolve, reject) => {
             lastIdPromise
@@ -40,7 +40,7 @@ export class User implements iSubject
 
     public static UserinitLastId()
     {
-        SubscriberDB.getLastId().then(id => User.lastId = id);
+        DB.getLastUserId().then(id => User.lastId = id);
     }
 
     public checkoutBasket(storeId: number, shippingInfo: tShippingInfo): Promise<boolean>
@@ -64,7 +64,7 @@ export class User implements iSubject
 
     public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Promise<string>
     {
-        let storep =  StoreDB.getStoreByID(shopId);
+        let storep =  DB.getStoreByID(shopId);
         return new Promise ((resolve,reject) => {
             storep.then (store => {
                 let sellp = store.sellProduct(this.getUserId() , shippingInfo,productId, quantity, buying_option);

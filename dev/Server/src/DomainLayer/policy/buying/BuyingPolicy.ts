@@ -1,4 +1,4 @@
-import { StoreDB } from "../../../DataAccessLayer/DBinit";
+import { DB } from "../../../DataAccessLayer/DBfacade";
 import { isFailure, isOk, makeFailure, makeOk, Result } from "../../../Result";
 import PredicateParser from "../../discount/logic/parser";
 import { iPredicate } from "../../discount/logic/Predicate";
@@ -27,7 +27,7 @@ export default class BuyingPolicy{
 
     public static initLastBuyingId(): Promise<number> 
     {
-        let lastIdPromise = StoreDB.getLastBuyingId()
+        let lastIdPromise = DB.getLastBuyingId()
 
         return new Promise((resolve, reject) => {
             lastIdPromise
@@ -75,7 +75,7 @@ export default class BuyingPolicy{
         if(isFailure(predRes)) return Promise.reject(predRes.message);
         let rule = new Rule(BuyingPolicy.nextId,predRes.value, policyInWords)
         this.rules.set(BuyingPolicy.nextId, rule);
-        let addPolicyPromise = StoreDB.addPolicy(storeId, rule);
+        let addPolicyPromise = DB.addPolicy(storeId, rule);
         BuyingPolicy.nextId++;
         return new Promise((resolve, reject) => addPolicyPromise
         .then(_ =>resolve("successfully added condition to the buying policy")).

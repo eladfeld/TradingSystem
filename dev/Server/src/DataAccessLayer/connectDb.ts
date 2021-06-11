@@ -1,15 +1,16 @@
 import { SHOULD_RESET_DATABASE, SQLconnector } from '../../config'
+
 export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
 
 //
-SQLconnector
+
 export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
     port: SQLconnector.port, // this is the mysql port
-    // logging: true,
+    logging: false,
     define: {
       timestamps: false
     }
@@ -46,6 +47,8 @@ export async function initTables (){
     sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)
     sequelize.models.StoreProduct.hasMany(sequelize.models.ProductToCategory)
+    sequelize.models.Store.hasMany(sequelize.models.ProductToCategory)
+
 
     //Subscriber connections
     sequelize.models.Subscriber.hasMany(sequelize.models.PendingMessage)

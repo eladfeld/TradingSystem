@@ -8,9 +8,9 @@ import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAviName, uniqueM
 import { tCompositePredicate, tPredicate, tSimplePredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.9.1 Buying with respect to buying policy', function () {
+describe('2.9.1 Buying with respect to buying policy',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -32,7 +32,7 @@ describe('2.9.1 Buying with respect to buying policy', function () {
         let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         await service.addCategoryToRoot(avi_sessionId,storeId, "toys")
-        const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000);
+        const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000,"");
         const pred:tCompositePredicate = {
             type: "composite",
             operator: "=>",
@@ -67,7 +67,7 @@ describe('2.9.1 Buying with respect to buying policy', function () {
         let moshe = await register_login_with_age(service,moshe_sessionId, uniqueName("moshe"), "123456789", 25);
         let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
-        const playstationId = await service.addNewProduct(avi_sessionId, storeId, "playstation", [], 10, 1000);
+        const playstationId = await service.addNewProduct(avi_sessionId, storeId, "playstation", [], 10, 1000,"");
         const pred:tSimplePredicate = {
             type:"simple",
             operand1:`b_${playstationId}_quantity`,

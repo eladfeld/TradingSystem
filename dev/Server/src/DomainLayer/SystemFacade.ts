@@ -19,16 +19,17 @@ import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
 import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
-import { StoreDB, SubscriberDB } from "../DataAccessLayer/DBinit";
 import { PATH_TO_SYSTEM_MANAGERS, SHOULD_RESET_DATABASE } from "../../config";
-import { ProductDB } from "../DataAccessLayer/DBinit";
 import { initTables } from "../DataAccessLayer/connectDb";
 import { initLastStoreId } from "./store/Common";
 import { DiscountOption } from "./store/DiscountOption";
 import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
+import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
+import { DB } from "../DataAccessLayer/DBfacade";
 export class SystemFacade
 {
+    
 
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
@@ -44,21 +45,26 @@ export class SystemFacade
 
     public async init(){
         await initTables();
+        return new Promise<void>((resolve,reject) => {
             this.initIdisfromDB().then( async _ =>{
-            let init_managers = true;
-            if(SHOULD_RESET_DATABASE)
-            {
-                 init_managers = await this.initSystemManagers();
+                let init_managers = true;
+                if(SHOULD_RESET_DATABASE)
+                {
+                     init_managers = await this.initSystemManagers();
+                }
+                let init_supply = await this.initSupplySystem();
+                let init_payment =  await this.initPaymentSystem()
+                if(!((init_managers && init_supply  && init_payment)))
+                {
+                    Logger.error("system could not initialized properly!");
+                    reject("failed to init trading system. check api connections and system managers")
+                    throw new Error("failed to init trading system. check api connections and system managers");
+                }
+                else resolve()
             }
-            let init_supply = await this.initSupplySystem();
-            let init_payment =  await this.initPaymentSystem()
-            if(!((init_managers && init_supply  && init_payment)))
-            {
-                Logger.error("system could not initialized properly!");
-                throw new Error("failed to init trading system. check api connections and system managers");
-            }
-        }
-        )
+            )
+        })
+            
     }
 
     private async initIdisfromDB()
@@ -147,6 +153,7 @@ export class SystemFacade
     public initSystemManagers() : boolean
     {
         const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
+        console.log(data)
         let arr: any[] = JSON.parse(data);
         if (arr.length === 0)
         {
@@ -155,8 +162,10 @@ export class SystemFacade
         }
         for (var i in arr)
         {
+            console.log(arr[i])
             let manager: any = arr[i];
             let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
+            console.log(sub)
             Authentication.addSystemManager(sub);
         }
         return true
@@ -169,6 +178,8 @@ export class SystemFacade
         let user: User = new User();
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
+        DB.updateLoginStats(userType.guest);
+        Publisher.get_instance().notify_login_update("$login_stats:guests")
         return new Promise( (resolve,reject) => {
             resolve(sessionId);
         })
@@ -243,7 +254,27 @@ export class SystemFacade
                 let ismanagerp = subscriber.isSystemManager()
                 ismanagerp.then (issysmanager => {
                     if(issysmanager)
-                    this.logged_system_managers.set(sessionId,subscriber);
+                    {
+                        this.logged_system_managers.set(sessionId,subscriber);
+                        DB.updateLoginStats(userType.system_manager)
+                        Publisher.get_instance().notify_login_update("$login_stats:system_managers")
+                    }
+                    else{
+                        let appointments = subscriber.getAppointments();
+                        let ownerapps = appointments.filter((app => app.isOwner()))
+                        if (appointments.length == 0){
+                            DB.updateLoginStats(userType.subscriber)
+                            Publisher.get_instance().notify_login_update("$login_stats:subscribers")
+                        }
+                        else if (ownerapps.length != 0){
+                            DB.updateLoginStats(userType.owner)
+                            Publisher.get_instance().notify_login_update("$login_stats:owners")
+                        }
+                        else{
+                            DB.updateLoginStats(userType.manager)
+                            Publisher.get_instance().notify_login_update("$login_stats:managers")
+                        }
+                    }
                 })
                 resolve(subscriber);
             })
@@ -266,7 +297,7 @@ export class SystemFacade
             if (user === undefined)
                 return Promise.reject("user is not logged in")
 
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then( store => {
                 let infop = store.getStoreInfoResult(user.getUserId())
@@ -283,35 +314,35 @@ export class SystemFacade
     public getPruductInfoByName(sessionId : string, productName: string): Promise<string>
     {
         Logger.log(`getPruductInfoByName : sessionId:${sessionId}, productName: ${productName}`);
-        return StoreDB.getPruductInfoByName(productName);
+        return DB.getPruductInfoByName(productName);
     }
 
     //++
     public getPruductInfoByCategory(sessionId : string, category: string): Promise<string>
     {
         Logger.log(`getPruductInfoByCategory : sessionId:${sessionId} , category:${category}`);
-        return StoreDB.getPruductInfoByCategory(category);
+        return DB.getPruductInfoByCategory(category);
     }
 
     //--
     public getPruductInfoAbovePrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoAbovePrice : userId:${userId} , price:${price}`);
-        return StoreDB.getProductInfoAbovePrice(price);
+        return DB.getProductInfoAbovePrice(price);
     }
 
     //--
     public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
-        return StoreDB.getProductInfoAbovePrice(price);
+        return DB.getProductInfoAbovePrice(price);
     }
 
     //--
     public getPruductInfoByStore(userId : number, store: string): Promise<string>
     {
         Logger.log(`getPruductInfoByStore : userId:${userId} , store:${store}`);
-        return StoreDB.getPruductInfoByStore(store);
+        return DB.getPruductInfoByStore(store);
     }
 
     //++
@@ -344,7 +375,7 @@ export class SystemFacade
         if (subscriber === undefined)
             return Promise.reject("user not found");
 
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise( (resolve,reject) => {
             storep.then( store => {
                 let addcatp = store.addCategoryToRoot(category)
@@ -374,7 +405,7 @@ export class SystemFacade
         if(subscriber === undefined)
             return Promise.reject("user not found");
 
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise( (resolve,reject) => {
             storep.then( store => {
                 let addcatp = store.addCategory(categoryFather, category)
@@ -472,7 +503,7 @@ export class SystemFacade
         if (user === undefined)
             return Promise.reject("user not found")
 
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
@@ -508,7 +539,7 @@ export class SystemFacade
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber !== undefined)
         {
-            let storep = StoreDB.getStoreByName(storeName);
+            let storep = DB.getStoreByName(storeName);
             return new Promise ((resolve,reject) => {
                 storep.then( _ => reject("storename used"))
                 .catch( _ => {
@@ -537,7 +568,7 @@ export class SystemFacade
         if (subscriber === undefined)
             return Promise.reject("subscriber wasn't found");
 
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise ((resolve,reject) => {
             storep.then( store => {
                 let setp =  store.setProductQuantity(subscriber, productId, quantity);
@@ -567,7 +598,7 @@ export class SystemFacade
         if (subscriber === undefined)
             return Promise.reject("subscriber wasn't found")
 
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 if(store === undefined)
@@ -612,7 +643,7 @@ export class SystemFacade
         }
 
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then(store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -633,7 +664,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid policy number")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise ((resolve,reject) => {
             storep.then( store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -666,7 +697,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid discount name")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             storep.then(store =>
                 {
@@ -690,7 +721,7 @@ export class SystemFacade
             return new Promise((resolve,reject) => { reject("invalid policy number")});
         }
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -750,7 +781,7 @@ export class SystemFacade
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
         if (subscriber === undefined)
             return Promise.reject("User not logged in");
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise ((resolve,reject) => {
             storep.then( store => {
                 let sysmanagerp = Authentication.isSystemManager(subscriber.getUserId());
@@ -768,8 +799,8 @@ export class SystemFacade
     {
         Logger.log(`deleteManagerFromStore : sessionId:${sessionId},managerToDelete:${managerName}, storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let managerp = SubscriberDB.getSubscriberByUsername(managerName)
-        let storep = StoreDB.getStoreByID(storeId);
+        let managerp = DB.getSubscriberByUsername(managerName)
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve, reject) => {
             managerp.then( managerToDelete => {
                 storep.then(store =>
@@ -792,7 +823,7 @@ export class SystemFacade
     {
         Logger.log(`editStaffPermission : sessionId:${sessionId},managerToEditId:${managerToEditId}, storeId:${storeId}, permissionMask:${permissionMask}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 if(subscriber !== undefined && store !== undefined)
@@ -816,7 +847,7 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         let newOwnerp = Authentication.getSubscriberByName(newOwnerUsername)
         return new Promise ((resolve,reject) => {
             newOwnerp.then ( newOwner => {
@@ -841,7 +872,7 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         let newManagerp = Authentication.getSubscriberByName(newManagerUsername)
 
         return new Promise ((resolve,reject) => {
@@ -862,7 +893,7 @@ export class SystemFacade
     public getStoreStaff(sessionId: string, storeId: number): Promise<string> {
         Logger.log(`getStoreStaff : sessionId:${sessionId} , storeId:${storeId}`);
         let subscriber: Subscriber = this.logged_subscribers.get(sessionId);
-        let storep = StoreDB.getStoreByID(storeId);
+        let storep = DB.getStoreByID(storeId);
         return new Promise((resolve,reject) => {
             storep.then( store => {
                 let getp = store.getStoreStaff(subscriber)
@@ -902,7 +933,31 @@ export class SystemFacade
         return Promise.reject("subscriber not logged in");
     }
 
+    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats> 
+    {
+        Logger.log(`getLoginStats: ${sessionId} , from:${from} , until:${until}`)
+        let sys_manager = this.logged_system_managers.get(sessionId)
+        if (sys_manager !== undefined)
+        {
+            if (this.isToday(from) || this.isToday(until))
+                Publisher.get_instance().register_login(sys_manager)
+            return DB.getLoginStats(from, until)
+        }
+        return Promise.reject("only system managers can ask login stats")
+    }
 
+    isToday(date : Date) : boolean
+    {
+        
+        let today = new Date()
+        console.log("today",today)
+        console.log("date",date)
+        if (date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear() &&
+                    date.getDate() === today.getDate())
+            return true;
+        return false
+    }
 
     public getSubscriberId(sessionId: string): number {
         let subscriber = this.logged_subscribers.get(sessionId);
@@ -934,8 +989,7 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        StoreDB.clear();
-        ProductDB.clear();
+        DB.clear();
         Purchase.clear();
     }
 
