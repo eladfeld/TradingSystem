@@ -81,7 +81,8 @@ class Purchase {
         }
 
         //allow payment within 5 minutes
-        DB.storeTransaction(transaction);
+        // DB.storeTransaction(transaction);
+        DB.completeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);

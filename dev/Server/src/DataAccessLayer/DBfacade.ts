@@ -47,6 +47,7 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
             this.storeDB = new storeDB();
         }
     }
+
     
     //-------------------------Subscriber DB-----------------------------
     public getAppointment(userId: number, storeId: number) : Promise<Appointment>{
@@ -189,6 +190,12 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
         return this.storeDB.addDiscountPolicy(id, discount, storeId)
     }
     //-------------------------Transaction DB-----------------------------
+
+
+    public completeTransaction(transaction: Transaction):Promise<boolean>
+    {
+        return this.purchaseDB.completeTransaction(transaction)
+    }
     public getLastTransactionId(): Promise<number>
     {
         return this.purchaseDB.getLastTransactionId();

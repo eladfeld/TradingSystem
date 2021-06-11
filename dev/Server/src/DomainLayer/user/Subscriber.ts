@@ -91,7 +91,7 @@ export class Subscriber extends User
         return new Promise((resolve,reject) => {
             checkoutp.then( isSusccesfull => {
                 this.shoppingCart.getBaskets().delete(storeId);
-                DB.deleteBasket(this.userId, storeId);
+                // DB.deleteBasket(this.userId, storeId);
                 resolve(isSusccesfull)
             })
             .catch( error => reject(error))

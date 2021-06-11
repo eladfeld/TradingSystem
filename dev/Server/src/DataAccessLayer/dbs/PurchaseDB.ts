@@ -1,11 +1,116 @@
 import Transaction, { TransactionStatus } from "../../DomainLayer/purchase/Transaction";
 import { sequelize } from "../connectDb";
+import { DB } from "../DBfacade";
 import { iPurchaseDB } from "../interfaces/iPurchaseDB";
 
 
 export class purchaseDB implements iPurchaseDB
 {
-    
+    public async completeTransaction(transaction: Transaction):Promise<boolean>
+    {
+        const t = await sequelize.transaction();
+        try
+        {
+            await sequelize.models.Transaction.create({
+                id: transaction.getId(),
+                userId: transaction.getUserId(),
+                storeId: transaction.getStoreId(),
+                storeName: transaction.getStoreName(),
+                total: transaction.getTotal(),
+                cardNumber: transaction.getCardNumber(),
+                status: transaction.getStatus(),
+                time: transaction.getTime(),
+                shipmentId: transaction.getShipmentId(),
+                paymentId: transaction.getPaymentId()
+            },
+            {
+                transaction: t
+            })
+            for(let [itemId, [quantity, productName, price]] of transaction.getItems())
+            {
+                await sequelize.models.TransactionItem.create({
+                    ProductId: itemId,
+                    quantity: quantity,
+                    name: productName,
+                    price: price,
+                    TransactionId: transaction.getId()
+                },
+                {
+                    transaction: t
+                })
+                await sequelize.models.StoreProduct.update(
+                    {
+                        quantity: sequelize.literal(`quantity - ${quantity}`)
+                    },
+                    {
+                        where:{
+                            id: itemId
+                        },
+                        transaction: t
+                })
+            }        
+        }
+        catch(e)
+        {
+            console.log('rollback')
+            await t.rollback();
+            return Promise.resolve(false)
+        }
+
+        return new Promise((resolve,reject) => {
+            let subscriberp = DB.getSubscriberById(transaction.getUserId())
+            subscriberp.then( async (subscriber) => {
+                let basket = await sequelize.models.ShoppingBasket.findOne({
+                    where:{
+                        SubscriberId: transaction.getUserId(),
+                        StoreId: transaction.getStoreId()
+                    }
+                });
+        
+                let basketId = basket.id;
+                await sequelize.models.BasketProduct.destroy(
+                    {
+                        where:
+                        {
+                            ShoppingBasketId : basketId,
+                        },
+                        transaction: t
+                    }
+                )
+                await sequelize.models.ShoppingBasket.destroy(
+                    {
+                        where:
+                        {
+                            SubscriberId : transaction.getUserId(),
+                            StoreId :transaction.getStoreId(),
+                        },
+                        transaction: t
+                    }
+                )
+                try{
+                    await t.commit()
+                    resolve(true)
+                }
+                catch(e){
+                    await t.rollback();
+                    reject("couldnt save transaction")
+                }
+            })
+            .catch(async (err) => {
+                try{
+                    await t.rollback();
+                    resolve(true)
+                }
+                catch(e){
+                    await t.rollback();
+                    reject("couldnt save transaction")
+                }
+            })
+        })
+        
+        
+    }
+
     public async getLastTransactionId(): Promise<number>
     {
         let lastId = await sequelize.models.Transaction.max('id')
