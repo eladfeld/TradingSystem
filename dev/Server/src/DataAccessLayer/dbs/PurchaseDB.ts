@@ -8,6 +8,7 @@ export class purchaseDB implements iPurchaseDB
 {
     public async completeTransaction(transaction: Transaction):Promise<boolean>
     {
+        console.log("transaction:",transaction)
         const t = await sequelize.transaction();
         try
         {
@@ -52,6 +53,7 @@ export class purchaseDB implements iPurchaseDB
         }
         catch(e)
         {
+            console.log(e)
             console.log('rollback')
             await t.rollback();
             return Promise.resolve(false)
@@ -97,8 +99,9 @@ export class purchaseDB implements iPurchaseDB
                 }
             })
             .catch(async (err) => {
+                console.log("guest")
                 try{
-                    await t.rollback();
+                    await t.commit();
                     resolve(true)
                 }
                 catch(e){

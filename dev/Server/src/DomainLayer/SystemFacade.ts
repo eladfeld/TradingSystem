@@ -153,7 +153,6 @@ export class SystemFacade
     public initSystemManagers() : boolean
     {
         const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
-        console.log(data)
         let arr: any[] = JSON.parse(data);
         if (arr.length === 0)
         {
@@ -162,10 +161,8 @@ export class SystemFacade
         }
         for (var i in arr)
         {
-            console.log(arr[i])
             let manager: any = arr[i];
             let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
-            console.log(sub)
             Authentication.addSystemManager(sub);
         }
         return true
@@ -950,8 +947,6 @@ export class SystemFacade
     {
         
         let today = new Date()
-        console.log("today",today)
-        console.log("date",date)
         if (date.getMonth() === today.getMonth() &&
                 date.getFullYear() === today.getFullYear() &&
                     date.getDate() === today.getDate())

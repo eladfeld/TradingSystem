@@ -100,7 +100,6 @@ export class storeDB implements iStoreDB
 
     public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
     {
-        console.log("pid",productId, "category",category, "storeId",storeId)
         try{
             await sequelize.models.ProductToCategory.create({
                 StoreProductId: productId,
