@@ -82,12 +82,17 @@ class Purchase {
 
         //allow payment within 5 minutes
         // DB.storeTransaction(transaction);
-        DB.completeTransaction(transaction);
+        let checkoutp = DB.completeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, onFail);
-        return new Promise((res , rej) => {res(true)});;
+        return new Promise((resolve,reject) => {
+            checkoutp.then( _ => {
+                resolve(true)
+            })
+            .catch( error => reject(error))
+        })
     }
 
     //completes an existing transaction in progress. returns failure in the event that

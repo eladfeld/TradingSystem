@@ -1,3 +1,4 @@
+import { DB } from "../../DataAccessLayer/DBfacade";
 import { Logger } from "../../Logger";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
@@ -23,7 +24,12 @@ export class MakeAppointment
             let new_appointment = new OwnerAppointment(founder.getUserId(), store.getStoreId(), founder.getUserId(), allGrantedPermission);
             store.addAppointment(new_appointment);
             founder.addAppointment(new_appointment);
-            return Promise.resolve("appointment made successfully");
+            let addapp = DB.addAppointment(founder.getUserId(),new_appointment)
+            return new Promise((resolve,reject) => {
+                addapp.then ( _ => {
+                    resolve("appointment made successfully")
+                }).catch(error => reject(error))
+            })            
         }
         Logger.log("the candidate is not the store founder");
         return Promise.reject("the candidate is not the store founder");
@@ -46,7 +52,12 @@ export class MakeAppointment
                     let new_appointment = new OwnerAppointment(appointer.getUserId(), store.getStoreId(), appointee.getUserId(), new Permission(basic_owner_permissions));
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
-                    return Promise.resolve("owner appointed successfully!");
+                    let addapp = DB.addAppointment(appointee.getUserId(),new_appointment)
+                    return new Promise((resolve,reject) => {
+                        addapp.then ( _ => {
+                            resolve("appointment made successfully")
+                        }).catch(error => reject(error))
+                    })  
                 }
                 else
                 {
@@ -58,7 +69,12 @@ export class MakeAppointment
                     let new_appointment = new OwnerAppointment(appointer.getUserId(), store.getStoreId(), appointee.getUserId(), prev_permission);
                     store.addAppointment(new_appointment);
                     appointee.addAppointment(new_appointment);
-                    return Promise.reject("owner appointed successfully!");
+                    let addapp = DB.addAppointment(appointee.getUserId(),new_appointment)
+                    return new Promise((resolve,reject) => {
+                        addapp.then ( _ => {
+                            resolve("appointment made successfully")
+                        }).catch(error => reject(error))
+                    })  
                 }
             }
         }
@@ -82,7 +98,12 @@ export class MakeAppointment
                 let new_appointment = new ManagerAppointment(appointer.getUserId(), store.getStoreId(), appointee.getUserId(), new Permission(basic_manager_permissions));
                 store.addAppointment(new_appointment);
                 appointee.addAppointment(new_appointment);
-                return Promise.resolve("manager appointed successfully!");
+                let addapp = DB.addAppointment(appointee.getUserId(),new_appointment)
+                return new Promise((resolve,reject) => {
+                    addapp.then ( _ => {
+                        resolve("appointment made successfully")
+                    }).catch(error => reject(error))
+                })  
             }
             else {
                 return Promise.reject("user already appointed");

@@ -137,6 +137,7 @@ export class subscriberDB implements iSubscriberDB
             }
             catch(e)
             {
+                console.log(e)
                 return Promise.reject("product with the same id is already exists")
             }
 

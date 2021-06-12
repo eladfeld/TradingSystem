@@ -23,6 +23,7 @@ import { StoreCategoryInfo } from '../../DomainLayer/store/StoreInfo';
 import { Service } from '../Service';
 import Purchase, { tPaymentInfo, tShippingInfo } from '../../DomainLayer/purchase/Purchase';
 import { basketState, discountState, predState, PRODUCT_PREF } from './StateBuilder';
+import { isConstructorDeclaration } from 'typescript';
 
 const BANK_ACCOUNT = 0;
 const SHIPPING_INFO : tShippingInfo = {name: "shir", address: "313 8 Mile Road" , city:"Detroit", country:"Michigan" , zip:3553}
@@ -59,7 +60,7 @@ export default class StateInitializer{
             return true;
             
         } catch (error) {
-            throw error;
+            console.log(error);
             return false;
         }
     }
@@ -111,37 +112,35 @@ export default class StateInitializer{
                 this.products.get(storeName).set(itemState.name, itemId);
             }
 
-            let promises = []
             //appoint owners
-            // const owners = storeState.employees.owners;
-            // for(var i=0; i<owners.length; i++){
-            //     const ownerState = owners[i];
-            //     this.sessions.get(ownerState.appointer),storeId,ownerState.name;
-            //     promises.push(service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name));
-            // }
+            const owners = storeState.employees.owners;
+            for(var i=0; i<owners.length; i++){
+                const ownerState = owners[i];
+                this.sessions.get(ownerState.appointer),storeId,ownerState.name;
+                await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
+            }
 
-            // Promise.all(promises).then ( _ => {
-            //     // //appoint managers
-            //     const managers = storeState.employees.managers;
-            //     for(var i=0; i<managers.length; i++){
-            //         const appointerSessionId = this.sessions.get(managers[i].appointer);
-            //         let appointp = service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
-            //         appointp.then( _ => {
-            //             service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
-            //         })
-            //     }
-            // })
+            // //appoint managers
+            const managers = storeState.employees.managers;
+            // for(var i=0; i<managers.length; i++){
+            //     const appointerSessionId = this.sessions.get(managers[i].appointer);
+            //     let appointp = service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
+            //     appointp.then( _ => {
+            //         service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
+            //     })
+            // }
+            
             
 
             //add buying policy
             // convert fields
-            // storeState.buying_policies.forEach(policyState =>{
-            //     this.convertPredicate(storeName, policyState.rule);
-            // });
-            // for(var pIdx=0; pIdx<storeState.buying_policies.length; pIdx++){
-            //     const policy = storeState.buying_policies[pIdx];
-            //     await service.addBuyingPolicy(founderSessionId, storeId, policy.name, policy.rule); 
-            // }
+            storeState.buying_policies.forEach(policyState =>{
+                this.convertPredicate(storeName, policyState.rule);
+            });
+            for(var pIdx=0; pIdx<storeState.buying_policies.length; pIdx++){
+                const policy = storeState.buying_policies[pIdx];
+                await service.addBuyingPolicy(founderSessionId, storeId, policy.name, policy.rule); 
+            }
 
             //add discounts
 

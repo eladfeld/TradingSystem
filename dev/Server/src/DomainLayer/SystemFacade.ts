@@ -27,6 +27,7 @@ import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
+import { StoreProduct } from "./store/StoreProduct";
 export class SystemFacade
 {
     
@@ -74,6 +75,7 @@ export class SystemFacade
         await BuyingPolicy.initLastBuyingId();
         await initLastStoreId();
         await User.initLastId();
+        await StoreProduct.initLastProductId()
     }
 
     private async initSupplySystem() : Promise<boolean>
@@ -542,10 +544,12 @@ export class SystemFacade
                 .catch( _ => {
                     let storePromise  = Store.createStore(subscriber.getUserId(), storeName, bankAccountNumber, storeAddress)
                     storePromise.then( store => {
-                        MakeAppointment.appoint_founder(subscriber, store);
-                        Publisher.get_instance().register_store(store.getStoreId(),subscriber);
-                        SpellCheckerAdapter.get_instance().add_storeName(storeName);
-                        resolve(store)
+                        let founderp = MakeAppointment.appoint_founder(subscriber, store);
+                        founderp.then( _ => {
+                            Publisher.get_instance().register_store(store.getStoreId(),subscriber);
+                            SpellCheckerAdapter.get_instance().add_storeName(storeName);
+                            resolve(store)
+                        }).catch( error => reject(error))
                     })
                     .catch( error => reject(error))
                 })

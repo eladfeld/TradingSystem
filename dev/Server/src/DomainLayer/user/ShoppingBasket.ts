@@ -83,11 +83,7 @@ export class ShoppingBasket implements iBasket
             )
         }
         let buyingSubject = new BuyingSubject(userSubject, this);
-        let sellp =  this.store.sellShoppingBasket(userId, shippingInfo, this, buyingSubject , onfail);
-        return new Promise((resolve,reject) => {
-            sellp.then( sell_res => { resolve(sell_res) })
-            .catch( error => reject(error))
-        })
+        return this.store.sellShoppingBasket(userId, shippingInfo, this, buyingSubject , onfail);
     }
 
     public edit(productId: number, newQuantity: number): Promise<string>

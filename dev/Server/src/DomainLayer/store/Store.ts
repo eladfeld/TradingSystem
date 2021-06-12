@@ -277,11 +277,10 @@ export class Store implements iCategorizer
         const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
         if(isFailure(discountRes)) return Promise.reject(discountRes.message);
         price -= discountRes.value;
-        Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
+        return Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
             onFail();
             this.cancelReservedShoppingBasket(reservedProducts)}
          );
-        return Promise.resolve(true);
     }
 
 
@@ -520,7 +519,7 @@ export class Store implements iCategorizer
                         reject(error)
                     })
                 }
-                else reject("user is not permited to appoint store manager");
+                else reject(`user ${appointer.getUserId()} is not permited to appoint store manager ${appointee.getUserId()}`);
             })
         })
     }
@@ -636,13 +635,14 @@ export class Store implements iCategorizer
             return Promise.reject(`Category Father: ${categoryFather} does not exists in store: ${this.storeName}`)
         }
 
-        DB.addCategory(this.storeId, category, categoryFather)
-        let fatherNode = this.categiries.getChildNode(categoryFather)
-        
-        //TODO: #saveDB
-        fatherNode.createChildNode(category)
-        
-        return Promise.resolve('category was added')
+        let addcatp = DB.addCategory(this.storeId, category, categoryFather)
+        return new Promise((resolve, reject) => {
+            addcatp.then( _ => {
+                let fatherNode = this.categiries.getChildNode(categoryFather)
+                fatherNode.createChildNode(category)
+                resolve('category was added')
+            }).catch(error => reject(error))
+        })
     }
 
     public addCategoryToRoot(category: string): Promise<string>{
@@ -650,9 +650,13 @@ export class Store implements iCategorizer
             return Promise.reject(`Category: ${category} already exists in store: ${this.storeName}`)
         }
 
-        DB.addCategory(this.storeId, category, 'General')
-        this.categiries.createChildNode(category);
-        return Promise.resolve('category was added')
+        let addcatp = DB.addCategory(this.storeId, category, 'General')
+        return new Promise((resolve,reject) => {
+            addcatp.then( _ => {
+                this.categiries.createChildNode(category);
+                resolve('category was added')
+            })
+        })
     }
 
     public getProductQuantity(productId : number) : number{
