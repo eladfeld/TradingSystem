@@ -6,6 +6,8 @@ import { StoreProduct } from '../store/StoreProduct';
 import { Store } from '../store/Store';
 import { Logger } from '../../Logger';
 import { Publisher } from '../notifications/Publisher';
+import { isOk } from '../../Result';
+import Purchase from '../purchase/Purchase';
 
 export class OfferManager implements iOfferManager {
 
@@ -101,7 +103,7 @@ export class OfferManager implements iOfferManager {
                     Logger.log(`Offer status changed to counter`)
                     resolve(DB.updateOffer(offer).then(() => this.sendOfferAlertToBuyer(subscriber, offer)))
                 }
-            })
+            }).catch(err => reject(err))
         })
 
     }
@@ -111,8 +113,8 @@ export class OfferManager implements iOfferManager {
         return DB.getAllOffersByStore(storeId);
     }
 
-    public async getOffersByUser (storeId: number) : Promise<Offer[]>{
-        return DB.getAllOffersByStore(storeId);
+    public async getOffersByUser (userId: number) : Promise<Offer[]>{
+        return DB.getAllOffersByUser(userId);
     }
 
     public async sendOfferAlertToBuyer(subscriber: Subscriber, offer: Offer): Promise<void> {
@@ -135,9 +137,39 @@ export class OfferManager implements iOfferManager {
 
     }
 
-    public async buyAcceptedOffer(subscriber: Subscriber, offerId: number): Promise<boolean>{
-        return true;
-    } // CHECK QUANTITY IS STILL AVAILABLE
+    public async buyAcceptedOffer(subscriber: Subscriber, store: Store, offerId: number, onFail : ()=>void): Promise<boolean> {
+        if(store.getIsStoreClosed()){
+            return Promise.reject("Store is closed")
+        }
+        let reservedProducts = new Map <number, [number,string,number]> (); // id => [quantity, name, price]
+        let pricesToQuantity = new Map <number, number> ();
+        let offerp = DB.getOfferById(offerId);
+        return new Promise((resolve,reject) => {
+            offerp.then(offer => {
+            let pid = offer.getProductId();
+            let quantity = 1
+            let sellResult = store.reserveProduct(pid, quantity);
+            let productPrice = offer.getOfferPrice();
+            if(offer.getCounterPrice() > 0)
+                productPrice = offer.getCounterPrice();
+            let pname = offer.getProductName();
+            if(isOk(sellResult) && sellResult.value && productPrice != -1){
+                reservedProducts.set(pid,[quantity,pname,productPrice]);
+                pricesToQuantity.set(productPrice,quantity);
+            }
+            else{
+                store.cancelReservedShoppingBasket(reservedProducts)
+                return Promise.reject(sellResult);
+            }
+
+            Purchase.checkout(store.getStoreId(), productPrice, subscriber.getUserId(), reservedProducts, store.getStoreName(),() => {
+                onFail();
+                store.cancelReservedShoppingBasket(reservedProducts)}
+            );
+            return resolve(true);
+            }).catch(err => reject(err))
+        })
+    }
 
 
 }

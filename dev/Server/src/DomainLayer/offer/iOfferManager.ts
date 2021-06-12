@@ -42,5 +42,5 @@ export interface iOfferManager {
     /**
      * OFFERS BUYING
      */
-    buyAcceptedOffer: (subscriber: Subscriber, offerId: number) => Promise<boolean>; // CHECK QUANTITY IS STILL AVAILABLE
+    buyAcceptedOffer: (subscriber: Subscriber, store: Store, offerId: number, onFail : ()=>void) => Promise<boolean>; // CHECK QUANTITY IS STILL AVAILABLE
 }

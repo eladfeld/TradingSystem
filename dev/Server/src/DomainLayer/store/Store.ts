@@ -248,7 +248,7 @@ export class Store implements iCategorizer
         if(this.storeClosed){
             return Promise.reject("Store is closed")
         }
-        const policyRes = this.buyingPolicy.isSatisfied(buyingSubject);//TODO: FIX
+        const policyRes = this.buyingPolicy.isSatisfied(buyingSubject);
         if(isFailure(policyRes))return Promise.reject(policyRes.message);
         if(policyRes.value !== BuyingPolicy.SUCCESS) return Promise.reject(policyRes.value);
 
@@ -295,6 +295,10 @@ export class Store implements iCategorizer
                 }
             }
         }
+    }
+
+    public reserveProduct(productId: number, quantity: number): Result<boolean> {
+        return this.inventory.reserveProduct(productId, quantity)
     }
 
     private buyingOptionsMenu = [this.buyInstant, this.buyOffer, this.buyBid, this.buyRaffle];
