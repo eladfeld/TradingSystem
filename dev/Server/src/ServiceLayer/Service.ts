@@ -267,6 +267,10 @@ export class Service
         return this.facade.getOffersByStore(storeId);
     }
 
+    public newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
+        return this.facade.newOffer(sessionId, storeId, productId, bid);
+    }
+
 
 
     //------------------------------------------functions for tests-------------------------

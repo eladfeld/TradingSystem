@@ -26,12 +26,12 @@ export class Offer {
     private storeId: number;
     private productId: number;
     private productName: string;
-    private offerPrice: number;
+    private bid: number;
     private counterPrice: number;
     private offerStatus: OfferStatus;
     private ownersAccepted: number[];
 
-    private constructor(userId: number, username: string, storeId: number, productId:number, productName: string, offerPrice: number)
+    private constructor(userId: number, username: string, storeId: number, productId:number, productName: string, bid: number)
     {
         this.offerId = ID();
         this.userId = userId;
@@ -39,19 +39,19 @@ export class Offer {
         this.storeId = storeId;
         this.productId = productId;
         this.productName = productName;
-        this.offerPrice = offerPrice;
+        this.bid = bid;
         this.offerStatus = OfferStatus.PENDING;
         this.ownersAccepted = [];
     }
 
-    public static createOffer(userId: number, username: string, storeId: number, productId:number, productName: string, offerPrice: number){
+    public static createOffer(userId: number, username: string, storeId: number, productId:number, productName: string, bid: number){
         let offer = new Offer(
             userId,
             username,
             storeId,
             productId,
             productName,
-            offerPrice,
+            bid,
         )
         return DB.addOffer(offer);
     }
@@ -62,7 +62,7 @@ export class Offer {
         storeId: number,
         productId:number,
         productName: string,
-        offerPrice: number,
+        bid: number,
         counterPrice: number,
         offerStatus: string,
         ownersAccepted: number[]){
@@ -72,7 +72,7 @@ export class Offer {
             storeId,
             productId,
             productName,
-            offerPrice,
+            bid,
         )
         offer.offerId = id;
         offer.counterPrice = counterPrice;
@@ -139,7 +139,7 @@ export class Offer {
     public getStoreId = () => this.storeId;
     public getProductId = () => this.productId;
     public getProductName = () => this.productName
-    public getOfferPrice = () => this.offerPrice;
+    public getBid = () => this.bid;
     public getCounterPrice = () => this.counterPrice;
     public getOfferStatus = () => this.offerStatus;
     public getOwnersAccepted = () => this.ownersAccepted;

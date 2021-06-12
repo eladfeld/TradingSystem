@@ -10,7 +10,7 @@ const Offer = sequelize.define('Offer', {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    offerPrice: {
+    bid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

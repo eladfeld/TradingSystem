@@ -336,7 +336,7 @@ export class SystemFacade
     public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
-        return DB.getProductInfoAbovePrice(price);
+        return DB.getProductInfoBelowPrice(price);
     }
 
     //--
@@ -998,6 +998,20 @@ export class SystemFacade
 
     getOffersByStore(storeId: number): Promise<Offer[]> {
         return OfferManager.get_instance().getOffersByStore(storeId);
+    }
+
+    newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined)
+            return Promise.reject("subscriber is not logged in");
+        return new Promise((resolve, reject) =>
+        {
+            DB.getProductById(productId)
+            .then(product => {
+                OfferManager.get_instance().newOffer(subscriber, storeId, product, bid);
+                resolve('added offer')
+            }).catch(err => reject(`failed to add offer`))
+        })
     }
 
 

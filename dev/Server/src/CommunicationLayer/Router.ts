@@ -48,6 +48,7 @@ router.post('/getUserStores', Controller.getUserStores)
 router.post('/getMyPurchaseHistory', Controller.getMyPurchaseHistory)
 router.post('/OfferResponseByOwner', Controller.OfferResponseByOwner)
 router.post('/getOffersByStore', Controller.getOffersByStore)
+router.post('/newOffer', Controller.newOffer)
 
 router.post('/complain', Controller.complain)
 router.post('/getUsersNames', Controller.getUserNames)

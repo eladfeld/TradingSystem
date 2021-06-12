@@ -40,9 +40,9 @@ export class OfferManager implements iOfferManager {
         return DB.getRecievingOffers(storeId);
     }
 
-    public async newOffer(user: Subscriber, storeId: number, product: StoreProduct, offerPrice: number): Promise<number>{
+    public async newOffer(user: Subscriber, storeId: number, product: StoreProduct, bid: number): Promise<number>{
         Publisher.get_instance().notify_store_update(storeId, `you recieved a new offer for ${product.getName()} from ${user.getUsername()}`)
-        return Offer.createOffer(user.getUserId(), user.getUsername(), storeId, product.getProductId(), product.getName(), offerPrice)
+        return Offer.createOffer(user.getUserId(), user.getUsername(), storeId, product.getProductId(), product.getName(), bid)
     }
 
     public async acceptOffer(subscriber: Subscriber, store: Store, offerId: number): Promise<void>{
@@ -149,7 +149,7 @@ export class OfferManager implements iOfferManager {
             let pid = offer.getProductId();
             let quantity = 1
             let sellResult = store.reserveProduct(pid, quantity);
-            let productPrice = offer.getOfferPrice();
+            let productPrice = offer.getBid();
             if(offer.getCounterPrice() > 0)
                 productPrice = offer.getCounterPrice();
             let pname = offer.getProductName();

@@ -160,6 +160,8 @@ export class Store implements iCategorizer
         this.storeId = id;
     }
 
+    isRecievingOffers = () => this.recieveOffers
+
     public addStoreRating(rating : number) : Result<string>
     {
         if(!Object.values(Rating).includes(rating)){

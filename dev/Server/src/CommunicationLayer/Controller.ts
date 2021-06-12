@@ -574,10 +574,21 @@ const OfferResponseByOwner = (req : Request, res: Response , next: NextFunction)
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
-const getOffersByStore = (req : Request, res: Response , next: NextFunction) => 
+const getOffersByStore = (req : Request, res: Response , next: NextFunction) =>
 {
     let storeId: number = req.body.storeId
     service.getOffersByStore(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const newOffer = (req : Request, res: Response , next: NextFunction) =>
+{
+    let sessionId : string = req.body.sessionId
+    let storeId: number = req.body.storeId
+    let productId: number = req.body.productId
+    let bid: number = req.body.bid
+    service.newOffer(sessionId, storeId, productId, bid)
     .then(message => res.status(OKSTATUS).json(message))
     .catch(error => res.status(FAILSTATUS).json(error))
 }
@@ -638,5 +649,6 @@ export default {
     initSystem,
     getLoginStats,
     OfferResponseByOwner,
-    getOffersByStore
+    getOffersByStore,
+    newOffer
     };

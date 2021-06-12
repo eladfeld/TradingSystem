@@ -106,7 +106,7 @@ describe('create and accept offers' , () => {
         }).then( id => {
             return DB.getOfferById(id)
         }).then( off => {
-            expect(off.getOfferPrice()).to.equal(300)
+            expect(off.getBid()).to.equal(300)
             expect(off.getOfferStatus()).to.equal(OfferStatus.PENDING)
             expect(off.getProductName()).to.equal('shirt')
             expect(off.getUsername()).to.equal('michael')
@@ -141,7 +141,7 @@ describe('create and accept offers' , () => {
         }).then( _ => {
             return DB.getOfferById(offId)
         }).then( off => {
-            expect(off.getOfferPrice()).to.equal(300)
+            expect(off.getBid()).to.equal(300)
             expect(off.getOfferStatus()).to.equal(OfferStatus.PENDING)
             expect(off.getProductName()).to.equal('pants')
             expect(off.getUsername()).to.equal('michael')
@@ -150,7 +150,7 @@ describe('create and accept offers' , () => {
         }).then( _ => {
             return DB.getOfferById(offId)
         }).then( off => {
-            expect(off.getOfferPrice()).to.equal(300)
+            expect(off.getBid()).to.equal(300)
             expect(off.getOfferStatus()).to.equal(OfferStatus.ACCEPTED)
             expect(off.getProductName()).to.equal('pants')
             expect(off.getUsername()).to.equal('michael')
