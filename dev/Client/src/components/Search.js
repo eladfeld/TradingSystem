@@ -160,12 +160,17 @@ export const Products=({getAppState, setAppState})=>{
     const userId = getAppState().userId;
     const [problem, setProblem] = useState("");
     const [success, setSuccess] = useState("");
+    let bid = 0;
+    const setBid = (event) => {
+        bid = event.target.value;
+    }
 
     const addToCart = async (storeId, productId) =>
     {
         const res = await axios.post(`${SERVER_BASE_URL}addProductTocart`, {userId, storeId, productId, quantity:1} )
         if(res.status === 200)
-        {            
+        {
+            console.log(bid)
             axios.post(SERVER_BASE_URL+'/getCartInfo',{userId}).then(response =>
                 {
                     switch(response.status){
@@ -188,10 +193,47 @@ export const Products=({getAppState, setAppState})=>{
             setProblem("could not add product")
         }
     }
+
+    const newBid = async (storeId, productId) =>
+    {
+        const res = await axios.post(`${SERVER_BASE_URL}/newOffer`, {userId, storeId, productId, bid} )
+        if(res.status === 200)
+        {
+            setSuccess("bid added successfully")
+        }
+        else
+        {
+            setProblem("could not create bid")
+        }
+    }
+
+    function EnableBidding(props) {
+        if(props.recieveOffers){
+            let product = props.product
+            return <Grid item  xs={10} align='left'>
+                        <Grid item xs={7} align='right'>
+                            <TextField
+                            label="Offering price"
+                            placeholder="Enter new category"
+                            onChange={(event) => setBid(event)}
+                            fullWidth
+
+                            />
+                        </Grid>
+                        <Grid item xs={3} align='right'>
+                        <Button variant="contained" color="#00a152" startIcon={<AiIcons.AiFillDollarCircle/>}
+                            onClick={() => newBid(product.storeId, product.productId)}>
+                                bid
+                            </Button>
+                        </Grid>
+                    </Grid>
+        }
+        return <Grid />
+    }
     return(
-        <div> 
+        <div>
             {
-                (products === undefined || products.length === 0 ) ? <h1></h1> :             
+                (products === undefined || products.length === 0 ) ? <h1></h1> :
                 <Grid item align='right'>
                     <Button variant="contained" color="secondary" startIcon={<DeleteIcon/>}
                         onClick={reset}>
@@ -208,12 +250,12 @@ export const Products=({getAppState, setAppState})=>{
                 </Button>
             }
             severity="error"> {problem}</Alert> : <a1></a1>
-            } 
-            {   
+            }
+            {
             success !== "" ?
             <Alert
             action={
-                <Button color="inherit" size="small" onClick={() => 
+                <Button color="inherit" size="small" onClick={() =>
                 {
                     setSuccess("");
                 }}>
@@ -233,7 +275,7 @@ export const Products=({getAppState, setAppState})=>{
                         <Grid container  align='right' style={paperStyle}>
                             <Grid item align='left' xs={5} >
                                 <img length='100' height='100' src={product.image}>
-                                    
+
                                 </img>
                             </Grid>
                             <Grid item xs={4} align='center'>
@@ -248,6 +290,7 @@ export const Products=({getAppState, setAppState})=>{
                                 </Button>
                             </Grid>
 
+                            <EnableBidding recieveOffers={true} product={product}/>
                         </Grid>
                     </ListItem>
 
@@ -457,7 +500,7 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
                 </Button>
             }
             severity="error"> {problem}</Alert> : <a1></a1>
-        } 
+        }
         <Grid>
             <Grid align='center'>
                 <h2>Search Below price</h2>
@@ -504,7 +547,7 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
                 </Button>
             }
             severity="error"> {problem}</Alert> : <a1></a1>
-        } 
+        }
         <Grid>
             <Grid align='center'>
                 <h2>Search above price</h2>
