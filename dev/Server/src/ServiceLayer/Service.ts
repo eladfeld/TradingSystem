@@ -280,7 +280,7 @@ export class Service
         return this.facade.acceptOffer(sessionId, storeId, offerId)
     }
 
-    public declinetOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+    public declineOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
         return this.facade.declineOffer(sessionId, storeId, offerId)
     }
 

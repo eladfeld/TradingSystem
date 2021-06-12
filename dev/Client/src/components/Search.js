@@ -214,7 +214,6 @@ export const Products=({getAppState, setAppState})=>{
                         <Grid item xs={7} align='right'>
                             <TextField
                             label="Offering price"
-                            placeholder="Enter new category"
                             onChange={(event) => setBid(event)}
                             fullWidth
 
