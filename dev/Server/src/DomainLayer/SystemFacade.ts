@@ -28,6 +28,7 @@ import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
 import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
+import { OfferManager } from "./offer/OfferManager";
 export class SystemFacade
 {
 
@@ -964,6 +965,36 @@ export class SystemFacade
         }
         return subscriber.getUserId();
     }
+
+    OfferResponseByOwner(sessionId: string, response: boolean, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined)
+            return Promise.reject("subscriber is not logged in");
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    if(response)
+                    {
+                        offerManager.acceptOffer(subscriber, store, offerId)
+                        .then(_ => resolve("offer accpted"))
+                        .catch(error => reject(error))
+                    }
+                    else
+                    {
+                        offerManager.declineOffer(subscriber, store, offerId)
+                        .then(_ => resolve("offer decline"))
+                        .catch(error => reject(error))
+                    }
+
+                })
+            .catch(error => reject(error))
+        })
+
+    }
+
 
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users()

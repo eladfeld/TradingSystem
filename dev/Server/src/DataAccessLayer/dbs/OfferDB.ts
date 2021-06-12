@@ -80,5 +80,65 @@ export class offerDB implements iOfferDB
         return Promise.resolve()
     }
 
+    public async getAllOffersByStore(storeId: number):Promise<Offer[]>
+    {
+        let offerssdb = await sequelize.models.Offer.findAll(
+            {
+                where:
+                {
+                    storeId: storeId
+                }
+            }
+        )
+
+        let offers = []
+        for(let offerdb of offerssdb)
+        {
+            offers.push(Offer.rebuildOffer(
+                offerdb.id,
+                offerdb.SubscriberId,
+                offerdb.username,
+                offerdb.StoreId,
+                offerdb.productId,
+                offerdb.productName,
+                offerdb.offerPrice,
+                offerdb.counterPrice,
+                offerdb.offerStatus,
+                offerdb.ownersAccepted.split`,`.map(Number),
+            ));
+        }
+        return Promise.resolve(offers);
+    }
+
+    public async getAllOffersByUser(userId: number):Promise<Offer[]>
+    {
+        let offerssdb = await sequelize.models.Offer.findAll(
+            {
+                where:
+                {
+                    SubscriberId: userId
+                }
+            }
+        )
+
+        let offers = []
+        for(let offerdb of offerssdb)
+        {
+            offers.push(Offer.rebuildOffer(
+                offerdb.id,
+                offerdb.SubscriberId,
+                offerdb.username,
+                offerdb.StoreId,
+                offerdb.productId,
+                offerdb.productName,
+                offerdb.offerPrice,
+                offerdb.counterPrice,
+                offerdb.offerStatus,
+                offerdb.ownersAccepted.split`,`.map(Number),
+            ));
+        }
+        return Promise.resolve(offers);
+    }
+
 
 }

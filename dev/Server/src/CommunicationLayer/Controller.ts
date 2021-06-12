@@ -447,7 +447,7 @@ const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 //     promise
 //     .then(message => res.status(OKSTATUS).json(message))
 //     .catch(message => res.status(FAILSTATUS).json(message));
-// } 
+// }
 
 const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
@@ -563,6 +563,17 @@ const getLoginStats = (req : Request, res: Response , next: NextFunction) =>{
 
 }
 
+const OfferResponseByOwner = (req : Request, res: Response , next: NextFunction) =>
+{
+    let sessionId : string = req.body.sessionId
+    let response : boolean = req.body.response
+    let storeId: number = req.body.storeId
+    let offerId: number= req.body.offerId
+    service.OfferResponseByOwner(sessionId, response, storeId, offerId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 
 export default {
@@ -617,5 +628,6 @@ export default {
     deleteComplaint,
     replyToComplaint,
     initSystem,
-    getLoginStats
+    getLoginStats,
+    OfferResponseByOwner
     };

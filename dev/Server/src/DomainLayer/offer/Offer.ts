@@ -93,11 +93,15 @@ export class Offer {
         return [];
     }
 
-    public declineOffer(){
+    public changeStatusToDecline(){
         if(this.offerStatus == OfferStatus.PENDING || this.offerStatus == OfferStatus.COUNTER){
             this.offerStatus = OfferStatus.DECLINED;
+            return true;
+
         }
-        Logger.log("Offer status is no longer pending");
+        Logger.log("could not change offer status declined");
+        return false;
+
     }
 
     public changeStatusToAccepted() : boolean{
@@ -105,7 +109,26 @@ export class Offer {
             this.offerStatus = OfferStatus.ACCEPTED;
             return true;
         }
-        Logger.log("Offer status is no longer pending");
+        Logger.log("could not change offer status accepted");
+        return false;
+    }
+
+    public changeStatusToAcceptedButSoldOut() : boolean{
+        if(this.offerStatus == OfferStatus.PENDING || this.offerStatus == OfferStatus.COUNTER){
+            this.offerStatus = OfferStatus.ACCEPTED_AND_SOLD_OUT;
+            return true;
+        }
+        Logger.log("could not change offer status accepted but sold out");
+        return false;
+    }
+
+    public changeStatusToCounter(counterPrice: number) : boolean{
+        if(this.offerStatus == OfferStatus.PENDING){
+            this.counterPrice = counterPrice
+            this.offerStatus = OfferStatus.COUNTER;
+            return true;
+        }
+        Logger.log("could not counter offer");
         return false;
     }
 

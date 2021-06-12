@@ -1,10 +1,11 @@
 import { iOfferManager } from './iOfferManager'
-import { Offer } from './Offer';
+import { Offer, OfferStatus } from './Offer';
 import { DB } from "../../DataAccessLayer/DBfacade";
 import { Subscriber } from '../user/Subscriber';
 import { StoreProduct } from '../store/StoreProduct';
 import { Store } from '../store/Store';
 import { Logger } from '../../Logger';
+import { Publisher } from '../notifications/Publisher';
 
 export class OfferManager implements iOfferManager {
 
@@ -19,18 +20,8 @@ export class OfferManager implements iOfferManager {
         return OfferManager.singletone;
     }
 
-    declineOffer: (userid: number, storeId: number, offerId: number) => Promise<void>;
-    counterOffer: (userid: number, storeId: number, offerId: number, counterPrice: number) => Promise<void>;
     sendOfferAlertToOwners: (storeId: number, offerId: number) => Promise<void>;
-    sendOfferAlertToBuyer: (userId: number, offerId: number) => Promise<void>;
-    sendRecievedSupplyAlertToBuyer: (userId: number, offerId: number) => Promise<void>;
-    getOffersByStore: (storeId: number) => Promise<Offer[]>;
-    getOffersByUser: (userId: number) => Promise<Offer[]>;
-    getAcceptedOffersByUser: (userId: number) => Promise<Offer[]>;
-    reserveAcceptedOffersByUser: (userId: number) => Promise<void>;
-    clearAcceptedOffersByUser: (userId: number) => Promise<Offer[]>;
-    removeAcceptedOffer: (offerId: number) => Promise<void>;
-
+    sendRecievedSupplyAlertToBuyer: (subscriber: Subscriber, offer: Offer) => Promise<void>;
 
     getUserOfferPrice: () => number;
     getProductPrice: () => number;
@@ -48,6 +39,7 @@ export class OfferManager implements iOfferManager {
     }
 
     public async newOffer(user: Subscriber, storeId: number, product: StoreProduct, offerPrice: number): Promise<number>{
+        Publisher.get_instance().notify_store_update(storeId, `you recieved a new offer for ${product.getName()} from ${user.getUsername()}`)
         return Offer.createOffer(user.getUserId(), user.getUsername(), storeId, product.getProductId(), product.getName(), offerPrice)
     }
 
@@ -71,7 +63,7 @@ export class OfferManager implements iOfferManager {
                 if(diff.length == 0){
                     if(offerFromDb.changeStatusToAccepted()){
                         Logger.log(`Offer status changed to accepted`)
-                        resolve(DB.updateOffer(offerFromDb))
+                        resolve(DB.updateOffer(offerFromDb).then(() => this.sendOfferAlertToBuyer(subscriber, offerFromDb)))
                     }
                     Logger.log(`could not change offer status to accepted`)
                 }
@@ -82,7 +74,70 @@ export class OfferManager implements iOfferManager {
     }
 
 
+    public async declineOffer(subscriber: Subscriber, store: Store, offerId: number): Promise<void>{
+        if (!subscriber.isOwner(store.getStoreId())){
+            return Promise.reject('subscriber cant decline offer, is not owner of store')
+        }
+        let offerp = DB.getOfferById(offerId);
+        return new Promise((resolve,reject) => {
+            offerp.then(offer => {
+                if(offer.changeStatusToDecline()){
+                    Logger.log(`Offer status changed to declined`)
+                    resolve(DB.updateOffer(offer).then(() => this.sendOfferAlertToBuyer(subscriber, offer)))
+                }
+            })
+        })
 
+    }
+
+    public async counterOffer(subscriber: Subscriber, store: Store, offerId: number, counterPrice: number): Promise<void>{
+        if (!subscriber.isOwner(store.getStoreId())){
+            return Promise.reject('subscriber cant counter offer, is not owner of store')
+        }
+        let offerp = DB.getOfferById(offerId);
+        return new Promise((resolve,reject) => {
+            offerp.then(offer => {
+                if(offer.changeStatusToCounter(counterPrice)){
+                    Logger.log(`Offer status changed to counter`)
+                    resolve(DB.updateOffer(offer).then(() => this.sendOfferAlertToBuyer(subscriber, offer)))
+                }
+            })
+        })
+
+    }
+
+
+    public async getOffersByStore (storeId: number) : Promise<Offer[]>{
+        return DB.getAllOffersByStore(storeId);
+    }
+
+    public async getOffersByUser (storeId: number) : Promise<Offer[]>{
+        return DB.getAllOffersByStore(storeId);
+    }
+
+    public async sendOfferAlertToBuyer(subscriber: Subscriber, offer: Offer): Promise<void> {
+        let message = ''
+        switch (offer.getOfferStatus()){
+            case OfferStatus.ACCEPTED:
+                message = `your offer for ${offer.getProductName()} has been accepted`
+                break;
+            case OfferStatus.ACCEPTED_AND_SOLD_OUT:
+                message = `your offer for ${offer.getProductName()} has been accepted but is sold out`
+                break;
+            case OfferStatus.COUNTER:
+                message = `you have recieved a counter offer for ${offer.getProductName()}`
+                break;
+            case OfferStatus.DECLINED:
+                message = `your offer for ${offer.getProductName()} has been declined`
+                break;
+        }
+        Publisher.get_instance().send_message(subscriber, message);
+
+    }
+
+    public async buyAcceptedOffer(subscriber: Subscriber, offerId: number): Promise<boolean>{
+        return true;
+    } // CHECK QUANTITY IS STILL AVAILABLE
 
 
 }

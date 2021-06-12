@@ -287,6 +287,14 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
         return this.offerDB.getOfferById(offerId)
     }
 
+    public async getAllOffersByStore(storeId: number): Promise<Offer[]>{
+        return this.offerDB.getAllOffersByStore(storeId)
+    }
+
+    public async getAllOffersByUser(storeId: number): Promise<Offer[]>{
+        return this.offerDB.getAllOffersByUser(storeId)
+    }
+
 
 }
 

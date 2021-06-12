@@ -1,3 +1,4 @@
+import { tShippingInfo } from "../purchase/Purchase";
 import { Store } from "../store/Store";
 import { StoreProduct } from "../store/StoreProduct";
 import { Subscriber } from "../user/Subscriber";
@@ -23,15 +24,14 @@ export interface iOfferManager {
      */
     newOffer: (user: Subscriber, storeId: number, product: StoreProduct, offerPrice: number) => Promise<number> ;
     acceptOffer: (subscriber: Subscriber, store: Store, offerId: number) => Promise<void> ; // WHEN ALL OWNERS ACCEPT CHANGE OFFER STATUS TO ACCEPTED
-    declineOffer: (userid: number, storeId: number, offerId: number) => Promise<void> ;
-    counterOffer: (userid: number, storeId: number, offerId: number, counterPrice: number) => Promise<void> ;
+    declineOffer: (subscriber: Subscriber, store: Store, offerId: number) => Promise<void> ;
+    counterOffer: (subscriber: Subscriber, store: Store, offerId: number, counterPrice: number) => Promise<void> ;
 
     /**
      * ALERTS
      */
-    sendOfferAlertToOwners: (storeId: number, offerId: number) => Promise<void> ;
-    sendOfferAlertToBuyer: (userId: number, offerId: number) => Promise<void> ;
-    sendRecievedSupplyAlertToBuyer: (userId: number, offerId: number) => Promise<void> ; // (OPTIONAL ?) IF OFFER STATE IS ACCEPTED AND SOLD OUT CHANGE IT TO ACCEPTED AND SEND ALERT
+    sendOfferAlertToBuyer: (subscriber: Subscriber, offer: Offer) => Promise<void> ;
+    sendRecievedSupplyAlertToBuyer: (subscriber: Subscriber, offer: Offer) => Promise<void> ; // (OPTIONAL ?) IF OFFER STATE IS ACCEPTED AND SOLD OUT CHANGE IT TO ACCEPTED AND SEND ALERT
 
     /**
      * OFFERS PAGE INFO FOR UI
@@ -42,8 +42,5 @@ export interface iOfferManager {
     /**
      * OFFERS BUYING
      */
-    getAcceptedOffersByUser: (userId: number) => Promise<Offer[]>; // CHECK QUANTITY IS STILL AVAILABLE
-    reserveAcceptedOffersByUser: (userId: number) => Promise<void> ;
-    clearAcceptedOffersByUser: (userId: number) => Promise<Offer[]>;
-    removeAcceptedOffer: (offerId: number) => Promise<void> ;
+    buyAcceptedOffer: (subscriber: Subscriber, offerId: number) => Promise<boolean>; // CHECK QUANTITY IS STILL AVAILABLE
 }

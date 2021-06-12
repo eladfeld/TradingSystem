@@ -8,6 +8,11 @@ export class OfferDummyDB implements iOfferDB
     public constructor(){
         this.offers = []
     }
+
+    getAllOffersByUser: (storeId: number) => Promise<Offer[]>;
+
+    getAllOffersByStore: (storeId: number) => Promise<Offer[]>;
+
     updateOffer(offer: Offer): Promise<void> {
         throw new Error("Method not implemented.");
     }

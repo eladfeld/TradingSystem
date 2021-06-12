@@ -139,6 +139,13 @@ describe('create and accept offers' , () => {
             offId = offerId;
             return offerManager.acceptOffer(manager, storeFromDB, offerId)
         }).then( _ => {
+            return DB.getOfferById(offId)
+        }).then( off => {
+            expect(off.getOfferPrice()).to.equal(300)
+            expect(off.getOfferStatus()).to.equal(OfferStatus.PENDING)
+            expect(off.getProductName()).to.equal('pants')
+            expect(off.getUsername()).to.equal('michael')
+        }).then( _ => {
             return offerManager.acceptOffer(owner, storeFromDB, offId)
         }).then( _ => {
             return DB.getOfferById(offId)

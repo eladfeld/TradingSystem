@@ -12,7 +12,8 @@ import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 
 export class Service
 {
-    
+
+
     private static singletone: Service = undefined;
     private facade: SystemFacade;
 
@@ -251,9 +252,14 @@ export class Service
         return this.facade.getSubscriberId(sessionId);
     }
 
-    getLoginStats(sessionId : string, from:Date, until:Date) : Promise<login_stats>
+    public getLoginStats(sessionId : string, from:Date, until:Date) : Promise<login_stats>
     {
-        return this.facade.getLoginStats(sessionId , from, until)
+        return this.facade.getLoginStats(sessionId , from, until);
+    }
+
+    public OfferResponseByOwner(sessionId: string, response: boolean, storeId: number, offerId: number): Promise<string>
+    {
+        return this.facade.OfferResponseByOwner(sessionId, response, storeId, offerId);
     }
 
 

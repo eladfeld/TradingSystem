@@ -8,4 +8,9 @@ export interface iOfferDB
 
     addOffer:(offer: Offer)=> Promise<number>;
 
+    getAllOffersByStore:(storeId: number) => Promise<Offer[]>
+
+    getAllOffersByUser:(storeId: number) => Promise<Offer[]>
+
+
 }

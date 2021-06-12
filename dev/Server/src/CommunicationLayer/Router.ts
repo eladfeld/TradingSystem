@@ -46,7 +46,7 @@ router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 router.post('/getUsername', Controller.getUsername)
 router.post('/getUserStores', Controller.getUserStores)
 router.post('/getMyPurchaseHistory', Controller.getMyPurchaseHistory)
-
+router.post('/OfferResponseByOwner', Controller.OfferResponseByOwner)
 
 
 router.post('/complain', Controller.complain)
