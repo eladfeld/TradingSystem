@@ -584,7 +584,7 @@ const getOffersByStore = (req : Request, res: Response , next: NextFunction) =>
 
 const newOffer = (req : Request, res: Response , next: NextFunction) =>
 {
-    let sessionId : string = req.body.sessionId
+    let sessionId : string = req.body.userId
     let storeId: number = req.body.storeId
     let productId: number = req.body.productId
     let bid: number = req.body.bid

@@ -34,6 +34,24 @@ export class productDB implements iProductDB
         }
     }
 
+    public async updateProduct(product: StoreProduct): Promise<void>{
+        await sequelize.models.StoreProduct.update(
+            {
+                price: product.getPrice(),
+                quantity: product.getQuantity(),
+                productRating: product.getProductRating(),
+                numOfRaters: product.getNumOfRaters(),
+                image: product.getImage(),
+            },
+            {
+                where:
+                {
+                    id: product.getProductId(),
+                }
+            } )
+        return Promise.resolve()
+    }
+
     public async getProductById(productId: number):Promise<StoreProduct>
     {
         let productdb = await sequelize.models.StoreProduct.findOne(

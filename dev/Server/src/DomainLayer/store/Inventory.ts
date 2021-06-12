@@ -90,7 +90,6 @@ export class Inventory
         return makeFailure("Doesn't have product with name");
     }
 
-    //TODO: #saveDB
     public reserveProduct(productId: number, quantity: number): Result<boolean> {
         if(!this.isProductAvailable(productId, quantity)){
             return makeFailure("Product unavailable");

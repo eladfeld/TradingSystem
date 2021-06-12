@@ -10,7 +10,7 @@ export interface iProductDB
 
     getProductById:(productId: number) =>Promise<StoreProduct>;
 
-    //TODO: update product quantity
+    updateProduct:(product: StoreProduct) =>Promise<void>;
 
     clear:() => void;
 }

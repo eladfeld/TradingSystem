@@ -1002,8 +1002,9 @@ export class SystemFacade
 
     newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
         let subscriber = this.logged_subscribers.get(sessionId);
-        if(subscriber === undefined)
+        if(subscriber === undefined){
             return Promise.reject("subscriber is not logged in");
+        }
         return new Promise((resolve, reject) =>
         {
             DB.getProductById(productId)

@@ -257,6 +257,12 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     public getProductById(productId: number): Promise<StoreProduct>{
         return this.productDB.getProductById(productId)
     }
+
+    public updateProduct(product: StoreProduct): Promise<void>
+    {
+        return this.productDB.updateProduct(product);
+    }
+
     public clear() :void{
         return this.productDB.clear()
     }

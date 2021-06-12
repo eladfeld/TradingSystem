@@ -25,9 +25,6 @@ export class OfferManager implements iOfferManager {
     sendOfferAlertToOwners: (storeId: number, offerId: number) => Promise<void>;
     sendRecievedSupplyAlertToBuyer: (subscriber: Subscriber, offer: Offer) => Promise<void>;
 
-    getUserOfferPrice: () => number;
-    getProductPrice: () => number;
-
     public async setStoreToRecieveOffers(storeId: number): Promise<void> {
         await DB.updateStoreRecievesOffers(storeId, true);
     }

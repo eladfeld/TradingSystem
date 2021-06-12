@@ -6,12 +6,6 @@ import { Offer } from "./Offer";
 
 export interface iOfferManager {
     /**
-     * GETTERS
-     */
-    getUserOfferPrice: () => number;
-    getProductPrice: () => number;
-
-    /**
      * STORE OFFERS POLICY
      */
     setStoreToRecieveOffers: (storeId: number) => Promise<void> ;
