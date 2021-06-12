@@ -10,6 +10,7 @@ import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { Offer } from "../DomainLayer/offer/Offer";
+import { off } from "process";
 
 export class Service
 {
@@ -267,11 +268,41 @@ export class Service
         return this.facade.getOffersByStore(storeId);
     }
 
+    public getOffersByUser(userId: number): Promise<Offer[]> {
+        return this.facade.getOffersByUser(userId);
+    }
+
     public newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
         return this.facade.newOffer(sessionId, storeId, productId, bid);
     }
 
+    public acceptOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        return this.facade.acceptOffer(sessionId, storeId, offerId)
+    }
 
+    public declinetOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        return this.facade.declineOffer(sessionId, storeId, offerId)
+    }
+
+    public counterOffer(sessionId: string, storeId: number, offerId: number, counterPrice: number): Promise<string> {
+        return this.facade.counterOffer(sessionId, storeId, offerId, counterPrice)
+    }
+
+    public buyAcceptedOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        return this.facade.buyAcceptedOffer(sessionId, storeId, offerId)
+    }
+
+    public setStoreToRecieveOffers(storeId: number): Promise<void> {
+        return this.facade.setStoreToRecieveOffers(storeId);
+    }
+
+    public setStoreToNotRecieveOffers(storeId: number): Promise<void> {
+        return this.facade.setStoreToNotRecieveOffers(storeId);
+    }
+
+    public isRecievingOffers(storeId: number): Promise<boolean> {
+        return this.facade.isRecievingOffers(storeId);
+    }
 
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users()

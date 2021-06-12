@@ -1000,6 +1000,10 @@ export class SystemFacade
         return OfferManager.get_instance().getOffersByStore(storeId);
     }
 
+    getOffersByUser(userId: number): Promise<Offer[]> {
+        return OfferManager.get_instance().getOffersByUser(userId);
+    }
+
     newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
         let subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber === undefined){
@@ -1015,7 +1019,89 @@ export class SystemFacade
         })
     }
 
+    acceptOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.acceptOffer(subscriber, store, offerId).then(_ => resolve('acceptence registered'))
+                    .catch(err => reject('could not accept'))
+                })
+            .catch(error => reject(error))
+        })
+    }
 
+    declineOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.declineOffer(subscriber, store, offerId).then(_ => resolve('offer declined'))
+                    .catch(err => reject('could not decline'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    counterOffer(sessionId: string, storeId: number, offerId: number, counterPrice: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.counterOffer(subscriber, store, offerId, counterPrice).then(_ => resolve('offer countered'))
+                    .catch(err => reject('could not counter'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    buyAcceptedOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.buyAcceptedOffer(subscriber, store, offerId, () => {}).then(_ => resolve('offer countered'))
+                    .catch(err => reject('could not counter'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    public async setStoreToRecieveOffers(storeId: number): Promise<void> {
+        return OfferManager.get_instance().setStoreToRecieveOffers(storeId);
+    }
+
+    public async setStoreToNotRecieveOffers(storeId: number): Promise<void> {
+        return OfferManager.get_instance().setStoreToNotRecieveOffers(storeId);
+    }
+
+    public async isRecievingOffers(storeId: number): Promise<boolean> {
+        return OfferManager.get_instance().isRecievingOffers(storeId);
+    }
 
     //------------------------------------------functions for tests-------------------------
     public get_logged_guest_users()
