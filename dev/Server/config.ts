@@ -31,17 +31,16 @@ const Config =
 export default Config;
 
 
-export var TEST_MODE = false;
 
 
 //program constants
-export const CHECKOUT_TIMEOUT = 3000000;//5 minutes
-export const CACHE_SIZE = -1;           //how much memory we want to cache (in bytes?)
+export const CHECKOUT_TIMEOUT = 3000000;     //5 minutes
+export const CACHE_SIZE = -1;               //how much memory we want to cache (in bytes?)
 
 //init configurations
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
-export const SHOULD_INIT_STATE = true;    //initialize state from file?
-export const INITIAL_STATE = checkState;
+export const SHOULD_INIT_STATE = false;    //initialize state from file?
+export const INITIAL_STATE = state;
 
 
 //API configurations
@@ -66,10 +65,11 @@ export const setPathToSystemManagers = (newPath:string) =>{
     //modes:
 const LOCALHOST_MODE = 1;
 const REMOTE_MODE = 2;
+export const TEST_MODE = 3;
     //end modes
 
 
-let sqlMode = LOCALHOST_MODE;
+export var sqlMode = TEST_MODE;
 
 class SqlConnector
 {
@@ -101,13 +101,22 @@ class SqlConnector
             connector.dialect= 'mysql'
             connector.port= 3306
         }
+        else if(sqlMode === TEST_MODE)
+        {
+            connector.username= 'root'
+            connector.password= '1234'
+            connector.database= 'new_schema'
+            connector.host= 'localhost'
+            connector.dialect= 'mysql'
+            connector.port= 3306  
+        }
         return connector;
     }
 }
 export const SQLconnector = SqlConnector.factory();
 
 // cache configutaions:
-export const SHOULD_USE_CACHE = true;
+export const SHOULD_USE_CACHE = false;
 
 export const SUBSCRIBERS_CACHE_SIZE = 100
 export const STORE_CACHE_SIZE = 100

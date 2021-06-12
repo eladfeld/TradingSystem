@@ -1,4 +1,4 @@
-import { SHOULD_USE_CACHE, TEST_MODE } from "../../config";
+import { SHOULD_USE_CACHE } from "../../config";
 import iDiscount from "../DomainLayer/discount/iDiscount";
 import { Rule } from "../DomainLayer/policy/buying/BuyingPolicy";
 import Transaction from "../DomainLayer/purchase/Transaction";
@@ -33,7 +33,7 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     private storeDB : iStoreDB;
 
     constructor(){
-        if (TEST_MODE){
+        if (false){
             this.subscriberDB = new SubscriberDummyDB();
             this.loginDB = new LoginStatsDummyDB();
             this.productDB = new ProductDummyDB();

@@ -91,7 +91,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject(e)
         }
 
@@ -100,7 +99,6 @@ export class storeDB implements iStoreDB
 
     public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
     {
-        console.log("pid",productId, "category",category, "storeId",storeId)
         try{
             await sequelize.models.ProductToCategory.create({
                 StoreProductId: productId,
@@ -111,7 +109,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject("category with the id alreay exists!")
         }
     }

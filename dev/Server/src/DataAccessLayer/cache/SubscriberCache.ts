@@ -1,5 +1,4 @@
 import { SUBSCRIBERS_CACHE_SIZE } from "../../../config";
-import { subscribe } from "../../CommunicationLayer/Router";
 import { Appointment } from "../../DomainLayer/user/Appointment";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { subscriberDB } from "../dbs/SubscriberDB";
@@ -88,7 +87,7 @@ export class SubscriberCache implements iSubscriberDB
     {
         return new Promise<void>((resolve, reject) =>
         {
-            let addProductPromise =this.subscriberDb.addProductToCart(subscriberId, storeId, productId, quantity)
+            this.subscriberDb.addProductToCart(subscriberId, storeId, productId, quantity)
             .then(() =>{
                 this.updateCache(subscriberId);
                 resolve();
@@ -100,7 +99,7 @@ export class SubscriberCache implements iSubscriberDB
     {
         return new Promise<void>((resolve, reject) =>
         {
-            let updatePromise = this.subscriberDb.updateCart(subscriberId, storeId, productId, newQuantity)
+            this.subscriberDb.updateCart(subscriberId, storeId, productId, newQuantity)
             .then(() =>
             {
                 this.updateCache(subscriberId);
@@ -191,7 +190,7 @@ export class SubscriberCache implements iSubscriberDB
     {
         return new Promise((resolve, reject) =>
         {
-            let updatePromise = this.subscriberDb.updatePermission(storeId, managerToEditId, permissionMask)
+            this.subscriberDb.updatePermission(storeId, managerToEditId, permissionMask)
             .then(() =>
             {
                 this.updateCache(managerToEditId)

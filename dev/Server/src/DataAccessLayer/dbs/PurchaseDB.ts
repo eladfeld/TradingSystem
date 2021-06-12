@@ -52,7 +52,6 @@ export class purchaseDB implements iPurchaseDB
         }
         catch(e)
         {
-            console.log('rollback')
             await t.rollback();
             return Promise.resolve(false)
         }

@@ -53,9 +53,9 @@ export default class StateInitializer{
             const service: Service = await Service.get_instance();
             await this.initAndLoginUsers(service);
             await this.openStores(service);
-            // await this.performTransactions(service);
-            // await this.fillCarts(service);
-            // await this.logoutUsers(service);
+            await this.performTransactions(service);
+            await this.fillCarts(service);
+            await this.logoutUsers(service);
             return true;
             
         } catch (error) {
@@ -111,22 +111,27 @@ export default class StateInitializer{
                 this.products.get(storeName).set(itemState.name, itemId);
             }
 
+            let promises = []
             //appoint owners
             // const owners = storeState.employees.owners;
             // for(var i=0; i<owners.length; i++){
             //     const ownerState = owners[i];
             //     this.sessions.get(ownerState.appointer),storeId,ownerState.name;
-            //     await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
+            //     promises.push(service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name));
             // }
 
-
-            // //appoint managers
-            // const managers = storeState.employees.managers;
-            // for(var i=0; i<managers.length; i++){
-            //     const appointerSessionId = this.sessions.get(managers[i].appointer);
-            //     await service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
-            //     await service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
-            // }
+            // Promise.all(promises).then ( _ => {
+            //     // //appoint managers
+            //     const managers = storeState.employees.managers;
+            //     for(var i=0; i<managers.length; i++){
+            //         const appointerSessionId = this.sessions.get(managers[i].appointer);
+            //         let appointp = service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
+            //         appointp.then( _ => {
+            //             service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
+            //         })
+            //     }
+            // })
+            
 
             //add buying policy
             // convert fields

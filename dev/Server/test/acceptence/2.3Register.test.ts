@@ -6,9 +6,8 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, uniqueAviName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.3: register test' ,async function() {
+describe('2.3: register test' , function() {
 
-    var service : Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -19,19 +18,23 @@ describe('2.3: register test' ,async function() {
         setReady(true);
     });
 
-    it('guest user register' , function() {
+    it('guest user register' ,async function() {
+        var service : Service = await Service.get_instance();
+
         const aviName = uniqueAviName();
         let register = service.register(aviName, "123456789",13)
         register.then ( _ => {assert.ok(1)})
-        .catch( _ => assert.fail)
+        .catch( _ => assert.fail())
     })
 
-    it('register with the same username' , function() {
+    it('register with the same username' ,async function() {
+        var service : Service = await Service.get_instance();
+
         const aviName = uniqueAviName();
         service.register(aviName, "123456789",13);
         let register = service.register(aviName, "1234",13);
-        register.then( _ => {assert.fail})
-        .catch(_ => {assert.ok})
+        register.then( _ => {assert.fail()})
+        .catch(_ => {assert.ok("")})
     })
 
 
