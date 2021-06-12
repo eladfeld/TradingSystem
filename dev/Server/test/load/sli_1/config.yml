@@ -2,7 +2,7 @@ config:
   target: "https://localhost:3333/command"
   phases:
     - duration: 1
-      arrivalRate: 5
+      arrivalRate: 100
       name: Warm up
   payload:
     path: "users.csv"

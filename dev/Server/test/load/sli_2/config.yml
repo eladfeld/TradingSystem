@@ -1,0 +1,53 @@
+config:
+  target: "https://localhost:3333/command"
+  phases:
+    - duration: 1
+      arrivalRate: 5
+      name: Store Owners
+    - duration: 1
+      arrivalRate: 5
+      name: Store Owners
+  payload:
+    path: "users.csv"
+    fields:
+      - "username"
+      - "password"
+      - "age"
+      - "storeName"
+      - "productName"
+    order: sequence
+    skipHeader: false
+
+scenarios:
+  - name: "everyone has a store"
+    flow:
+      - get:
+          url: "/enter"
+          capture:
+            json: "$.userId"
+            as: userId
+      - think: 1
+      - post:
+          url: "/register"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+            age: "{{ age }}"
+      - think: 1
+      - post:
+          url: "/login"
+          json:
+            userId: "{{ userId }}"
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.userId"
+            as: userId
+      - think: 1
+      - post:
+          url: "/openStore"
+          json:
+            userId: "{{ userId }}"
+            storeName: "{{ storeName }}"
+            bankAccountNumber: 1111
+            storeAddress: "disneyland"
