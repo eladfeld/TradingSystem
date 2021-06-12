@@ -21,5 +21,9 @@ const Offer = sequelize.define('Offer', {
     offerStatus:{
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    ownersAccepted:{
+      type: DataTypes.STRING,
+      allowNull: false,
     }
   })

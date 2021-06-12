@@ -1,3 +1,6 @@
+import { Store } from "../store/Store";
+import { StoreProduct } from "../store/StoreProduct";
+import { Subscriber } from "../user/Subscriber";
 import { Offer } from "./Offer";
 
 export interface iOfferManager {
@@ -16,9 +19,10 @@ export interface iOfferManager {
 
     /**
      * OFFERS STATUS CHANGE AND CREATION
+     * newOffer(user: Subscriber, storeId: number, product: StoreProduct, offerPrice: number): Promise<void>
      */
-    newOffer: (userid: number, storeId: number, productId: number, offer: number) => Promise<void> ;
-    acceptOffer: (userid: number, storeId: number, offerId: number) => Promise<void> ; // WHEN ALL OWNERS ACCEPT CHANGE OFFER STATUS TO ACCEPTED
+    newOffer: (user: Subscriber, storeId: number, product: StoreProduct, offerPrice: number) => Promise<number> ;
+    acceptOffer: (subscriber: Subscriber, store: Store, offerId: number) => Promise<void> ; // WHEN ALL OWNERS ACCEPT CHANGE OFFER STATUS TO ACCEPTED
     declineOffer: (userid: number, storeId: number, offerId: number) => Promise<void> ;
     counterOffer: (userid: number, storeId: number, offerId: number, counterPrice: number) => Promise<void> ;
 

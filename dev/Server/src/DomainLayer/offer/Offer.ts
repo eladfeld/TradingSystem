@@ -1,4 +1,5 @@
-import { OfferDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
+import { Logger } from "../../Logger";
 import { ID } from "../store/Common";
 
 export enum OfferStatus{
@@ -52,7 +53,7 @@ export class Offer {
             productName,
             offerPrice,
         )
-        return OfferDB.addOffer(offer).then(_ => offer).catch(err => err);
+        return DB.addOffer(offer);
     }
 
     public static rebuildOffer(id: number,
@@ -80,5 +81,46 @@ export class Offer {
 
         return offer;
     }
+
+    public acceptOffer(userId: number) : number[]{
+        if(this.offerStatus == OfferStatus.PENDING || this.offerStatus == OfferStatus.COUNTER){
+            if(!this.ownersAccepted.includes(userId)){
+                this.ownersAccepted.push(userId);
+            }
+            return this.ownersAccepted;
+        }
+        Logger.log("Offer status is no longer pending");
+        return [];
+    }
+
+    public declineOffer(){
+        if(this.offerStatus == OfferStatus.PENDING || this.offerStatus == OfferStatus.COUNTER){
+            this.offerStatus = OfferStatus.DECLINED;
+        }
+        Logger.log("Offer status is no longer pending");
+    }
+
+    public changeStatusToAccepted() : boolean{
+        if(this.offerStatus == OfferStatus.PENDING || this.offerStatus == OfferStatus.COUNTER){
+            this.offerStatus = OfferStatus.ACCEPTED;
+            return true;
+        }
+        Logger.log("Offer status is no longer pending");
+        return false;
+    }
+
+
+    public getOfferId = () => this.offerId;
+    public getUserId = () => this.userId;
+    public getUsername = () => this.username;
+    public getStoreId = () => this.storeId;
+    public getProductId = () => this.productId;
+    public getProductName = () => this.productName
+    public getOfferPrice = () => this.offerPrice;
+    public getCounterPrice = () => this.counterPrice;
+    public getOfferStatus = () => this.offerStatus;
+    public getOwnersAccepted = () => this.ownersAccepted;
+
+
 
 }

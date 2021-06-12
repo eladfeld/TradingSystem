@@ -27,9 +27,10 @@ import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
+import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
 export class SystemFacade
 {
-    
+
 
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
@@ -45,6 +46,7 @@ export class SystemFacade
 
     public async init(){
         await initTables();
+        await initUniversalPolicy();
         return new Promise<void>((resolve,reject) => {
             this.initIdisfromDB().then( async _ =>{
                 let init_managers = true;
@@ -64,7 +66,7 @@ export class SystemFacade
             }
             )
         })
-            
+
     }
 
     private async initIdisfromDB()
@@ -930,7 +932,7 @@ export class SystemFacade
         return Promise.reject("subscriber not logged in");
     }
 
-    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats> 
+    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats>
     {
         Logger.log(`getLoginStats: ${sessionId} , from:${from} , until:${until}`)
         let sys_manager = this.logged_system_managers.get(sessionId)
@@ -945,7 +947,7 @@ export class SystemFacade
 
     isToday(date : Date) : boolean
     {
-        
+
         let today = new Date()
         if (date.getMonth() === today.getMonth() &&
                 date.getFullYear() === today.getFullYear() &&

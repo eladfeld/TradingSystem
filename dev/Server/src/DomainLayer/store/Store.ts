@@ -29,7 +29,6 @@ import { DB } from "../../DataAccessLayer/DBfacade";
 export class Store implements iCategorizer
 {
 
-
     public getStoreFounderId():number
     {
         return this.storeFounderId;
