@@ -15,9 +15,9 @@ import {setReady, waitToRun} from '../testUtil';
 import { Publisher } from '../../src/DomainLayer/notifications/Publisher';
 import { promises } from 'dns';
 
-describe('2.9.3: Live Messages', function () {
+describe('2.9.3: Live Messages',async function () {
     //setTestConfigurations();        //changing external APIs to mocks
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
 
     beforeEach( () => {
         //console.log('start')
@@ -39,8 +39,8 @@ describe('2.9.3: Live Messages', function () {
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
+        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
+        let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(avi_sessionId, store.getStoreId(), shippingInfo);
@@ -73,7 +73,7 @@ describe('2.9.3: Live Messages', function () {
 
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
+        let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
         service.logout(avi_sessionId)
 
         await service.addProductTocart(moshe_sessionId, store.getStoreId(), banana, 10);

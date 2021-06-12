@@ -1,13 +1,25 @@
 import { StoreProduct } from "../../DomainLayer/store/StoreProduct";
+import { categories } from "../../ServiceLayer/state/InitialStateConstants";
 import { sequelize } from "../connectDb";
+import { DB } from "../DBfacade";
 import { iProductDB } from "../interfaces/iProductDB";
 
 
 export class productDB implements iProductDB
 {
+    public async getLastProductId(): Promise<number>
+    {
+        let lastId = await sequelize.models.StoreProduct.max('id')
+        if (lastId === null)
+            return 0;
+        return lastId + 1
+    }
+
+
     public async addProduct(product: StoreProduct): Promise<void>
     {
         let prod = await sequelize.models.StoreProduct.create({
+            id: product.getProductId(),
             name: product.getName(),
             price: product.getPrice(),
             quantity: product.getQuantity(),
@@ -15,9 +27,13 @@ export class productDB implements iProductDB
             numOfRaters: product.getNumOfRaters(),
             image: product.getImage(),
             StoreId: product.getStoreId(),
-        }) 
+        })
+        // checking that store has categories in Store.addNewProduct
+        for(let category of product.getCategories()){
+            await DB.addCategoriesOfProduct(product.getProductId(), category, product.getStoreId())
+        }
     }
-    
+
     public async getProductById(productId: number):Promise<StoreProduct>
     {
         let productdb = await sequelize.models.StoreProduct.findOne(
@@ -37,7 +53,7 @@ export class productDB implements iProductDB
                 productdb.price,
                 productdb.StoreId,
                 productdb.quantity,
-                await this.getCategoriesByProductId(productId),
+                await DB.getCategoriesOfProduct(productdb.id),
                 productdb.image,
 
             );
@@ -66,7 +82,7 @@ export class productDB implements iProductDB
                 productdb.price,
                 productdb.StoreId,
                 productdb.quantity,
-                await this.getCategoriesByProductId(productdb.id),
+                await DB.getCategoriesOfProduct(productdb.id),
                 productdb.image,
 
             ));
@@ -74,15 +90,6 @@ export class productDB implements iProductDB
         return Promise.resolve(products);
     }
 
-    public async getCategoriesByProductId(pid: number): Promise<string[]> {
-        // return (await sequelize.models.Category.findAll({
-        //     where: {
-        //         StoreProductId: pid,
-        //     }
-        // })).map((categories: any) => categories.name);
-        return [];
-    }
-
     clear: () => void;
-    
+
 }

@@ -8,6 +8,15 @@ export class PurchaseDummyDB implements iPurchaseDB{
     constructor(){
         this.transactions = [];
     }
+    public completeTransaction(transaction: Transaction):Promise<boolean>
+    {
+        return Promise.resolve(true)
+    }
+
+    public getLastTransactionId(): Promise<number>
+    {
+        return Promise.resolve(1);
+    }
 
     getAllTransactions = () : Promise<Transaction[]> => {
         return Promise.resolve([...this.transactions]);

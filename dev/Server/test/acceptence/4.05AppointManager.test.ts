@@ -7,9 +7,9 @@ import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueMosheName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.5:Appoint manager tests', function () {
+describe('4.5:Appoint manager tests',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -36,6 +36,6 @@ describe('4.5:Appoint manager tests', function () {
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
         await service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
         await store.addCategoryToRoot('Sweet')
-        await failIfResolved(()=> service.addNewProduct(moshe_sessionId, store.getStoreId(), "banana", ['Sweet'], 15))
+        await failIfResolved(()=> service.addNewProduct(moshe_sessionId, store.getStoreId(), "banana", ['Sweet'], 15,0,""))
     })
 });

@@ -1,7 +1,7 @@
 import { makeFailure, makeOk, Result } from "../../Result";
 import { Logger } from "../../Logger";
 import { ID, Rating } from "./Common"
-import { ProductDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
 
 export class StoreProduct
 {
@@ -15,10 +15,25 @@ export class StoreProduct
     private numOfRaters: number
     private categories: string[];
     private image: string;
+    private static nextId:number = 0;
 
-    public constructor(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
+    public static initLastProductId(){
+        let lastIdPromise = DB.getLastProductId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                StoreProduct.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
+    }
+
+    constructor(name: string, price: number, storeId: number, quantity:number, categories: string[], image: string)
     {
-        this.productId = ID();
+        this.productId = StoreProduct.nextId++;
         this.name = name;
         this.price = price;
         this.storeId = storeId;
@@ -38,7 +53,7 @@ export class StoreProduct
             categories,
             image,
         )
-        return ProductDB.addProduct(product).then(_ => product).catch(err => err);
+        return DB.addProduct(product).then(_ => product).catch(err => err);
     }
 
     public static rebuildProduct(id: number, name: string, price: number, storeId: number, quantity:number, categories: string[], image: string){

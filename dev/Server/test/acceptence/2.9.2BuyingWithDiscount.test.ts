@@ -11,9 +11,9 @@ import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.9.2 Buying with discount', function () {
+describe('2.9.2 Buying with discount',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -33,7 +33,7 @@ describe('2.9.2 Buying with discount', function () {
         let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         await service.addCategoryToRoot(avi_sessionId,storeId, "toys")
-        const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000);
+        const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000,"");
 
         const discount:tUnconditionalDiscount = {
             type:"unconditional",
@@ -64,7 +64,7 @@ describe('2.9.2 Buying with discount', function () {
         let store = await open_store(service, avi_sessionId,avi, uniqueMegaName(), 123456, "Tel Aviv");
         const storeId: number = store.getStoreId();
         await service.addCategoryToRoot(avi_sessionId,storeId, "toys")
-        const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000);
+        const legoId = await service.addNewProduct(avi_sessionId, storeId, "lego", ["toys"], 10, 1000,"");
 
         const discount:tConditionalDiscount = {
             type:"conditional",

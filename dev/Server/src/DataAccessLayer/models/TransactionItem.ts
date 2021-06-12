@@ -4,7 +4,6 @@ import { sequelize } from '../connectDb'
     const TransactionItem = sequelize.define('TransactionItem', {
       ProductId: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
       },        
       quantity: {
         type: DataTypes.INTEGER,

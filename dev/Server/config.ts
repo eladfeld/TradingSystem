@@ -39,6 +39,7 @@ export const CHECKOUT_TIMEOUT = 3000000;//5 minutes
 export const CACHE_SIZE = -1;           //how much memory we want to cache (in bytes?)
 
 //init configurations
+export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
 export const SHOULD_INIT_STATE = true;    //initialize state from file?
 export const INITIAL_STATE = checkState;
 
@@ -56,7 +57,7 @@ export var PATH_TO_SYSTEM_MANAGERS = 'src/systemManagers.json';
 
 
 /************* FUNCTIONS FOR TESTING PURPOSES ONLY *********** */
-export const setPathToSystemManagers = (newPath:string) =>{ 
+export const setPathToSystemManagers = (newPath:string) =>{
     PATH_TO_SYSTEM_MANAGERS = newPath;
 }
 
@@ -79,7 +80,7 @@ class SqlConnector
     dialect: string;
     port: number;
 
-    static factory(): SqlConnector 
+    static factory(): SqlConnector
     {
         let connector = new SqlConnector();
         if(sqlMode === REMOTE_MODE)

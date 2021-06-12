@@ -46,8 +46,8 @@ describe('view store products' , () => {
         let store = new Store(1, 'nike', 123, 'Herzelyia leyad bbb')
         await store.addCategoryToRoot('Shirt')
         await store.addCategoryToRoot('Pants')
-        await failIfRejected(() => store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 100, 20));
-        await store.addNewProduct(manager, 'Dri-Fit Pants', ['Pants'], 100, 15)
+        await failIfRejected(() => store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 100, 20,""));
+        await store.addNewProduct(manager, 'Dri-Fit Pants', ['Pants'], 100, 15,"")
         expect(store.getStoreInfo().getStoreName()).to.equal('nike')
         expect(store.getStoreInfo().getStoreId()).to.equal(store.getStoreId())
         expect(store.getStoreInfo().getStoreProducts()[0].getName()).to.equal('Dri-Fit Shirt')
@@ -66,8 +66,8 @@ describe('search product in store' , () => {
         let store = new Store(1, uniqueName('nike'), 123, 'Herzelyia leyad bbb')
         await store.addCategoryToRoot('Shirt')
         await store.addCategoryToRoot('Pants')
-        await store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 120, 20)
-        await store.addNewProduct(manager, 'Dri-Fit Pants', ['Pants'], 100, 15)
+        await store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 120, 20,"")
+        await store.addNewProduct(manager, 'Dri-Fit Pants', ['Pants'], 100, 15,"")
         let shirtInfo = store.searchByName('Dri-Fit Shirt')
         let pantsInfo = store.searchByName('Dri-Fit Pants')
         expect(shirtInfo[0].getName()).to.equal('Dri-Fit Shirt')
@@ -82,8 +82,8 @@ describe('search product in store' , () => {
         let store = new Store(1, uniqueName('nike'), 123, 'Herzelyia leyad bbb')
         await store.addCategoryToRoot('Shirt')
         await store.addCategoryToRoot('Pants')
-        await store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 120, 20)
-        await store.addNewProduct(manager, 'Dri-Fit Pants', ['Pants'], 100, 15)
+        await store.addNewProduct(manager, 'Dri-Fit Shirt', ['Shirt'], 120, 20,"")
+        await store.addNewProduct(manager, 'Dri-Fit Pants', ['Pants'], 100, 15,"")
         let shirtInfo = store.searchByCategory('Shirt')
         let pantsInfo = store.searchByName('Dri-Fit Pants')
         expect(shirtInfo[0].getName()).to.equal('Dri-Fit Shirt')
@@ -101,7 +101,7 @@ describe('search product in store' , () => {
             await store1.addCategoryToRoot('alcohol')
             const user1Id: number = 100;
             const user1Adrs: string = "8 Mile Road, Detroit";
-            let productId = await store1.addNewProduct(manager, 'Jack Daniels', ['alcohol'], 80, 20)
+            let productId = await store1.addNewProduct(manager, 'Jack Daniels', ['alcohol'], 80, 20,"")
             const basket1a: ShoppingBasket = new ShoppingBasket (store1);
             await basket1a.addProduct(productId, 1);
             const policy:tPredicate = {type:"simple",operand1:0,operator:"<",operand2:1};

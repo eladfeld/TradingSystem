@@ -5,7 +5,9 @@ import { Subscriber } from "../../DomainLayer/user/Subscriber";
 
 export interface iSubscriberDB
 {
-    getLastId() : Promise<number>
+    getLastUserId() : Promise<number>
+
+    addMessageToHistory:(message: string, userId: number) => Promise<void>;
 
     addSubscriber: (username: string, password: string, age: number) => Promise<void>
 
@@ -13,7 +15,7 @@ export interface iSubscriberDB
 
     isSystemManager: (userId: number) => Promise<boolean>;
 
-    addProduct:(subscriberId: number, storeId: number, productId: number, quantity : number) => Promise<void>;
+    addProductToCart:(subscriberId: number, storeId: number, productId: number, quantity : number) => Promise<void>;
 
     updateCart: (subscriberId: number, storeId: number, productId: number, newQuantity:number) => Promise<void>;
 
@@ -25,6 +27,10 @@ export interface iSubscriberDB
 
     getAppointment:(userId : number, storeId : number) => Promise<Appointment>;
 
+
+    /* For testing purposes, real DB implementations should throw exception on calling these*/
+    willFail: () => void; 
+    willSucceed: () => void; 
     deleteBasket:(userId: number, storeId: number) => Promise<void>;
 
     deleteAppointment:(appointee: number, appointer: number, storeId: number) =>void;

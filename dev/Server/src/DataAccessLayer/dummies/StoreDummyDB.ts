@@ -10,9 +10,26 @@ export class StoreDummyDB implements iStoreDB
 {
     getRecievingOffers: (storeId: number) => Promise<boolean>;
     updateStoreRecievesOffers: (storeId: number, arg1: boolean) => Promise<void>;
+    getCategoriesOfProduct: (productId: number) => Promise<string[]>;
+    addCategoriesOfProduct: (productId: number, category: string, storeId: number) => Promise<void>;
 
     public addCategory(StoreId: number, category: string, father: string): Promise<void> {
         return Promise.resolve(undefined);
+    }
+
+    public getLastStoreId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
+    public getLastBuyingId() : Promise<number>
+    {
+        return Promise.resolve(0);
+    }
+
+    public getLastDiscountId() : Promise<number>
+    {
+        return Promise.resolve(0);
     }
 
     private  stores: Store[]  = [];

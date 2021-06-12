@@ -47,12 +47,13 @@ class PaymentSystemReal {
         data: bodyFormData,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
-        switch(response.data){
-            case "-1":
-                return -1;
-            default:
-                return response.data;
-            }
+        var resData = Number(response.data);
+        if (resData > 0){
+            return response.data;
+        }
+        else{
+            return -1;
+        }
     }
 
     //refunds the credit charge with payment id of @paymentId
@@ -67,12 +68,13 @@ class PaymentSystemReal {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
         //const response = await axios.post(`https://cs-bgu-wsep.herokuapp.com/`, {action_type: "cancel_pay", transaction_id: paymentId});
-        switch(response.data){
-            case "-1":
-                return false;
-            default:
-                return true;
-            }
+        var resData = Number(response.data);
+        if (resData == 0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
 }

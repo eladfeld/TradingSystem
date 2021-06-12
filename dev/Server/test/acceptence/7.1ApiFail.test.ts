@@ -6,7 +6,6 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from './common';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
-import { ProductDB } from '../../src/DomainLayer/store/ProductDB';
 import { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
 
 
@@ -17,9 +16,9 @@ const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerus
 import { APIsWillSucceed, failIfResolved, failTest, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('7.1: Api Fail', function () {
+describe('7.1: Api Fail',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -36,8 +35,8 @@ describe('7.1: Api Fail', function () {
         let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
         let store =await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
+        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
+        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
         await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(sessionId, store.getStoreId(), SHIPPING_INFO);
@@ -52,8 +51,8 @@ describe('7.1: Api Fail', function () {
         let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
         let store =await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
         await store.addCategoryToRoot('Sweet')
-        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50);
-        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10);
+        let banana = await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
+        let apple = await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
         await service.addProductTocart(sessionId, store.getStoreId(), banana, 10);
         await service.addProductTocart(sessionId, store.getStoreId(), apple, 7);
         await service.checkoutBasket(sessionId, store.getStoreId(), SHIPPING_INFO);

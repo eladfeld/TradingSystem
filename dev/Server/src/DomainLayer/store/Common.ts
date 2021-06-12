@@ -1,7 +1,27 @@
 // Use:
 //
+
+import { DB } from "../../DataAccessLayer/DBfacade";
+
+
 //     var privateID = ID();
 let current_id: number = 0 //TODO: get biggest id from DB
+
+export function initLastStoreId(): Promise<number> 
+{
+    let lastIdPromise = DB.getLastStoreId();
+
+    return new Promise((resolve, reject) => {
+        lastIdPromise
+        .then(id => {
+            if(isNaN(id)) id = 0;
+            current_id = id;
+            resolve(id);
+        })
+        .catch(e => reject("problem with user id "))
+    })
+}
+
 export var ID = function () {
     return current_id++;
   };

@@ -1,5 +1,4 @@
 import {assert, expect} from 'chai';
-import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Login } from '../../src/DomainLayer/user/Login';
@@ -11,8 +10,8 @@ import { enter_login } from './common';
 import { APIsWillSucceed, uniqueAlufHasportName, uniqueName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.1: Logout' , function() {
-    var service: Service = Service.get_instance();
+describe('3.1: Logout' ,async function() {
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

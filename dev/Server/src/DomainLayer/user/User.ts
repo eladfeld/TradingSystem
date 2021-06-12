@@ -1,4 +1,4 @@
-import { StoreDB, SubscriberDB } from '../../DataAccessLayer/DBinit';
+import { DB } from '../../DataAccessLayer/DBfacade';
 import iSubject from '../discount/logic/iSubject';
 import { tShippingInfo } from '../purchase/Purchase';
 import { buyingOption } from '../store/BuyingOption';
@@ -14,7 +14,7 @@ export class User implements iSubject
 {
     protected shoppingCart: ShoppingCart;
     protected userId: number;
-    protected static lastId: number = 0;
+    protected static lastId: number =0 ;
 
     public constructor()
     {
@@ -22,15 +22,25 @@ export class User implements iSubject
         this.userId = User.lastId++;
     }
 
-    static getLastId() 
+    static initLastId(): Promise<number> 
     {
-        return 0;
+        let lastIdPromise = DB.getLastUserId();
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                User.lastId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with user id "))
+        })
     }
 
 
     public static UserinitLastId()
     {
-        SubscriberDB.getLastId().then(id => User.lastId = id);
+        DB.getLastUserId().then(id => User.lastId = id);
     }
 
     public checkoutBasket(storeId: number, shippingInfo: tShippingInfo): Promise<boolean>
@@ -54,7 +64,7 @@ export class User implements iSubject
 
     public checkoutSingleProduct(productId :number , quantity: number, shippingInfo: tShippingInfo, shopId : number , buying_option : buyingOption) : Promise<string>
     {
-        let storep =  StoreDB.getStoreByID(shopId);
+        let storep =  DB.getStoreByID(shopId);
         return new Promise ((resolve,reject) => {
             storep.then (store => {
                 let sellp = store.sellProduct(this.getUserId() , shippingInfo,productId, quantity, buying_option);

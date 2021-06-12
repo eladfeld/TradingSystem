@@ -1,5 +1,4 @@
 import { assert, expect } from 'chai';
-import { Product } from '../../src/DomainLayer/store/Product';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Authentication } from '../../src/DomainLayer/user/Authentication';
 import { Login } from '../../src/DomainLayer/user/Login';
@@ -11,8 +10,8 @@ import { add_product, register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.1: edit store inventory', function () {
-    var service: Service = Service.get_instance();
+describe('4.1: edit store inventory',async function () {
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -28,8 +27,7 @@ describe('4.1: edit store inventory', function () {
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789")
         let store = await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
         await store.addCategoryToRoot('Sweet')
-        let product1: Product = new Product("banana", ['Sweet']);
-        failIfResolved(()=> service.editStoreInventory(sessionId, store.getStoreId(), product1.getProductId(), 10))
+        failIfResolved(()=> service.editStoreInventory(sessionId, store.getStoreId(), 10, 10))
     })
 
     it('edit existing product', async function () {

@@ -20,6 +20,7 @@ import { initialAppState } from './componentUtil';
 import logo from '../background/logo.jpeg'
 import Alert from '@material-ui/lab/Alert';
 import { Button } from '@material-ui/core';
+import SearchMarket from './searching/SearchMarket';
 
 const BASE_URL = SERVER_BASE_URL;
 

@@ -2,6 +2,11 @@ import Transaction from "../../DomainLayer/purchase/Transaction";
 
 export interface iPurchaseDB
 {
+
+    completeTransaction: (transaction: Transaction) => Promise<boolean>;
+
+    getLastTransactionId: () => Promise<number>;
+    
     getAllTransactions: () =>Promise<Transaction[]>;
 
     getCompletedTransactions: () => Promise<Transaction[]>;

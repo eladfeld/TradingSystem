@@ -13,8 +13,8 @@ const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMon
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 
 import {setReady, waitToRun} from '../testUtil';
-describe('6.4: System Manager Get Info', function () {
-    var service: Service = Service.get_instance();
+describe('6.4: System Manager Get Info',async function () {
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());

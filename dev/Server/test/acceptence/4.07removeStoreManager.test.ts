@@ -6,9 +6,9 @@ import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueM
 import { register_login, open_store } from './common';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.7: remove appointment', function () {
+describe('4.7: remove appointment',async function () {
 
-    var service: Service = Service.get_instance();
+    var service: Service =await Service.get_instance();
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -31,7 +31,7 @@ describe('4.7: remove appointment', function () {
 
         await service.appointStoreOwner(avi_sessionId, store.getStoreId(), moshe.getUsername());
         await service.appointStoreManager(moshe_sessionId, store.getStoreId(), hezi.getUsername());
-        await service.deleteManagerFromStore(avi_sessionId, moshe.getUserId(), store.getStoreId())
+        await service.deleteManagerFromStore(avi_sessionId, moshe.getUsername(), store.getStoreId())
         expect(store.getAppointments().length).to.equal(1);
     })
 
@@ -42,7 +42,7 @@ describe('4.7: remove appointment', function () {
         let moshe =await register_login(service,moshe_sessionId, uniqueMosheName(), "123456789");
         let store =await open_store(service,avi_sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
         await service.appointStoreManager(avi_sessionId, store.getStoreId(), moshe.getUsername());
-        await failIfResolved(()=> service.deleteManagerFromStore(moshe_sessionId, avi.getUserId(), store.getStoreId()))
+        await failIfResolved(()=> service.deleteManagerFromStore(moshe_sessionId, avi.getUsername(), store.getStoreId()))
     })
 
 });

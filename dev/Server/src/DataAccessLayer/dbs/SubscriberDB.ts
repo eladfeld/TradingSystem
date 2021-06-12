@@ -1,3 +1,4 @@
+import { subscribe } from "../../CommunicationLayer/Router";
 import { Appointment } from "../../DomainLayer/user/Appointment";
 import { ManagerAppointment } from "../../DomainLayer/user/ManagerAppointment";
 import { OwnerAppointment } from "../../DomainLayer/user/OwnerAppointment";
@@ -7,70 +8,95 @@ import { ShoppingCart } from "../../DomainLayer/user/ShoppingCart";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
-import { StoreDB, SubscriberDB } from "../DBinit";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
 export class subscriberDB implements iSubscriberDB
 {
+    public async addMessageToHistory(message: string, userId: number): Promise<void>
+    {
+        try{
+            await sequelize.models.MessageHistory.create({
+                message: message,
+                SubscriberId: userId
+            })
+            return Promise.resolve()
+        }
+        catch(e)
+        {
+            return Promise.reject("message with the same id is already exists")
+        }
+    }
+    
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 
     //add functions:
 
     public async addSubscriber(username: string, password: string, age: number) : Promise<void>
     {
         let subscriber = new Subscriber(username, password, age);
-        
-        await sequelize.models.Subscriber.create({
-            id: subscriber.getUserId(),
-            username:username,
-            password: password,
-            age: age
-        })
+        try{
+            await sequelize.models.Subscriber.create({
+                id: subscriber.getUserId(),
+                username:username,
+                password: password,
+                age: age
+            })
+            return Promise.resolve();
+        }
+        catch(e)
+        {
+            return Promise.reject("subscriber with the same id is alreay exists.");
+        }
+
     }
 
     public async addSystemManager (subscriber: Subscriber): Promise<void>
     {
-        await sequelize.models.Subscriber.create({
-            id: subscriber.getUserId(),
-            username: subscriber.getUsername(),
-            password: subscriber.getPassword(),
-            age : subscriber.getAge()
-        })
-        sequelize.models.SystemManager.create({
-            SubscriberId: subscriber.getUserId()
-        })
+        try{
+            await sequelize.models.Subscriber.create({
+                id: subscriber.getUserId(),
+                username: subscriber.getUsername(),
+                password: subscriber.getPassword(),
+                age : subscriber.getAge()
+            })
+            sequelize.models.SystemManager.create({
+                SubscriberId: subscriber.getUserId()
+            })
+            return Promise.resolve();
+        }
+        catch(e)
+        {
+            return Promise.reject("subscriber or system manager with the same id is alreay exists.");
+        }
+
     }
 
     public async addAppointment(userId: number, appointment: Appointment): Promise<void>
     {
-        // let store = await StoreDB.getStoreByID(appointment.getStoreId());
-
-        // let storeDb = await sequelize.models.Store.findOne({where:{storeName: store.getStoreName()}})
-        // if(storeDb === null)
-        // {
-        //     await sequelize.models.Store.create({
-        //         id: store.getStoreId(),
-        //         storeName: store.getStoreName(),
-        //         storeRating: store.getStoreRating(),
-        //         numOfRaters: 0, //TODO: change
-        //         bankAccount: store.getBankAccount(),
-        //         storeAddress: store.getStoreAddress(),
-        //         storeClosed: store.getIsStoreClosed(),
-        //         founderId: store.getStoreFounderId()
-        //     })
-        // }
-        await sequelize.models.Appointment.create({
-            appointerId: appointment.appointer,
-            StoreId: appointment.getStoreId(),
-            appointeeId: appointment.appointee,
-            permissionsMask: appointment.permission.getPermissions(),
-            isManager: appointment.isManager()
-        })
-        return Promise.resolve();
+        try{
+            await sequelize.models.Appointment.create({
+                appointerId: appointment.appointer,
+                StoreId: appointment.getStoreId(),
+                appointeeId: appointment.appointee,
+                permissionsMask: appointment.permission.getPermissions(),
+                isManager: appointment.isManager()
+            })
+            return Promise.resolve();
+        }
+        catch(e)
+        {
+            return Promise.reject("appointment with the same id is alreay exists")
+        }
     }
 
 
-    public async addProduct(subscriberId: number, storeId: number, productId: number, quantity: number): Promise<void>
+    public async addProductToCart(subscriberId: number, storeId: number, productId: number, quantity: number): Promise<void>
     {
 
         let basket = await sequelize.models.ShoppingBasket.findOne({
@@ -81,10 +107,17 @@ export class subscriberDB implements iSubscriberDB
         });
         if(basket === null)
         {
-            basket = await sequelize.models.ShoppingBasket.create({
-                SubscriberId: subscriberId,
-                StoreId: storeId
-            })
+            try{
+                basket = await sequelize.models.ShoppingBasket.create({
+                    SubscriberId: subscriberId,
+                    StoreId: storeId
+                })
+            }
+            catch(e)
+            {
+                return Promise.reject("shopping basket with the same id is already exists");
+            }
+
         }
 
         let product = await sequelize.models.BasketProduct.findOne({
@@ -95,37 +128,48 @@ export class subscriberDB implements iSubscriberDB
 
         if(product === null)
         {
-            await sequelize.models.BasketProduct.create({
-                ShoppingBasketId: basket.id,
-                quantity: quantity,
-                productId: productId
-            })
+            try{
+                await sequelize.models.BasketProduct.create({
+                    ShoppingBasketId: basket.id,
+                    quantity: quantity,
+                    productId: productId
+                })
+            }
+            catch(e)
+            {
+                return Promise.reject("product with the same id is already exists")
+            }
+
         }
         else
         {
             return this.updateCart(subscriberId, storeId, productId, product.quantity + quantity)
         }
-
-
         return Promise.resolve()
     }
 
     public async addPendingMessage(userId: number, message: string): Promise<void>
     {
-        await sequelize.models.PendingMessage.create({
-            message: message,
-            SubscriberId: userId
-        })
-
+        try{
+            await sequelize.models.PendingMessage.create({
+                message: message,
+                SubscriberId: userId
+            })
+            return Promise.resolve()
+        }
+        catch(e)
+        {
+            return Promise.reject("message with the same id is already exists")
+        }
     }
 
     //get functions:
 
 
-    public async getLastId() : Promise<number>
+    public async getLastUserId() : Promise<number>
     {
         let lastId = await sequelize.models.Subscriber.max('id')
-        if (lastId === null)
+        if (Number.isNaN(lastId))
             return 0;
         return lastId + 1
     }
@@ -134,7 +178,7 @@ export class subscriberDB implements iSubscriberDB
 
     public async isSystemManager(subscriberId: number) : Promise<boolean> {
         
-        let sys_manager = await sequelize.models.SystemManager.findOne({where : {subscriberId : subscriberId}})
+        let sys_manager = await sequelize.models.SystemManager.findOne({where : {SubscriberId : subscriberId}})
         if (sys_manager === null )
         {
             Logger.log(`SubscriberDb.isSystemManager ${subscriberId} => not system manager`)
@@ -221,11 +265,12 @@ export class subscriberDB implements iSubscriberDB
         let appointments = await sequelize.models.Appointment.findAll({
             where:{
                 appointeeId: appointee
-            }
+            },
         })
         Logger.log(`getting appointments response ${JSON.stringify(appointments)}`)
         let apps: Appointment[] = appointments.map(
-            (app : any) => app.isManager ?
+            (app : any) =>              
+            app.isManager ?
             new ManagerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)) :
             new OwnerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)))
 
@@ -253,7 +298,6 @@ export class subscriberDB implements iSubscriberDB
 
     public async deleteBasket(userId: number, storeId: number)
     {
-        console.log(`storeId: ${storeId}, userid: ${userId}`)
         let basket = await sequelize.models.ShoppingBasket.findOne({
             where:{
                 SubscriberId: userId,

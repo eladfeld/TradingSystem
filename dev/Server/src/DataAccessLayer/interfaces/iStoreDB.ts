@@ -10,6 +10,12 @@ export interface iStoreDB
 
     addStore:(store: Store)=> Promise<void>;
 
+    getLastStoreId:() => Promise<number>;
+
+    getLastDiscountId:() => Promise<number>;
+
+    getLastBuyingId:()=> Promise<number>;
+
     getStoreByID:(storeId: number)=> Promise<Store>;
 
     deleteStore:(storeId: number) => Promise<void>;
@@ -27,6 +33,10 @@ export interface iStoreDB
     getPruductInfoByStore:(storeName: string) => Promise<string>;
 
     addCategory: (StoreId: number, category: string, father: string) => Promise<void>;
+
+    getCategoriesOfProduct:(productId: number) => Promise<string[]>
+
+    addCategoriesOfProduct:(productId: number, category: string, storeId: number) => Promise<void>
 
     addPolicy: (storeId: number, rule: Rule) => Promise<void>;
 

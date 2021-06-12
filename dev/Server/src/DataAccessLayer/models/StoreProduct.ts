@@ -2,10 +2,14 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../connectDb"
 
 const StoreProduct = sequelize.define('StoreProduct', {
+    id:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     price: {
       type: DataTypes.INTEGER,

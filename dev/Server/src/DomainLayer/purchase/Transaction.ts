@@ -1,3 +1,5 @@
+import { DB } from "../../DataAccessLayer/DBfacade";
+
 export const TransactionStatus = {
     IN_PROGRESS: 0,
     CANCELLED: 1,
@@ -21,6 +23,21 @@ class Transaction {
     private paymentId: number;//
     
     private static nextId = 1;
+
+    public static async initLastTransactionId() 
+    {
+        let lastIdPromise = DB.getLastTransactionId()
+
+        return new Promise((resolve, reject) => {
+            lastIdPromise
+            .then(id => {
+                if(isNaN(id)) id = 0;
+                Transaction.nextId = id;
+                resolve(id);
+            })
+            .catch(e => reject("problem with dicsount id "))
+        })
+    }
 
     asJson = () => {
         var obj : any = {}
@@ -63,7 +80,7 @@ class Transaction {
 
     static rebuild(tranc: any, items: any): Transaction {
         let trancaction = new Transaction(tranc.userId, tranc.storeId, new Map(), tranc.total, tranc.storeName);
-
+        trancaction.transcationId = tranc.id;
         for(let item of items)
         {
             trancaction.items.set(item.ProductId, [item.quantity, item.name, item.price])
@@ -87,7 +104,7 @@ class Transaction {
     getItems = () : Map<number, [number,string,number]> => this.items;
     getStatus = () : number => this.status;
     getTime = () : number => this.time;
-
+    
     toJSON = () => {
         var obj : any = {};
         obj['transcationId'] = this.transcationId;

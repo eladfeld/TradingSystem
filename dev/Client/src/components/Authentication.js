@@ -4,6 +4,7 @@ import axios from 'axios';
 import history from '../history';
 import {SERVER_BASE_URL , SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD} from '../constants'
 import Alert from '@material-ui/lab/Alert';
+import {handleMessage} from '../WebsocketHandler'
 
 
 const onRegisterClick = async () =>
@@ -38,8 +39,7 @@ const Authentication=({getAppState, setAppState})=>{
         
                     ws.addEventListener("message", e => 
                     {
-                        getAppState().notifications.push(e.data)
-                        setAppState({notifications: getAppState().notifications})
+                        handleMessage(e,getAppState, setAppState)
                     })
                     setAppState({userId: res.data.userId, username: res.data.username, isGuest: false});
         

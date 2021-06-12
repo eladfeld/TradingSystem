@@ -23,7 +23,7 @@ import iCategorizer from "../discount/Categorizer";
 
 import { StoreProduct } from "./StoreProduct";
 import UniversalPolicy from "../policy/buying/UniversalPolicy";
-import { StoreDB, SubscriberDB } from "../../DataAccessLayer/DBinit";
+import { DB } from "../../DataAccessLayer/DBfacade";
 
 
 export class Store implements iCategorizer
@@ -104,7 +104,7 @@ export class Store implements iCategorizer
             storeAddress)
             store.inventory = new Inventory(store.storeId, []);
 
-        return new Promise((resolve ,reject) => { StoreDB.addStore(store).then(() => resolve(store)).catch(err => reject(err))})
+        return new Promise((resolve ,reject) => { DB.addStore(store).then(() => resolve(store)).catch(err => reject(err))})
     }
 
     public getProducts = (categoryName: string):number[] => {
@@ -355,7 +355,7 @@ export class Store implements iCategorizer
                 }
                 else{
                     this.storeClosed = true
-                    let deletestorep = StoreDB.deleteStore(this.storeId)
+                    let deletestorep = DB.deleteStore(this.storeId)
                     deletestorep.then( _ =>{
                         resolve("store deleted")
                     })
@@ -533,7 +533,7 @@ export class Store implements iCategorizer
         let appointment: Appointment = this.findAppointedBy(subscriber.getUserId(), managerToEditId);
         if(appointment !== undefined)
         {
-            SubscriberDB.updatePermission(this.storeId, managerToEditId, permissionMask)
+            DB.updatePermission(this.storeId, managerToEditId, permissionMask)
             return appointment.editPermissions(permissionMask);
         }
         return Promise.reject("subscriber can't edit a manager he didn't appoint");
@@ -545,7 +545,7 @@ export class Store implements iCategorizer
         }
         var staff : any = {}
         staff['subscribers']=[]
-        let staffPromises = this.appointments.map(appointment => SubscriberDB.getSubscriberById(appointment.getAppointeeId()));
+        let staffPromises = this.appointments.map(appointment => DB.getSubscriberById(appointment.getAppointeeId()));
         let staffList = await Promise.all(staffPromises);
         staffList.forEach(emp =>
             {
@@ -639,7 +639,7 @@ export class Store implements iCategorizer
             return Promise.reject(`Category Father: ${categoryFather} does not exists in store: ${this.storeName}`)
         }
 
-        StoreDB.addCategory(this.storeId, category, categoryFather)
+        DB.addCategory(this.storeId, category, categoryFather)
         let fatherNode = this.categiries.getChildNode(categoryFather)
 
         //TODO: #saveDB
@@ -653,7 +653,7 @@ export class Store implements iCategorizer
             return Promise.reject(`Category: ${category} already exists in store: ${this.storeName}`)
         }
 
-        StoreDB.addCategory(this.storeId, category, 'General')
+        DB.addCategory(this.storeId, category, 'General')
         this.categiries.createChildNode(category);
         return Promise.resolve('category was added')
     }

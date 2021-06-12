@@ -1,15 +1,15 @@
-import { SQLconnector } from '../../config'
+import { SHOULD_RESET_DATABASE, SQLconnector } from '../../config'
+
 export const Sequelize = require('sequelize')
 export const Op = Sequelize.Op
 
 
 //
-SQLconnector
 export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
     port: SQLconnector.port, // this is the mysql port
-    // logging: true,
+    logging: false,
     define: {
       timestamps: false
     }
@@ -32,25 +32,30 @@ const DiscountPolicy = require('./models/DiscountPolicy')
 const Transaction = require('./models/Transaction')
 const TransactionItem = require('./models/TransactionItem')
 const Offer = require('./models/Offer')
+const ProductToCategory = require('./models/ProductToCategory')
+const MessageHistory = require('./models/MessageHistory')
+const LoginStts = require('./models/LoginStats')
 
 export async function initTables (){
 
-    //TODO:delete when finshed working on db
-    await sequelize.queryInterface.dropAllTables()
+    if (SHOULD_RESET_DATABASE)
+      await sequelize.queryInterface.dropAllTables()
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
     sequelize.models.StoreProduct.belongsTo(sequelize.models.Store)
     sequelize.models.Store.belongsTo(sequelize.models.Subscriber, {as: 'founder'}) // will add subscriberId (founder) to Store
     sequelize.models.Store.hasMany(sequelize.models.Category)
-    // sequelize.models.StoreProduct.hasMany(sequelize.models.Category)
     sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)
     sequelize.models.Store.hasMany(sequelize.models.Offer)
     sequelize.models.StoreProduct.hasMany(sequelize.models.Offer)
+    sequelize.models.StoreProduct.hasMany(sequelize.models.ProductToCategory)
+    sequelize.models.Store.hasMany(sequelize.models.ProductToCategory)
 
 
     //Subscriber connections
     sequelize.models.Subscriber.hasMany(sequelize.models.PendingMessage)
+    sequelize.models.Subscriber.hasMany(sequelize.models.MessageHistory)
     sequelize.models.Subscriber.hasMany(sequelize.models.ShoppingBasket)
     sequelize.models.ShoppingBasket.hasMany(sequelize.models.BasketProduct)
     sequelize.models.SystemManager.belongsTo(sequelize.models.Subscriber)
