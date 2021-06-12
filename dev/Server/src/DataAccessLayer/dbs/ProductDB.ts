@@ -92,5 +92,10 @@ export class productDB implements iProductDB
     }
 
     clear: () => void;
-
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 }

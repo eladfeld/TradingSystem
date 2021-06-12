@@ -29,7 +29,7 @@ describe('2.9: buy products',async function () {
         let avi_sessionId = await service.enter()
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        await store.addCategoryToRoot('Sweet')
         let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
         let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);

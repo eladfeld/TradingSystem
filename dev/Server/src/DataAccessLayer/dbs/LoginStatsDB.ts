@@ -11,5 +11,11 @@ export class LoginStatsDB implements iLoginStatsDB
     getLoginStats(from: Date, until: Date): Promise<login_stats> {
         throw new Error("Method not implemented.");
     }
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 
 }

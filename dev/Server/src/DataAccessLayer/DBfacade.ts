@@ -95,11 +95,20 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     }
     public willFail():void
     {
-        return this.subscriberDB.willFail();
+        this.subscriberDB.willFail();
+        this.loginDB.willFail();
+        this.productDB.willFail();
+        this.purchaseDB.willFail();
+        this.storeDB.willFail();
+
     }
     public willSucceed(): void
     {
-        return this.subscriberDB.willSucceed();
+        this.subscriberDB.willSucceed();
+        this.loginDB.willSucceed();
+        this.productDB.willSucceed();
+        this.purchaseDB.willSucceed();
+        this.storeDB.willSucceed();
     }
     public deleteBasket(userId: number, storeId: number):Promise<void>
     {

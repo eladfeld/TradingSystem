@@ -4,6 +4,7 @@ import { iProductDB } from "../interfaces/iProductDB";
 
 export class ProductDummyDB implements iProductDB
 {
+    private isConnected = true;
     public async getLastProductId(): Promise<number>
     {
         return Promise.resolve(1);
@@ -16,12 +17,14 @@ export class ProductDummyDB implements iProductDB
 
     public  addProduct(product: StoreProduct): Promise<void>
     {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         this.products.push(product);
         return Promise.resolve()
     }
 
     public  async getProductByName(productName: string): Promise<StoreProduct>
     {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         let product = this.products.find(product => product.getName() == productName);
         if (product)
             return Promise.resolve(product)
@@ -30,6 +33,7 @@ export class ProductDummyDB implements iProductDB
 
     public  async getProductById(productId: number): Promise<StoreProduct>
     {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         let product = this.products.find(product => product.getProductId() === productId);
         if (product)
             return Promise.resolve(product)
@@ -39,6 +43,14 @@ export class ProductDummyDB implements iProductDB
     public  clear()
     {
         this.products=[]
+    }
+
+    public willFail = () =>{
+        this.isConnected = false;
+    }
+
+    public willSucceed = () =>{
+        this.isConnected = true;
     }
 
 }

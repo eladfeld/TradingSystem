@@ -4,9 +4,11 @@ import { sequelize } from "../connectDb";
 
 export class PurchaseDummyDB implements iPurchaseDB{
     private transactions: Transaction[];
+    private isConnected: boolean;
 
     constructor(){
         this.transactions = [];
+        this.isConnected = true;
     }
 
     public getLastTransactionId(): Promise<number>
@@ -15,19 +17,23 @@ export class PurchaseDummyDB implements iPurchaseDB{
     }
 
     getAllTransactions = () : Promise<Transaction[]> => {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         return Promise.resolve([...this.transactions]);
     }
 
     getCompletedTransactions = (): Promise<Transaction[]> => {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         return Promise.resolve(this.transactions.filter(t => t.getStatus() == TransactionStatus.COMPLETE));
     }
 
     storeTransaction = async (transaction: Transaction) =>{
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         this.transactions.push(transaction);
         return Promise.resolve()
     }
 
     getTransactionInProgress = (userId: number, storeId: number): Promise<Transaction> =>{
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         const ts:Transaction[] = this.transactions.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId) && (t.getStatus() === TransactionStatus.IN_PROGRESS)));
         if(ts.length === 0) return Promise.reject(null);
         if(ts.length > 1) throw (`userId: ${userId} and storeId: ${storeId} have ${ts.length} transactions in progress.\n should be at most 1`);
@@ -35,10 +41,12 @@ export class PurchaseDummyDB implements iPurchaseDB{
     }
 
     getTransactionsInProgress = (userId: number, storeId: number): Promise<Transaction[]> =>{
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         return Promise.resolve(this.transactions.filter(t => ((t.getUserId() === userId) && (t.getStoreId() === storeId) && (t.getStatus() === TransactionStatus.IN_PROGRESS))));
     }
 
     updateTransaction = (transaction: Transaction) => {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         const ts: Transaction[] = this.transactions.filter(t => t.getId() !== transaction.getId());
         ts.push(transaction);
         this.transactions = ts;
@@ -51,10 +59,19 @@ export class PurchaseDummyDB implements iPurchaseDB{
     }
 
     getUserStoreHistory = (userId: number, storeId:number) : Promise<Transaction[]> => {
+        if(!this.isConnected)return Promise.reject("database is disconnected");
         return Promise.resolve(this.transactions.filter(t => t.getUserId()===userId && t.getStoreId()===storeId).sort( (a,b) => {
             const dt:number = b.getTime() - a.getTime();
             return dt !== 0 ? dt : a.getStatus() - b.getStatus();
         }));
+    }
+
+    public willFail = () =>{
+        this.isConnected = false;
+    }
+
+    public willSucceed = () =>{
+        this.isConnected = true;
     }
 
 }

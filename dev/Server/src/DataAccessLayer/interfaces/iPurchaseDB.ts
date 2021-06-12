@@ -20,5 +20,7 @@ export interface iPurchaseDB
     getUserStoreHistory: (userId: number, storeId:number) => Promise<Transaction[]> 
 
     clear:() => void;
+    willFail: () => void; 
+    willSucceed: () => void; 
 
 }
