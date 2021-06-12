@@ -9,6 +9,7 @@ import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
+import { Offer } from "../DomainLayer/offer/Offer";
 
 export class Service
 {
@@ -261,6 +262,11 @@ export class Service
     {
         return this.facade.OfferResponseByOwner(sessionId, response, storeId, offerId);
     }
+
+    public getOffersByStore(storeId: number): Promise<Offer[]> {
+        return this.facade.getOffersByStore(storeId);
+    }
+
 
 
     //------------------------------------------functions for tests-------------------------

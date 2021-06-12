@@ -17,6 +17,7 @@ import AppointOwner from './AppointOwner'
 import AppointManager from './AppointManager'
 import AddProduct from './AddProduct'
 import ManageCategories from './ManageCategories'
+import Offers from './Offers'
 import axios from 'axios';
 import { unknownStatusMessage } from '../componentUtil';
 import Employees from './Employees';
@@ -26,10 +27,11 @@ import DiscountPolicy from '../discount_policy/DiscountPolicy';
 import DeleteManager from './RemoveManager';
 import Alert from '@material-ui/lab/Alert';
 import { Button } from '@material-ui/core';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 const useStyles = makeStyles({
   root: {
-    width: 230,
+    width: 300,
   },
 });
 
@@ -43,7 +45,7 @@ const getInventory = async(userId, storeId, setAppState) =>
 const ADD_BUYING_POLICY = "add_buying_policy";
 const ADD_DISCOUNT_POLICY = "add_discount_policy";
 const DELETE_MANAGER = "delete_manager"
-
+const OFFER_MANAGER = "offer_manager"
 export default function ManageStore({getAppState, setAppState}) {
     const classes = useStyles();
     let storeId = getAppState().storeId
@@ -69,7 +71,6 @@ export default function ManageStore({getAppState, setAppState}) {
     const onAppointOwnerClick =() =>{
         setPage("appointowner");
         if(appointOwner !== undefined) setappointOwner(undefined);
-
     }
 
     const onAppointManagerClick =() =>{
@@ -103,6 +104,11 @@ export default function ManageStore({getAppState, setAppState}) {
 
     const onDeleteManagerClick = () =>{
         setPage(DELETE_MANAGER)
+    }
+
+    const onOffersClick = () =>
+    {
+        setPage(OFFER_MANAGER)
     }
 
     const renderPage = () =>{
@@ -202,6 +208,24 @@ export default function ManageStore({getAppState, setAppState}) {
                 return <AddProduct getAppState={getAppState} setAppState={setAppState}></AddProduct>
             case DELETE_MANAGER:
                 return <DeleteManager getAppState={getAppState} setAppState={setAppState}></DeleteManager>
+            case OFFER_MANAGER:
+                const getOffers = async () =>{
+                    const offersResponse = await axios.post(SERVER_BASE_URL+'/getOffersByStore', {storeId});
+                    switch(offersResponse.status){
+                        case SERVER_RESPONSE_OK:
+                            const offers = JSON.parse(offersResponse.data);
+                            setAppState({offers: offers});
+                            break;
+                        case SERVER_RESPONSE_BAD:
+                            setProblem(offersResponse.data);
+                            break;
+                        default:
+                            setProblem(unknownStatusMessage(offersResponse));
+                            break;
+                    }
+                }
+                getOffers();
+                return <Offers getAppState={getAppState} setAppState={setAppState}></Offers>
             default:
                 return <h1></h1>
         }
@@ -288,6 +312,14 @@ export default function ManageStore({getAppState, setAppState}) {
                 </ListItemIcon>
                 <Typography variant="inherit" noWrap>
                     add discount
+                </Typography>
+            </MenuItem>
+            <MenuItem onClick={onOffersClick}>
+                <ListItemIcon>
+                    <LocalOfferIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                    manage offers
                 </Typography>
             </MenuItem>
             {/* <MenuItem onClick={onPoliciesClick}>

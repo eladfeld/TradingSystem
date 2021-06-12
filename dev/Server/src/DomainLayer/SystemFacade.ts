@@ -29,6 +29,7 @@ import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStats
 import { DB } from "../DataAccessLayer/DBfacade";
 import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
 import { OfferManager } from "./offer/OfferManager";
+import { Offer } from "./offer/Offer";
 export class SystemFacade
 {
 
@@ -994,6 +995,11 @@ export class SystemFacade
         })
 
     }
+
+    getOffersByStore(storeId: number): Promise<Offer[]> {
+        return OfferManager.get_instance().getOffersByStore(storeId);
+    }
+
 
 
     //------------------------------------------functions for tests-------------------------

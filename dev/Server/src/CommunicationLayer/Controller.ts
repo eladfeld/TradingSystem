@@ -574,6 +574,14 @@ const OfferResponseByOwner = (req : Request, res: Response , next: NextFunction)
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
+const getOffersByStore = (req : Request, res: Response , next: NextFunction) => 
+{
+    let storeId: number = req.body.storeId
+    service.getOffersByStore(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 
 export default {
@@ -629,5 +637,6 @@ export default {
     replyToComplaint,
     initSystem,
     getLoginStats,
-    OfferResponseByOwner
+    OfferResponseByOwner,
+    getOffersByStore
     };
