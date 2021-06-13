@@ -31,7 +31,7 @@ const Config =
 export default Config;
 
 
-export var TEST_MODE = false;
+export var TEST_MODE = true;
 
 
 //program constants
@@ -40,7 +40,7 @@ export const CACHE_SIZE = -1;           //how much memory we want to cache (in b
 
 //init configurations
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
-export const SHOULD_INIT_STATE = true;    //initialize state from file?
+export const SHOULD_INIT_STATE = false;    //initialize state from file?
 export const INITIAL_STATE = checkState;
 
 
@@ -69,7 +69,7 @@ const REMOTE_MODE = 2;
     //end modes
 
 
-let sqlMode = LOCALHOST_MODE;
+let sqlMode = REMOTE_MODE;
 
 class SqlConnector
 {

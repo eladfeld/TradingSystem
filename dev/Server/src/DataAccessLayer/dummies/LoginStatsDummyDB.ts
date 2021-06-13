@@ -3,6 +3,7 @@ import { iLoginStatsDB, login_stats, userType } from "../interfaces/iLoginStatsD
 export class LoginStatsDummyDB implements iLoginStatsDB
 {
     private logins_table: Map<Date, login_stats> = new Map(); // date -> login_stats
+    private isConnected = true;
 
     updateLoginStats(user_type: userType): Promise<void> 
     {
@@ -66,6 +67,14 @@ export class LoginStatsDummyDB implements iLoginStatsDB
             }
         }
         return Promise.resolve(res_stats)
+    }
+
+    public willFail = () =>{
+        this.isConnected = false;
+    }
+
+    public willSucceed = () =>{
+        this.isConnected = true;
     }
     
 }

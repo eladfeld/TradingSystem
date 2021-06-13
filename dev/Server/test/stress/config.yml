@@ -1,0 +1,47 @@
+config:
+  target: "https://localhost:3333/command"
+  phases:
+    - duration: 1000
+      arrivalRate: 10000
+      name: Warm up
+  payload:
+    path: "users.csv"
+    fields:
+      - "username"
+      - "password"
+      - "age"
+      - "storeName"
+      - "productName"
+    order: sequence
+    skipHeader: false
+
+scenarios:
+  - name: "1000 users"
+    flow:
+      - get:
+          url: "/enter"
+          capture:
+            json: "$.userId"
+            as: userId
+      - post:
+          url: "/register"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+            age: "{{ age }}"
+      - post:
+          url: "/login"
+          json:
+            userId: "{{ userId }}"
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.userId"
+            as: userId
+      - post:
+          url: "/openStore"
+          json:
+            userId: "{{ userId }}"
+            storeName: "{{ storeName }}"
+            bankAccountNumber: 1111
+            storeAddress: "disneyland"
