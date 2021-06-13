@@ -91,7 +91,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject(e)
         }
 
@@ -110,7 +109,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject("category with the id alreay exists!")
         }
     }
