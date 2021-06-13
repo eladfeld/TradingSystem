@@ -8,6 +8,7 @@ export class purchaseDB implements iPurchaseDB
 {
     public async completeTransaction(transaction: Transaction):Promise<boolean>
     {
+        console.log("transaction:",transaction)
         const t = await sequelize.transaction();
         try
         {
@@ -98,6 +99,7 @@ export class purchaseDB implements iPurchaseDB
                 }
             })
             .catch(async (err) => {
+                console.log("guest")
                 try{
                     await t.commit();
                     resolve(true)
@@ -330,5 +332,11 @@ export class purchaseDB implements iPurchaseDB
 
 
     clear: () => void;
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 
 }

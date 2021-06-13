@@ -31,15 +31,13 @@ const Config =
 export default Config;
 
 
-
-
 //program constants
 export const CHECKOUT_TIMEOUT = 3000000;     //5 minutes
 export const CACHE_SIZE = -1;               //how much memory we want to cache (in bytes?)
 
 //init configurations
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
-export const SHOULD_INIT_STATE = true;    //initialize state from file?
+export const SHOULD_INIT_STATE = false;    //initialize state from file?
 export const INITIAL_STATE = checkState;
 
 
@@ -70,6 +68,7 @@ export const TEST_MODE = 3;
 
 
 export var sqlMode = LOCALHOST_MODE;
+
 
 class SqlConnector
 {

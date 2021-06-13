@@ -17,4 +17,6 @@ export interface iLoginStatsDB
     setLoginStatsAtDate( date:Date, guests:number, subscribers:number, owners:number, managers:number, system_manager:number) : Promise<void>
 
     getLoginStats( from:Date, until:Date ) : Promise<login_stats>
+    willFail: () => void; 
+    willSucceed: () => void; 
 }

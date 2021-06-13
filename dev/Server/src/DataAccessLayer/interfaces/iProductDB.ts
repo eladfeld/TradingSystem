@@ -11,4 +11,7 @@ export interface iProductDB
     getProductById:(productId: number) =>Promise<StoreProduct>;
 
     clear:() => void;
+
+    willFail: () => void; 
+    willSucceed: () => void; 
 }
