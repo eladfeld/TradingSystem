@@ -593,6 +593,29 @@ const newOffer = (req : Request, res: Response , next: NextFunction) =>
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
+const setRecievingOffers = (req: Request, res: Response, next: NextFunction) =>
+{
+    let state: boolean = req.body.state;
+    let storeId: number = req.body.storeId;
+    if(state)service.setStoreToRecieveOffers(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+    else
+    {
+        service.setStoreToNotRecieveOffers(storeId)
+        .then(message => res.status(OKSTATUS).json(message))
+        .catch(error => res.status(FAILSTATUS).json(error))
+    }
+}
+
+const isRecievingOffers = (req: Request, res: Response, next: NextFunction) =>
+{
+    let storeId: number = req.body.storeId
+    service.isRecievingOffers(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 
 export default {
@@ -650,5 +673,7 @@ export default {
     getLoginStats,
     OfferResponseByOwner,
     getOffersByStore,
-    newOffer
+    newOffer,
+    setRecievingOffers,
+    isRecievingOffers
     };
