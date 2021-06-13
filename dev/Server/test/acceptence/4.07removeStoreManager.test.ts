@@ -6,9 +6,9 @@ import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueM
 import { register_login, open_store } from './common';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.7: remove appointment',async function () {
+describe('4.7: remove appointment',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -19,6 +19,7 @@ describe('4.7: remove appointment',async function () {
         setReady(true);
     });
     it('remove recursive appointment',async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let hezi_sessionId = await service.enter();
@@ -36,6 +37,7 @@ describe('4.7: remove appointment',async function () {
     })
 
     it('try to remove manager without permission',async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "123456789");

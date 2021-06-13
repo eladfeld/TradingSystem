@@ -14,6 +14,9 @@ export class ProductCache implements iProductDB
         this.products = new Map();
         this.productDb = new productDB;
     }
+    
+    willFail: () => void;
+    willSucceed: () => void;
 
     public getLastProductId (): Promise<number>
     {

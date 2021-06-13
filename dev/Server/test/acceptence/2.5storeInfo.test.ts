@@ -8,23 +8,27 @@ import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName} from '../testUti
 import { enter_login, register_login, open_store } from './common';
 import {uniqueName, isReady,  check} from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
+import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
 
-describe('2.5: store info test' ,async function() {
-    var service : Service =await Service.get_instance();
+describe('2.5: store info test' , function() {
+    
 
 
     
     beforeEach( () => {
         //console.log('start')
+        this.timeout(10000)
         return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function () {
-        //console.log('finish');        
+    afterEach(async function () {
+        //console.log('finish');      
+        await truncate_tables()  
         setReady(true);
     });
 
     it('store info test good',async function () {
+        var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName_1 = uniqueAlufHasportName();
         const storeName_2 = uniqueAlufHasportName();
@@ -42,6 +46,7 @@ describe('2.5: store info test' ,async function() {
     })
 
     it('try to watch store without permission',async function () {
+        var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName_1 = uniqueAlufHasportName();
         const storeName_2 = uniqueAlufHasportName();
@@ -60,6 +65,7 @@ describe('2.5: store info test' ,async function() {
     })
 
     it('avi opens store , system manager watching it' ,async function() {
+        var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
         const michaelName = "michael";

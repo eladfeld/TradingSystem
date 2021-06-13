@@ -12,21 +12,25 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfRejected, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
+import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
+import { doesNotMatch } from 'assert';
 
-describe('2.6: find product',async function () {
+describe('2.6: find product',function () {
 
 
-    var service: Service =await Service.get_instance();
     beforeEach( () => {
+        this.timeout(10000)
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
-    afterEach(function () {
-        //console.log('finish');        
+    afterEach(async function () {
+        //console.log('finish');      
+        await truncate_tables()  
         setReady(true);
     });
     it('find product by name', async function () {
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const megaName = uniqueMegaName();
         let sessionId = await service.enter();
@@ -43,6 +47,7 @@ describe('2.6: find product',async function () {
     })
 
     it('find product by category', async function () {
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const megaName = uniqueMegaName();
         let sessionId = await failIfRejected(()=> service.enter());

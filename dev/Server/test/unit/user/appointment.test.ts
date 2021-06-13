@@ -13,6 +13,7 @@ const HASHED_PASSWORD = "7110eda4d09e062aa5e4a390b0a572ac0d2c0220";
 
 describe('AppointmentManager tests' , function() {
     beforeEach( () => {
+        this.timeout(5000);
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
@@ -56,6 +57,7 @@ describe('AppointmentManager tests' , function() {
     it('try to reappoint user',async function(){
         let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD,13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
+        await MakeAppointment.appoint_founder(founder,store);
         let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD,13);
         await MakeAppointment.appoint_manager(founder,store,manager);
         await failIfResolved(() => MakeAppointment.appoint_manager(founder,store,manager))
@@ -94,20 +96,21 @@ describe('AppointmentManager tests' , function() {
         await MakeAppointment.appoint_founder(founder,store);  
         let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
         await MakeAppointment.appoint_manager(founder,store,manager);
-        await failIfResolved(() => MakeAppointment.appoint_owner(founder,store,manager))
+        await failIfRejected(() => MakeAppointment.appoint_owner(founder,store,manager))
     })
 
-    it('remove appontment good',async function() {//here
+    it('remove appointment good',async function() {//here
         let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
         await MakeAppointment.appoint_founder(founder,store);  
         let manager : Subscriber = new Subscriber("elad",HASHED_PASSWORD, 13);
         await MakeAppointment.appoint_manager(founder,store,manager);
-        await MakeAppointment.removeAppointment(store.findAppointedBy(founder.getUserId(), manager.getUserId()));
+        let appointment = store.findAppointedBy(founder.getUserId(), manager.getUserId())
+        await MakeAppointment.removeAppointment(appointment);
         expect(manager.getAppointments().length).to.equal(0);
     })
 
-    it('remove appontment bad',async function(){
+    it('remove appointment bad',async function(){
         let founder : Subscriber = new Subscriber("micha",HASHED_PASSWORD, 13);
         let store : Store = new StoreStub(founder.getUserId(),"Aluf Hasport" , 123456 , "Tel Aviv");
         await MakeAppointment.appoint_founder(founder,store);  

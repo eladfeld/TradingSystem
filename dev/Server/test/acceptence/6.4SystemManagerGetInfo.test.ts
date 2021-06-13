@@ -13,8 +13,8 @@ const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMon
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 
 import {setReady, waitToRun} from '../testUtil';
-describe('6.4: System Manager Get Info',async function () {
-    var service: Service =await Service.get_instance();
+describe('6.4: System Manager Get Info',function () {
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -25,6 +25,7 @@ describe('6.4: System Manager Get Info',async function () {
         setReady(true);
     });
     it('system manager get store purchase history',async  function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let sys_manager_sessionId = await service.enter();
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "1234");
@@ -40,6 +41,7 @@ describe('6.4: System Manager Get Info',async function () {
     })
 
     it('system manager get user purchase history', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let ali_sessionId = await service.enter();
         let sysm_sessionId = await service.enter();

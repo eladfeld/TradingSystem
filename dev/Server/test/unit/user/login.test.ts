@@ -24,7 +24,7 @@ describe('login test' , function() {
             const subscriber = await Login.login("yosi", "1234");
             expect(subscriber).to.not.null;
         }catch(e){
-            failTest("register or login failed");
+            failTest(e);
         }
     })
 

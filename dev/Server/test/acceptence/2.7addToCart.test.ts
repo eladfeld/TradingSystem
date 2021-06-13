@@ -11,9 +11,9 @@ import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName }
 import { fail } from 'assert';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.7: add to cart test' ,async function() {
+describe('2.7: add to cart test' ,function() {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -24,6 +24,7 @@ describe('2.7: add to cart test' ,async function() {
         setReady(true);
     });
     it('add to cart good' , async function() {
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
         let sessionId = await service.enter();
@@ -36,6 +37,7 @@ describe('2.7: add to cart test' ,async function() {
     })
 
     it('add non existent product to cart' , async function() {
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
 

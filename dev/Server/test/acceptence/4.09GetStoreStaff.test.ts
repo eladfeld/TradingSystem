@@ -7,9 +7,9 @@ import { register_login, open_store } from './common';
 import { APIsWillSucceed, uniqueAviName, uniqueMegaName, uniqueMosheName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.9: get store staff',async function () {
+describe('4.9: get store staff',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -22,6 +22,7 @@ describe('4.9: get store staff',async function () {
 
 
     it('get staff', async function () {
+        var service: Service =await Service.get_instance();
         let moshe_sessionId = await service.enter();
         let avi_sessionId = await service.enter();
         let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");

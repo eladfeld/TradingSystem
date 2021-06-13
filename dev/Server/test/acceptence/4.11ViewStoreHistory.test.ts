@@ -14,8 +14,8 @@ const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMon
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 
 
-describe('4.11: view store buying history',async function () {
-    var service: Service =await Service.get_instance();
+describe('4.11: view store buying history',function () {
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -26,6 +26,7 @@ describe('4.11: view store buying history',async function () {
         setReady(true);
     });
     it('viwe store history',async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
         let store = await open_store(service,avi_sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");

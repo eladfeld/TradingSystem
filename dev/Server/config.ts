@@ -58,16 +58,18 @@ export const setPathToSystemManagers = (newPath:string) =>{
     PATH_TO_SYSTEM_MANAGERS = newPath;
 }
 
+
+export const TEST_MODE = true;
 //database configurations:
 
     //modes:
 const LOCALHOST_MODE = 1;
 const REMOTE_MODE = 2;
-export const TEST_MODE = 3;
+const TEST_DB = 3;
     //end modes
 
 
-export var sqlMode = LOCALHOST_MODE;
+export var sqlMode = TEST_DB;
 
 
 class SqlConnector
@@ -100,11 +102,11 @@ class SqlConnector
             connector.dialect= 'mysql'
             connector.port= 3306
         }
-        else if(sqlMode === TEST_MODE)
+        else if(sqlMode === TEST_DB)
         {
             connector.username= 'root'
             connector.password= '1234'
-            connector.database= 'new_schema'
+            connector.database= 'test_db'
             connector.host= 'localhost'
             connector.dialect= 'mysql'
             connector.port= 3306  

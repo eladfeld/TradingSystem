@@ -8,9 +8,9 @@ import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName } from '../testUt
 import { register_login, open_store } from './common';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.8: Shopping Cart view and edit' ,async function() {
+describe('2.8: Shopping Cart view and edit' ,function() {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -23,6 +23,7 @@ describe('2.8: Shopping Cart view and edit' ,async function() {
 
     it('shopping cart before and after delete' , async function()
     {
+        var service: Service =await Service.get_instance();
         //this.timeout(30000)
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();

@@ -5,7 +5,6 @@ export class LoginStatsDB implements iLoginStatsDB
 {
     public async updateLoginStats(user_type: userType):Promise<void> 
     {
-        console.log("update stats")
         // todays date at 00:00
         let today = new Date()
         today.setHours(0,0,0,0)
@@ -71,7 +70,6 @@ export class LoginStatsDB implements iLoginStatsDB
         until.setHours(0,0,0,0)
         let res_stats: login_stats = {guests:0, subscribers:0, owners:0, managers:0, system_managers:0}
         let relevant_dates = await sequelize.models.LoginStats.findAll({ where: { date: {$between: [from, until] } } } )
-        console.log(relevant_dates)
         for(let stats of relevant_dates)
         {
             if((stats.date >= from) && (stats.date <= until))

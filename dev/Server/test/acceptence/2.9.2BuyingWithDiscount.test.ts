@@ -11,9 +11,9 @@ import PaymentInfo from '../../src/DomainLayer/purchase/PaymentInfo';
 import Transaction from '../../src/DomainLayer/purchase/Transaction';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.9.2 Buying with discount',async function () {
+describe('2.9.2 Buying with discount',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -26,6 +26,7 @@ describe('2.9.2 Buying with discount',async function () {
 
     //child should succeed, adult should fail
     it('10% off toys category', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
@@ -54,6 +55,7 @@ describe('2.9.2 Buying with discount',async function () {
     })
 
     it('10% off toys category if you buy at least 10 toys', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let al_sessionId = await service.enter();

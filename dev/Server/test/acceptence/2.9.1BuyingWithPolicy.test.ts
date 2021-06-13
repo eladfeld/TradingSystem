@@ -8,9 +8,9 @@ import { APIsWillSucceed, failIfRejected, failIfResolved, uniqueAviName, uniqueM
 import { tCompositePredicate, tPredicate, tSimplePredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.9.1 Buying with respect to buying policy',async function () {
+describe('2.9.1 Buying with respect to buying policy',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -23,6 +23,7 @@ describe('2.9.1 Buying with respect to buying policy',async function () {
 
     //child should succeed, adult should fail
     it('only kids can buy toys (category)', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let child_sessionId = await service.enter();
         let adult_sessionId = await service.enter();
@@ -61,6 +62,7 @@ describe('2.9.1 Buying with respect to buying policy',async function () {
 
     //checkout should be allowed with 1 playstation and then fail when he tries to checkout with 2
     it('cant buy more than 1 playstation (product)', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");

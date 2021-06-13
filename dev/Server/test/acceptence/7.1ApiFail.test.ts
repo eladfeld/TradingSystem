@@ -16,9 +16,9 @@ const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerus
 import { APIsWillSucceed, failIfResolved, failTest, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('7.1: Api Fail',async function () {
+describe('7.1: Api Fail',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -29,6 +29,7 @@ describe('7.1: Api Fail',async function () {
         setReady(true);
     });
     it('supply fail', async function () {
+        var service: Service =await Service.get_instance();
         SupplySystem.willFail();
         PaymentSystem.willSucceed();
         let sessionId = await service.enter();
@@ -45,6 +46,7 @@ describe('7.1: Api Fail',async function () {
     )
 
     it('payment fail', async function () {
+        var service: Service =await Service.get_instance();
         SupplySystem.willSucceed();
         PaymentSystem.willFail();
         let sessionId = await service.enter();

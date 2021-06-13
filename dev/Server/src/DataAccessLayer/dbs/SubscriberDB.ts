@@ -51,7 +51,7 @@ export class subscriberDB implements iSubscriberDB
         }
         catch(e)
         {
-            return Promise.reject("subscriber with the same id is alreay exists.");
+            return Promise.reject(e);
         }
 
     }

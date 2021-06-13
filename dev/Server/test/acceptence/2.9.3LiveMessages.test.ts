@@ -15,9 +15,9 @@ import {setReady, waitToRun} from '../testUtil';
 import { Publisher } from '../../src/DomainLayer/notifications/Publisher';
 import { promises } from 'dns';
 
-describe('2.9.3: Live Messages',async function () {
+describe('2.9.3: Live Messages',function () {
     //setTestConfigurations();        //changing external APIs to mocks
-    var service: Service =await Service.get_instance();
+    
 
     beforeEach( () => {
         //console.log('start')
@@ -30,6 +30,7 @@ describe('2.9.3: Live Messages',async function () {
     });
 
     it('avi buys from himself and receives message', async function () {
+        var service: Service =await Service.get_instance();
         var publisher : Publisher = Publisher.get_instance();
         publisher.set_send_func((userId:number,_message:{}) => {
             return Promise.resolve("message sent")
@@ -53,6 +54,7 @@ describe('2.9.3: Live Messages',async function () {
 
 
     it('moshe buys from avi which receives the message only after he logs in', async function () {
+        var service: Service =await Service.get_instance();
         var publisher : Publisher = Publisher.get_instance();
         publisher.set_send_func((userId:number,_message:{}) => {
             let logged_subscribers = service.get_logged_subscribers()

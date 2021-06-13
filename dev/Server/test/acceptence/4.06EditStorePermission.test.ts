@@ -7,9 +7,9 @@ import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueMosheName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.6: edit store permission',async function () {
+describe('4.6: edit store permission',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -20,6 +20,7 @@ describe('4.6: edit store permission',async function () {
         setReady(true);
     });
     it('avi opens store and appoints manager with all the permissions', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
@@ -31,6 +32,7 @@ describe('4.6: edit store permission',async function () {
     })
 
     it('moshe, a store manager tries to edit store inventory without permissions', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let avi = await register_login(service,avi_sessionId, uniqueAviName(), "123456789");

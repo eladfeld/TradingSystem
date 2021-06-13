@@ -17,6 +17,9 @@ export class StoreCache implements iStoreDB
         this.stores = new Map();
         this.storeDb = new storeDB
     }
+    
+    willFail: () => void;
+    willSucceed: () => void;
 
     private getStore(storeId: number): Promise<Store>
     {

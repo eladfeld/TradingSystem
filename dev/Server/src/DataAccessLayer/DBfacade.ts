@@ -278,4 +278,8 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
 
 }
 
-export const DB =new DBfacade();
+// to replace the DB in stub for the tests
+export function set_DB(db : any ) {
+    DB = db;
+}
+export var DB =new DBfacade();

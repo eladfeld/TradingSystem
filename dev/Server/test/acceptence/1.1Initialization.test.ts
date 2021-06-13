@@ -6,6 +6,7 @@ import { APIsWillSucceed, failTest, setReady, waitToRun } from '../testUtil';
 import SupplySystem from '../../src/DomainLayer/apis/SupplySystem';
 import PaymentSystem from '../../src/DomainLayer/apis/PaymentSystem';
 import { PATH_TO_SYSTEM_MANAGERS, setPathToSystemManagers } from '../../config';
+import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
 // import fs from '../../../Client/node_modules/fs-extra/lib/fs/index.js'
 
 // 
@@ -13,15 +14,18 @@ describe('1.1 Ensure Proper Initialization' , function() {
 
     beforeEach( () => {
         //console.log('start')
+        this.timeout(10000)
         return waitToRun(()=>{
             APIsWillSucceed();
             Service.uninitialize();
         });
     });
 
-    afterEach(function () {
-        //console.log('finish');        
+    afterEach(async function (done) {
+        //console.log('finish');     
+        await truncate_tables()   
         setReady(true);
+        done()
     });
    
     it('main success scenario - successfully init' ,function() {

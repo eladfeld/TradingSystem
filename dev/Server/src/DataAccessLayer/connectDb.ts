@@ -35,10 +35,13 @@ const TransactionItem = require('./models/TransactionItem')
 const ProductToCategory = require('./models/ProductToCategory')
 const MessageHistory = require('./models/MessageHistory')
 const LoginStts = require('./models/LoginStats')
+
+
 export async function initTables (){
 
     if (SHOULD_RESET_DATABASE)
-      await sequelize.queryInterface.dropAllTables()
+      await truncate_tables()
+
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
     sequelize.models.StoreProduct.belongsTo(sequelize.models.Store)
@@ -73,3 +76,23 @@ export async function initTables (){
     await sequelize.sync()
 
 }
+
+export async function truncate_tables() {
+  await sequelize.models.Appointment.truncate()
+  await sequelize.models.BasketProduct.truncate()
+  await sequelize.models.ProductToCategory.truncate()
+  await sequelize.models.MessageHistory.truncate()
+  await sequelize.models.LoginStats.truncate()
+  await sequelize.models.DiscountPolicy.truncate()
+  await sequelize.models.Category.truncate()
+  await sequelize.models.BuyingPolicy.truncate()
+  await sequelize.models.PendingMessage.truncate()
+  await sequelize.models.ShoppingBasket.truncate()
+  await sequelize.models.StoreProduct.truncate()
+  await sequelize.models.Store.truncate()
+  await sequelize.models.SystemManager.truncate()
+  await sequelize.models.Subscriber.truncate()
+  await sequelize.models.TransactionItem.truncate()
+  await sequelize.models.Transaction.truncate()
+}
+

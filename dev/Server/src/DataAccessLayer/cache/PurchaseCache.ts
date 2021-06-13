@@ -15,6 +15,9 @@ export class PurchaseCache implements iPurchaseDB
         this.transactions = new Map();
         this.purchaseDB = new purchaseDB();
     }
+    
+    willFail: () => void;
+    willSucceed: () => void;
 
     // private getTransaction(transactionId: number): Promise<Transaction>
     // {

@@ -17,7 +17,7 @@ Object.freeze(stringUtil);
 
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
-export const PAYMENT_TIMEOUT_MILLISEC: number = sqlMode === TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
+export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
 
 
 class Purchase {

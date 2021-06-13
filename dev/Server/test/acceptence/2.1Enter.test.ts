@@ -4,17 +4,20 @@ import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, failIfRejected,  } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
+import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
 
 describe('2.1: enter system test' ,function() {
 
     
     beforeEach( () => {
         //console.log('start')
+        this.timeout(10000)
         return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function () {
-        //console.log('finish');        
+    afterEach(async function () {
+        //console.log('finish');     
+        await truncate_tables()   
         setReady(true);
     });
     

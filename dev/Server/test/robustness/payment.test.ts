@@ -8,9 +8,9 @@ import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from '../acce
 import {APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName} from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('API fail',async function () {
+describe('API fail',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
         //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
@@ -21,6 +21,7 @@ describe('API fail',async function () {
         setReady(true);
     });
     it('buy shopping basket with payment system down', async function () {
+        var service: Service =await Service.get_instance();
         SupplySystem.willSucceed();
         PaymentSystem.willFail();
         let avi_sessionId = await service.enter()

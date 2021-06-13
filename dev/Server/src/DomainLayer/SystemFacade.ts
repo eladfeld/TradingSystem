@@ -177,10 +177,11 @@ export class SystemFacade
         let user: User = new User();
         let sessionId = SystemFacade.getSessionId();
         this.logged_guest_users.set(sessionId,user);
-        DB.updateLoginStats(userType.guest);
+        let updatestatsp = DB.updateLoginStats(userType.guest);
         Publisher.get_instance().notify_login_update("$login_stats:guests")
         return new Promise( (resolve,reject) => {
-            resolve(sessionId);
+            updatestatsp.then( _ => { resolve(sessionId); })
+            .catch(error => reject(error))
         })
     }
 
