@@ -1,12 +1,9 @@
 config:
   target: "https://localhost:3333/command"
   phases:
-    - duration: 1
-      arrivalRate: 5
-      name: Store Owners
-    - duration: 1
-      arrivalRate: 5
-      name: Store Owners
+    - duration: 1000
+      arrivalRate: 10000
+      name: Warm up
   payload:
     path: "users.csv"
     fields:
@@ -19,21 +16,19 @@ config:
     skipHeader: false
 
 scenarios:
-  - name: "everyone has a store"
+  - name: "1000 users"
     flow:
       - get:
           url: "/enter"
           capture:
             json: "$.userId"
             as: userId
-      - think: 1
       - post:
           url: "/register"
           json:
             username: "{{ username }}"
             password: "{{ password }}"
             age: "{{ age }}"
-      - think: 1
       - post:
           url: "/login"
           json:
@@ -43,7 +38,6 @@ scenarios:
           capture:
             json: "$.userId"
             as: userId
-      - think: 1
       - post:
           url: "/openStore"
           json:
