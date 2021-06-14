@@ -13,6 +13,7 @@ import { Search, SearchByName, SearchAbovePrice, SearchByStore, SearchBelowPrice
 import { SERVER_BASE_URL } from '../constants';
 import MyTransactions from './MyTransactions';
 import MyTransaction from './MyTransaction';
+import ActiveOffers from './ActiveOffers';
 import Register from './Register';
 import ManageStores from './store_manager/ManageStores'
 import ManageStore from './store_manager/ManageStore'
@@ -177,6 +178,12 @@ class App extends React.Component
             path= '/inbox' exact
             render={(props) => (
               <Inbox {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
+            )}
+          />
+          <Route
+            path= '/activeOffers' exact
+            render={(props) => (
+              <ActiveOffers {...props} getAppState={this.getAppState} setAppState={this.setAppState} />
             )}
           />
         </div>

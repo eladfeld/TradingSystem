@@ -6,9 +6,10 @@ import HomeIcon from '@material-ui/icons/Home';
 import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
-import history from '../../history';
+import history from '../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../../constants';
+import { SERVER_BASE_URL } from '../constants';
+import Banner from './Banner';
 
 const theme = createMuiTheme({
   palette: {
@@ -27,14 +28,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //style:
-const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
+const paperStyle={padding :20,height:'70vh',width:400, margin:"20px auto"}
 const btnstyle={margin:'8px 0'}
 
 
 
 
 
-export const AppointManager = ({getAppState, setAppState}) => {
+export const CounterOffer = ({getAppState, setAppState, setPage, offer}) => {
 
     const [_ManagerUsername, setManagerUsername] = useState("");
     const [_isSucsess, setIsSucsess] = useState(false);
@@ -42,39 +43,19 @@ export const AppointManager = ({getAppState, setAppState}) => {
     const [problem, setProblem] = useState("");
     let storeId = getAppState().storeId
     let userId = getAppState().userId
-
-
-
+    const [counterOffer, setCounterOffer] = useState(0)
+    
     const classes = useStyles();
 
-    const appoint = async (newManagerUsername) =>
-    {
-        axios.post(`${SERVER_BASE_URL}appointStoreManager`, {userId, storeId, newManagerUsername})
-        .then(res => {
-          if(res.status == 200){
-            setIsSucsess(true);
-          }
-          else if(res.status == 201)
-          {
-            setHasProblem(true);
-            setProblem(res.data);
-            clearFields();
-          }
-        })
-        .catch()
-    }
-    const clearFields = () =>
-    {
-        setManagerUsername("");
-    }
-
+    console.log(offer)
   return (
       <div className={classes.margin}>
       <div>
+      <Banner getAppState={getAppState} setAppState={setAppState}/>
         {_isSucsess ?
         <Alert
         action={
-          <Button color="inherit" size="small" onClick={() => {history.push(`/store/${storeId}`)}}>
+          <Button color="inherit" size="small" onClick={() => {history.push('/welcome')}}>
             Back
           </Button>
         }
@@ -83,39 +64,56 @@ export const AppointManager = ({getAppState, setAppState}) => {
       </Alert> :
       _hasProblem ?
       <Alert severity="warning">A problem accured while adding the manager: {problem}!</Alert>
-
-
       :<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
-                    <h2>Add new store manager</h2>
+                    <h2>counter offer</h2>
                 </Grid>
                   <Grid container spacing={1} alignItems="flex-end">
-                    <Grid item>
-                      <HomeIcon />
+                    <Grid item xs={12}>
+                            <TextField disabled id="standard-disabled" label="product name" defaultValue={offer.productName} />
+                    </Grid>
+                    <Grid item xs={12}>
+                            <TextField disabled id="standard-disabled" label="counter offer" defaultValue={offer.counterPrice} />
                     </Grid>
                     <Grid item>
-                      <TextField
-                          label='Manager username'
-                          placeholder='Enter new manager username'
-                          onChange={(event) => setManagerUsername(event.target.value)}
-                      fullWidth/>
+                        <TextField
+                        id="standard-number"
+                        label="new counter offer"
+                        type="number"
+                        value={counterOffer}
+                        onChange={(e) => setCounterOffer(e.target.value)}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        />
+                    </Grid>
+                    <Grid item>
+                    <Button variant="contained" onClick={() => 
+                    {
+                        axios.post(SERVER_BASE_URL+'/counterOffer', {userId, storeId, offerId: offer.offerId, counterOffer: Number(counterOffer)})
+                    }} >
+                        sand counter offer 
+                    </Button>
                     </Grid>
                   </Grid>
               <MuiThemeProvider theme={theme}>
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(_ManagerUsername)
+                        alert("not yet implemented")
                     }}
-                  fullWidth>add manager
+                  fullWidth>approve and checkout
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
-                  onClick={(e) => clearFields()}
-                    fullWidth>clear
+                  onClick={(e) =>
+                    {
+                        alert("not yet implemented")
+                    }}
+                    fullWidth>decline
                   </Button>
                 <Typography >
-                    <Button onClick={() => {history.push('/welcome');}} >
+                    <Button onClick={() => {setPage("offers");}} >
                         back
                     </Button>
                 </Typography>
@@ -130,4 +128,4 @@ export const AppointManager = ({getAppState, setAppState}) => {
   );
 }
 
-export default AppointManager;
+export default CounterOffer;

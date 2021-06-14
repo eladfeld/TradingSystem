@@ -27,14 +27,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //style:
-const paperStyle={padding :20,height:'70vh',width:280, margin:"20px auto"}
+const paperStyle={padding :20,height:'70vh',width:400, margin:"20px auto"}
 const btnstyle={margin:'8px 0'}
 
 
 
 
 
-export const AppointManager = ({getAppState, setAppState}) => {
+export const Offer = ({getAppState, setAppState, setPage}) => {
 
     const [_ManagerUsername, setManagerUsername] = useState("");
     const [_isSucsess, setIsSucsess] = useState(false);
@@ -42,31 +42,10 @@ export const AppointManager = ({getAppState, setAppState}) => {
     const [problem, setProblem] = useState("");
     let storeId = getAppState().storeId
     let userId = getAppState().userId
-
-
-
+    const { offer } = getAppState();
+    const [counterOffer, setCounterOffer] = useState(0)
     const classes = useStyles();
 
-    const appoint = async (newManagerUsername) =>
-    {
-        axios.post(`${SERVER_BASE_URL}appointStoreManager`, {userId, storeId, newManagerUsername})
-        .then(res => {
-          if(res.status == 200){
-            setIsSucsess(true);
-          }
-          else if(res.status == 201)
-          {
-            setHasProblem(true);
-            setProblem(res.data);
-            clearFields();
-          }
-        })
-        .catch()
-    }
-    const clearFields = () =>
-    {
-        setManagerUsername("");
-    }
 
   return (
       <div className={classes.margin}>
@@ -74,7 +53,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
         {_isSucsess ?
         <Alert
         action={
-          <Button color="inherit" size="small" onClick={() => {history.push(`/store/${storeId}`)}}>
+          <Button color="inherit" size="small" onClick={() => {history.push('/welcome')}}>
             Back
           </Button>
         }
@@ -83,39 +62,61 @@ export const AppointManager = ({getAppState, setAppState}) => {
       </Alert> :
       _hasProblem ?
       <Alert severity="warning">A problem accured while adding the manager: {problem}!</Alert>
-
-
       :<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
-                    <h2>Add new store manager</h2>
+                    <h2>manage offer</h2>
                 </Grid>
                   <Grid container spacing={1} alignItems="flex-end">
-                    <Grid item>
-                      <HomeIcon />
+
+                    <Grid item xs={12}>
+                            <TextField disabled id="standard-disabled" label="username" defaultValue={offer.username} />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                            <TextField disabled id="standard-disabled" label="product name" defaultValue={offer.productName} />
+                    </Grid>
+                    <Grid item xs={12}>
+                            <TextField disabled id="standard-disabled" label="bid" defaultValue={offer.bid} />
                     </Grid>
                     <Grid item>
-                      <TextField
-                          label='Manager username'
-                          placeholder='Enter new manager username'
-                          onChange={(event) => setManagerUsername(event.target.value)}
-                      fullWidth/>
+                        <TextField
+                        id="standard-number"
+                        label="counter offer"
+                        type="number"
+                        value={counterOffer}
+                        onChange={(e) => setCounterOffer(e.target.value)}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        />
+                    </Grid>
+                    <Grid item>
+                    <Button variant="contained" onClick={() => 
+                    {
+                        axios.post(SERVER_BASE_URL+'/counterOffer', {userId, storeId, offerId: offer.offerId, counterOffer: Number(counterOffer)})
+                    }} >
+                        sand counter offer 
+                    </Button>
                     </Grid>
                   </Grid>
               <MuiThemeProvider theme={theme}>
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        appoint(_ManagerUsername)
+                        axios.post(SERVER_BASE_URL+'/acceptOffer', {userId, storeId, offerId: offer.offerId})
                     }}
-                  fullWidth>add manager
+                  fullWidth>approve
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
-                  onClick={(e) => clearFields()}
-                    fullWidth>clear
+                  onClick={(e) =>
+                    {
+                        axios.post(SERVER_BASE_URL+'/declineOffer', {userId, storeId, offerId: offer.offerId})
+                    }}
+                    fullWidth>decline
                   </Button>
                 <Typography >
-                    <Button onClick={() => {history.push('/welcome');}} >
+                    <Button onClick={() => {setPage("offer_manager");}} >
                         back
                     </Button>
                 </Typography>
@@ -130,4 +131,4 @@ export const AppointManager = ({getAppState, setAppState}) => {
   );
 }
 
-export default AppointManager;
+export default Offer;

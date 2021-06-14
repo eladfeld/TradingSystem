@@ -1000,8 +1000,12 @@ export class SystemFacade
         return OfferManager.get_instance().getOffersByStore(storeId);
     }
 
-    getOffersByUser(userId: number): Promise<Offer[]> {
-        return OfferManager.get_instance().getOffersByUser(userId);
+    getOffersByUser(sessionId: string): Promise<Offer[]> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return OfferManager.get_instance().getOffersByUser(subscriber.getUserId());
     }
 
     newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {

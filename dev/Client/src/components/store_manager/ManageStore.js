@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Banner from '.././Banner';
+import Banner from '../Banner';
 import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
@@ -16,6 +16,7 @@ import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../../
 import AppointOwner from './AppointOwner'
 import AppointManager from './AppointManager'
 import AddProduct from './AddProduct'
+import Offer from './Offer'
 import ManageCategories from './ManageCategories'
 import Offers from './Offers'
 import axios from 'axios';
@@ -45,7 +46,9 @@ const getInventory = async(userId, storeId, setAppState) =>
 const ADD_BUYING_POLICY = "add_buying_policy";
 const ADD_DISCOUNT_POLICY = "add_discount_policy";
 const DELETE_MANAGER = "delete_manager"
-const OFFER_MANAGER = "offer_manager"
+const OFFERS_MANAGER = "offer_manager"
+const OFFER = "offer"
+
 export default function ManageStore({getAppState, setAppState}) {
     const classes = useStyles();
     let storeId = getAppState().storeId
@@ -108,7 +111,7 @@ export default function ManageStore({getAppState, setAppState}) {
 
     const onOffersClick = () =>
     {
-        setPage(OFFER_MANAGER)
+        setPage(OFFERS_MANAGER)
     }
 
     const renderPage = () =>{
@@ -208,24 +211,10 @@ export default function ManageStore({getAppState, setAppState}) {
                 return <AddProduct getAppState={getAppState} setAppState={setAppState}></AddProduct>
             case DELETE_MANAGER:
                 return <DeleteManager getAppState={getAppState} setAppState={setAppState}></DeleteManager>
-            case OFFER_MANAGER:
-                const getOffers = async () =>{
-                    const offersResponse = await axios.post(SERVER_BASE_URL+'/getOffersByStore', {storeId});
-                    switch(offersResponse.status){
-                        case SERVER_RESPONSE_OK:
-                            const offers = JSON.parse(offersResponse.data);
-                            setAppState({offers: offers});
-                            break;
-                        case SERVER_RESPONSE_BAD:
-                            setProblem(offersResponse.data);
-                            break;
-                        default:
-                            setProblem(unknownStatusMessage(offersResponse));
-                            break;
-                    }
-                }
-                getOffers();
-                return <Offers getAppState={getAppState} setAppState={setAppState}></Offers>
+            case OFFERS_MANAGER:
+                return <Offers getAppState={getAppState} setAppState={setAppState} setPage={setPage}></Offers>
+            case OFFER:
+                return <Offer getAppState={getAppState} setAppState={setAppState} setPage={setPage}></Offer>
             default:
                 return <h1></h1>
         }

@@ -5,7 +5,7 @@ import ProgressWheel from '../ProgreeWheel';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import Switch from "react-switch";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
+import { List, Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
 import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../../constants';
 import axios from 'axios';
 
@@ -30,24 +30,48 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const renderOffer = (offer, setAppState) =>
-{
-  return(
-      <Button startIcon={<LocalOfferIcon/>} variant="contained" color="secondary" onClick={() => {
-        setAppState({offer: offer});
-        // history.push(`/store/${store.storeId}`)
-      }}>
-        {`offer for user: ${offer.username}`}
-      </Button>
-  )
-}
 
-const Offers = ({getAppState, setAppState}) => {
+
+const Offers = ({getAppState, setAppState, setPage}) => {
     const classes = useStyles();
-    const {offers} = getAppState();
+    const [offers, setOffers] = useState(undefined);
     const [state, setState] = useState(undefined);
     const { storeId } = getAppState();
 
+
+
+    const getOffers = () =>{
+      axios.post(SERVER_BASE_URL+'/getOffersByStore', {storeId}).then((offersResponse) =>
+      {
+          switch(offersResponse.status){
+              case SERVER_RESPONSE_OK:
+                setOffers( offersResponse.data);
+                  break;
+              case SERVER_RESPONSE_BAD:
+                  alert("ho no")
+                  break;
+                  default:
+                  alert("ho no")
+                  break;
+          }
+      })                    
+  }
+  if(offers === undefined)getOffers();
+    const renderOffer = (offer, setAppState) =>
+    {
+      return(
+        <li className={classes.root} subheader={<li />}>
+
+          <Button startIcon={<LocalOfferIcon/>} variant="contained" color="primary"  onClick={() => {
+            setAppState({offer: offer});
+            setPage("offer")
+          }}>
+            <text uppercase="false">{`user: ${offer.username} offer for product: ${offer.productName}`}</text>
+          </Button>
+          </li>
+
+      )
+    }
     if(state === undefined) {
       axios.post(`${SERVER_BASE_URL}isRecievingOffers`, { storeId})
       .then(ans => setState(ans))
@@ -68,18 +92,20 @@ const Offers = ({getAppState, setAppState}) => {
         <div >
         <Paper elevation={10} style={paperStyle}>
 
-        <FormControlLabel
+        <FormControlLabel 
+          alignItems={'center'}
           control={
             <Switch onChange={handleChange} checked={state}/>
           }
           label="turn on offers to this store"
         />
-        <ul className={classes.root} subheader={<li />}>
-        {
-        offers === null || offers === undefined ? <h1>no offers to show</h1> :
-        offers.map(offer => renderOffer(offer, setAppState))
-        }
-        </ul>
+        <List>
+          {
+          offers === null || offers === undefined ? <h1>no offers to show</h1> :
+          offers.map(offer => renderOffer(offer, setAppState))
+          }
+        </List>
+
         </Paper>
 
         </div>

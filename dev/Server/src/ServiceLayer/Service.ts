@@ -268,8 +268,8 @@ export class Service
         return this.facade.getOffersByStore(storeId);
     }
 
-    public getOffersByUser(userId: number): Promise<Offer[]> {
-        return this.facade.getOffersByUser(userId);
+    public getOffersByUser(sessionId: string): Promise<Offer[]> {
+        return this.facade.getOffersByUser(sessionId);
     }
 
     public newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
