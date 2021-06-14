@@ -616,7 +616,7 @@ const isRecievingOffers = (req: Request, res: Response, next: NextFunction) =>
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
-const acceptOffer = (req: Request, res: Response, next: NextFunction) => 
+const acceptOffer = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId = req.body.userId;
     let storeId = req.body.storeId;
@@ -627,7 +627,7 @@ const acceptOffer = (req: Request, res: Response, next: NextFunction) =>
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
-const declineOffer = (req: Request, res: Response, next: NextFunction) => 
+const declineOffer = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId = req.body.userId;
     let storeId = req.body.storeId;
@@ -649,6 +649,18 @@ const counterOffer = (req: Request, res: Response, next: NextFunction) =>
     .then(message => res.status(OKSTATUS).json(message))
     .catch(error => res.status(FAILSTATUS).json(error))
 }
+
+const buyAcceptedOffer = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId = req.body.userId;
+    let storeId = req.body.storeId;
+    let offerId = req.body.offerId;
+
+    service.buyAcceptedOffer(sessionId, storeId, offerId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 const getOffersByUser = (req: Request, res: Response, next: NextFunction) => {
     let sessionId = req.body.userId;
@@ -721,5 +733,6 @@ export default {
     acceptOffer,
     declineOffer,
     counterOffer,
-    getOffersByUser
+    buyAcceptedOffer,
+    getOffersByUser,
     };

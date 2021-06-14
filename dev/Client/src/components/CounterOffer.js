@@ -8,8 +8,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
 import history from '../history';
 import Alert from '@material-ui/lab/Alert';
-import { SERVER_BASE_URL } from '../constants';
 import Banner from './Banner';
+import {SERVER_BASE_URL, SERVER_RESPONSE_BAD, SERVER_RESPONSE_OK} from '../constants';
 
 const theme = createMuiTheme({
   palette: {
@@ -44,8 +44,25 @@ export const CounterOffer = ({getAppState, setAppState, setPage, offer}) => {
     let storeId = getAppState().storeId
     let userId = getAppState().userId
     const [counterOffer, setCounterOffer] = useState(0)
-    
+
     const classes = useStyles();
+
+    const onBuyAcceptedOffer = async (storeId, offerId) =>{
+      const {userId} = getAppState();
+      const response = await axios.post(SERVER_BASE_URL+'buyAcceptedOffer',{userId, storeId, offerId});
+      switch(response.status){
+          case SERVER_RESPONSE_OK:
+              setAppState({basketAtCheckout:storeId});
+              history.push('/checkout');
+              return;
+          case SERVER_RESPONSE_BAD:
+              setProblem(response.data);
+              return;
+          default:
+              setProblem(`unexpected response code: ${response.status}`);
+              return;
+      }
+  }
 
     console.log(offer)
   return (
@@ -76,39 +93,19 @@ export const CounterOffer = ({getAppState, setAppState, setPage, offer}) => {
                     <Grid item xs={12}>
                             <TextField disabled id="standard-disabled" label="counter offer" defaultValue={offer.counterPrice} />
                     </Grid>
-                    <Grid item>
-                        <TextField
-                        id="standard-number"
-                        label="new counter offer"
-                        type="number"
-                        value={counterOffer}
-                        onChange={(e) => setCounterOffer(e.target.value)}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        />
-                    </Grid>
-                    <Grid item>
-                    <Button variant="contained" onClick={() => 
-                    {
-                        axios.post(SERVER_BASE_URL+'/counterOffer', {userId, storeId, offerId: offer.offerId, counterOffer: Number(counterOffer)})
-                    }} >
-                        sand counter offer 
-                    </Button>
-                    </Grid>
                   </Grid>
               <MuiThemeProvider theme={theme}>
                 <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        alert("not yet implemented")
+                      onBuyAcceptedOffer(storeId, offer.offerId)
                     }}
                   fullWidth>approve and checkout
                 </Button>
                   <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
                   onClick={(e) =>
                     {
-                        alert("not yet implemented")
+                      axios.post(SERVER_BASE_URL+'/declineOffer', {userId, storeId, offerId: offer.offerId})
                     }}
                     fullWidth>decline
                   </Button>

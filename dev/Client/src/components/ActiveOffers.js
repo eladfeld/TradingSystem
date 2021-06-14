@@ -43,21 +43,20 @@ const ActiveOffers = ({getAppState, setAppState}) => {
 
     const COUNTER = "counter"
     const OFFERS = "offers"
-    const executeOffer = async (offer) =>{
-        alert("not yet implemented!")
-        // const response = await axios.post(SERVER_BASE_URL+'checkoutBasket',{userId, storeId});
-        // switch(response.status){
-        //     case SERVER_RESPONSE_OK:
-        //         setAppState({basketAtCheckout:storeId});
-        //         history.push('/checkout');
-        //         return;
-        //     case SERVER_RESPONSE_BAD:
-        //         setProblem(response.data);
-        //         return;
-        //     default:
-        //         setProblem(`unexpected response code: ${response.status}`);
-        //         return;
-        // }
+    const executeOffer = async (storeId, offerId) => {
+        const response = await axios.post(SERVER_BASE_URL+'buyAcceptedOffer',{userId, storeId, offerId});
+        switch(response.status){
+            case SERVER_RESPONSE_OK:
+                setAppState({basketAtCheckout:storeId});
+                history.push('/checkout');
+                return;
+            case SERVER_RESPONSE_BAD:
+                setProblem(response.data);
+                return;
+            default:
+                setProblem(`unexpected response code: ${response.status}`);
+                return;
+        }
     }
 
 
@@ -94,11 +93,11 @@ const ActiveOffers = ({getAppState, setAppState}) => {
                     </Button>
                   }
                   severity="error"> {problem}</Alert> : <a1></a1>
-                } 
+                }
                 <a1>Active offers</a1>
-                <br/>   
-                <br/>   
-                <br/>   
+                <br/>
+                <br/>
+                <br/>
                 <List className={classes.root} subheader={<li />}>
                 {
                 activeOffers === null || activeOffers === undefined ? <ProgressWheel/> :
@@ -111,7 +110,7 @@ const ActiveOffers = ({getAppState, setAppState}) => {
                                     <ListItemText primary={`offer for ${offer.productName} with bid of ${offer.bid}`}/>
                                 </Grid>
                                 <Grid item xs={3} md={2}>
-                                    {offer.offerStatus === "PENDING" ? 
+                                    {offer.offerStatus === "PENDING" ?
                                         <Button variant="contained" color="primary"  onClick={() => setProblem("this offer is still pending")} >
                                             pending
                                         </Button>:
@@ -119,7 +118,7 @@ const ActiveOffers = ({getAppState, setAppState}) => {
                                         <Button variant="contained" color="secondary"  onClick={() => setProblem("this offer is declined, make a better one ;)")} >
                                             declined
                                         </Button>:
-                                        offer.offerStatus === "ACCEPTED AND SOLD OUT" ?                                
+                                        offer.offerStatus === "ACCEPTED AND SOLD OUT" ?
                                         <Button variant="contained" color="primary"  onClick={() => setProblem("this offer already got executed, make another one")} >
                                             offer accpted and bought
                                         </Button> :
@@ -130,12 +129,16 @@ const ActiveOffers = ({getAppState, setAppState}) => {
                                             }} >
                                             watch counter offer
                                         </Button>:
-                                        <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} onClick={() => executeOffer(offer)} >
-                                            execute offer
+                                        offer.offerStatus === "PURCHASED" ?
+                                        <Button variant="contained" color="primary" onClick={() => setProblem("this offer was already purchased")} >
+                                            purchased
+                                        </Button>:
+                                        <Button variant="contained" color="primary" startIcon={<PaymentIcon/>} onClick={() => executeOffer(offer.storeId, offer.offerId)} >
+                                        execute offer
                                         </Button>
                                     }
                                 </Grid>
-                            </Grid>                    
+                            </Grid>
                         </ListSubheader>
                     </ul>
                     </li>

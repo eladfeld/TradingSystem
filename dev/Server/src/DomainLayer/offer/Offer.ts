@@ -8,6 +8,7 @@ export enum OfferStatus{
     COUNTER = "COUNTER", // Store sent counter offer, buyer can accept or send a new offer with pending status and this offer will be rejected
     DECLINED = "DECLINED",
     ACCEPTED_AND_SOLD_OUT = "ACCEPTED AND SOLD OUT",
+    PURCHASED = "PURCHASED",
 }
 
 const offerStatusMapper: { [key: string]: OfferStatus } = {
@@ -16,6 +17,7 @@ const offerStatusMapper: { [key: string]: OfferStatus } = {
     "COUNTER": OfferStatus.COUNTER,
     "DECLINED": OfferStatus.DECLINED,
     "ACCEPTED AND SOLD OUT": OfferStatus.ACCEPTED_AND_SOLD_OUT,
+    "PURCHASED": OfferStatus.PURCHASED,
 }
 
 export class Offer {
@@ -130,6 +132,11 @@ export class Offer {
         }
         Logger.log("could not counter offer");
         return false;
+    }
+
+    public changeStatusToPurchased() : boolean{
+        this.offerStatus = OfferStatus.PURCHASED;
+        return true;
     }
 
 

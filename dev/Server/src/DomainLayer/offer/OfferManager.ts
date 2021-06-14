@@ -39,7 +39,10 @@ export class OfferManager implements iOfferManager {
 
     public async newOffer(user: Subscriber, storeId: number, product: StoreProduct, bid: number): Promise<number>{
         Publisher.get_instance().notify_store_update(storeId, `you recieved a new offer for ${product.getName()} from ${user.getUsername()}`)
-        return Offer.createOffer(user.getUserId(), user.getUsername(), storeId, product.getProductId(), product.getName(), bid)
+        return new Promise((resolve,reject) => {
+            Offer.createOffer(user.getUserId(), user.getUsername(), storeId, product.getProductId(), product.getName(), bid)
+            .catch(err => reject(err));
+        })
     }
 
     public async acceptOffer(subscriber: Subscriber, store: Store, offerId: number): Promise<void>{
@@ -62,11 +65,12 @@ export class OfferManager implements iOfferManager {
                 if(diff.length == 0){
                     if(offerFromDb.changeStatusToAccepted()){
                         Logger.log(`Offer status changed to accepted`)
-                        resolve(DB.updateOffer(offerFromDb).then(() => this.sendOfferAlertToBuyer(subscriber, offerFromDb)))
                     }
-                    Logger.log(`could not change offer status to accepted`)
+                    else{
+                        Logger.log(`could not change offer status to accepted`)
+                    }
                 }
-                resolve()
+                resolve(DB.updateOffer(offerFromDb).then(() => this.sendOfferAlertToBuyer(subscriber, offerFromDb)))
             }).catch(err => reject(err));
         })
 
@@ -74,13 +78,13 @@ export class OfferManager implements iOfferManager {
 
 
     public async declineOffer(subscriber: Subscriber, store: Store, offerId: number): Promise<void>{
-        if (!subscriber.isOwner(store.getStoreId())){
-            return Promise.reject('subscriber cant decline offer, is not owner of store')
-        }
         let offerp = DB.getOfferById(offerId);
         return new Promise((resolve,reject) => {
             offerp.then(offer => {
-                if(offer.changeStatusToDecline()){
+                if (!(subscriber.isOwner(store.getStoreId()) || offer.getUserId() === subscriber.getUserId())){
+                    reject('subscriber cant decline offer, is not owner of store and didnt make the offer')
+                }
+                else if(offer.changeStatusToDecline()){
                     Logger.log(`Offer status changed to declined`)
                     resolve(DB.updateOffer(offer).then(() => this.sendOfferAlertToBuyer(subscriber, offer)))
                 }
@@ -130,7 +134,9 @@ export class OfferManager implements iOfferManager {
                 message = `your offer for ${offer.getProductName()} has been declined`
                 break;
         }
-        Publisher.get_instance().send_message(subscriber, message);
+        if(message === ''){
+            Publisher.get_instance().send_message(subscriber, message);
+        }
 
     }
 
@@ -162,7 +168,14 @@ export class OfferManager implements iOfferManager {
             Purchase.checkout(store.getStoreId(), productPrice, subscriber.getUserId(), reservedProducts, store.getStoreName(),() => {
                 onFail();
                 store.cancelReservedShoppingBasket(reservedProducts)}
-            );
+            ).then(res => {
+                offer.changeStatusToPurchased()
+                if(offer.changeStatusToPurchased()){
+                    Logger.log(`Offer status changed to purchased`)
+                    DB.updateOffer(offer)
+                }
+            })
+
             return resolve(true);
             }).catch(err => reject(err))
         })

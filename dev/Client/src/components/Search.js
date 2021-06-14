@@ -289,7 +289,7 @@ export const Products=({getAppState, setAppState})=>{
                                 </Button>
                             </Grid>
 
-                            <EnableBidding recieveOffers={true} product={product}/>
+                            <EnableBidding recieveOffers={product.recieveOffers} product={product}/>
                         </Grid>
                     </ListItem>
 

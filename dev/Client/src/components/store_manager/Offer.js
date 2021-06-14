@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //style:
-const paperStyle={padding :20,height:'70vh',width:400, margin:"20px auto"}
+const paperStyle={padding :20,height:'70vh',width:410, margin:"20px auto"}
 const btnstyle={margin:'8px 0'}
 
 
@@ -46,6 +46,34 @@ export const Offer = ({getAppState, setAppState, setPage}) => {
     const [counterOffer, setCounterOffer] = useState(0)
     const classes = useStyles();
 
+    const renderCounter = (offer) =>
+    {
+      if(offer.offerStatus === 'PENDING'){
+        return(
+          <Grid item>
+          <TextField
+              id="standard-number"
+              label="counter offer"
+              type="number"
+              value={counterOffer}
+              onChange={(e) => setCounterOffer(e.target.value)}
+              InputLabelProps={{
+                  shrink: true,
+              }}
+            />
+                    <Button variant="contained" onClick={() =>
+                    {
+                        axios.post(SERVER_BASE_URL+'/counterOffer', {userId, storeId, offerId: offer.offerId, counterOffer: Number(counterOffer)}).then(() => setPage("offer_manager"))
+                    }} >
+                        send counter offer
+                    </Button>
+            </Grid>
+
+        )
+      }
+
+
+    }
 
   return (
       <div className={classes.margin}>
@@ -79,42 +107,31 @@ export const Offer = ({getAppState, setAppState, setPage}) => {
                     <Grid item xs={12}>
                             <TextField disabled id="standard-disabled" label="bid" defaultValue={offer.bid} />
                     </Grid>
-                    <Grid item>
-                        <TextField
-                        id="standard-number"
-                        label="counter offer"
-                        type="number"
-                        value={counterOffer}
-                        onChange={(e) => setCounterOffer(e.target.value)}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        />
-                    </Grid>
-                    <Grid item>
-                    <Button variant="contained" onClick={() => 
-                    {
-                        axios.post(SERVER_BASE_URL+'/counterOffer', {userId, storeId, offerId: offer.offerId, counterOffer: Number(counterOffer)})
-                    }} >
-                        sand counter offer 
-                    </Button>
-                    </Grid>
+                    {offer.offerStatus === "COUNTER" ?
+                    <Grid item xs={12}>
+                    <TextField disabled id="standard-disabled" label="counter offer" defaultValue={offer.counterPrice} />
+                    </Grid> : <a1></a1>
+                    }
+                    {renderCounter(offer)}
                   </Grid>
               <MuiThemeProvider theme={theme}>
-                <Button type='submit' color='primary' variant="contained"  style={btnstyle}
+                    {offer.offerStatus === "PENDING" ?
+                    <Button type='submit' color='primary' variant="contained"  style={btnstyle}
                     onClick={(e) =>
                     {
-                        axios.post(SERVER_BASE_URL+'/acceptOffer', {userId, storeId, offerId: offer.offerId})
+                        axios.post(SERVER_BASE_URL+'/acceptOffer', {userId, storeId, offerId: offer.offerId}).then(() => setPage("offer_manager"))
                     }}
                   fullWidth>approve
-                </Button>
-                  <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
-                  onClick={(e) =>
-                    {
-                        axios.post(SERVER_BASE_URL+'/declineOffer', {userId, storeId, offerId: offer.offerId})
-                    }}
-                    fullWidth>decline
-                  </Button>
+                </Button>: <a1></a1>}
+                {offer.offerStatus === "PENDING" ?
+                    <Button type='submit' color='secondary' variant="contained"  style={btnstyle}
+                    onClick={(e) =>
+                      {
+                          axios.post(SERVER_BASE_URL+'/declineOffer', {userId, storeId, offerId: offer.offerId}).then(() => setPage("offer_manager"))
+
+                      }}
+                      fullWidth>decline
+                    </Button>: <a1></a1>}
                 <Typography >
                     <Button onClick={() => {setPage("offer_manager");}} >
                         back

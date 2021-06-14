@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import history from '../../history';
 import ProgressWheel from '../ProgreeWheel';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import Switch from "react-switch";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { List, Button, ButtonGroup, Container, Paper, Typography, Link } from '@material-ui/core';
+import { List, Button, ButtonGroup, Container, Paper, Typography, Link, TextField } from '@material-ui/core';
 import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../../constants';
 import axios from 'axios';
 
@@ -35,10 +35,21 @@ const useStyles = makeStyles((theme) => ({
 const Offers = ({getAppState, setAppState, setPage}) => {
     const classes = useStyles();
     const [offers, setOffers] = useState(undefined);
-    const [state, setState] = useState(undefined);
+    const [state, setState] = useState(false);
     const { storeId } = getAppState();
 
+    useEffect(() => {
+      async function fetchData() {
+        // Call fetch as usual
+        const res = await axios.post(`${SERVER_BASE_URL}isRecievingOffers`, { storeId})
 
+        // Save the posts into state
+        // (look at the Network tab to see why the path is like this)
+        setState(res.data);
+      }
+
+      fetchData();
+    });
 
     const getOffers = () =>{
       axios.post(SERVER_BASE_URL+'/getOffersByStore', {storeId}).then((offersResponse) =>
@@ -54,7 +65,7 @@ const Offers = ({getAppState, setAppState, setPage}) => {
                   alert("ho no")
                   break;
           }
-      })                    
+      })
   }
   if(offers === undefined)getOffers();
     const renderOffer = (offer, setAppState) =>
@@ -66,16 +77,12 @@ const Offers = ({getAppState, setAppState, setPage}) => {
             setAppState({offer: offer});
             setPage("offer")
           }}>
-            <text uppercase="false">{`user: ${offer.username} offer for product: ${offer.productName}`}</text>
+            <text>{`user: ${offer.username}\n offer for product: ${offer.productName} state: ${offer.offerStatus}`}</text>
           </Button>
           </li>
 
       )
-    }
-    if(state === undefined) {
-      axios.post(`${SERVER_BASE_URL}isRecievingOffers`, { storeId})
-      .then(ans => setState(ans))
-      .catch(error => console.log(error));
+
     }
 
     const handleChange = async (event) =>
@@ -91,17 +98,16 @@ const Offers = ({getAppState, setAppState, setPage}) => {
     return (
         <div >
         <Paper elevation={10} style={paperStyle}>
-
-        <FormControlLabel 
-          alignItems={'center'}
-          control={
-            <Switch onChange={handleChange} checked={state}/>
-          }
-          label="turn on offers to this store"
-        />
+          <FormControlLabel
+            alignItems={'center'}
+            control={
+              <Switch onChange={handleChange} checked={state}/>
+            }
+            label="turn on offers to this store"
+          />
         <List>
           {
-          offers === null || offers === undefined ? <h1>no offers to show</h1> :
+          offers === [] || offers === null || offers === undefined ? <h1>no offers to show</h1> :
           offers.map(offer => renderOffer(offer, setAppState))
           }
         </List>

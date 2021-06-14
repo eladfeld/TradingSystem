@@ -61,6 +61,7 @@ router.post('/isRecievingOffers', Controller.isRecievingOffers)
 router.post('/acceptOffer', Controller.acceptOffer)
 router.post('/declineOffer', Controller.declineOffer)
 router.post('/counterOffer', Controller.counterOffer)
+router.post('/buyAcceptedOffer', Controller.buyAcceptedOffer)
 router.post('/getOffersByUser', Controller.getOffersByUser)
 //router.post('/banUser', Controller.banUser)
 
