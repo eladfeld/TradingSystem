@@ -61,7 +61,7 @@ const LOCALHOST_MACOS = 3;
     //end modes
 
 
-let sqlMode = LOCALHOST_MACOS;
+let sqlMode = LOCALHOST_MODE;
 
 class SqlConnector
 {
