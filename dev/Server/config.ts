@@ -61,7 +61,7 @@ const LOCALHOST_MACOS = 4;
     //end modes
 
 
-export var sqlMode = LOCALHOST_MACOS;
+export var sqlMode = LOCALHOST_MODE;
 
 
 class SqlConnector
