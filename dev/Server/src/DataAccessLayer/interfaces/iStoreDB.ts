@@ -43,5 +43,7 @@ export interface iStoreDB
     addDiscountPolicy: (id: number, discount: iDiscount, storeId: number) => Promise<void>
 
     clear:() => void;
+    willFail: () => void; 
+    willSucceed: () => void; 
 
 }

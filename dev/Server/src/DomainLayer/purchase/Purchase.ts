@@ -1,4 +1,4 @@
-import {TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../../config';
+import {TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT, sqlMode, TEST_MODE} from '../../../config';
 import Transaction, { TransactionStatus } from './Transaction';
 import { Publisher } from '../notifications/Publisher';
 import APIAdapterFactory from '../apis/APIAdapterFactory';
@@ -17,7 +17,7 @@ Object.freeze(stringUtil);
 
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
-export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
+export const PAYMENT_TIMEOUT_MILLISEC: number = sqlMode === TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
 
 
 class Purchase {
@@ -82,12 +82,17 @@ class Purchase {
 
         //allow payment within 5 minutes
         // DB.storeTransaction(transaction);
-        DB.completeTransaction(transaction);
+        let checkoutp = DB.completeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, onFail);
-        return new Promise((res , rej) => {res(true)});;
+        return new Promise((resolve,reject) => {
+            checkoutp.then( _ => {
+                resolve(true)
+            })
+            .catch( error => reject(error))
+        })
     }
 
     //completes an existing transaction in progress. returns failure in the event that

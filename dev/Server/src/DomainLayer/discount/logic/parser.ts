@@ -34,7 +34,6 @@ export class Parser{
                     return makeFailure("buying policy type must be simple or composite");
             }            
         }catch(e){
-            console.log(e);
         }
 
         return null;

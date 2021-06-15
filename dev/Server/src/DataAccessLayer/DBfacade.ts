@@ -1,4 +1,4 @@
-import { TEST_MODE } from "../../config";
+import { SHOULD_USE_CACHE } from "../../config";
 import iDiscount from "../DomainLayer/discount/iDiscount";
 import { Offer } from "../DomainLayer/offer/Offer";
 import { Rule } from "../DomainLayer/policy/buying/BuyingPolicy";
@@ -7,6 +7,8 @@ import { Store } from "../DomainLayer/store/Store";
 import { StoreProduct } from "../DomainLayer/store/StoreProduct";
 import { Appointment } from "../DomainLayer/user/Appointment";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
+import { StoreCache } from "./cache/StoreCache";
+import { SubscriberCache } from "./cache/SubscriberCache";
 import { LoginStatsDB } from "./dbs/LoginStatsDB";
 import { offerDB } from "./dbs/OfferDB";
 import { productDB } from "./dbs/ProductDB";
@@ -36,7 +38,7 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     private offerDB : iOfferDB;
 
     constructor(){
-        if (TEST_MODE){
+        if (false){
             this.subscriberDB = new SubscriberDummyDB();
             this.loginDB = new LoginStatsDummyDB();
             this.productDB = new ProductDummyDB();
@@ -52,6 +54,11 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
             this.purchaseDB = new purchaseDB();
             this.storeDB = new storeDB();
             this.offerDB = new offerDB();
+        }
+        if(SHOULD_USE_CACHE)
+        {
+            this.subscriberDB = new SubscriberCache();
+            this.storeDB = new StoreCache();
         }
     }
 
@@ -103,11 +110,20 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     }
     public willFail():void
     {
-        return this.subscriberDB.willFail();
+        this.subscriberDB.willFail();
+        this.loginDB.willFail();
+        this.productDB.willFail();
+        this.purchaseDB.willFail();
+        this.storeDB.willFail();
+
     }
     public willSucceed(): void
     {
-        return this.subscriberDB.willSucceed();
+        this.subscriberDB.willSucceed();
+        this.loginDB.willSucceed();
+        this.productDB.willSucceed();
+        this.purchaseDB.willSucceed();
+        this.storeDB.willSucceed();
     }
     public deleteBasket(userId: number, storeId: number):Promise<void>
     {

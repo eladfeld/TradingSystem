@@ -9,7 +9,7 @@ export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.usern
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
     port: SQLconnector.port, // this is the mysql port
-    logging: false,
+    logging: true,
     define: {
       timestamps: false
     }

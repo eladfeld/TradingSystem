@@ -550,13 +550,9 @@ const replyToComplaint = (req : Request, res: Response , next: NextFunction) =>{
 }
 
 const getLoginStats = (req : Request, res: Response , next: NextFunction) =>{
-    console.log(req.body)
-    console.log(req)
     let sessionId : string = req.body.sessionId
     let from : Date = new Date(req.body.from)
     let until : Date = new Date(req.body.until)
-    console.log(from)
-    console.log(until)
     let getstatsp = service.getLoginStats(sessionId , from, until)
     getstatsp.then(message => res.status(OKSTATUS).json(message))
     .catch(error => res.status(FAILSTATUS).json(error));

@@ -27,7 +27,7 @@ export class StoreProduct
                 StoreProduct.nextId = id;
                 resolve(id);
             })
-            .catch(e => reject("problem with dicsount id "))
+            .catch(e => reject("problem with product id "))
         })
     }
 

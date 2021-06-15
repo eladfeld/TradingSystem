@@ -92,7 +92,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject(e)
         }
 
@@ -111,7 +110,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject("category with the id alreay exists!")
         }
     }
@@ -461,4 +459,10 @@ export class storeDB implements iStoreDB
 
     }
     clear: () => void;
+    public willFail= () =>{
+        throw new Error("can not force failure outside of test mode")
+    }
+    public willSucceed= () =>{
+        throw new Error("can not force success outside of test mode")
+    }
 }

@@ -186,6 +186,14 @@ export class StoreDummyDB implements iStoreDB
     {
         this.stores = [];
     }
+    private isConnected = true;
+    public willFail = () =>{
+        this.isConnected = false;
+    }
+
+    public willSucceed = () =>{
+        this.isConnected = true;
+    }
 
 }
 

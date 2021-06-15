@@ -13,4 +13,7 @@ export interface iProductDB
     updateProduct:(product: StoreProduct) =>Promise<void>;
 
     clear:() => void;
+
+    willFail: () => void; 
+    willSucceed: () => void; 
 }
