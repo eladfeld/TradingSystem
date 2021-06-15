@@ -109,7 +109,7 @@ export class StoreProduct
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
-        
+        DB.updateProduct(this)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 
@@ -119,6 +119,7 @@ export class StoreProduct
             return makeFailure("Amount has to be non negative");
         }
         this.quantity = this.quantity + amount;
+        DB.updateProduct(this)
         return makeOk(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 

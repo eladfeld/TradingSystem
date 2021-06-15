@@ -1,12 +1,5 @@
 import dotenv from 'dotenv';
-import SupplySystem from "./src/DomainLayer/apis/SupplySystem";
-import PaymentSystemAdapter from "./src/DomainLayer/purchase/PaymentSystemAdapter";
-import SupplySystemAdapter from "./src/DomainLayer/purchase/SupplySystemAdapter";
-import state from "./src/ServiceLayer/state/MyInitialState";
 import checkState from "./src/ServiceLayer/state/CheckState";
-import fakePaymentSystemAdapter from "./src/DomainLayer/purchase/fakePaymentSystemAdapter";
-import fakeSupplySystemAdapter from "./src/DomainLayer/purchase/fakeSupplySystemAdapter";
-import { iPaymentAdapter, iSupplyAdapter } from "./src/DomainLayer/purchase/iAPI";
 
 
 //server configurations:
@@ -38,7 +31,7 @@ export const CACHE_SIZE = -1;               //how much memory we want to cache (
 //init configurations
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
 export const SHOULD_INIT_STATE = true;    //initialize state from file?
-export const INITIAL_STATE = state;
+export const INITIAL_STATE = checkState;
 
 
 //API configurations
@@ -59,13 +52,14 @@ export const setPathToSystemManagers = (newPath:string) =>{
 }
 
 
-export const TEST_MODE = true;
+export const TEST_MODE = false;
 //database configurations:
 
     //modes:
 const LOCALHOST_MODE = 1;
 const REMOTE_MODE = 2;
 const TEST_DB = 3;
+const LOCALHOST_MACOS = 4;
     //end modes
 
 
@@ -93,10 +87,10 @@ class SqlConnector
             connector.dialect= 'mysql'
             connector.port= 3306
         }
-        else if(sqlMode === LOCALHOST_MODE)
+        else if(sqlMode === LOCALHOST_MACOS)
         {
             connector.username= 'root'
-            connector.password= '1234'
+            connector.password= ''
             connector.database= 'db'
             connector.host= 'localhost'
             connector.dialect= 'mysql'
@@ -109,7 +103,16 @@ class SqlConnector
             connector.database= 'test_db'
             connector.host= 'localhost'
             connector.dialect= 'mysql'
-            connector.port= 3306  
+            connector.port= 3306
+        }
+        else (sqlMode === LOCALHOST_MODE)
+        {
+            connector.username= 'root'
+            connector.password= '1234'
+            connector.database= 'db'
+            connector.host= 'localhost'
+            connector.dialect= 'mysql'
+            connector.port= 3306
         }
         return connector;
     }

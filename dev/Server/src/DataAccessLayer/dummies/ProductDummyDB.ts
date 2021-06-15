@@ -4,15 +4,17 @@ import { iProductDB } from "../interfaces/iProductDB";
 
 export class ProductDummyDB implements iProductDB
 {
+    updateProduct: (product: StoreProduct) => Promise<void>;
+
     private isConnected = true;
     public async getLastProductId(): Promise<number>
     {
         return Promise.resolve(1);
     }
-    
+
     getAllProductsOfStore: (storeId: number) => Promise<StoreProduct[]>;
 
-    
+
     private  products: StoreProduct[]  = [];
 
     public  addProduct(product: StoreProduct): Promise<void>

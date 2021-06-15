@@ -13,6 +13,9 @@ import { Subscriber } from "../../src/DomainLayer/user/Subscriber";
 
 export class DBstub implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscriberDB 
 {
+    updateProduct: (product: StoreProduct) => Promise<void>;
+    getRecievingOffers: (storeId: number) => Promise<boolean>;
+    updateStoreRecievesOffers: (storeId: number, recieveOffers: boolean) => Promise<void>;
     getLastUserId(): Promise<number> {
         return Promise.resolve(1)
     }

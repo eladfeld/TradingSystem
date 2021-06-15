@@ -213,6 +213,10 @@ export default function Banner({getAppState, setAppState}) {
     history.push('/openstore');
   };
 
+  const handleActiveOffersClick = () => {
+    history.push('/activeOffers');
+  }
+
   const handleLogoutClick  = async () => {
     //handleMenuClose();
     await axios.post(BASE_URL+'logout',{userId});
@@ -252,6 +256,7 @@ export default function Banner({getAppState, setAppState}) {
           <MenuItem onClick={handleTransactionsClick}>Transactions</MenuItem>
           <MenuItem onClick={handleComplainClick}>Complain</MenuItem>
           <MenuItem onClick={handleOpenStoreClick}>Open Store</MenuItem>
+          <MenuItem onClick={handleActiveOffersClick}>Active offers</MenuItem>
           <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
         </div>
       }

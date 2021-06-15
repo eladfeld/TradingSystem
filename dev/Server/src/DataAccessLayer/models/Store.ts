@@ -3,7 +3,7 @@ import { sequelize } from "../connectDb";
 
 const Store = sequelize.define('Store', {
   id:
-  {    
+  {
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true,
@@ -35,6 +35,10 @@ const Store = sequelize.define('Store', {
   storeClosed: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
+  },
+  recieveOffers: {
+    type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
 }

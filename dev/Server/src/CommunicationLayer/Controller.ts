@@ -447,7 +447,7 @@ const removeBuyingPolicy = (req: Request, res: Response, next: NextFunction) =>
 //     promise
 //     .then(message => res.status(OKSTATUS).json(message))
 //     .catch(message => res.status(FAILSTATUS).json(message));
-// } 
+// }
 
 const removeDiscountPolicy = (req: Request, res: Response, next: NextFunction) =>
 {
@@ -559,6 +559,113 @@ const getLoginStats = (req : Request, res: Response , next: NextFunction) =>{
 
 }
 
+const OfferResponseByOwner = (req : Request, res: Response , next: NextFunction) =>
+{
+    let sessionId : string = req.body.sessionId
+    let response : boolean = req.body.response
+    let storeId: number = req.body.storeId
+    let offerId: number= req.body.offerId
+    service.OfferResponseByOwner(sessionId, response, storeId, offerId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const getOffersByStore = (req : Request, res: Response , next: NextFunction) =>
+{
+    let storeId: number = req.body.storeId
+    service.getOffersByStore(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const newOffer = (req : Request, res: Response , next: NextFunction) =>
+{
+    let sessionId : string = req.body.userId
+    let storeId: number = req.body.storeId
+    let productId: number = req.body.productId
+    let bid: number = req.body.bid
+    service.newOffer(sessionId, storeId, productId, bid)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const setRecievingOffers = (req: Request, res: Response, next: NextFunction) =>
+{
+    let state: boolean = req.body.state;
+    let storeId: number = req.body.storeId;
+    if(state)service.setStoreToRecieveOffers(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+    else
+    {
+        service.setStoreToNotRecieveOffers(storeId)
+        .then(message => res.status(OKSTATUS).json(message))
+        .catch(error => res.status(FAILSTATUS).json(error))
+    }
+}
+
+const isRecievingOffers = (req: Request, res: Response, next: NextFunction) =>
+{
+    let storeId: number = req.body.storeId
+    service.isRecievingOffers(storeId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const acceptOffer = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId = req.body.userId;
+    let storeId = req.body.storeId;
+    let offerId = req.body.offerId;
+
+    service.acceptOffer(sessionId, storeId, offerId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const declineOffer = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId = req.body.userId;
+    let storeId = req.body.storeId;
+    let offerId = req.body.offerId;
+
+    service.declineOffer(sessionId, storeId, offerId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const counterOffer = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId = req.body.userId;
+    let storeId = req.body.storeId;
+    let offerId = req.body.offerId;
+    let counterOffer = req.body.counterOffer;
+
+    service.counterOffer(sessionId, storeId, offerId, counterOffer)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+const buyAcceptedOffer = (req: Request, res: Response, next: NextFunction) =>
+{
+    let sessionId = req.body.userId;
+    let storeId = req.body.storeId;
+    let offerId = req.body.offerId;
+
+    service.buyAcceptedOffer(sessionId, storeId, offerId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
+
+const getOffersByUser = (req: Request, res: Response, next: NextFunction) => {
+    let sessionId = req.body.userId;
+
+    service.getOffersByUser(sessionId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 
 export default {
@@ -613,5 +720,15 @@ export default {
     deleteComplaint,
     replyToComplaint,
     initSystem,
-    getLoginStats
+    getLoginStats,
+    OfferResponseByOwner,
+    getOffersByStore,
+    newOffer,
+    setRecievingOffers,
+    isRecievingOffers,
+    acceptOffer,
+    declineOffer,
+    counterOffer,
+    buyAcceptedOffer,
+    getOffersByUser,
     };

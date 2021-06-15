@@ -27,10 +27,13 @@ import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
+import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
+import { OfferManager } from "./offer/OfferManager";
+import { Offer } from "./offer/Offer";
 import { StoreProduct } from "./store/StoreProduct";
 export class SystemFacade
 {
-    
+
 
     private logged_guest_users : Map<string,User>; // sessionId => User
     private logged_subscribers : Map<string,Subscriber> ; //sessionId =>subscriber
@@ -46,6 +49,7 @@ export class SystemFacade
 
     public async init(){
         await initTables();
+        await initUniversalPolicy();
         return new Promise<void>((resolve,reject) => {
             this.initIdisfromDB().then( async _ =>{
                 let init_managers = true;
@@ -65,7 +69,7 @@ export class SystemFacade
             }
             )
         })
-            
+
     }
 
     private async initIdisfromDB()
@@ -335,7 +339,7 @@ export class SystemFacade
     public getPruductInfoBelowPrice(userId : number, price: number): Promise<string>
     {
         Logger.log(`getPruductInfoBelowPrice : userId:${userId} , price:${price}`);
-        return DB.getProductInfoAbovePrice(price);
+        return DB.getProductInfoBelowPrice(price);
     }
 
     //--
@@ -924,7 +928,7 @@ export class SystemFacade
         return Promise.reject("subscriber not logged in");
     }
 
-    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats> 
+    getLoginStats(sessionId : string, from:Date, until:Date): Promise<login_stats>
     {
         Logger.log(`getLoginStats: ${sessionId} , from:${from} , until:${until}`)
         let sys_manager = this.logged_system_managers.get(sessionId)
@@ -939,7 +943,7 @@ export class SystemFacade
 
     isToday(date : Date) : boolean
     {
-        
+
         let today = new Date()
         if (date.getMonth() === today.getMonth() &&
                 date.getFullYear() === today.getFullYear() &&
@@ -955,6 +959,154 @@ export class SystemFacade
             return -1;
         }
         return subscriber.getUserId();
+    }
+
+    OfferResponseByOwner(sessionId: string, response: boolean, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined)
+            return Promise.reject("subscriber is not logged in");
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    if(response)
+                    {
+                        offerManager.acceptOffer(subscriber, store, offerId)
+                        .then(_ => resolve("offer accpted"))
+                        .catch(error => reject(error))
+                    }
+                    else
+                    {
+                        offerManager.declineOffer(subscriber, store, offerId)
+                        .then(_ => resolve("offer decline"))
+                        .catch(error => reject(error))
+                    }
+
+                })
+            .catch(error => reject(error))
+        })
+
+    }
+
+    getOffersByStore(storeId: number): Promise<Offer[]> {
+        return OfferManager.get_instance().getOffersByStore(storeId);
+    }
+
+    getOffersByUser(sessionId: string): Promise<Offer[]> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return OfferManager.get_instance().getOffersByUser(subscriber.getUserId());
+    }
+
+    newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
+        Logger.log(`newOffer : sessionId:${sessionId} , storeId:${storeId}, productId:${productId} , bid:${bid}`);
+        if(bid < 1|| bid === undefined || bid === null){
+            return Promise.reject("invalid bid")
+        }
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getProductById(productId)
+            .then(product => {
+                OfferManager.get_instance().newOffer(subscriber, storeId, product, bid);
+                resolve('added offer')
+            }).catch(err => reject(`failed to add offer`))
+        })
+    }
+
+    acceptOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.acceptOffer(subscriber, store, offerId).then(_ => resolve('acceptence registered'))
+                    .catch(err => reject('could not accept'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    declineOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.declineOffer(subscriber, store, offerId).then(_ => resolve('offer declined'))
+                    .catch(err => reject('could not decline'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    counterOffer(sessionId: string, storeId: number, offerId: number, counterPrice: number): Promise<string> {
+        Logger.log(`counterOffer : sessionId:${sessionId} , storeId:${storeId}, counterPrice:${counterPrice} , offerId:${offerId}`);
+        if(counterPrice < 1|| counterPrice === undefined || counterPrice === null){
+            return Promise.reject("invalid counter price")
+        }
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.counterOffer(subscriber, store, offerId, counterPrice).then(_ => resolve('offer countered'))
+                    .catch(err => reject('could not counter'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    buyAcceptedOffer(sessionId: string, storeId: number, offerId: number): Promise<string> {
+        let subscriber = this.logged_subscribers.get(sessionId);
+        if(subscriber === undefined){
+            return Promise.reject("subscriber is not logged in");
+        }
+        return new Promise((resolve, reject) =>
+        {
+            DB.getStoreByID(storeId)
+            .then(store =>
+                {
+                    let offerManager = OfferManager.get_instance();
+                    offerManager.buyAcceptedOffer(subscriber, store, offerId, () => {}).then(_ => resolve('offer countered'))
+                    .catch(err => reject('could not counter'))
+                })
+            .catch(error => reject(error))
+        })
+    }
+
+    public async setStoreToRecieveOffers(storeId: number): Promise<void> {
+        return OfferManager.get_instance().setStoreToRecieveOffers(storeId);
+    }
+
+    public async setStoreToNotRecieveOffers(storeId: number): Promise<void> {
+        return OfferManager.get_instance().setStoreToNotRecieveOffers(storeId);
+    }
+
+    public async isRecievingOffers(storeId: number): Promise<boolean> {
+        return OfferManager.get_instance().isRecievingOffers(storeId);
     }
 
     //------------------------------------------functions for tests-------------------------

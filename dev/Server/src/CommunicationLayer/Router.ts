@@ -46,9 +46,10 @@ router.post('/removeDiscountPolicy', Controller.removeDiscountPolicy)
 router.post('/getUsername', Controller.getUsername)
 router.post('/getUserStores', Controller.getUserStores)
 router.post('/getMyPurchaseHistory', Controller.getMyPurchaseHistory)
-
-
-
+router.post('/OfferResponseByOwner', Controller.OfferResponseByOwner)
+router.post('/getOffersByStore', Controller.getOffersByStore)
+router.post('/newOffer', Controller.newOffer)
+router.post('/setRecievingOffers', Controller.setRecievingOffers)
 router.post('/complain', Controller.complain)
 router.post('/getUsersNames', Controller.getUserNames)
 router.post('/getSystemComplaints', Controller.getSystemComplaints)
@@ -56,6 +57,12 @@ router.post('/getSystemTransactions', Controller.getSystemTransactions)
 router.post('/closeStore', Controller.closeStore)
 router.post('/deleteComplaint', Controller.deleteComplaint)
 router.post('/replyToComplaint', Controller.replyToComplaint)
+router.post('/isRecievingOffers', Controller.isRecievingOffers)
+router.post('/acceptOffer', Controller.acceptOffer)
+router.post('/declineOffer', Controller.declineOffer)
+router.post('/counterOffer', Controller.counterOffer)
+router.post('/buyAcceptedOffer', Controller.buyAcceptedOffer)
+router.post('/getOffersByUser', Controller.getOffersByUser)
 //router.post('/banUser', Controller.banUser)
 
 

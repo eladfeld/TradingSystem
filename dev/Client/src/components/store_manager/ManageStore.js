@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Banner from '.././Banner';
+import Banner from '../Banner';
 import Inventory from './Inventory'
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleIcon from '@material-ui/icons/People';
@@ -16,7 +16,9 @@ import { SERVER_BASE_URL, SERVER_RESPONSE_OK, SERVER_RESPONSE_BAD } from '../../
 import AppointOwner from './AppointOwner'
 import AppointManager from './AppointManager'
 import AddProduct from './AddProduct'
+import Offer from './Offer'
 import ManageCategories from './ManageCategories'
+import Offers from './Offers'
 import axios from 'axios';
 import { unknownStatusMessage } from '../componentUtil';
 import Employees from './Employees';
@@ -26,10 +28,11 @@ import DiscountPolicy from '../discount_policy/DiscountPolicy';
 import DeleteManager from './RemoveManager';
 import Alert from '@material-ui/lab/Alert';
 import { Button } from '@material-ui/core';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 const useStyles = makeStyles({
   root: {
-    width: 230,
+    width: 300,
   },
 });
 
@@ -43,6 +46,8 @@ const getInventory = async(userId, storeId, setAppState) =>
 const ADD_BUYING_POLICY = "add_buying_policy";
 const ADD_DISCOUNT_POLICY = "add_discount_policy";
 const DELETE_MANAGER = "delete_manager"
+const OFFERS_MANAGER = "offer_manager"
+const OFFER = "offer"
 
 export default function ManageStore({getAppState, setAppState}) {
     const classes = useStyles();
@@ -69,7 +74,6 @@ export default function ManageStore({getAppState, setAppState}) {
     const onAppointOwnerClick =() =>{
         setPage("appointowner");
         if(appointOwner !== undefined) setappointOwner(undefined);
-
     }
 
     const onAppointManagerClick =() =>{
@@ -103,6 +107,11 @@ export default function ManageStore({getAppState, setAppState}) {
 
     const onDeleteManagerClick = () =>{
         setPage(DELETE_MANAGER)
+    }
+
+    const onOffersClick = () =>
+    {
+        setPage(OFFERS_MANAGER)
     }
 
     const renderPage = () =>{
@@ -202,6 +211,10 @@ export default function ManageStore({getAppState, setAppState}) {
                 return <AddProduct getAppState={getAppState} setAppState={setAppState}></AddProduct>
             case DELETE_MANAGER:
                 return <DeleteManager getAppState={getAppState} setAppState={setAppState}></DeleteManager>
+            case OFFERS_MANAGER:
+                return <Offers getAppState={getAppState} setAppState={setAppState} setPage={setPage}></Offers>
+            case OFFER:
+                return <Offer getAppState={getAppState} setAppState={setAppState} setPage={setPage}></Offer>
             default:
                 return <h1></h1>
         }
@@ -288,6 +301,14 @@ export default function ManageStore({getAppState, setAppState}) {
                 </ListItemIcon>
                 <Typography variant="inherit" noWrap>
                     add discount
+                </Typography>
+            </MenuItem>
+            <MenuItem onClick={onOffersClick}>
+                <ListItemIcon>
+                    <LocalOfferIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                    manage offers
                 </Typography>
             </MenuItem>
             {/* <MenuItem onClick={onPoliciesClick}>

@@ -9,7 +9,7 @@ export class Publisher
     private store_subscribers:Map<number,Subscriber[]>; //key=storeId , value = registered subscribers
     private login_subscribers: Subscriber[]; // subscribers(system managers) that needs to get notified when someone logins for login_stats
 
-    private constructor() 
+    private constructor()
     {
         this.store_subscribers = new Map();
         this.login_subscribers = []
@@ -88,7 +88,7 @@ export class Publisher
         let subscribers = this.store_subscribers.get(storeId);
         if (subscribers !== undefined)
         {
-            subscribers.forEach(subscriber => { 
+            subscribers.forEach(subscriber => {
                 let promise = this.send_message(subscriber,message)
                 promises.push(promise)
             });
@@ -96,7 +96,7 @@ export class Publisher
         return promises;
     }
 
-    
+
 
     //send message to specific subscriber
     public send_message(subscriber:Subscriber , message:string) : Promise<void>
@@ -109,7 +109,7 @@ export class Publisher
             promise.then( _ => {
                 subscriber.addMessageToHistory(message)
             }).
-            catch( reason => {  
+            catch( reason => {
                 Logger.log(`publisher: can't send message, ${subscriber.getUsername()} is not logged in`);
                 subscriber.addPendingMessage(message);
                 resolve();

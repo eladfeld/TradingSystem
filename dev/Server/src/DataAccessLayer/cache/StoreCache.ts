@@ -15,7 +15,7 @@ export class StoreCache implements iStoreDB
     public constructor()
     {
         this.stores = new Map();
-        this.storeDb = new storeDB
+        this.storeDb = new storeDB()
     }
     
     willFail: () => void;
@@ -32,7 +32,7 @@ export class StoreCache implements iStoreDB
         return new Promise((resolve, reject) =>
         {
             storePromise
-            .then(store => 
+            .then(store =>
                 {
                     this.cacheStore(store);
                     resolve(store);
@@ -50,7 +50,7 @@ export class StoreCache implements iStoreDB
         this.stores.set(store.getStoreId(), [false, store]);
     }
 
-    private StoreUpdateCache(storeId: number): void 
+    private StoreUpdateCache(storeId: number): void
     {
         if(this.stores.has(storeId))
         {
@@ -108,7 +108,7 @@ export class StoreCache implements iStoreDB
         return this.storeDb.getPruductInfoByCategory(category);
     }
     public getProductInfoAbovePrice(price: number): Promise<string>
-    {   
+    {
         return this.storeDb.getProductInfoAbovePrice(price);
     }
     public getProductInfoBelowPrice(price: number): Promise<string>
@@ -167,6 +167,17 @@ export class StoreCache implements iStoreDB
             .catch(error => reject(error))
         })
     }
+
+    public getRecievingOffers(storeId: number): Promise<boolean>{
+        return this.storeDb.getRecievingOffers(storeId);
+
+    }
+
+    public updateStoreRecievesOffers(storeId: number, recieveOffers: boolean): Promise<void>{
+        return this.storeDb.updateStoreRecievesOffers(storeId, recieveOffers);
+
+    }
+
     public clear() :void
     {
         for(let id of this.stores.keys())
@@ -175,5 +186,5 @@ export class StoreCache implements iStoreDB
         }
         this.storeDb.clear()
     }
-    
+
 }

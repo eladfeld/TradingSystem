@@ -5,7 +5,6 @@ export const Op = Sequelize.Op
 
 
 //
-
 export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
@@ -32,16 +31,16 @@ const BuyingPolicy = require('./models/BuyingPolicy')
 const DiscountPolicy = require('./models/DiscountPolicy')
 const Transaction = require('./models/Transaction')
 const TransactionItem = require('./models/TransactionItem')
+const Offer = require('./models/Offer')
 const ProductToCategory = require('./models/ProductToCategory')
 const MessageHistory = require('./models/MessageHistory')
 const LoginStts = require('./models/LoginStats')
 
-
 export async function initTables (){
 
     if (SHOULD_RESET_DATABASE)
-      await truncate_tables()  
-    // await sequelize.queryInterface.dropAllTables()
+      //await truncate_tables()  
+      await sequelize.queryInterface.dropAllTables()
 
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
@@ -50,6 +49,8 @@ export async function initTables (){
     sequelize.models.Store.hasMany(sequelize.models.Category)
     sequelize.models.Store.hasMany(sequelize.models.BuyingPolicy)
     sequelize.models.Store.hasMany(sequelize.models.DiscountPolicy)
+    sequelize.models.Store.hasMany(sequelize.models.Offer)
+    sequelize.models.StoreProduct.hasMany(sequelize.models.Offer)
     sequelize.models.StoreProduct.hasMany(sequelize.models.ProductToCategory)
     sequelize.models.Store.hasMany(sequelize.models.ProductToCategory)
 
@@ -63,6 +64,7 @@ export async function initTables (){
     sequelize.models.BasketProduct.belongsTo(sequelize.models.ShoppingBasket)
     sequelize.models.BasketProduct.belongsTo(sequelize.models.StoreProduct)
     sequelize.models.ShoppingBasket.belongsTo(sequelize.models.Store)
+    sequelize.models.Subscriber.hasMany(sequelize.models.Offer)
 
     // //Appointment conections
     sequelize.models.Appointment.belongsTo(sequelize.models.Subscriber, {as: 'appointer'})

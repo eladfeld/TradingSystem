@@ -39,9 +39,8 @@ export const AddProduct = ({getAppState, setAppState}) => {
     const [quantity, setQuantity] = useState("");
     const [price, setPrice] = useState("");
     const [image, setImage] = useState("");
-    const [_isSucsess, setIsSucsess] = useState(false);
-    const [_hasProblem, setHasProblem] = useState(false);
     const [problem, setProblem] = useState("");
+    const [success, setSuccess] = useState("")
     let storeId = getAppState().storeId
     let userId = getAppState().userId
 
@@ -52,12 +51,14 @@ export const AddProduct = ({getAppState, setAppState}) => {
         axios.post(`${SERVER_BASE_URL}addNewProduct`, {userId, storeId, productName, categories, quantity, price, image})
         .then(res => {
           if(res.status == 200){
-            setIsSucsess(true);
+            clearFields()
+            setSuccess("Product Added sussfully!")
+            setProblem("")
           }
           else if(res.status == 201)
           {
-            setHasProblem(true);
             setProblem(res.data.error);
+            setSuccess("")
             clearFields();
           }
         })
@@ -67,14 +68,14 @@ export const AddProduct = ({getAppState, setAppState}) => {
     {
         setProductName("");
         setCategories([]);
-        setQuantity(0);
-        setPrice(-1);
+        setQuantity("");
+        setPrice("");
     }
 
   return (
       <div className={classes.margin}>
       <div>
-        {_isSucsess ?
+        {success !== "" ?
         <Alert
         action={
           <Button color="inherit" size="small" onClick={() => {history.push('/welcome')}}>
@@ -82,13 +83,11 @@ export const AddProduct = ({getAppState, setAppState}) => {
           </Button>
         }
       >
-        Product Added sussfully!
+        {success}
       </Alert> :
-      _hasProblem ?
-      <Alert severity="warning">A problem accured while adding the product: {problem}!</Alert>
-
-
-      :<Grid>
+      problem !== "" ?
+      <Alert severity="warning">A problem accured while adding the product: {problem}!</Alert> :<a1></a1>
+        }<Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align='center'>
                     <h2>Add new product</h2>
@@ -125,6 +124,7 @@ export const AddProduct = ({getAppState, setAppState}) => {
                       <Grid item>
                         <TextField style={{width:400}}
                             label='Quantity'
+                            type="number"
                             placeholder='Enter product quantity available'
                             onChange={(event) => setQuantity(event.target.value)}
                         fullWidth/>
@@ -138,6 +138,7 @@ export const AddProduct = ({getAppState, setAppState}) => {
                       <Grid item>
                         <TextField style={{width:400}}
                             label='Price'
+                            type="number"
                             placeholder='Enter product price'
                             onChange={(event) => setPrice(event.target.value)}
                         fullWidth/>
@@ -172,11 +173,8 @@ export const AddProduct = ({getAppState, setAppState}) => {
                     </Button>
                 </Typography>
                 </MuiThemeProvider>
-
             </Paper>
         </Grid>
-                }
-
     </div>
   </div>
   );
