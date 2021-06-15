@@ -12,20 +12,20 @@ const payInfo : tPaymentInfo = { holder: "Rick" , id:244, cardNumber:123, expMon
 
 const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerusalem", country:"israel", zip:8727};
 import {setReady, waitToRun} from '../testUtil';
+import { DB } from '../../src/DataAccessLayer/DBfacade';
 
 describe('2.9: buy products',function () {
     //setTestConfigurations();        //changing external APIs to mocks
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('buy shopping basket', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter()
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
@@ -44,6 +44,8 @@ describe('2.9: buy products',function () {
         expect(avi.quantityInBasket(store.getStoreId(),apple)).to.equal(0)
 
         // check store inventory updated successfully
+
+        store = await DB.getStoreByID(store.getStoreId())
         expect(store.getProductQuantity(banana)).to.equal(40)
         expect(store.getProductQuantity(apple)).to.equal(3)
         
@@ -53,6 +55,7 @@ describe('2.9: buy products',function () {
 
 
     it('try to buy too much items', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         // avi and ali enter the system register and login
         let ali_sessionId = await service.enter()
@@ -62,7 +65,7 @@ describe('2.9: buy products',function () {
 
         // avi opens store and adds 50 bananas to it
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
-        await store.addCategoryToRoot('Sweet')
+        await service.addCategoryToRoot(avi_sessionId, store.getStoreId(),'Sweet')
         let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
 
         // avi and ali both add 40 bananas to their basket
@@ -90,6 +93,7 @@ describe('2.9: buy products',function () {
     
     
     it('parallel buy of last item',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         //avi and ali enters the system
         let avi_sessionId = await service.enter();

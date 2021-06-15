@@ -32,13 +32,13 @@ export class Inventory
             Logger.log("Product already exist in inventory!")
             return Promise.reject(`Product already exist in inventory! productName: ${productName}`);
         }
-        let productp = StoreProduct.createProduct(productName,price, storeId,quantity, categories, image)
         return new Promise((resolve,reject) => {
-            productp.then( product => {
+            StoreProduct.createProduct(productName,price, storeId,quantity, categories, image)
+            .then( product => {
                 this.products.set(product.getProductId(), product);
                 resolve(product.getProductId());
             })
-            .catch( err => reject(err))
+            .catch( err => {reject(err)})
         })
     }
 
@@ -69,7 +69,6 @@ export class Inventory
     }
 
     public isProductAvailable(productId: number, quantity: number) : boolean {
-        //TODO: check synchronization accotding to the internet we don't need to sync in javascript
         let product = this.products.get(productId);
         if(product === undefined){
             Logger.log("Product does not exist in inventory!")

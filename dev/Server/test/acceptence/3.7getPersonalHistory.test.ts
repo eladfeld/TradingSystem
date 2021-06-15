@@ -21,12 +21,10 @@ import {setReady, waitToRun} from '../testUtil';
 describe('3.7: get subscriber history',function () {
 
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 

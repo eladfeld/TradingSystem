@@ -9,14 +9,11 @@ import {setReady, waitToRun} from '../testUtil';
 
 describe('4.5:Appoint manager tests',function () {
 
-    
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('avi opens store and appoints moshe to manager', async function () {

@@ -19,17 +19,14 @@ describe('2.6: find product',function () {
 
 
     beforeEach( () => {
-        this.timeout(10000)
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(async function () {
-        //console.log('finish');      
-        await truncate_tables()  
         setReady(true);
     });
     it('find product by name', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const megaName = uniqueMegaName();
@@ -37,16 +34,14 @@ describe('2.6: find product',function () {
         let avi = await register_login(service,sessionId,aviName,"123456");
         let store =await open_store(service,sessionId,avi,megaName,123456,"Tel Aviv");
         await store.addCategoryToRoot('Food')
-        let banana = service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Food'], 156, 50,"");
-        let apple = service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Food'], 1, 10,"");
+        let banana =await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Food'], 156, 50,"");
+        let apple =await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Food'], 1, 10,"");
         let products = await service.getPruductInfoByName(sessionId, "banana")
-        //console.log('[t] res:',JSON.parse(products));
         expect(JSON.parse(products)['products'].length).to.greaterThanOrEqual(1)
-        // .then(products => expect(JSON.parse(products)['products'].length).to.equal(1))
-        // .catch(assert.fail)
     })
 
     it('find product by category', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const megaName = uniqueMegaName();

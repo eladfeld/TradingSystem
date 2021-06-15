@@ -13,12 +13,10 @@ import {setReady, waitToRun} from '../testUtil';
 describe('3.1: Logout' ,function() {
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 

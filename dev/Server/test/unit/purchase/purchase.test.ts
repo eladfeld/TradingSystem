@@ -28,12 +28,10 @@ const cb: ()=>void = ()=>{};
 
 describe('purchase tests' , function() {
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
 
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 

@@ -12,19 +12,17 @@ describe('2.8: Shopping Cart view and edit' ,function() {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('shopping cart before and after delete' , async function()
     {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
-        //this.timeout(30000)
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
 

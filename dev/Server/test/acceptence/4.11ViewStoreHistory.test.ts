@@ -17,12 +17,10 @@ const shippingInfo: tShippingInfo = {name:"Rick", address:"kineret", city:"jerus
 describe('4.11: view store buying history',function () {
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('viwe store history',async function () {
@@ -31,7 +29,6 @@ describe('4.11: view store buying history',function () {
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "123456789");
         let store = await open_store(service,avi_sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
         
-        console.log("----------------------------------------------------------------------------------");
         let banana = await add_product(service,avi_sessionId, avi, store, "banana", [], 1, 50);
         let apple = await add_product(service,avi_sessionId, avi, store, "apple", [], 1, 10);
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);

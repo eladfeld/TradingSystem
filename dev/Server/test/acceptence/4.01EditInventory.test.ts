@@ -12,12 +12,10 @@ import {setReady, waitToRun} from '../testUtil';
 
 describe('4.1: edit store inventory',function () {
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 

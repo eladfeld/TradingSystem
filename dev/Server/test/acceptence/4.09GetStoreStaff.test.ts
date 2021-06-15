@@ -11,12 +11,10 @@ describe('4.9: get store staff',function () {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 

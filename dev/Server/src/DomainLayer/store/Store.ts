@@ -660,6 +660,7 @@ export class Store implements iCategorizer
     }
 
     public getProductQuantity(productId : number) : number{
+        console.log("get product quantity")
         return this.inventory.getProductQuantity(productId);
     }
 

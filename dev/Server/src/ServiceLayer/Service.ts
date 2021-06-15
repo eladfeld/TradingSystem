@@ -1,4 +1,4 @@
-import { SHOULD_INIT_STATE } from "../../config";
+import { SHOULD_INIT_STATE, TEST_MODE } from "../../config";
 import { tDiscount } from "../DomainLayer/discount/Discount";
 import { tPredicate } from "../DomainLayer/discount/logic/Predicate";
 import Transaction from "../DomainLayer/purchase/Transaction";
@@ -9,6 +9,7 @@ import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
+import { truncate_tables } from "../DataAccessLayer/connectDb";
 
 export class Service
 {
@@ -31,14 +32,16 @@ export class Service
         if (Service.singletone === undefined)
         {
             Service.singletone = new Service();
-            return Service.singletone.facade.init().then(_ =>{
-                if(SHOULD_INIT_STATE){
-                    setTimeout(async() =>{
-                        const res = await new StateInitializer().initState();
-                        console.log(`init state was succesful: ${res}`)
-                    }, 0);
-                }
-            }).then(() => Service.singletone)
+            await Service.singletone.facade.init()
+            if(SHOULD_INIT_STATE)
+            {
+                const res = await new StateInitializer().initState();
+                console.log(`init state was succesful: ${res}`)
+            }
+        }
+        if (TEST_MODE)
+        {
+            Service.singletone.clear();
         }
         return Service.singletone;
     }

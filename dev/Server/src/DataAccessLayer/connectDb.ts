@@ -10,7 +10,7 @@ export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.usern
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
     port: SQLconnector.port, // this is the mysql port
-    logging: true,
+    logging: false,
     define: {
       timestamps: false
     }
@@ -40,7 +40,8 @@ const LoginStts = require('./models/LoginStats')
 export async function initTables (){
 
     if (SHOULD_RESET_DATABASE)
-      await truncate_tables()
+      await truncate_tables()  
+    // await sequelize.queryInterface.dropAllTables()
 
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
@@ -73,26 +74,28 @@ export async function initTables (){
     sequelize.models.Transaction.hasMany(sequelize.models.TransactionItem)
     sequelize.models.TransactionItem.belongsTo(sequelize.models.Transaction)
 
+    sequelize.models.LoginStats.sync()
     await sequelize.sync()
 
 }
 
 export async function truncate_tables() {
-  await sequelize.models.Appointment.truncate()
-  await sequelize.models.BasketProduct.truncate()
-  await sequelize.models.ProductToCategory.truncate()
-  await sequelize.models.MessageHistory.truncate()
-  await sequelize.models.LoginStats.truncate()
-  await sequelize.models.DiscountPolicy.truncate()
-  await sequelize.models.Category.truncate()
-  await sequelize.models.BuyingPolicy.truncate()
-  await sequelize.models.PendingMessage.truncate()
-  await sequelize.models.ShoppingBasket.truncate()
-  await sequelize.models.StoreProduct.truncate()
-  await sequelize.models.Store.truncate()
-  await sequelize.models.SystemManager.truncate()
-  await sequelize.models.Subscriber.truncate()
-  await sequelize.models.TransactionItem.truncate()
-  await sequelize.models.Transaction.truncate()
+  await sequelize.models.MessageHistory.destroy( { where:{}, truncate:true, cascade:true})
+  await sequelize.models.PendingMessage.destroy( { where:{}, truncate:true, cascade:true})
+  await sequelize.models.SystemManager.destroy( { where:{}, truncate:true, cascade:true})
+  await sequelize.models.LoginStats.destroy( { where:{}, truncate:true, cascade:true} )
+  await sequelize.models.Appointment.destroy( { where:{}, truncate:true, cascade:true} )
+  
+  await sequelize.models.BasketProduct.destroy( { where:{}, truncate:true, cascade:true} )
+  await sequelize.models.ShoppingBasket.destroy( { where:{},  cascade:true} )
+  await sequelize.models.StoreProduct.destroy( { where:{},  cascade:true} )
+  await sequelize.models.ProductToCategory.destroy( { where:{}, truncate:true, cascade:true} )
+  await sequelize.models.DiscountPolicy.destroy( { where:{}, truncate:true, cascade:true} )
+  await sequelize.models.Category.destroy( { where:{}, truncate:true, cascade:true} )
+  await sequelize.models.BuyingPolicy.destroy({ where:{}, truncate:true, cascade:true} )
+  await sequelize.models.Store.destroy( { where:{},  cascade:true} )
+  await sequelize.models.Subscriber.destroy( { where:{},  cascade:true} )
+  await sequelize.models.TransactionItem.destroy( { where:{}, truncate:true, cascade:true} )
+  await sequelize.models.Transaction.destroy( { where:{},  cascade:true} )
 }
 

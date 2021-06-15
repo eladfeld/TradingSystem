@@ -16,12 +16,10 @@ import {setReady, waitToRun} from '../testUtil';
 describe('6.4: System Manager Get Info',function () {
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('system manager get store purchase history',async  function () {

@@ -10,12 +10,10 @@ describe('4.7: remove appointment',function () {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('remove recursive appointment',async function () {

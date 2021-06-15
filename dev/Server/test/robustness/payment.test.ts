@@ -12,12 +12,10 @@ describe('API fail',function () {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('buy shopping basket with payment system down', async function () {

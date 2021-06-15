@@ -9,12 +9,10 @@ import {setReady, waitToRun} from '../testUtil';
 
 describe('shopping cart tests' , function() {
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it("add product to cart", async function(){

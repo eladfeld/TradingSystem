@@ -152,7 +152,7 @@ export class SystemFacade
         return new Promise((resolve, reject) => reject("user not found"));
     }
 
-    public initSystemManagers() : boolean
+    public async initSystemManagers() : Promise<boolean>
     {
         const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
         let arr: any[] = JSON.parse(data);
@@ -165,7 +165,7 @@ export class SystemFacade
         {
             let manager: any = arr[i];
             let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
-            Authentication.addSystemManager(sub);
+            await Authentication.addSystemManager(sub);
         }
         return true
     }
@@ -218,7 +218,7 @@ export class SystemFacade
         if(age < 1 || age === undefined || age === null){
             return Promise.reject("invalid age")
         }
-        let regp =Register.register(username, password, age);
+        let regp = Register.register(username, password, age);
         return new Promise ((resolve,reject) => {
             regp.then ( _ => {
                 resolve("registered")
@@ -989,8 +989,6 @@ export class SystemFacade
         this.logged_guest_users = new Map();
         this.logged_subscribers = new Map();
         this.logged_system_managers = new Map();
-        DB.clear();
-        Purchase.clear();
     }
 
 }

@@ -110,7 +110,6 @@ export class StoreProduct
         }
         this.quantity = quantity;
         
-        console.log(`new quantitty was set ${quantity}`)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 

@@ -14,12 +14,10 @@ const HASHED_PASSWORD = "7110eda4d09e062aa5e4a390b0a572ac0d2c0220";
 describe('AppointmentManager tests' , function() {
     beforeEach( () => {
         this.timeout(5000);
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 

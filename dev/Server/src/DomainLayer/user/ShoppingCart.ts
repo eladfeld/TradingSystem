@@ -55,7 +55,7 @@ export class ShoppingCart
                 }
                 let addp = basket.addProduct(productId, quantity);
                 addp.then( _ => { resolve(basket) })
-                .catch( error => { reject("error") })
+                .catch( error => { reject(error) })
             })
             .catch( error => reject(error))
         }) 

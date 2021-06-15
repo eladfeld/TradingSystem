@@ -11,10 +11,9 @@ import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
 
 // 
 describe('1.1 Ensure Proper Initialization' , function() {
-
+    
     beforeEach( () => {
-        //console.log('start')
-        this.timeout(10000)
+        
         return waitToRun(()=>{
             APIsWillSucceed();
             Service.uninitialize();
@@ -22,18 +21,19 @@ describe('1.1 Ensure Proper Initialization' , function() {
     });
 
     afterEach(async function (done) {
-        //console.log('finish');     
-        await truncate_tables()   
         setReady(true);
         done()
     });
    
-    it('main success scenario - successfully init' ,function() {
-        Service.get_instance();
+    it('main success scenario - successfully init' ,async function() {
+        this.timeout(100000)
+        await truncate_tables()
+        await Service.get_instance();
         //didnt throw error is a pass
     })
 
     it('fail to init supply system - system should not init' ,function() {
+        this.timeout(100000)
         SupplySystem.willFail();
         try{
             Service.get_instance();
@@ -44,6 +44,7 @@ describe('1.1 Ensure Proper Initialization' , function() {
     })
 
     it('fail to init payment system - system should not init' ,function() {
+        this.timeout(100000)
         PaymentSystem.willFail();
         try{
             Service.get_instance();
@@ -54,6 +55,7 @@ describe('1.1 Ensure Proper Initialization' , function() {
     })
 
     it('no system managers - system should not init' ,function() {
+        this.timeout(100000)
         const originalPath:string = (' ' + PATH_TO_SYSTEM_MANAGERS).slice(1);//deep copy of string
         try{
             setPathToSystemManagers('../resources/empty_list.json');

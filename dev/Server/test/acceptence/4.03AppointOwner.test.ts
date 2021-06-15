@@ -13,12 +13,10 @@ import {setReady, waitToRun} from '../testUtil';
 describe('4.3: Appoint Owner tests',function () {
 
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('avi opens store and appoints moshe to owner',async function () {

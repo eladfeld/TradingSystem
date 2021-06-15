@@ -222,7 +222,7 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
     let shippingInfo: any = req.body.shippingInfo;
     service.completeOrder(sessionId, storeId, paymentInfo, shippingInfo)
     .then(result => res.status(OKSTATUS).json(result))
-    .catch(message => {console.log(message); res.status(FAILSTATUS).json(message)})
+    .catch(message => { res.status(FAILSTATUS).json(message)})
 }
 
 

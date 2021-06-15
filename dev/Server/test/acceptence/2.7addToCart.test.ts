@@ -15,15 +15,14 @@ describe('2.7: add to cart test' ,function() {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
 
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('add to cart good' , async function() {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
@@ -37,6 +36,7 @@ describe('2.7: add to cart test' ,function() {
     })
 
     it('add non existent product to cart' , async function() {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
@@ -45,8 +45,6 @@ describe('2.7: add to cart test' ,function() {
         let avi = await register_login(service,sessionId,aviName,"123456789");
         let store1 =await open_store(service,sessionId,avi , storeName , 123456 , "Tel Aviv" );
         await failIfResolved(()=> service.addProductTocart(sessionId, store1.getStoreId() , 1 , 10))
-        // .then( _ => expect(true).to.eq(false))
-        // .catch( _ => expect(true).to.eq(true))
     })
 
 

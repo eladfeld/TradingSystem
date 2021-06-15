@@ -11,23 +11,18 @@ import {setReady, waitToRun} from '../testUtil';
 import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
 
 describe('2.5: store info test' , function() {
-    
-
-
-    
+        
     beforeEach( () => {
-        //console.log('start')
-        this.timeout(10000)
+        
         return waitToRun(()=>APIsWillSucceed());
     });
 
     afterEach(async function () {
-        //console.log('finish');      
-        await truncate_tables()  
         setReady(true);
     });
 
     it('store info test good',async function () {
+        this.timeout(100000)
         var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName_1 = uniqueAlufHasportName();
@@ -46,6 +41,7 @@ describe('2.5: store info test' , function() {
     })
 
     it('try to watch store without permission',async function () {
+        this.timeout(100000)
         var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName_1 = uniqueAlufHasportName();
@@ -55,34 +51,37 @@ describe('2.5: store info test' , function() {
         let avi: Subscriber =await register_login(service,sessionId, aviName, "123456789");
         let store1 =await service.openStore(sessionId, storeName_1, 123456, "Tel Aviv");
         let store2 =await service.openStore(sessionId, storeName_2, 123456, "Tel Aviv");
-        store1.addCategoryToRoot('Food')
-        store2.addCategoryToRoot('Food')
-        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10,"");
-        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20,"");
+        await store1.addCategoryToRoot('Food')
+        await store2.addCategoryToRoot('Food')
+        await service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10,"");
+        await service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20,"");
         service.getStoreInfo(sessionId + 1, store1.getStoreId())
         .then( _ => assert.fail())
         .catch( _ => assert.ok(1))
     })
 
     it('avi opens store , system manager watching it' ,async function() {
+        this.timeout(100000)
         var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
         const michaelName = "michael";
 
         //----------------avi opens store---------------------------------
-        let sessionId = await service.enter();
-        let avi =await register_login(service,sessionId,aviName,"123456789");
-        var store1 =await open_store(service,sessionId,avi, storeName , 123456 , "Tel Aviv");
+        let aviSessionId = await service.enter();
+        let avi =await register_login(service,aviSessionId,aviName,"123456789");
+        var store1 =await open_store(service,aviSessionId,avi, storeName , 123456 , "Tel Aviv");
         //---------------------------------------------------------------
 
         //-----------------system manager watches-------------------------
 
-        let sys_manager =await enter_login(service, michaelName, "1234")
+        let sm_sessionId = await service.enter()
+        let sys_manager =await service.login(sm_sessionId, michaelName, "1234")
         try {
-            let info = await service.getStoreInfo(sessionId, store1.getStoreId())
+            let info = await service.getStoreInfo(sm_sessionId, store1.getStoreId())
         }
-        catch {
+        catch(e) {
+            console.log(e)
             assert.fail()
         }
         assert.ok(1)

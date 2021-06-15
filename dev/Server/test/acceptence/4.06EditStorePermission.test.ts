@@ -11,12 +11,10 @@ describe('4.6: edit store permission',function () {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('avi opens store and appoints manager with all the permissions', async function () {

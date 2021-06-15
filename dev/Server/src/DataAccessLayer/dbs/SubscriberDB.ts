@@ -72,7 +72,7 @@ export class subscriberDB implements iSubscriberDB
         }
         catch(e)
         {
-            return Promise.reject("subscriber or system manager with the same id is alreay exists.");
+            return Promise.reject(e);
         }
 
     }
@@ -137,7 +137,6 @@ export class subscriberDB implements iSubscriberDB
             }
             catch(e)
             {
-                console.log(e)
                 return Promise.reject("product with the same id is already exists")
             }
 

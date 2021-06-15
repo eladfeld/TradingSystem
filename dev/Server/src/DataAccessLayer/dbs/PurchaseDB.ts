@@ -52,7 +52,6 @@ export class purchaseDB implements iPurchaseDB
         }
         catch(e)
         {
-            console.log(e)
             await t.rollback();
             return Promise.resolve(false)
         }
@@ -92,7 +91,6 @@ export class purchaseDB implements iPurchaseDB
                     resolve(true)
                 }
                 catch(e){
-                    console.log(e)
                     await t.rollback();
                     reject("couldnt save transaction")
                 }
@@ -103,7 +101,6 @@ export class purchaseDB implements iPurchaseDB
                     resolve(true)
                 }
                 catch(e){
-                    console.log(e)
                     await t.rollback();
                     reject("couldnt save transaction")
                 }

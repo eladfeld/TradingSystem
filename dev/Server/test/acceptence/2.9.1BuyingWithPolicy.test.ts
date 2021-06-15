@@ -12,17 +12,16 @@ describe('2.9.1 Buying with respect to buying policy',function () {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     //child should succeed, adult should fail
     it('only kids can buy toys (category)', async function () {
+        this.timeout(100000);
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let child_sessionId = await service.enter();
@@ -62,6 +61,7 @@ describe('2.9.1 Buying with respect to buying policy',function () {
 
     //checkout should be allowed with 1 playstation and then fail when he tries to checkout with 2
     it('cant buy more than 1 playstation (product)', async function () {
+        this.timeout(100000);
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();

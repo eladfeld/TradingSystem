@@ -10,23 +10,22 @@ describe('2.1: enter system test' ,function() {
 
     
     beforeEach( () => {
-        //console.log('start')
-        this.timeout(10000)
+        
         return waitToRun(()=>APIsWillSucceed());
     });
 
     afterEach(async function () {
-        //console.log('finish');     
-        await truncate_tables()   
         setReady(true);
     });
     
     it('guest user enter system' , async function() {
+        this.timeout(100000)
         var service : Service =await Service.get_instance();
         await failIfRejected(()=> service.enter())
     })
 
     it('enter 3 users' , async function() {
+        this.timeout(100000)
         var service : Service =await Service.get_instance();
         let res1: string = await service.enter()
         let res2: string = await service.enter()
@@ -37,6 +36,7 @@ describe('2.1: enter system test' ,function() {
     describe('exit system test' , function() {
         
         it('enter 3 users and exit 1' , async function() {
+            this.timeout(100000)
             var service : Service =await Service.get_instance();
             let res1: string = await service.enter()
             let res2: string = await service.enter()
@@ -47,6 +47,7 @@ describe('2.1: enter system test' ,function() {
         })
 
         it('fail exit' , async function() {
+            this.timeout(100000)
             var service : Service =await Service.get_instance();
             await service.enter();
             let numUsers: number = service.get_logged_guest_users().size;

@@ -20,12 +20,10 @@ describe('7.1: Api Fail',function () {
 
     
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('supply fail', async function () {
@@ -100,7 +98,6 @@ describe('7.1: Api Fail',function () {
     //     try{
     //         let cartStr = await service.getCartInfo(sessionId)
     //         let cart = JSON.parse( String(cartStr));
-    //         console.log(cart['baskets'][0]['products'][0]);
     //         expect(cart['baskets'][0]['products'].length).to.equal(2);
     //         expect(cart['baskets'][0]['products'][0]['quantity']).to.equal(10);
     //         expect(cart['baskets'][0]['products'][1]['quantity']).to.equal(10);
