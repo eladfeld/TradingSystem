@@ -21,8 +21,7 @@ describe('login test' , function() {
     it('postive log in', async function(){
         try{
             await Register.register("yosi", "1234", 13);
-            const subscriber = await Login.login("yosi", "1234");
-            expect(subscriber).to.not.null;
+            await Login.login("yosi", "1234");
         }catch(e){
             failTest(e);
         }

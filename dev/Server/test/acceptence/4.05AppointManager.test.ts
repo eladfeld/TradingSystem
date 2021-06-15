@@ -17,6 +17,7 @@ describe('4.5:Appoint manager tests',function () {
         setReady(true);
     });
     it('avi opens store and appoints moshe to manager', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
@@ -27,6 +28,7 @@ describe('4.5:Appoint manager tests',function () {
     })
 
     it('moshe, a store manager tries to edit store inventory without permissions', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();

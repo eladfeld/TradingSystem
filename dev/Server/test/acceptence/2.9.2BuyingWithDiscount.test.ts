@@ -24,6 +24,7 @@ describe('2.9.2 Buying with discount',function () {
 
     //child should succeed, adult should fail
     it('10% off toys category', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
@@ -53,6 +54,7 @@ describe('2.9.2 Buying with discount',function () {
     })
 
     it('10% off toys category if you buy at least 10 toys', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();

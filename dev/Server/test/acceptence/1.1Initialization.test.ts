@@ -20,9 +20,8 @@ describe('1.1 Ensure Proper Initialization' , function() {
         });
     });
 
-    afterEach(async function (done) {
+    afterEach(function () {
         setReady(true);
-        done()
     });
    
     it('main success scenario - successfully init' ,async function() {

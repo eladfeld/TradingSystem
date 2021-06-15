@@ -29,9 +29,9 @@ describe('2.8: Shopping Cart view and edit' ,function() {
         let sessionId = await service.enter()
         let avi = await register_login(service,sessionId,aviName, "123456789");
         let store1 = await open_store(service,sessionId,avi,storeName , 123456 , "Tel Aviv" );
-        await store1.addCategoryToRoot('Sweet')
-        await store1.addCategoryToRoot('Computer')
-        let prodId = await store1.addNewProduct(avi,"banana",['Computer'],500,100,"");
+        await service.addCategoryToRoot(sessionId,store1.getStoreId(),'Sweet')
+        await service.addCategoryToRoot(sessionId,store1.getStoreId(),'Computer')
+        let prodId = await service.addNewProduct(sessionId,store1.getStoreId(),"banana",['Computer'],500,100,"");
         await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10);
         await service.getCartInfo(sessionId)
         await service.editCart(sessionId, store1.getStoreId(), prodId, 0 );

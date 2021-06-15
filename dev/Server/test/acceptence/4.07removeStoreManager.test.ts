@@ -5,6 +5,7 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueMosheName, uniqueName } from '../testUtil';
 import { register_login, open_store } from './common';
 import {setReady, waitToRun} from '../testUtil';
+import { DB } from '../../src/DataAccessLayer/DBfacade';
 
 describe('4.7: remove appointment',function () {
 
@@ -17,6 +18,7 @@ describe('4.7: remove appointment',function () {
         setReady(true);
     });
     it('remove recursive appointment',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
@@ -27,7 +29,6 @@ describe('4.7: remove appointment',function () {
         let hezi =await register_login(service,hezi_sessionId, uniqueName("hezi"), "123456789");
         let store =await open_store(service,avi_sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
 
-
         await service.appointStoreOwner(avi_sessionId, store.getStoreId(), moshe.getUsername());
         await service.appointStoreManager(moshe_sessionId, store.getStoreId(), hezi.getUsername());
         await service.deleteManagerFromStore(avi_sessionId, moshe.getUsername(), store.getStoreId())
@@ -35,6 +36,7 @@ describe('4.7: remove appointment',function () {
     })
 
     it('try to remove manager without permission',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();

@@ -18,6 +18,7 @@ describe('4.6: edit store permission',function () {
         setReady(true);
     });
     it('avi opens store and appoints manager with all the permissions', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
@@ -30,6 +31,7 @@ describe('4.6: edit store permission',function () {
     })
 
     it('moshe, a store manager tries to edit store inventory without permissions', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();

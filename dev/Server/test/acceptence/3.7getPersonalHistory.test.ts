@@ -29,6 +29,7 @@ describe('3.7: get subscriber history',function () {
     });
 
     it('get personal purchase history',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let sessionId = await service.enter()
         let avi =await register_login(service,sessionId, uniqueAviName(), "1234");

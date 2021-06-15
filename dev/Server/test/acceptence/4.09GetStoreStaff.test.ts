@@ -20,6 +20,7 @@ describe('4.9: get store staff',function () {
 
 
     it('get staff', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let moshe_sessionId = await service.enter();
         let avi_sessionId = await service.enter();

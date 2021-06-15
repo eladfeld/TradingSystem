@@ -131,11 +131,15 @@ class Purchase {
         transaction.setPaymentId(paymentRes);
         transaction.setCardNumber(paymentInfo.cardNumber);
         transaction.setStatus(TransactionStatus.COMPLETE);
-        DB.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
-
+        
+        let updatep = DB.updateTransaction(transaction);
         Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
-        return new Promise((res , rej) => {res(true)});
+        return new Promise((resolve , reject) => {
+            updatep.then( _ => {
+                resolve(true)
+            }).catch( err => reject(err))
+        });
     }
 
     

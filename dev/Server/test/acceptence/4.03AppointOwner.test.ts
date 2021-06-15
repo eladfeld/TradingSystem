@@ -20,6 +20,7 @@ describe('4.3: Appoint Owner tests',function () {
         setReady(true);
     });
     it('avi opens store and appoints moshe to owner',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
@@ -30,6 +31,7 @@ describe('4.3: Appoint Owner tests',function () {
     })
 
     it('moshe tries to appoint ali to owner without permissions',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
@@ -44,6 +46,7 @@ describe('4.3: Appoint Owner tests',function () {
 
 
     it('parallel appoint owner test',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         // avi and moshe and ali enter the system and login
         let avi_sessionId = await service.enter();

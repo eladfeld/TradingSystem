@@ -442,15 +442,7 @@ export class SystemFacade
         let user: User = this.logged_guest_users.get(sessionId);
         if (user !== undefined)
         {
-            let editp = user.editCart(storeId , productId , newQuantity);
-            return new Promise((resolve,reject) => {
-                editp.then( msg => {
-                    resolve(msg)
-                })
-                .catch(error => {
-                    reject(error)
-                })
-            })
+            return user.editCart(storeId , productId , newQuantity);
         }
         return Promise.reject("user not found");
     }
@@ -508,11 +500,7 @@ export class SystemFacade
             storep.then( store => {
                 let completep = store.completeOrder(user.getUserId(), paymentInfo, shippingInfo);
                 completep.then( complete => {
-                    let deletep =  Promise.resolve()//user.deleteShoppingBasket(storeId)TODO: delete
-                    deletep.then ( _ => {
                         resolve(complete)
-                    })
-                    .catch( error => reject(error))
                 })
                 .catch( error => reject(error))
             })
@@ -866,7 +854,7 @@ export class SystemFacade
         })
     }
 
-    public appointStoreManager(sessionId: string, storeId: number, newManagerUsername: string): Promise<string>
+    public async appointStoreManager(sessionId: string, storeId: number, newManagerUsername: string): Promise<string>
     {
         Logger.log(`appointStoreManager : sessionId:${sessionId} , storeId:${storeId}, newManagerUsername:${newManagerUsername}`);
         if(newManagerUsername === '' || newManagerUsername === undefined || newManagerUsername === null){
@@ -874,6 +862,7 @@ export class SystemFacade
         }
 
         let appointer: Subscriber = this.logged_subscribers.get(sessionId);
+        // appointer = await DB.getSubscriberById(appointer.getUserId())
         let storep = DB.getStoreByID(storeId);
         let newManagerp = Authentication.getSubscriberByName(newManagerUsername)
 

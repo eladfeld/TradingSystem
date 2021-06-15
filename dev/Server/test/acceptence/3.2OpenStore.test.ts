@@ -22,6 +22,7 @@ describe('3.2: open store test' , function() {
     });
 
     it('open store good' ,async function() {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let sessionId = await service.enter()
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789");
@@ -29,6 +30,7 @@ describe('3.2: open store test' , function() {
     })
 
     it('open store with non exist subscriber' ,async function() {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let sessionId = await service.enter()
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789");

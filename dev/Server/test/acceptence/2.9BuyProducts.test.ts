@@ -81,6 +81,7 @@ describe('2.9: buy products',function () {
         // check that the basket of ali hasn't changed
         expect(ali.quantityInBasket(store.getStoreId(),banana)).to.equal(40)
         // chech that the store's inventory hasnt changed
+        store =await DB.getStoreByID(store.getStoreId())
         expect(store.getProductQuantity(banana)).to.equal(10)
         // check that transaction wasnt completed
         //expect((await Purchase.getCompletedTransactionsForUser(avi.getUserId())).length).to.equal(1);

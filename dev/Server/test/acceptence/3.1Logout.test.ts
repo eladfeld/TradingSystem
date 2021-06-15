@@ -21,6 +21,7 @@ describe('3.1: Logout' ,function() {
     });
 
     it('good logout' ,async function(){
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let michaelName = uniqueName("michael");
         let sessionId = await service.enter()
@@ -32,6 +33,7 @@ describe('3.1: Logout' ,function() {
     });
 
     it('system manager tries to open store store after logout' ,async function(){
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let michaelName = uniqueName("michael");
         let sessionId = await service.enter()

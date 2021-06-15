@@ -24,6 +24,7 @@ describe('4.11: view store buying history',function () {
         setReady(true);
     });
     it('viwe store history',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "123456789");

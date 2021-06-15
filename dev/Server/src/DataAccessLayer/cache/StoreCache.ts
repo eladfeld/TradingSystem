@@ -25,7 +25,7 @@ export class StoreCache implements iStoreDB
     {
         if(this.stores.has(storeId))
         {
-            if(this.stores.get(storeId)[0])
+            if(!this.stores.get(storeId)[0])
                 return Promise.resolve(this.stores.get(storeId)[1]);
         }
         let storePromise = this.storeDb.getStoreByID(storeId);
@@ -85,16 +85,16 @@ export class StoreCache implements iStoreDB
     }
     public getStoreByName(storeName: string): Promise<Store>
     {
-        for(let store of this.stores.values())
+        for(let [dirty,store] of this.stores.values())
         {
-            if(store[0])
+            if(store.getStoreName() === storeName)
             {
-                if(store[1].getStoreName() === storeName)
+                if(!dirty)
                 {
-                    return Promise.resolve(store[1]);
+                    return Promise.resolve(store);
                 }
+                else return this.storeDb.getStoreByID(store.getStoreId());
             }
-            else return this.storeDb.getStoreByID(store[1].getStoreId());
         }
         return this.storeDb.getStoreByName(storeName);
     }

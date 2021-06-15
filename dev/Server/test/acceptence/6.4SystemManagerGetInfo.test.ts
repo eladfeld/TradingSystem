@@ -23,6 +23,7 @@ describe('6.4: System Manager Get Info',function () {
         setReady(true);
     });
     it('system manager get store purchase history',async  function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let sys_manager_sessionId = await service.enter();
@@ -39,6 +40,7 @@ describe('6.4: System Manager Get Info',function () {
     })
 
     it('system manager get user purchase history', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let ali_sessionId = await service.enter();

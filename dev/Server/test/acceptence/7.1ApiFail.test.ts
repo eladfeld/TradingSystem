@@ -27,6 +27,7 @@ describe('7.1: Api Fail',function () {
         setReady(true);
     });
     it('supply fail', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         SupplySystem.willFail();
         PaymentSystem.willSucceed();
@@ -44,6 +45,7 @@ describe('7.1: Api Fail',function () {
     )
 
     it('payment fail', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         SupplySystem.willSucceed();
         PaymentSystem.willFail();

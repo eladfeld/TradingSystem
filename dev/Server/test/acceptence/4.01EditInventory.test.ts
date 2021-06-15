@@ -20,6 +20,7 @@ describe('4.1: edit store inventory',function () {
     });
 
     it('edit non existent product ',async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let sessionId = await service.enter();
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789")
@@ -29,6 +30,7 @@ describe('4.1: edit store inventory',function () {
     })
 
     it('edit existing product', async function () {
+        this.timeout(100000)
         var service: Service =await Service.get_instance();
         let sessionId = await service.enter();
         let avi = await register_login(service,sessionId, uniqueAviName(), "123456789")

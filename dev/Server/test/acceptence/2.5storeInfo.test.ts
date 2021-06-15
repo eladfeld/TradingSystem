@@ -31,13 +31,13 @@ describe('2.5: store info test' , function() {
         let avi =await register_login(service,sessionId, aviName, "123456789");
         let store1 =await service.openStore(sessionId, storeName_1, 123456, "Tel Aviv");
         let store2 =await service.openStore(sessionId, storeName_2, 123456, "Tel Aviv");
-        store1.addCategoryToRoot('Food')
-        store2.addCategoryToRoot('Food')
-        service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10,"");
-        service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20,"");
-        service.getStoreInfo(sessionId, store1.getStoreId())
-        .then( _ => assert.ok(1))
-        .catch( _ => assert.fail(""))
+        await service.addCategoryToRoot(sessionId,store1.getStoreId(),'Food')
+        await service.addCategoryToRoot(sessionId,store2.getStoreId(),'Food')
+        await service.addNewProduct(sessionId, store1.getStoreId(), "Apple", ['Food'], 26, 10,"");
+        await service.addNewProduct(sessionId, store2.getStoreId(), "banana", ['Food'], 26, 20,"");
+        await service.getStoreInfo(sessionId, store1.getStoreId())
+        // .then( _ => assert.ok(1))
+        // .catch( _ => assert.fail(""))
     })
 
     it('try to watch store without permission',async function () {
