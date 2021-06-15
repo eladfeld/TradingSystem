@@ -170,7 +170,6 @@ export const Products=({getAppState, setAppState})=>{
         const res = await axios.post(`${SERVER_BASE_URL}addProductTocart`, {userId, storeId, productId, quantity:1} )
         if(res.status === 200)
         {
-            console.log(bid)
             axios.post(SERVER_BASE_URL+'/getCartInfo',{userId}).then(response =>
                 {
                     switch(response.status){
@@ -196,6 +195,7 @@ export const Products=({getAppState, setAppState})=>{
 
     const newBid = async (storeId, productId) =>
     {
+
         const res = await axios.post(`${SERVER_BASE_URL}/newOffer`, {userId, storeId, productId, bid} )
         if(res.status === 200)
         {
@@ -213,6 +213,7 @@ export const Products=({getAppState, setAppState})=>{
             return <Grid item  xs={10} align='left'>
                         <Grid item xs={7} align='right'>
                             <TextField
+                            type="number"
                             label="Offering price"
                             onChange={(event) => setBid(event)}
                             fullWidth
@@ -316,7 +317,7 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
 
     const searchByName = async (productName) =>
     {
-        axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
     }
 
     return(
@@ -350,10 +351,8 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
 
 export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
     const [category, changeCategory] = useState('')
-    const [productsByCategory, setProductsByCategory] = useState([])
     const [category_options , setCategoryOptions] = useState(undefined)
     const userId = getAppState().userId;
-    const classes = useStyles();
 
 
     if (category_options === undefined)
@@ -366,7 +365,7 @@ export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
 
     const searchByCategory = async (category) =>
     {
-        axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
     }
 
     return(
@@ -399,51 +398,65 @@ export const SearchByCategory= ({getAppState, setAppState, intersect})=>{
 
 export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     const [productsByKeyword, setProductsByKeyword] = useState([])
-    const [productsByName, setProductsByName] = useState([])
-    const [productsByCategory, setProductsByCategory] = useState([])
     const [keyword_options , setKeywordOptions] = useState(undefined)
     const [key, setKey] = useState('')
 
-    const classes = useStyles();
     const userId = getAppState().userId;
 
     if (keyword_options === undefined)
     {
-        const keywords = axios.get(`${SERVER_BASE_URL}getkeywords`);
-        keywords.then( res => {
-            setKeywordOptions(JSON.parse(res.data));
+        const catagories = axios.get(`${SERVER_BASE_URL}getAllCategories`);
+        let keywords = []
+        catagories.then( res => {
+            keywords = JSON.parse(res.data);
+            return axios.get(`${SERVER_BASE_URL}getProductNames`);
+        }).then( res => {
+            if (keywords === []){
+                setKeywordOptions(JSON.parse(res.data));
+            }
+            else{
+                setKeywordOptions([...keywords,...JSON.parse(res.data)]);
+            }
         })
     }
 
     const searchByName = async (productName) =>
     {
-        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
-        setProductsByName(JSON.parse(res.data)['products'])
-        if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0){
-            setProductsByKeyword(productsByName)
+        return axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
+        .then(res => {
+            let productsByName = JSON.parse(res.data)['products']
+            if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0){
+                setProductsByKeyword(productsByName)
+            }
+            return productsByName
         }
+        )
     }
 
     const searchByCategory = async (category) =>
     {
-        const res = await axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} )
-        setProductsByCategory(JSON.parse(res.data)['products'])
-        if(productsByCategory !== null && productsByCategory !== undefined && productsByCategory.length !== 0){
-
-            setProductsByKeyword(productsByCategory)
-        }
+        return axios.post(`${SERVER_BASE_URL}getPruductInfoByCategory`, {userId, category} )
+        .then(res => {
+            let productsByCategory = JSON.parse(res.data)['products']
+            if(productsByCategory !== null && productsByCategory !== undefined && productsByCategory.length !== 0){
+                setProductsByKeyword(productsByCategory)
+            }
+            return productsByCategory
+        })
     }
 
     const enlist = async (strToSearch) => {
-        setProductsByKeyword([])
-        searchByName(strToSearch)
-        searchByCategory(strToSearch)
-
-        productsByName !== null && productsByName !== undefined && productsByName.length !== 0 ? setProductsByKeyword(productsByCategory) :
-        productsByCategory !== null && productsByCategory !== undefined && productsByCategory.length !== 0 ? setProductsByKeyword(productsByName) :
-        setProductsByKeyword([...new Set([...productsByName,...productsByCategory])])
-        intersect(getAppState().products, productsByKeyword)
-
+        let productsByKeyword = []
+        let productsByName = []
+        searchByName(strToSearch).then((res) => {
+            productsByName = res
+            return searchByCategory(strToSearch)
+            }).then((productsByCategory) => {
+            productsByName === null || productsByName === undefined || productsByName.length === 0 ? productsByKeyword = productsByCategory :
+            productsByCategory === null || productsByCategory === undefined || productsByCategory.length === 0 ? productsByKeyword = productsByName :
+            productsByKeyword = [...new Set([...productsByName,...productsByCategory])]
+            intersect(getAppState().products, productsByKeyword)
+        })
     }
     return(
         <div>
@@ -476,7 +489,6 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
     const userId = getAppState().userId;
     const [problem, setProblem] = useState("")
-    const classes = useStyles();
 
     const SearchBelowPrice = async (price) =>
     {
@@ -484,7 +496,7 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
             setProblem("not a number")
         }
         else {
-            axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price }).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
+            axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price }).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
         }
     }
     return(
@@ -523,7 +535,6 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
     const [key, setKey] = useState('')
     const userId = getAppState().userId;
     const [problem, setProblem] = useState("")
-    const classes = useStyles();
 
     const SearchAbovePrice = async (price) =>
     {
@@ -531,7 +542,7 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
             setProblem("not a number")
         }
         else{
-            axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
+            axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
         }
     }
     return(
@@ -583,7 +594,7 @@ export const SearchByStore=({getAppState, setAppState, intersect})=>{
 
     const SearchByStore = async (store) =>
     {
-        axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} ).then(res => intersect(getAppState().productsm, JSON.parse(res.data)['products']))
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
 
     }
     return(

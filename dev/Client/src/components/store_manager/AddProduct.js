@@ -124,6 +124,7 @@ export const AddProduct = ({getAppState, setAppState}) => {
                       <Grid item>
                         <TextField style={{width:400}}
                             label='Quantity'
+                            type="number"
                             placeholder='Enter product quantity available'
                             onChange={(event) => setQuantity(event.target.value)}
                         fullWidth/>
@@ -137,6 +138,7 @@ export const AddProduct = ({getAppState, setAppState}) => {
                       <Grid item>
                         <TextField style={{width:400}}
                             label='Price'
+                            type="number"
                             placeholder='Enter product price'
                             onChange={(event) => setPrice(event.target.value)}
                         fullWidth/>

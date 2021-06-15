@@ -1013,6 +1013,10 @@ export class SystemFacade
     }
 
     newOffer(sessionId: string, storeId: number, productId: number, bid: number): Promise<string> {
+        Logger.log(`newOffer : sessionId:${sessionId} , storeId:${storeId}, productId:${productId} , bid:${bid}`);
+        if(bid < 1|| bid === undefined || bid === null){
+            return Promise.reject("invalid bid")
+        }
         let subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber === undefined){
             return Promise.reject("subscriber is not logged in");
@@ -1064,6 +1068,10 @@ export class SystemFacade
     }
 
     counterOffer(sessionId: string, storeId: number, offerId: number, counterPrice: number): Promise<string> {
+        Logger.log(`counterOffer : sessionId:${sessionId} , storeId:${storeId}, counterPrice:${counterPrice} , offerId:${offerId}`);
+        if(counterPrice < 1|| counterPrice === undefined || counterPrice === null){
+            return Promise.reject("invalid counter price")
+        }
         let subscriber = this.logged_subscribers.get(sessionId);
         if(subscriber === undefined){
             return Promise.reject("subscriber is not logged in");
