@@ -37,8 +37,8 @@ export const CACHE_SIZE = -1;               //how much memory we want to cache (
 
 //init configurations
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
-export const SHOULD_INIT_STATE = false;    //initialize state from file?
-export const INITIAL_STATE = checkState;
+export const SHOULD_INIT_STATE = true;    //initialize state from file?
+export const INITIAL_STATE = state;
 
 
 //API configurations
@@ -69,7 +69,7 @@ const TEST_DB = 3;
     //end modes
 
 
-export var sqlMode = TEST_DB;
+export var sqlMode = LOCALHOST_MODE;
 
 
 class SqlConnector

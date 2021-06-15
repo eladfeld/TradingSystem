@@ -83,7 +83,6 @@ export async function truncate_tables() {
   await sequelize.models.MessageHistory.destroy( { where:{}, truncate:true, cascade:true})
   await sequelize.models.PendingMessage.destroy( { where:{}, truncate:true, cascade:true})
   await sequelize.models.SystemManager.destroy( { where:{}, truncate:true, cascade:true})
-  await sequelize.models.LoginStats.destroy( { where:{}, truncate:true, cascade:true} )
   await sequelize.models.Appointment.destroy( { where:{}, truncate:true, cascade:true} )
   
   await sequelize.models.BasketProduct.destroy( { where:{}, truncate:true, cascade:true} )
@@ -97,5 +96,8 @@ export async function truncate_tables() {
   await sequelize.models.Subscriber.destroy( { where:{},  cascade:true} )
   await sequelize.models.TransactionItem.destroy( { where:{}, truncate:true, cascade:true} )
   await sequelize.models.Transaction.destroy( { where:{},  cascade:true} )
+  
+  try{ await sequelize.models.LoginStats.destroy( { where:{}, truncate:true, cascade:true} )}
+  catch(e){}
 }
 
