@@ -103,13 +103,14 @@ export class StoreProduct
         return this.categories;
     }
 
-    public setQuantity(quantity: number): Result<string> {
+    public setQuantity(quantity: number, saveDb:boolean = true): Result<string> {
         if(quantity < 0){
             Logger.log("Quantity has to be non negative")
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
-        DB.updateProduct(this)
+        if (saveDb)
+            DB.updateProduct(this)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 

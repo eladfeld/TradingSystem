@@ -59,9 +59,10 @@ export class Inventory
             return Promise.reject("Product does not exist in inventory!");
         }
 
-        //TODO: #saveDB
-        product.setQuantity(quantity);
-        return Promise.resolve("Quantity was set");
+        let setQauntity = product.setQuantity(quantity,true);
+        if(isOk(setQauntity))
+            return Promise.resolve("Quantity was set");
+        return Promise.reject(setQauntity.message)
     }
 
     public getProductQuantity(productId : number) : number {
@@ -94,8 +95,10 @@ export class Inventory
             return makeFailure("Product unavailable");
         }
         let product = this.products.get(productId);
-        product.setQuantity(product.getQuantity() - quantity);
-        return makeOk(true);
+        let setproduct = product.setQuantity(product.getQuantity() - quantity, false);
+        if (isOk(setproduct))
+            return makeOk(true); 
+        return setproduct;
     }
 
     public returnReservedProduct(productId: number, quantity: number): Result<string> {

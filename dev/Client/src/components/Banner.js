@@ -223,8 +223,8 @@ export default function Banner({getAppState, setAppState}) {
     const wsConn = getAppState().wsConn;
     if (wsConn !== undefined)
       wsConn.close();
+    setAppState({notifications:[]});
     history.push('/');
-    setAppState(initialAppState);
   };
 
   const handleSignInClick = () => {

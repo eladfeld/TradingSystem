@@ -45,7 +45,7 @@ const Cart = ({getAppState, setAppState}) => {
                 history.push('/checkout');
                 return;
             case SERVER_RESPONSE_BAD:
-                setProblem(response.data);
+                setProblem(response.data.message);
                 return;
             default:
                 setProblem(`unexpected response code: ${response.status}`);
