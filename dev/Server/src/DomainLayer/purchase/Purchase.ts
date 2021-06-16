@@ -1,4 +1,4 @@
-import {TEST_MODE,TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT} from '../../../config';
+import {TEST_CHECKOUT_TIMEOUT, CHECKOUT_TIMEOUT, sqlMode, TEST_MODE} from '../../../config';
 import Transaction, { TransactionStatus } from './Transaction';
 import { Publisher } from '../notifications/Publisher';
 import APIAdapterFactory from '../apis/APIAdapterFactory';
@@ -81,12 +81,18 @@ class Purchase {
         }
 
         //allow payment within 5 minutes
-        DB.storeTransaction(transaction);
+        // DB.storeTransaction(transaction);
+        let checkoutp = DB.completeTransaction(transaction);
         const timerId: ReturnType<typeof setTimeout> = setTimeout(() => {
             this.onTransactionTimeout(userId, storeId, onFail);
         }, PAYMENT_TIMEOUT_MILLISEC);
         this.addTimerAndCallback(userId, storeId, timerId, onFail);
-        return new Promise((res , rej) => {res(true)});;
+        return new Promise((resolve,reject) => {
+            checkoutp.then( _ => {
+                resolve(true)
+            })
+            .catch( error => reject(error))
+        })
     }
 
     //completes an existing transaction in progress. returns failure in the event that
@@ -125,11 +131,15 @@ class Purchase {
         transaction.setPaymentId(paymentRes);
         transaction.setCardNumber(paymentInfo.cardNumber);
         transaction.setStatus(TransactionStatus.COMPLETE);
-        DB.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
-
+        
+        let updatep = DB.updateTransaction(transaction);
         Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
-        return new Promise((res , rej) => {res(true)});
+        return new Promise((resolve , reject) => {
+            updatep.then( _ => {
+                resolve(true)
+            }).catch( err => reject(err))
+        });
     }
 
     
@@ -218,7 +228,6 @@ class Purchase {
         return DB.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {
-        // console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
         return PAYMENT_TIMEOUT_MILLISEC;
     };
 

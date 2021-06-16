@@ -8,31 +8,30 @@ import { APIsWillSucceed, uniqueAlufHasportName, uniqueAviName } from '../testUt
 import { register_login, open_store } from './common';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('2.8: Shopping Cart view and edit' ,async function() {
+describe('2.8: Shopping Cart view and edit' ,function() {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('shopping cart before and after delete' , async function()
     {
-        //this.timeout(30000)
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();
 
         let sessionId = await service.enter()
         let avi = await register_login(service,sessionId,aviName, "123456789");
         let store1 = await open_store(service,sessionId,avi,storeName , 123456 , "Tel Aviv" );
-        await store1.addCategoryToRoot('Sweet')
-        await store1.addCategoryToRoot('Computer')
-        let prodId = await store1.addNewProduct(avi,"banana",['Computer'],500,100,"");
+        await service.addCategoryToRoot(sessionId,store1.getStoreId(),'Sweet')
+        await service.addCategoryToRoot(sessionId,store1.getStoreId(),'Computer')
+        let prodId = await service.addNewProduct(sessionId,store1.getStoreId(),"banana",['Computer'],500,100,"");
         await service.addProductTocart(sessionId, store1.getStoreId() , prodId , 10);
         await service.getCartInfo(sessionId)
         await service.editCart(sessionId, store1.getStoreId(), prodId, 0 );

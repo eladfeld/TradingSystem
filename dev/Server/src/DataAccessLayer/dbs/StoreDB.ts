@@ -24,17 +24,19 @@ export class storeDB implements iStoreDB
                 id: store.getStoreId(),
                 storeName: store.getStoreName(),
                 storeRating: store.getStoreRating(),
-                numOfRaters: 0, //TODO: change
+                numOfRaters: 0,
                 bankAccount: store.getBankAccount(),
                 storeAddress: store.getStoreAddress(),
                 storeClosed: store.getIsStoreClosed(),
-                founderId: store.getStoreFounderId()
+                founderId: store.getStoreFounderId(),
+                recieveOffers: store.isRecievingOffers(),
             })
             return Promise.resolve();
         }
         catch(e)
         {
-            return Promise.reject("store with the same id exists,")
+            Logger.error(e)
+            return Promise.reject(e)
         }
     }
 
@@ -91,7 +93,7 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
+            Logger.error(e)
             return Promise.reject(e)
         }
 
@@ -100,7 +102,6 @@ export class storeDB implements iStoreDB
 
     public async addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>
     {
-        console.log("pid",productId, "category",category, "storeId",storeId)
         try{
             await sequelize.models.ProductToCategory.create({
                 StoreProductId: productId,
@@ -111,7 +112,6 @@ export class storeDB implements iStoreDB
         }
         catch(e)
         {
-            console.log(e)
             return Promise.reject("category with the id alreay exists!")
         }
     }
@@ -119,7 +119,7 @@ export class storeDB implements iStoreDB
 
 
     //get functions:
-    
+
     public async getLastStoreId() : Promise<number>
     {
         let lastId = await sequelize.models.Store.max('id')
@@ -128,7 +128,7 @@ export class storeDB implements iStoreDB
         return lastId + 1
     }
 
-    
+
     public async getLastDiscountId() : Promise<number>
     {
         let lastId = await sequelize.models.DiscountPolicy.max('id')
@@ -136,8 +136,8 @@ export class storeDB implements iStoreDB
             return 0;
         return lastId + 1
     }
-    
-    
+
+
     public async getLastBuyingId() : Promise<number>
     {
         let lastId = await sequelize.models.BuyingPolicy.max('id')
@@ -149,6 +149,8 @@ export class storeDB implements iStoreDB
 
     public async getStoreByID(storeId: number): Promise<Store>
     {
+        try{
+            
         let storedb = await sequelize.models.Store.findOne(
             {
                 where:
@@ -164,13 +166,20 @@ export class storeDB implements iStoreDB
                 await DB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
-                await this.getBuyingPoliciesByStoreId(storedb.id));
+                await this.getBuyingPoliciesByStoreId(storedb.id),
+                storedb.recieveOffers);
             return Promise.resolve(store);
         }
         return Promise.resolve(undefined);
     }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
+    }
     public async deleteStore(storeId: number): Promise<void>
     {
+        try{
         await sequelize.models.Store.destroy(
             {
                 where:
@@ -179,10 +188,16 @@ export class storeDB implements iStoreDB
                 }
             }
         )
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
     };
 
     public async getStoreByName(storeName: string):Promise<Store>
     {
+        try{
         let storedb = await sequelize.models.Store.findOne(
             {
                 where:
@@ -199,35 +214,54 @@ export class storeDB implements iStoreDB
                 await DB.getAllProductsOfStore(storedb.id),
                 await this.getAllCategories(storedb.id),
                 await this.getDiscountPolicyByStoreId(storedb.id),
-                await this.getBuyingPoliciesByStoreId(storedb.id));
+                await this.getBuyingPoliciesByStoreId(storedb.id),
+                storedb.recieveOffers);
             return Promise.resolve(store);
         }
         return Promise.reject("store not found!");
     }
+    catch(e){
+        Logger.error(e)
+        return Promise.reject(e)
+    }
+    }
 
     private async getBuyingPoliciesByStoreId(storeId: number): Promise<BuyingPolicy>
     {
-        let policies = await sequelize.models.BuyingPolicy.findAll({
-            where:{
-                StoreId: storeId
-            }
-        })
-        return BuyingPolicy.rebuild(policies);
+        try{
+            let policies = await sequelize.models.BuyingPolicy.findAll({
+                where:{
+                    StoreId: storeId
+                }
+            })
+            return BuyingPolicy.rebuild(policies);
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
     }
 
     private async getDiscountPolicyByStoreId(storeId: number): Promise<DiscountPolicy>
     {
+        try{
         let discounts = await sequelize.models.DiscountPolicy.findAll({
             where:{
                 StoreId: storeId
             }
         })
         return DiscountPolicy.rebuild(discounts);
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
     }
 
 
     public async getPruductInfoByName(productName: string):Promise<string>
     {
+        try{
         let productsdb = await sequelize.models.StoreProduct.findAll({
                 where: {
                     name: productName
@@ -237,6 +271,7 @@ export class storeDB implements iStoreDB
 
         var products : any = {}
         products['products']=[]
+
         for(let product of productsdb)
         {
             products['products'].push({
@@ -247,22 +282,59 @@ export class storeDB implements iStoreDB
                 'storeName': product.Store.storeName,
                 'storeId': product.StoreId,
                 'productId': product.id,
-                'image': product.image
+                'image': product.image,
+                'recieveOffers': product.Store.recieveOffers,
             })
+
         }
         Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
         return Promise.resolve(JSON.stringify(products))
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
     }
 
     public async getPruductInfoByStore(storeName: string):Promise<string>
     {
+        try{
+            
         let productsdb = await sequelize.models.StoreProduct.findAll(
             {
-                where:
-                {
-                    storeName: storeName
-                }
+                include: {all: true}
             },
+        )
+        var products : any = {}
+        products['products']=[]
+        for(let product of productsdb)
+        {
+            if(product.Store.storeName === storeName){
+                products['products'].push({
+                    'productName': product.name,
+                    'numberOfRaters': product.numOfRaters,
+                    'rating': product.productRating,
+                    'price': product.price,
+                    'storeName': product.Store.storeName,
+                    'storeId': product.StoreId,
+                    'productId': product.id,
+                    'image': product.image,
+                    'recieveOffers': product.Store.recieveOffers
+                })
+            }
+        }
+        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
+        return Promise.resolve(JSON.stringify(products))
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
+    }
+
+    public async getPruductInfoByCategory(category: string): Promise<string>{
+        try{
+        let productsdb = await sequelize.models.StoreProduct.findAll(
             {
                 include: {all: true}
             }
@@ -271,28 +343,100 @@ export class storeDB implements iStoreDB
         products['products']=[]
         for(let product of productsdb)
         {
-            products['products'].push({
-                'productName': product.name,
-                'numberOfRaters': product.numOfRaters,
-                'rating': product.productRating,
-                'price': product.price,
-                'storeName': product.store.storeName,
-                'storeId': product.StoreId,
-                'productId': product.id,
-                'image': product.image
-            })
+            let categories = await DB.getCategoriesOfProduct(product.id)
+            if(categories.includes(category)){
+                products['products'].push({
+                    'productName': product.name,
+                    'numberOfRaters': product.numOfRaters,
+                    'rating': product.productRating,
+                    'price': product.price,
+                    'storeName': product.Store.storeName,
+                    'storeId': product.StoreId,
+                    'productId': product.id,
+                    'image': product.image,
+                    'recieveOffers': product.Store.recieveOffers
+                })
+            }
         }
-        Logger.log(`Getting products by name answer: ${JSON.stringify(products)}`)
+        Logger.log(`Getting products by category answer: ${JSON.stringify(products)}`)
         return Promise.resolve(JSON.stringify(products))
+        }
+        catch(e){
+            return Promise.reject()
+        }
     }
 
-    getPruductInfoByCategory: (category: string) => Promise<string>;
-    getProductInfoAbovePrice: (price: number) => Promise<string>;
-    getProductInfoBelowPrice: (price: number) => Promise<string>;
+    public async getProductInfoAbovePrice(price: number): Promise<string>{
+        try{
+        let productsdb = await sequelize.models.StoreProduct.findAll(
+            {
+                include: {all: true}
+            }
+        )
+        var products : any = {}
+        products['products']=[]
+        for(let product of productsdb)
+        {
+            if(product.price > price){
+                products['products'].push({
+                    'productName': product.name,
+                    'numberOfRaters': product.numOfRaters,
+                    'rating': product.productRating,
+                    'price': product.price,
+                    'storeName': product.Store.storeName,
+                    'storeId': product.StoreId,
+                    'productId': product.id,
+                    'image': product.image,
+                    'recieveOffers': product.Store.recieveOffers
+                })
+            }
+        }
+        Logger.log(`Getting products above price ${price} answer: ${JSON.stringify(products)}`)
+        return Promise.resolve(JSON.stringify(products))
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
+    }
 
+    public async getProductInfoBelowPrice(price: number): Promise<string>{
+        try{
+        let productsdb = await sequelize.models.StoreProduct.findAll(
+            {
+                include: {all: true}
+            }
+        )
+        var products : any = {}
+        products['products']=[]
+        for(let product of productsdb)
+        {
+            if(product.price < price){
+                products['products'].push({
+                    'productName': product.name,
+                    'numberOfRaters': product.numOfRaters,
+                    'rating': product.productRating,
+                    'price': product.price,
+                    'storeName': product.Store.storeName,
+                    'storeId': product.StoreId,
+                    'productId': product.id,
+                    'image': product.image,
+                    'recieveOffers': product.Store.recieveOffers
+                })
+            }
+        }
+        Logger.log(`Getting products below price ${price} answer: ${JSON.stringify(products)}`)
+        return Promise.resolve(JSON.stringify(products))
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
+    }
 
     private async getAppointmentByStoreId(storeId : number) : Promise<Appointment[]>
     {
+        try{
         let appointments = await sequelize.models.Appointment.findAll({
             where:{
                 StoreId: storeId
@@ -305,9 +449,12 @@ export class storeDB implements iStoreDB
             new OwnerAppointment(app.appointerId, app.StoreId, app.appointeeId, new Permission(app.permissionsMask)))
 
         return apps;
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
     }
-
-
 
     private async getCategory(categoryName: string, storeId:number): Promise<string>
     {
@@ -322,6 +469,7 @@ export class storeDB implements iStoreDB
 
     public async getAllCategories(StoreId: number) : Promise<TreeRoot<string>>
     {
+        try{
         Logger.log(`getting categories StoreId: ${StoreId}`)
         let categories = await sequelize.models.Category.findAll({
             where: {
@@ -342,17 +490,65 @@ export class storeDB implements iStoreDB
             categories = categories.filter( (cat: any) => inserted_categories.indexOf(cat.name) == -1)
         }
         return categiriesTree;
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
 
     }
 
+    public async updateStoreRecievesOffers(storeId: number, recieveOffers: boolean): Promise<void>
+    {
+        try{
+        await sequelize.models.Store.update(
+            {recieveOffers: recieveOffers},
+            {
+                where:
+                {
+                    id: storeId
+                }
+            } )
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
+    }
+
+    public async getRecievingOffers(storeId: number): Promise<boolean>
+    {
+        try{
+        let storedb = await sequelize.models.Store.findOne(
+            {
+                where:
+                {
+                    id: storeId
+                }
+            }
+        )
+
+        return storedb.recieveOffers;
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
+    }
     public async getCategoriesOfProduct(productId: number) : Promise<string[]>
     {
+        try{
         let productToCategories = await sequelize.models.ProductToCategory.findAll({
             where: {
                 StoreProductId: productId,
             }
         })
         return productToCategories.map((p2c: any) => p2c.category)
+        }
+        catch(e){
+            Logger.error(e)
+            return Promise.reject(e)
+        }
 
     }
     clear: () => void;

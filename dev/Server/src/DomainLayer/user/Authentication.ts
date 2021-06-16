@@ -27,8 +27,8 @@ export class Authentication
     {
         let subp = DB.getSubscriberByUsername(username)
         return new Promise( (resolve,reject) => {
-            subp.then( _ => {
-                reject("username already in use");
+            subp.then( msg => {
+                reject(msg);
             })
             .catch( _ => {
                 resolve(true)

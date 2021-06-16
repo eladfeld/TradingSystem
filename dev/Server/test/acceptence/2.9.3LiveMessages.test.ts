@@ -15,21 +15,21 @@ import {setReady, waitToRun} from '../testUtil';
 import { Publisher } from '../../src/DomainLayer/notifications/Publisher';
 import { promises } from 'dns';
 
-describe('2.9.3: Live Messages',async function () {
+describe('2.9.3: Live Messages',function () {
     //setTestConfigurations();        //changing external APIs to mocks
-    var service: Service =await Service.get_instance();
+    
 
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('avi buys from himself and receives message', async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         var publisher : Publisher = Publisher.get_instance();
         publisher.set_send_func((userId:number,_message:{}) => {
             return Promise.resolve("message sent")
@@ -38,7 +38,7 @@ describe('2.9.3: Live Messages',async function () {
         let avi_sessionId = await service.enter()
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        await service.addCategoryToRoot(avi_sessionId, store.getStoreId(), "Sweet")
         let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
         let apple = await service.addNewProduct(avi_sessionId, store.getStoreId(), "apple", ['Sweet'], 1, 10,"");
         await service.addProductTocart(avi_sessionId, store.getStoreId(), banana, 10);
@@ -53,6 +53,8 @@ describe('2.9.3: Live Messages',async function () {
 
 
     it('moshe buys from avi which receives the message only after he logs in', async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         var publisher : Publisher = Publisher.get_instance();
         publisher.set_send_func((userId:number,_message:{}) => {
             let logged_subscribers = service.get_logged_subscribers()
@@ -72,9 +74,9 @@ describe('2.9.3: Live Messages',async function () {
         let moshe = await register_login(service, moshe_sessionId , uniqueMosheName() , "1234")
 
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
-        store.addCategoryToRoot('Sweet')
+        await service.addCategoryToRoot(avi_sessionId, store.getStoreId(), "Sweet")
         let banana = await service.addNewProduct(avi_sessionId, store.getStoreId(), "banana", ['Sweet'], 1, 50,"");
-        service.logout(avi_sessionId)
+        await service.logout(avi_sessionId)
 
         await service.addProductTocart(moshe_sessionId, store.getStoreId(), banana, 10);
         await service.checkoutBasket(moshe_sessionId, store.getStoreId(), shippingInfo);
@@ -87,6 +89,5 @@ describe('2.9.3: Live Messages',async function () {
         }, 2000)
     })
 
-    
 
 });

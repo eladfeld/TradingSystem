@@ -27,7 +27,7 @@ export class StoreProduct
                 StoreProduct.nextId = id;
                 resolve(id);
             })
-            .catch(e => reject("problem with dicsount id "))
+            .catch(e => reject("problem with product id "))
         })
     }
 
@@ -103,14 +103,14 @@ export class StoreProduct
         return this.categories;
     }
 
-    public setQuantity(quantity: number): Result<string> {
+    public setQuantity(quantity: number, saveDb:boolean = true): Result<string> {
         if(quantity < 0){
             Logger.log("Quantity has to be non negative")
             return makeFailure("Quantity has to be non negative");
         }
         this.quantity = quantity;
-        
-        console.log(`new quantitty was set ${quantity}`)
+        if (saveDb)
+            DB.updateProduct(this)
         return makeOk(`New quantity was set, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 
@@ -120,6 +120,7 @@ export class StoreProduct
             return makeFailure("Amount has to be non negative");
         }
         this.quantity = this.quantity + amount;
+        DB.updateProduct(this)
         return makeOk(`New quantity was added, Product Name: ${this.name}, New Quantity: ${this.quantity}\n`);
     }
 

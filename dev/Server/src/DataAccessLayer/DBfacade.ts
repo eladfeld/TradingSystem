@@ -1,53 +1,68 @@
-import { TEST_MODE } from "../../config";
+import { SHOULD_USE_CACHE } from "../../config";
 import iDiscount from "../DomainLayer/discount/iDiscount";
+import { Offer } from "../DomainLayer/offer/Offer";
 import { Rule } from "../DomainLayer/policy/buying/BuyingPolicy";
 import Transaction from "../DomainLayer/purchase/Transaction";
 import { Store } from "../DomainLayer/store/Store";
 import { StoreProduct } from "../DomainLayer/store/StoreProduct";
 import { Appointment } from "../DomainLayer/user/Appointment";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
+import { StoreCache } from "./cache/StoreCache";
+import { SubscriberCache } from "./cache/SubscriberCache";
 import { LoginStatsDB } from "./dbs/LoginStatsDB";
+import { offerDB } from "./dbs/OfferDB";
 import { productDB } from "./dbs/ProductDB";
 import { purchaseDB } from "./dbs/PurchaseDB";
 import { storeDB } from "./dbs/StoreDB";
 import { subscriberDB } from "./dbs/SubscriberDB";
 import { LoginStatsDummyDB } from "./dummies/LoginStatsDummyDB";
+import { OfferDummyDB } from "./dummies/OfferDummyDB";
 import { ProductDummyDB } from "./dummies/ProductDummyDB";
 import { PurchaseDummyDB } from "./dummies/PurchaseDummyDB";
 import { StoreDummyDB } from "./dummies/StoreDummyDB";
 import { SubscriberDummyDB } from "./dummies/SubscriberDummyDb";
 import { iLoginStatsDB, login_stats, userType } from "./interfaces/iLoginStatsDB";
+import { iOfferDB } from "./interfaces/iOfferDB";
 import { iProductDB } from "./interfaces/iProductDB";
 import { iPurchaseDB } from "./interfaces/iPurchaseDB";
 import { iStoreDB } from "./interfaces/iStoreDB";
 import { iSubscriberDB } from "./interfaces/iSubscriberDB";
 
-class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscriberDB 
+class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscriberDB, iOfferDB
 {
     private subscriberDB : iSubscriberDB;
     private loginDB : iLoginStatsDB;
     private productDB : iProductDB;
-    private purchaseDB : iPurchaseDB; 
+    private purchaseDB : iPurchaseDB;
     private storeDB : iStoreDB;
+    private offerDB : iOfferDB;
 
     constructor(){
-        if (TEST_MODE){
+        if (false){
             this.subscriberDB = new SubscriberDummyDB();
             this.loginDB = new LoginStatsDummyDB();
             this.productDB = new ProductDummyDB();
             this.purchaseDB = new PurchaseDummyDB();
             this.storeDB = new StoreDummyDB();
+            this.offerDB = new OfferDummyDB();
         }
         else
         {
             this.subscriberDB = new subscriberDB();
-            this.loginDB = new LoginStatsDummyDB(); //TODO:Change to DB
+            this.loginDB = new LoginStatsDB();
             this.productDB = new productDB();
             this.purchaseDB = new purchaseDB();
             this.storeDB = new storeDB();
+            this.offerDB = new offerDB();
+        }
+        if(SHOULD_USE_CACHE)
+        {
+            this.subscriberDB = new SubscriberCache();
+            this.storeDB = new StoreCache();
         }
     }
-    
+
+
     //-------------------------Subscriber DB-----------------------------
     public getAppointment(userId: number, storeId: number) : Promise<Appointment>{
         return this.subscriberDB.getAppointment(userId,storeId);
@@ -136,7 +151,7 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     {
         return this.storeDB.addStore(store);
     }
-    
+
     public getLastStoreId() : Promise<number>{
         return this.storeDB.getLastStoreId();
     }
@@ -150,11 +165,11 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     public getStoreByID(storeId: number) :Promise<Store>{
         return this.storeDB.getStoreByID(storeId);
     }
-    
+
     public deleteStore(storeId: number) : Promise<void>{
         return this.storeDB.deleteStore(storeId);
     }
-    
+
     public getStoreByName(storeName: string) : Promise<Store>{
         return this.storeDB.getStoreByName(storeName);
     }
@@ -178,14 +193,14 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     public getPruductInfoByStore(storeName: string) : Promise<string>{
         return this.storeDB.getPruductInfoByStore(storeName);
     }
-    
+
     public addCategory(StoreId: number, category: string, father: string) : Promise<void>{
         return this.storeDB.addCategory(StoreId, category, father)
     }
     public getCategoriesOfProduct(productId: number) : Promise<string[]>{
         return this.storeDB.getCategoriesOfProduct(productId);
     }
-    
+
     public addCategoriesOfProduct(productId: number, category: string, storeId: number) : Promise<void>{
         return this.storeDB.addCategoriesOfProduct(productId, category, storeId);
     }
@@ -193,11 +208,25 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     public addPolicy(storeId: number, rule: Rule) : Promise<void>{
         return this.storeDB.addPolicy(storeId, rule);
     }
-    
+
     public addDiscountPolicy(id: number, discount: iDiscount, storeId: number): Promise<void>{
         return this.storeDB.addDiscountPolicy(id, discount, storeId)
     }
+
+    public updateStoreRecievesOffers(storeId: number, recieveOffers: boolean) : Promise<void>{
+        return this.storeDB.updateStoreRecievesOffers(storeId, recieveOffers)
+    }
+
+    public getRecievingOffers(storeId: number) : Promise<boolean>{
+        return this.storeDB.getRecievingOffers(storeId)
+    }
     //-------------------------Transaction DB-----------------------------
+
+
+    public completeTransaction(transaction: Transaction):Promise<boolean>
+    {
+        return this.purchaseDB.completeTransaction(transaction)
+    }
     public getLastTransactionId(): Promise<number>
     {
         return this.purchaseDB.getLastTransactionId();
@@ -230,7 +259,7 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     {
         return this.purchaseDB.getUserStoreHistory(userId, storeId);
     }
-    
+
     //-------------------------Product DB-----------------------------
     public getLastProductId(): Promise<number>{
         return this.productDB.getLastProductId();
@@ -244,6 +273,12 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
     public getProductById(productId: number): Promise<StoreProduct>{
         return this.productDB.getProductById(productId)
     }
+
+    public updateProduct(product: StoreProduct): Promise<void>
+    {
+        return this.productDB.updateProduct(product);
+    }
+
     public clear() :void{
         return this.productDB.clear()
     }
@@ -261,7 +296,32 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
         return this.loginDB.getLoginStats(from,until);
     }
 
+    //-------------------------Offer DB-----------------------------
+    public async addOffer(offer: Offer): Promise<number>{
+        return this.offerDB.addOffer(offer)
+    }
+
+    public async updateOffer(offer: Offer): Promise<void>{
+        return this.offerDB.updateOffer(offer)
+    }
+
+    public async getOfferById(offerId: number): Promise<Offer>{
+        return this.offerDB.getOfferById(offerId)
+    }
+
+    public async getAllOffersByStore(storeId: number): Promise<Offer[]>{
+        return this.offerDB.getAllOffersByStore(storeId)
+    }
+
+    public async getAllOffersByUser(storeId: number): Promise<Offer[]>{
+        return this.offerDB.getAllOffersByUser(storeId)
+    }
+
 
 }
 
-export const DB =new DBfacade();
+// to replace the DB in stub for the tests
+export function set_DB(db : any ) {
+    DB = db;
+}
+export var DB =new DBfacade();

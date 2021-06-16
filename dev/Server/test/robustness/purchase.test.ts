@@ -7,21 +7,21 @@ import {APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName} from '..
 import {setReady, waitToRun} from '../testUtil';
 
 
-describe('Auth fail',async function () {
+describe('Auth fail',function () {
 
-    var service: Service =await Service.get_instance();
+   
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
 
     it('fail on checkout', async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter()
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
@@ -51,6 +51,7 @@ describe('Auth fail',async function () {
     })
 
     it('fail on completing order', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter()
         let avi = await register_login(service, avi_sessionId, uniqueAviName(), "1234");
         let store = await open_store(service, avi_sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");

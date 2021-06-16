@@ -10,26 +10,28 @@ import { register_login } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.2: open store test' ,async function() {
+describe('3.2: open store test' , function() {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('open store good' ,async function() {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let sessionId = await service.enter()
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789");
         await service.openStore(sessionId , uniqueAlufHasportName() , 123456 , "Tel Aviv" );
     })
 
     it('open store with non exist subscriber' ,async function() {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let sessionId = await service.enter()
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789");
         await failIfResolved(()=> service.openStore(sessionId + 1 , uniqueAlufHasportName() , 123456 , "Tel Aviv" ));

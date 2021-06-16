@@ -10,6 +10,10 @@ export class PurchaseDummyDB implements iPurchaseDB{
         this.transactions = [];
         this.isConnected = true;
     }
+    public completeTransaction(transaction: Transaction):Promise<boolean>
+    {
+        return Promise.resolve(true)
+    }
 
     public getLastTransactionId(): Promise<number>
     {

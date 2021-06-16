@@ -74,7 +74,7 @@ export const AppointManager = ({getAppState, setAppState}) => {
         {_isSucsess ?
         <Alert
         action={
-          <Button color="inherit" size="small" onClick={() => {history.push('/welcome')}}>
+          <Button color="inherit" size="small" onClick={() => {history.push(`/store/${storeId}`)}}>
             Back
           </Button>
         }

@@ -10,19 +10,19 @@ import { enter_login } from './common';
 import { APIsWillSucceed, uniqueAlufHasportName, uniqueName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.1: Logout' ,async function() {
-    var service: Service =await Service.get_instance();
+describe('3.1: Logout' ,function() {
+    
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('good logout' ,async function(){
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let michaelName = uniqueName("michael");
         let sessionId = await service.enter()
         await service.register(michaelName,"1234",20)
@@ -33,6 +33,8 @@ describe('3.1: Logout' ,async function() {
     });
 
     it('system manager tries to open store store after logout' ,async function(){
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let michaelName = uniqueName("michael");
         let sessionId = await service.enter()
         await service.register(michaelName,"1234",20)

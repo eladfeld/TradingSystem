@@ -56,8 +56,10 @@ export class Subscriber extends User
         let addp = this.shoppingCart.addProduct(storeId, productId, quantity);
         return new Promise ((resolve,reject) => {
             addp.then( shoppingbasket => {
-                DB.addProductToCart(this.userId,storeId, productId, quantity);
-                resolve(shoppingbasket)
+                let addtpcartp = DB.addProductToCart(this.userId,storeId, productId, quantity);
+                addtpcartp.then( _ => {
+                    resolve(shoppingbasket)
+                }).catch(error => reject(error))
             })
             .catch( error => reject(error))
         })
@@ -82,7 +84,6 @@ export class Subscriber extends User
     public addAppointment(appointment: Appointment) : void
     {
         this.appointments.push(appointment);
-        DB.addAppointment(this.getUserId(),appointment)
     }
 
     public checkoutBasket(storeId: number, shippingInfo: tShippingInfo): Promise<boolean>
@@ -91,7 +92,6 @@ export class Subscriber extends User
         return new Promise((resolve,reject) => {
             checkoutp.then( isSusccesfull => {
                 this.shoppingCart.getBaskets().delete(storeId);
-                DB.deleteBasket(this.userId, storeId);
                 resolve(isSusccesfull)
             })
             .catch( error => reject(error))
@@ -120,9 +120,9 @@ export class Subscriber extends User
         return new Promise( (resolve,reject) => {
             editp.then ( msg => {
                 DB.updateCart(this.userId, storeId, productId, quantity)
-                resolve(msg)
-            })
-            editp.catch( error => {
+                .then( _ => resolve(msg))
+                .catch(error => reject(error))
+            }).catch( error => {
                 reject(error)
             })
         })

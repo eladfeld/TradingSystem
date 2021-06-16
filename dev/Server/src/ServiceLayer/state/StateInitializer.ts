@@ -23,6 +23,7 @@ import { StoreCategoryInfo } from '../../DomainLayer/store/StoreInfo';
 import { Service } from '../Service';
 import Purchase, { tPaymentInfo, tShippingInfo } from '../../DomainLayer/purchase/Purchase';
 import { basketState, discountState, predState, PRODUCT_PREF } from './StateBuilder';
+import { isConstructorDeclaration } from 'typescript';
 
 const BANK_ACCOUNT = 0;
 const SHIPPING_INFO : tShippingInfo = {name: "shir", address: "313 8 Mile Road" , city:"Detroit", country:"Michigan" , zip:3553}
@@ -59,7 +60,7 @@ export default class StateInitializer{
             return true;
             
         } catch (error) {
-            //throw error;
+            console.log(error)
             return false;
         }
     }
@@ -118,7 +119,6 @@ export default class StateInitializer{
                 this.sessions.get(ownerState.appointer),storeId,ownerState.name;
                 await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
             }
-
 
             //appoint managers
             const managers = storeState.employees.managers;

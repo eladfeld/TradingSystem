@@ -10,12 +10,10 @@ import {setReady, waitToRun} from '../testUtil';
 
 describe('Store owner manage store inventory' , () => {
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
