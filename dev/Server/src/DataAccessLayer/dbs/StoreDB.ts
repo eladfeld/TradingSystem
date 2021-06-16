@@ -8,14 +8,16 @@ import { ManagerAppointment } from "../../DomainLayer/user/ManagerAppointment";
 import { OwnerAppointment } from "../../DomainLayer/user/OwnerAppointment";
 import { Permission } from "../../DomainLayer/user/Permission";
 import { Logger } from "../../Logger";
-import { sequelize } from "../connectDb";
+import { sequelize, set_sequelize } from "../connectDb";
 import { DB } from "../DBfacade";
 import { iStoreDB } from "../interfaces/iStoreDB";
 const Storedb = require('../models/Store')
 
 export class storeDB implements iStoreDB
 {
+    sequelize_backup: any = sequelize;
     StoreUpdateCache(storeId: number): void {
+        //empty on purpose
     }
 
     //add functions:
@@ -554,10 +556,11 @@ export class storeDB implements iStoreDB
 
     }
     clear: () => void;
-    public willFail= () =>{
-        throw new Error("can not force failure outside of test mode")
+    public willFail() : void{
+        this.sequelize_backup = sequelize;
+        set_sequelize(undefined)
     }
-    public willSucceed= () =>{
-        throw new Error("can not force success outside of test mode")
+    public willSucceed() : void {
+        set_sequelize(this.sequelize_backup)
     }
 }

@@ -7,12 +7,14 @@ import { ShoppingBasket } from "../../DomainLayer/user/ShoppingBasket";
 import { ShoppingCart } from "../../DomainLayer/user/ShoppingCart";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
 import { Logger } from "../../Logger";
-import { sequelize } from "../connectDb";
+import { sequelize, set_sequelize } from "../connectDb";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
 
 
 export class subscriberDB implements iSubscriberDB
 {
+    private sequelize_backup : any = sequelize;// for tests purposes
+
     public async addMessageToHistory(message: string, userId: number): Promise<void>
     {
         try{
@@ -29,10 +31,11 @@ export class subscriberDB implements iSubscriberDB
     }
     
     public willFail= () =>{
-        throw new Error("can not force failure outside of test mode")
+        this.sequelize_backup = sequelize;
+        set_sequelize(undefined)
     }
     public willSucceed= () =>{
-        throw new Error("can not force success outside of test mode")
+        set_sequelize(this.sequelize_backup)
     }
 
     //add functions:

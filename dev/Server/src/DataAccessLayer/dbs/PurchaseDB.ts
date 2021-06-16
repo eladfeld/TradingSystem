@@ -1,12 +1,14 @@
 import Transaction, { TransactionStatus } from "../../DomainLayer/purchase/Transaction";
 import { Logger } from "../../Logger";
-import { sequelize } from "../connectDb";
+import { sequelize, set_sequelize } from "../connectDb";
 import { DB } from "../DBfacade";
 import { iPurchaseDB } from "../interfaces/iPurchaseDB";
 
 
 export class purchaseDB implements iPurchaseDB
 {
+    sequelize_backup: any = sequelize;
+    
     public async completeTransaction(transaction: Transaction):Promise<boolean>
     {
         const t = await sequelize.transaction();
@@ -384,10 +386,11 @@ export class purchaseDB implements iPurchaseDB
 
     clear: () => void;
     public willFail= () =>{
-        throw new Error("can not force failure outside of test mode")
+        this.sequelize_backup = sequelize;
+        set_sequelize(undefined)
     }
     public willSucceed= () =>{
-        throw new Error("can not force success outside of test mode")
+        set_sequelize(this.sequelize_backup)
     }
 
 }

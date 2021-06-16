@@ -43,16 +43,18 @@ export class Publisher
     {
         Logger.log(`Publisher.register_store storeId:${storeId} , subscriber:${subscriber}`)
         let registered: Subscriber[] = this.store_subscribers.get(storeId);
+        console.log("befor register",registered)
         if (registered === undefined)
         {
             this.store_subscribers.set(storeId,[subscriber]);
         }
         else
         {
-            if (!registered.filter( sub => sub.getUserId() === subscriber.getUserId()))
-                registered.push(subscriber);
+            //if (!registered.filter( sub => sub.getUserId() === subscriber.getUserId()))
+            registered.push(subscriber);
             this.store_subscribers.set(storeId,registered);
         }
+        console.log("After registeered",this.store_subscribers)
     }
 
     public unregister_login(sys_manager : Subscriber) : void
@@ -86,6 +88,7 @@ export class Publisher
         Logger.log(`Publisher.notify_store_update  storeId:${storeId} , message:${message} `)
         let promises : Promise<void>[] = [];
         let subscribers = this.store_subscribers.get(storeId);
+        console.log(subscribers)
         if (subscribers !== undefined)
         {
             subscribers.forEach(subscriber => {

@@ -854,7 +854,10 @@ export class SystemFacade
                 storep.then(store =>
                     {
                         let appownerp = store.appointStoreOwner(appointer, newOwner );
-                        appownerp.then( msg => { resolve(msg)})
+                        appownerp.then( msg => { 
+                            resolve(msg)
+                            Publisher.get_instance().register_store(store.getStoreId(), newOwner)
+                        })
                         .catch( error => reject(error))
                     }
                 )

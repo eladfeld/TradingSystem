@@ -13,6 +13,8 @@ import { Subscriber } from "../../src/DomainLayer/user/Subscriber";
 
 export class DBstub implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscriberDB 
 {
+    StoreUpdateCache(storeId: number): void {
+    }
     updateProduct (product: StoreProduct) : Promise<void>{
         return Promise.resolve()
     }

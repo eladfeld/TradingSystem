@@ -21,7 +21,7 @@ describe('2.8: Shopping Cart view and edit' ,function() {
 
     it('shopping cart before and after delete' , async function()
     {
-        this.timeout(100000)
+        this.timeout(10000)
         var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const storeName = uniqueAlufHasportName();

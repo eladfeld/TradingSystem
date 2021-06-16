@@ -1,5 +1,6 @@
 import { DB } from "../../DataAccessLayer/DBfacade";
 import { Logger } from "../../Logger";
+import { Publisher } from "../notifications/Publisher";
 import { Store } from "../store/Store";
 import { Appointment } from "./Appointment";
 import { ManagerAppointment } from "./ManagerAppointment";
