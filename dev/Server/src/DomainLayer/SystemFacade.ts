@@ -231,7 +231,7 @@ export class SystemFacade
 
     public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
-        Logger.log(`login : sessionId:${sessionId} , username:${username}`);
+        Logger.log(`login : sessionId:${sessionId} , username:${username}`);//TODO: remove password from log
 
         if(username === '' || username === undefined || username === null)
             return Promise.reject("invalid username name")
