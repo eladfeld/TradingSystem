@@ -663,6 +663,15 @@ const getOffersByUser = (req: Request, res: Response, next: NextFunction) => {
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
+const isSystemManager = (req: Request, res: Response, next: NextFunction) => 
+{
+    let sessionId = req.body.userId;
+
+    service.isSystemManager(sessionId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 
 export default {
@@ -728,4 +737,5 @@ export default {
     counterOffer,
     buyAcceptedOffer,
     getOffersByUser,
+    isSystemManager,
     };

@@ -102,6 +102,7 @@ export default function Banner({getAppState, setAppState}) {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const {IsStoreManager, notifications, cart} = getAppState();
   const [problem, setProblem] = useState("");
+  const [isSystemManager, setIsSystemManager] = useState(undefined)
 
   const getTotalProducts = () =>
   {
@@ -145,7 +146,12 @@ export default function Banner({getAppState, setAppState}) {
 
 
   const {userId, isGuest} = getAppState();
-  const isSystemManager = true;
+  if(isSystemManager === undefined)
+  {
+    axios.post(SERVER_BASE_URL+'/isSystemManager',{userId})
+    .then(res => setIsSystemManager(res.data))
+  }
+
   
 
   const handleManageStoresClick = async () => {
