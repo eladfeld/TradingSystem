@@ -39,8 +39,8 @@ const LoginStts = require('./models/LoginStats')
 export async function initTables (){
 
      if (SHOULD_RESET_DATABASE)
-       await truncate_tables()  
-    //   await sequelize.queryInterface.dropAllTables()
+       //await truncate_tables()  
+       await sequelize.queryInterface.dropAllTables()
 
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct

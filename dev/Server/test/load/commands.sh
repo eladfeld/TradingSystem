@@ -1,1 +1,1 @@
-artillery run --insecure config.yml
+artillery run --insecure config.yml > res.txt

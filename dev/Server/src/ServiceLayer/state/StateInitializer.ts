@@ -120,20 +120,16 @@ export default class StateInitializer{
                 await service.appointStoreOwner(this.sessions.get(ownerState.appointer),storeId,ownerState.name);
             }
 
-            // //appoint managers
+            //appoint managers
             const managers = storeState.employees.managers;
-            // for(var i=0; i<managers.length; i++){
-            //     const appointerSessionId = this.sessions.get(managers[i].appointer);
-            //     let appointp = service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
-            //     appointp.then( _ => {
-            //         service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
-            //     })
-            // }
-            
-            
+            for(var i=0; i<managers.length; i++){
+                const appointerSessionId = this.sessions.get(managers[i].appointer);
+                await service.appointStoreManager(appointerSessionId,storeId,managers[i].name);
+                await service.editStaffPermission(appointerSessionId, this.users.get(managers[i].name), storeId, managers[i].permissions);
+            }
 
             //add buying policy
-            // convert fields
+            //convert fields
             storeState.buying_policies.forEach(policyState =>{
                 this.convertPredicate(storeName, policyState.rule);
             });
@@ -143,15 +139,13 @@ export default class StateInitializer{
             }
 
             //add discounts
-
-
-            // storeState.discounts.forEach(discount => {
-            //     this.convertDiscount(storeName, discount.discount);
-            // })
-            // for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
-            //     const discount = storeState.discounts[dIdx];
-            //     await service.addDiscountPolicy(founderSessionId, storeId,discount.name, discount.discount); 
-            // }
+            storeState.discounts.forEach(discount => {
+                this.convertDiscount(storeName, discount.discount);
+            })
+            for(var dIdx=0; dIdx<storeState.discounts.length; dIdx++){
+                const discount = storeState.discounts[dIdx];
+                await service.addDiscountPolicy(founderSessionId, storeId,discount.name, discount.discount); 
+            }
 
 
         }

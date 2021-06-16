@@ -27,10 +27,10 @@ import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
-import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
 import { OfferManager } from "./offer/OfferManager";
 import { Offer } from "./offer/Offer";
 import { StoreProduct } from "./store/StoreProduct";
+import UniversalPolicy,{initUniversalPolicy} from "./policy/buying/UniversalPolicy";
 export class SystemFacade
 {
 
@@ -235,7 +235,7 @@ export class SystemFacade
 
     public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
-        Logger.log(`login : sessionId:${sessionId} , username:${username}`);
+        Logger.log(`login : sessionId:${sessionId} , username:${username}`);//TODO: remove password from log
 
         if(username === '' || username === undefined || username === null)
             return Promise.reject("invalid username name")
