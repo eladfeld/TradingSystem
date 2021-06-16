@@ -1,0 +1,71 @@
+config:
+  target: "https://localhost:3333/command"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: subscribers_phase
+  payload:
+    path: "subscribers.csv"
+    fields:
+      - "username"
+      - "password"
+      - "age"
+      - "productId"
+      - "quantity"
+      - "checkoutInfo"
+    order: sequence
+    skipHeader: false
+
+scenarios:
+  - name: "subscribers"
+    flow:
+      - get:
+          url: "/enter"
+          capture:
+            json: "$.userId"
+            as: userId
+      - post:
+          url: "/register"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+            age: "{{ age }}"
+      - post:
+          url: "/login"
+          json:
+            userId: "{{ userId }}"
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.userId"
+            as: userId
+      - loop:
+        - post:
+            url: "/addProductTocart"
+            json:
+              userId: "{{ userId }}"
+              storeId: 0
+              productId: 0
+              quantity: 1
+        - post:
+            url: "/checkoutBasket"
+            json:
+              userId: "{{ userId }}"
+              storeId: 0
+              shippingInfo: "myInfo"
+        - post:
+            url: "/completeOrder"
+            json:
+              userId: "{{ userId }}"
+              storeId: 0
+              shippingInfo: {}
+              paymentInfo: {}
+        count: 12
+      - post:
+          url: "/logout"
+          json:
+            userId: "{{ userId }}"
+      # - post:
+      #     url: "/exit"
+      #     json:
+      #       userId: "{{ userId }}"

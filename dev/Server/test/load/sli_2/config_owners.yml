@@ -1,0 +1,79 @@
+config:
+  target: "https://localhost:3333/command"
+  phases:
+    - duration: 1
+      arrivalRate: 1
+      name: Warm up
+  payload:
+    path: "owners.csv"
+    fields:
+      - "username"
+      - "password"
+      - "age"
+      - "storeName"
+      - "productName"
+      - "price"
+      - "quantity"
+    order: sequence
+    skipHeader: false
+
+scenarios:
+  - name: "owners"
+    flow:
+      - get:
+          url: "/enter"
+          capture:
+            json: "$.userId"
+            as: userId
+      - think: 1
+      - post:
+          url: "/register"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+            age: "{{ age }}"
+      - think: 1
+      - post:
+          url: "/login"
+          json:
+            userId: "{{ userId }}"
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            json: "$.userId"
+            as: userId
+      - think: 1
+      - post:
+          url: "/openStore"
+          json:
+            userId: "{{ userId }}"
+            storeName: "{{ storeName }}"
+            bankAccountNumber: 1111
+            storeAddress: "disneyland"
+          capture:
+            json: "$.message"
+            as: storeId
+      - think: 1
+      - loop:
+        - post:
+            url: "/addNewProduct"
+            json:
+              userId: "{{ userId }}"
+              storeId: "{{ storeId }}"
+              productName: "{{ productName }}_{{ $loopCount }}"
+              categories: []
+              quantity: 1000000
+              price: 1
+              image: "https://i.guim.co.uk/img/static/sys-images/Guardian/Pix/pictures/2013/8/1/1375354802439/Blue---the-colour-008.jpg?width=300&quality=45&auto=format&fit=max&dpr=2&s=d32b70ddf7ecff3771c2d99d32eae422"
+        count: 1000
+      - post:
+          url: "/logout"
+          json:
+            userId: "{{ userId }}"
+          capture:
+            json: "$.userId"
+            as: userId
+      # - post:
+      #     url: "/exit"
+      #     json:
+      #       userId: "{{ userId }}"

@@ -11,7 +11,7 @@ const state:systemState = {
             name:"s1",
             founder:"u2",
             categories: [],
-            inventory:[sb.storeItem("Bamba",[], 30, 20)],
+            inventory:[sb.storeItem("Bamba",[], 30, 20000000)],
             employees:{
                 owners:[],
                 managers:[sb.manager("u3","u2", 63)]
