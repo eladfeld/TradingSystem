@@ -71,7 +71,8 @@ const state:systemState = {
     history:
     [
         sb.transaction("Walmart", "tupac", [
-            sb.item("Combos", 50)
+            sb.item("tetris", 100)
+
         ])
     ]
 };

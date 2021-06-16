@@ -8,6 +8,9 @@ import iDiscount from "../../DomainLayer/discount/iDiscount";
 
 export class StoreDummyDB implements iStoreDB
 {
+    StoreUpdateCache(storeId: number): void {
+        throw new Error("Method not implemented.");
+    }
     getRecievingOffers: (storeId: number) => Promise<boolean>;
     updateStoreRecievesOffers: (storeId: number, arg1: boolean) => Promise<void>;
     getCategoriesOfProduct: (productId: number) => Promise<string[]>;
@@ -66,7 +69,6 @@ export class StoreDummyDB implements iStoreDB
 
     public  getStoreByName(storeName: string): Promise<Store>
     {
-        //TODO: ask real data base
         let store = this.stores.find(store => store.getStoreName() == storeName);
         if (store)
             return Promise.resolve(store)

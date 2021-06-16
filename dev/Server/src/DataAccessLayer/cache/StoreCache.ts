@@ -50,7 +50,7 @@ export class StoreCache implements iStoreDB
         this.stores.set(store.getStoreId(), [false, store]);
     }
 
-    private StoreUpdateCache(storeId: number): void
+    public StoreUpdateCache(storeId: number): void
     {
         if(this.stores.has(storeId))
         {

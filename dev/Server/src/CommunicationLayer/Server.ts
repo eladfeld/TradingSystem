@@ -58,7 +58,6 @@ const run  = () =>
 
 
     // create the server
-    const httpServer = http.createServer(router);
 
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),

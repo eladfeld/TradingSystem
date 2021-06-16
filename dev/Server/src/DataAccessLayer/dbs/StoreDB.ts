@@ -15,6 +15,8 @@ const Storedb = require('../models/Store')
 
 export class storeDB implements iStoreDB
 {
+    StoreUpdateCache(storeId: number): void {
+    }
 
     //add functions:
     public async addStore(store: Store): Promise<void>

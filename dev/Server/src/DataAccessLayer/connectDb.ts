@@ -40,7 +40,7 @@ export async function initTables (){
 
      if (SHOULD_RESET_DATABASE)
        await truncate_tables()  
-    //   await sequelize.queryInterface.dropAllTables()
+      // await sequelize.queryInterface.dropAllTables()
 
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
@@ -62,7 +62,7 @@ export async function initTables (){
     sequelize.models.ShoppingBasket.hasMany(sequelize.models.BasketProduct)
     sequelize.models.SystemManager.belongsTo(sequelize.models.Subscriber)
     sequelize.models.BasketProduct.belongsTo(sequelize.models.ShoppingBasket)
-    sequelize.models.BasketProduct.belongsTo(sequelize.models.StoreProduct)
+    // sequelize.models.BasketProduct.belongsTo(sequelize.models.StoreProduct)
     sequelize.models.ShoppingBasket.belongsTo(sequelize.models.Store)
     sequelize.models.Subscriber.hasMany(sequelize.models.Offer)
 

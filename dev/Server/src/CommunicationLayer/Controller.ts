@@ -53,7 +53,6 @@ const register = (req: Request, res: Response, next: NextFunction) =>
 
 
 
-//TODO: change the result so it wont sand back a subscriber
 const login = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
@@ -226,7 +225,6 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
 }
 
 
-//TODO: change the result so it wont sand back a store
 const openStore = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
@@ -308,7 +306,6 @@ const getMyPurchaseHistory = (req: Request, res: Response, next: NextFunction) =
 }
 
 
-//TODO: change transaction to any
 const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;

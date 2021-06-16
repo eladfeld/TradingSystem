@@ -48,17 +48,18 @@ export class SystemFacade
     }
 
     public async init(){
+        try{
+        let init_managers = true;
         await initTables();
         await initUniversalPolicy();
+        let init_supply = await this.initSupplySystem();
+        let init_payment =  await this.initPaymentSystem()
+        if(SHOULD_RESET_DATABASE)
+        {
+            init_managers = await this.initSystemManagers();
+        }
         return new Promise<void>((resolve,reject) => {
             this.initIdisfromDB().then( async _ =>{
-                let init_managers = true;
-                if(SHOULD_RESET_DATABASE)
-                {
-                     init_managers = await this.initSystemManagers();
-                }
-                let init_supply = await this.initSupplySystem();
-                let init_payment =  await this.initPaymentSystem()
                 if(!((init_managers && init_supply  && init_payment)))
                 {
                     Logger.error("system could not initialized properly!");
@@ -69,6 +70,12 @@ export class SystemFacade
             }
             )
         })
+        }
+        catch(e){
+            Logger.error(e)
+            throw new Error("problem initializing system")
+        }
+
 
     }
 
@@ -141,7 +148,6 @@ export class SystemFacade
     }
 
     public getUsernames = async(sessionId:string):Promise<string[]> =>{
-        //TODO: IMPLEMENT!!!
         return ["feature","not", "yet", "supported"];
     }
     public closeStore = (sessionId:string, storeName:string):Promise<string> =>{

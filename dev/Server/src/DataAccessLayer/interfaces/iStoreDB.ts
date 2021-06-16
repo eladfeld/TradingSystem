@@ -6,6 +6,8 @@ export interface iStoreDB
 {
     getRecievingOffers: (storeId: number)=> Promise<boolean>
 
+    StoreUpdateCache(storeId: number): void;
+
     updateStoreRecievesOffers: (storeId: number, recieveOffers: boolean) => Promise<void>;
 
     addStore:(store: Store)=> Promise<void>;

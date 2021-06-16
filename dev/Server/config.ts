@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import checkState from "./src/ServiceLayer/state/CheckState";
+import state from './src/ServiceLayer/state/MyInitialState';
 
 
 //server configurations:
@@ -31,7 +32,7 @@ export const CACHE_SIZE = -1;               //how much memory we want to cache (
 //init configurations
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
 export const SHOULD_INIT_STATE = true;    //initialize state from file?
-export const INITIAL_STATE = checkState;
+export const INITIAL_STATE = state;
 
 
 //API configurations
@@ -52,7 +53,7 @@ export const setPathToSystemManagers = (newPath:string) =>{
 }
 
 
-export const TEST_MODE = false;
+export const TEST_MODE = true;
 //database configurations:
 
     //modes:
@@ -63,7 +64,7 @@ const LOCALHOST_MACOS = 4;
     //end modes
 
 
-export var sqlMode = LOCALHOST_MODE;
+export var sqlMode = TEST_DB;
 
 
 class SqlConnector
