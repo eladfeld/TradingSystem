@@ -54,7 +54,7 @@ export class subscriberDB implements iSubscriberDB
         }
         catch(e)
         {
-            return Promise.reject(e);
+            return Promise.reject("data base error");
         }
 
     }
@@ -75,7 +75,7 @@ export class subscriberDB implements iSubscriberDB
         }
         catch(e)
         {
-            return Promise.reject(e);
+            return Promise.reject("data base error");
         }
 
     }
@@ -94,7 +94,7 @@ export class subscriberDB implements iSubscriberDB
         }
         catch(e)
         {
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 

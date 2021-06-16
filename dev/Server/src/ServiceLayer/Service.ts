@@ -7,11 +7,11 @@ import { SystemFacade } from "../DomainLayer/SystemFacade";
 import { Subscriber } from "../DomainLayer/user/Subscriber";
 import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
-import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 //import { truncate_tables } from "../DataAccessLayer/connectDb";
 import { Offer } from "../DomainLayer/offer/Offer";
 import { off } from "process";
+import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 
 export class Service
 {
@@ -50,16 +50,19 @@ export class Service
     }
 
     public complain = (sessionId:string, title:string, body:string):Promise<string> =>{
-        return this.facade.complain(sessionId, title, body);
+        return Promise.reject("not yet implemented")
+        //return this.facade.complain(sessionId, title, body);
     }
     public getUsernames = (sessionId:string):Promise<string[]> =>{
         return this.facade.getUsernames(sessionId);
     }
     public getSystemComplaints = (sessionId:string):Promise<tComplaint[][]> => {
-        return this.facade.getSystemComplaints(sessionId);
+        return Promise.reject("not yet implemented")
+        //return this.facade.getSystemComplaints(sessionId);
     }
     public deleteComplaint = (sessionId:string, messageId:number):Promise<string> =>{
-        return this.facade.deleteComplaint(sessionId, messageId);
+        return Promise.reject("not yet implemented")
+        // return this.facade.deleteComplaint(sessionId, messageId);
     }
     public replyToComplaint = (sessionId:string, title:string, body:string, messageId:number):Promise<string> =>{
         return this.facade.replyToComplaint(sessionId,title,body,messageId);

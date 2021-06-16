@@ -40,7 +40,7 @@ export class storeDB implements iStoreDB
         catch(e)
         {
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -98,7 +98,7 @@ export class storeDB implements iStoreDB
         catch(e)
         {
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
 
     }
@@ -178,7 +178,7 @@ export class storeDB implements iStoreDB
     }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
     public async deleteStore(storeId: number): Promise<void>
@@ -195,7 +195,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     };
 
@@ -226,7 +226,7 @@ export class storeDB implements iStoreDB
     }
     catch(e){
         Logger.error(e)
-        return Promise.reject(e)
+        return Promise.reject("data base error")
     }
     }
 
@@ -242,7 +242,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -258,7 +258,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -296,7 +296,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -332,7 +332,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -400,7 +400,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -434,7 +434,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -456,7 +456,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -497,7 +497,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
 
     }
@@ -516,7 +516,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -536,7 +536,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
     public async getCategoriesOfProduct(productId: number) : Promise<string[]>
@@ -551,7 +551,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
 
     }

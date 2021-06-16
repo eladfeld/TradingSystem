@@ -178,7 +178,7 @@ export const Products=({getAppState, setAppState})=>{
                             setAppState({cart});
                             break;
                         case SERVER_RESPONSE_BAD:
-                            setProblem(response.data.message);
+                            setProblem(response.data);
                             break;
                         default:
                             setProblem(`unexpected response code: ${response.status}`);
@@ -317,7 +317,9 @@ export const SearchByName=({getAppState, setAppState, intersect})=>{
 
     const searchByName = async (productName) =>
     {
-        axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products'])).catch(error =>{
+            alert(error)
+        })
     }
 
     return(
@@ -430,7 +432,9 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
             }
             return productsByName
         }
-        )
+        ).catch(error =>{
+            alert(error)
+        })
     }
 
     const searchByCategory = async (category) =>
@@ -442,6 +446,8 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
                 setProductsByKeyword(productsByCategory)
             }
             return productsByCategory
+        }).catch(error =>{
+            alert(error)
         })
     }
 
@@ -496,7 +502,9 @@ export const SearchBelowPrice=({getAppState, setAppState, intersect})=>{
             setProblem("not a number")
         }
         else {
-            axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price }).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
+            axios.post(`${SERVER_BASE_URL}getPruductInfoBelowPrice`, {userId, price }).then(res => intersect(getAppState().products, JSON.parse(res.data)['products'])).catch(error =>{
+                alert(error)
+            })
         }
     }
     return(
@@ -542,7 +550,9 @@ export const SearchAbovePrice=({getAppState, setAppState, intersect})=>{
             setProblem("not a number")
         }
         else{
-            axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
+            axios.post(`${SERVER_BASE_URL}getPruductInfoAbovePrice`, {userId, price} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products'])).catch(error =>{
+                alert(error)
+            })
         }
     }
     return(
@@ -594,7 +604,9 @@ export const SearchByStore=({getAppState, setAppState, intersect})=>{
 
     const SearchByStore = async (store) =>
     {
-        axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products']))
+        axios.post(`${SERVER_BASE_URL}getPruductInfoByStore`, {userId, store} ).then(res => intersect(getAppState().products, JSON.parse(res.data)['products'])).catch(error =>{
+            alert(error)
+        })
 
     }
     return(
