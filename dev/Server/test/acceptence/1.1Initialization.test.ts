@@ -26,7 +26,6 @@ describe('1.1 Ensure Proper Initialization' , function() {
    
     it('main success scenario - successfully init' ,async function() {
         this.timeout(100000)
-        await truncate_tables()
         await Service.get_instance();
         //didnt throw error is a pass
     })

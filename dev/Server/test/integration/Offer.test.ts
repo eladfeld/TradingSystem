@@ -27,7 +27,8 @@ describe('set store recieve offers' , () => {
         setReady(true);
     });
 
-    it('store should not recieve offers', async() => {
+    it('store should not recieve offers', async function() {
+        this.timeout(100000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let sess = await service.enter();
@@ -40,7 +41,8 @@ describe('set store recieve offers' , () => {
         }).catch(err => expect(err).to.equal(false))
     })
 
-    it('set store to recieve offers', async() => {
+    it('set store to recieve offers', async function() {
+        this.timeout(100000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let manager = await Login.login("michael", '1234')
@@ -56,7 +58,8 @@ describe('set store recieve offers' , () => {
         }).catch(err => expect(err).to.equal(false))
     })
 
-    it('set store to not recieve offers', async() => {
+    it('set store to not recieve offers', async function() {
+        this.timeout(100000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let manager = await Login.login("michael", '1234')
@@ -86,7 +89,8 @@ describe('create and accept offers' , () => {
         setReady(true);
     });
 
-    it('create and get offer', async() => {
+    it('create and get offer', async function() {
+        this.timeout(100000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let manager = await Login.login("michael", '1234')
@@ -113,7 +117,8 @@ describe('create and accept offers' , () => {
         }).catch(err => expect(err).to.equal(true))
     })
 
-    it('accept offer', async() => {
+    it('accept offer', async function()  {
+        this.timeout(100000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let manager = await Login.login("michael", '1234')

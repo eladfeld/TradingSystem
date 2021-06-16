@@ -1,6 +1,8 @@
 import { expect } from "chai"
+import { set_DB } from "../../../src/DataAccessLayer/DBfacade"
 import { StoreProduct } from "../../../src/DomainLayer/store/StoreProduct"
 import { isFailure, isOk } from "../../../src/Result"
+import { DBstub } from "../DBstub"
 
 describe('rate product' , () => {
 
@@ -20,18 +22,22 @@ describe('rate product' , () => {
 })
 
 describe('set quantity' , () => {
+    let stubDB = new DBstub()
     it('test set quantity', () => {
+        set_DB(stubDB)
         let storeProduct = new StoreProduct('somthing',10,0, 5,['Electric'],"")
-        storeProduct.setQuantity(5)
+        storeProduct.setQuantity(5,false)
         expect(storeProduct.getQuantity()).to.equal(5)
     })
 
     it('test set quantity invalid number', () => {
+        set_DB(stubDB)
         let storeProduct = new StoreProduct('somthing',10,0, 30,['Electric'],"")
         expect(isFailure(storeProduct.setQuantity(-1))).to.equal(true)
     })
 
     it('test add quantity', () => {
+        set_DB(stubDB)
         let storeProduct = new StoreProduct('somthing',10,0, 30,['Electric'],"")
         expect(isOk(storeProduct.addQuantity(100))).to.equal(true)
         expect(storeProduct.getQuantity()).to.equal(130)

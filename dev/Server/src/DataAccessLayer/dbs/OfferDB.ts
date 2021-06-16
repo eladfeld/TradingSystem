@@ -5,9 +5,9 @@ import { iOfferDB } from "../interfaces/iOfferDB";
 export class offerDB implements iOfferDB
 {
 
-    public async getOfferById(offerId: number): Promise<Offer> {
+    public async getOfferById(offerId: number): Promise<Offer> 
+    {
         try{
-
             let offerdb = await sequelize.models.Offer.findOne(
                 {
                     where:
@@ -32,12 +32,11 @@ export class offerDB implements iOfferDB
                 )
                 return Promise.resolve(offer);
             }
-        }
-        catch(e)
-        {
-            return Promise.reject("could not fetch offer from database")
-        }
         return Promise.resolve(undefined);
+        }
+        catch{
+            return Promise.reject("database error try again later")
+        }
     }
 
     public async addOffer(offer: Offer): Promise<number>
@@ -64,33 +63,41 @@ export class offerDB implements iOfferDB
     }
 
     public async updateOffer(offer: Offer): Promise<void>{
-        await sequelize.models.Offer.update(
-            {
-                bid: offer.getBid(),
-                counterPrice: offer.getCounterPrice(),
-                offerStatus: offer.getOfferStatus(),
-                ownersAccepted: offer.getOwnersAccepted().join(','),
-            },
-            {
-                where:
+        try{
+            await sequelize.models.Offer.update(
                 {
-                    id: offer.getOfferId(),
-                }
-            } )
-        return Promise.resolve()
+                    bid: offer.getBid(),
+                    counterPrice: offer.getCounterPrice(),
+                    offerStatus: offer.getOfferStatus(),
+                    ownersAccepted: offer.getOwnersAccepted().join(','),
+                },
+                {
+                    where:
+                    {
+                        id: offer.getOfferId(),
+                    }
+                } )
+            return Promise.resolve()
+        }
+        catch(e)
+        {
+            return Promise.reject("database error, please try again later")
+        }
+
     }
 
     public async getAllOffersByStore(storeId: number):Promise<Offer[]>
     {
-        let offerssdb = await sequelize.models.Offer.findAll(
-            {
-                where:
+        try{
+            
+            let offerssdb = await sequelize.models.Offer.findAll(
                 {
-                    storeId: storeId
+                    where:
+                    {
+                        storeId: storeId
+                    }
                 }
-            }
-        )
-
+            )
         let offers = []
         for(let offerdb of offerssdb)
         {
@@ -109,35 +116,46 @@ export class offerDB implements iOfferDB
         }
         return Promise.resolve(offers);
     }
+    catch{
+        return Promise.reject("database error, please try again later")
+        }
+    }
 
     public async getAllOffersByUser(userId: number):Promise<Offer[]>
     {
-        let offerssdb = await sequelize.models.Offer.findAll(
-            {
-                where:
+        try{
+            let offerssdb = await sequelize.models.Offer.findAll(
                 {
-                    SubscriberId: userId
+                    where:
+                    {
+                        SubscriberId: userId
+                    }
                 }
+            )
+    
+            let offers = []
+            for(let offerdb of offerssdb)
+            {
+                offers.push(Offer.rebuildOffer(
+                    offerdb.id,
+                    offerdb.SubscriberId,
+                    offerdb.username,
+                    offerdb.StoreId,
+                    offerdb.StoreProductId,
+                    offerdb.productName,
+                    offerdb.bid,
+                    offerdb.counterPrice,
+                    offerdb.offerStatus,
+                    offerdb.ownersAccepted.split`,`.map(Number),
+                ));
             }
-        )
-
-        let offers = []
-        for(let offerdb of offerssdb)
-        {
-            offers.push(Offer.rebuildOffer(
-                offerdb.id,
-                offerdb.SubscriberId,
-                offerdb.username,
-                offerdb.StoreId,
-                offerdb.StoreProductId,
-                offerdb.productName,
-                offerdb.bid,
-                offerdb.counterPrice,
-                offerdb.offerStatus,
-                offerdb.ownersAccepted.split`,`.map(Number),
-            ));
+            return Promise.resolve(offers);
         }
-        return Promise.resolve(offers);
+        catch(e)
+        {
+            return Promise.reject("database error, please try again later")
+        }
+
     }
 
 
