@@ -31,11 +31,11 @@ export class subscriberDB implements iSubscriberDB
     }
     
     public willFail= () =>{
-        this.sequelize_backup = sequelize;
-        set_sequelize(undefined)
+        // this.sequelize_backup = sequelize;
+        // set_sequelize(undefined)
     }
     public willSucceed= () =>{
-        set_sequelize(this.sequelize_backup)
+        // set_sequelize(this.sequelize_backup)
     }
 
     //add functions:
@@ -94,7 +94,7 @@ export class subscriberDB implements iSubscriberDB
         }
         catch(e)
         {
-            return Promise.reject("appointment with the same id is alreay exists")
+            return Promise.reject(e)
         }
     }
 

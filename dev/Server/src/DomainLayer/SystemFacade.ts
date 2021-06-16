@@ -91,13 +91,27 @@ export class SystemFacade
 
     private async initSupplySystem() : Promise<boolean>
     {
-        const initialization = await SupplySystemReal.init();
+        let initialization = undefined;
+        try{
+         initialization = await SupplySystemReal.init();
+        }
+        catch(e){
+            Logger.error("couldn't intialize suplly system")
+            throw new Error(e)
+        }
         return initialization > 0 ? true : false;
     }
 
     private async initPaymentSystem() : Promise<boolean>
     {
-        const initialization = await PaymentSystemReal.init();
+        let initialization = undefined
+        try{
+        initialization = await PaymentSystemReal.init();
+        }
+        catch(e){
+            Logger.error("couldn't intialize payment system")
+            throw new Error(e)
+        }
         return initialization > 0 ? true : false;
     }
 
@@ -164,20 +178,26 @@ export class SystemFacade
 
     public async initSystemManagers() : Promise<boolean>
     {
-        const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
-        let arr: any[] = JSON.parse(data);
-        if (arr.length === 0)
-        {
-            Logger.error("no system managers found!");
-            return false;
+        try{
+            const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
+            let arr: any[] = JSON.parse(data);
+            if (arr.length === 0)
+            {
+                Logger.error("no system managers found!");
+                return false;
+            }
+            for (var i in arr)
+            {
+                let manager: any = arr[i];
+                let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
+                await Authentication.addSystemManager(sub);
+            }
+            return true
         }
-        for (var i in arr)
-        {
-            let manager: any = arr[i];
-            let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
-            await Authentication.addSystemManager(sub);
+        catch(e){
+            Logger.error("couldnt initalize system managers")
+            throw new Error(e)
         }
-        return true
     }
 
     //++user enter the system

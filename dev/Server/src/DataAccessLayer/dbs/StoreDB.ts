@@ -557,10 +557,10 @@ export class storeDB implements iStoreDB
     }
     clear: () => void;
     public willFail() : void{
-        this.sequelize_backup = sequelize;
-        set_sequelize(undefined)
+        // this.sequelize_backup = sequelize;
+        // set_sequelize(undefined)
     }
     public willSucceed() : void {
-        set_sequelize(this.sequelize_backup)
+        // set_sequelize(this.sequelize_backup)
     }
 }

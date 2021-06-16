@@ -150,10 +150,10 @@ export class productDB implements iProductDB
 
     clear: () => void;
     public willFail= () =>{
-        this.sequelize_backup = sequelize;
-        set_sequelize(undefined)
+        // this.sequelize_backup = sequelize;
+        // set_sequelize(undefined)
     }
     public willSucceed= () =>{
-        set_sequelize(this.sequelize_backup)
+        // set_sequelize(this.sequelize_backup)
     }
 }
