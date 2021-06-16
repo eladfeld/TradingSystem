@@ -45,8 +45,7 @@ const Cart = ({getAppState, setAppState}) => {
                 history.push('/checkout');
                 return;
             case SERVER_RESPONSE_BAD:
-                setProblem(response.data);
-                //history.push('/checkout');//TODO: REMOVE LINE!
+                setProblem(response.data.message);
                 return;
             default:
                 setProblem(`unexpected response code: ${response.status}`);
@@ -66,7 +65,7 @@ const Cart = ({getAppState, setAppState}) => {
             </Button>
           }
           severity="error"> {problem}</Alert> : <a1></a1>
-        } 
+        }
         <List className={classes.root} subheader={<li />}>
         {
         cart === null || cart === undefined ? <ProgressWheel/> :
@@ -83,7 +82,7 @@ const Cart = ({getAppState, setAppState}) => {
                                 buy basket
                             </Button>
                         </Grid>
-                    </Grid>                    
+                    </Grid>
                 </ListSubheader>
                 {basket.products.map((product) => (
                     <CartItem getAppState={getAppState} setAppState={setAppState} basket={basket} product={product} setProblem={setProblem}/>

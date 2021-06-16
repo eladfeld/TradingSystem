@@ -96,14 +96,12 @@ const options = {
 
     const messageSender = async (userId: number, message: string):Promise<string> =>
     {
-        // console.log("message sent :)");
         let ws = wssConnections.get(userId);
         if(ws !== undefined)
         {
             ws.send(message);
             return  Promise.resolve( "fine")
         }
-        // console.log("mesage didnt sent!");
         return Promise.reject("user not logged in");
     }
 

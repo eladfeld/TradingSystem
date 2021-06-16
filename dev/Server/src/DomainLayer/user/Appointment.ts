@@ -5,11 +5,6 @@ import { ACTION, Permission } from "./Permission";
 import { Subscriber } from "./Subscriber";
 import { DB } from "../../DataAccessLayer/DBfacade";
 
-
-
-
-
-
 export abstract class Appointment {
 
     appointer: number;
@@ -25,7 +20,7 @@ export abstract class Appointment {
         this.permission = permission;
     }
 
-    editPermissions(permissionMask: number): Promise<string> 
+    editPermissions(permissionMask: number): Promise<string>
     {
         this.permission.setPermissions(permissionMask);
         return Promise.resolve("permission changed successfully");
@@ -61,9 +56,9 @@ export abstract class Appointment {
         return this.permission;
     }
 
-    checkIfPermited(action: ACTION) 
+    checkIfPermited(action: ACTION)
     {
-        return this.permission.checkIfPermited(action);    
+        return this.permission.checkIfPermited(action);
     }
 
     public isOwner() : boolean

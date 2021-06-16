@@ -17,6 +17,7 @@ export class SubscriberCache implements iSubscriberDB
 
     private getSubscriber(userId: number): Promise<Subscriber>
     {
+        
         if(this.subscribers.has(userId))
         {
             if(this.subscribers.get(userId)[0])
@@ -114,18 +115,30 @@ export class SubscriberCache implements iSubscriberDB
     }
     public getSubscriberByUsername (username: string): Promise<Subscriber>
     {
-        for(let subscriber of this.subscribers.values())
+        for(let [dirty,subscriber] of this.subscribers.values())
         {
-            if(subscriber[0])
+            if(subscriber.getUsername() === username)
             {
-                if(subscriber[1].getUsername() === username)
+                if(!dirty)
                 {
-                    return Promise.resolve(subscriber[1]);
+                    return Promise.resolve(subscriber);
                 }
+                else return new Promise((resolve,reject) => {
+                    this.subscriberDb.getSubscriberByUsername(username)
+                    .then( subscriber =>{
+                        this.cacheSubscrbriber(subscriber)
+                        resolve(subscriber)
+                    }).catch( error => reject(error))
+                }) 
             }
-            else return this.subscriberDb.getSubscriberById(subscriber[1].getUserId());
         }
-        return this.subscriberDb.getSubscriberByUsername(username);
+        return new Promise((resolve,reject) => {
+            this.subscriberDb.getSubscriberByUsername(username)
+            .then( subscriber =>{
+                this.cacheSubscrbriber(subscriber)
+                resolve(subscriber)
+            }).catch( error => reject(error))
+        }) 
     }
 
     public addAppointment (userId: number, appointment: Appointment):Promise<void>

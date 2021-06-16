@@ -17,7 +17,7 @@ Object.freeze(stringUtil);
 
 export type tShippingInfo = {name: string, address: string, city:string, country:string , zip:number};
 export type tPaymentInfo = {holder:string, id:number, cardNumber:number, expMonth:number, expYear:number, cvv:number, toAccount: number, amount: number};
-export const PAYMENT_TIMEOUT_MILLISEC: number = sqlMode === TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
+export const PAYMENT_TIMEOUT_MILLISEC: number = TEST_MODE ? TEST_CHECKOUT_TIMEOUT : CHECKOUT_TIMEOUT;
 
 
 class Purchase {
@@ -131,11 +131,15 @@ class Purchase {
         transaction.setPaymentId(paymentRes);
         transaction.setCardNumber(paymentInfo.cardNumber);
         transaction.setStatus(TransactionStatus.COMPLETE);
-        DB.updateTransaction(transaction);
         this.removeTimerAndCallback(userId, storeId);
-
+        
+        let updatep = DB.updateTransaction(transaction);
         Publisher.get_instance().notify_store_update(storeId, `userid: ${transaction.getUserId()} bought from you with total of ${transaction.getTotal()}$`);
-        return new Promise((res , rej) => {res(true)});
+        return new Promise((resolve , reject) => {
+            updatep.then( _ => {
+                resolve(true)
+            }).catch( err => reject(err))
+        });
     }
 
     
@@ -224,7 +228,6 @@ class Purchase {
         return DB.getUserStoreHistory(userId, storeId);
     }
     public getPaymentTimeoutInMillis = ():number => {
-        // console.log(`[t] timeout = ${PAYMENT_TIMEOUT_MILLISEC} ms`);        
         return PAYMENT_TIMEOUT_MILLISEC;
     };
 

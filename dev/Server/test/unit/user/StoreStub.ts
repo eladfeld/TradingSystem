@@ -9,7 +9,7 @@ export class StoreStub extends Store
     }
     public isProductAvailable(productId: number, quantity: number): boolean
     {
-        if (productId > 0)
+        if (productId >= 0)
             return true;
         else
             return false;

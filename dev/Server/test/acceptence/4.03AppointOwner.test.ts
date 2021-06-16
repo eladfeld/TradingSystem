@@ -10,19 +10,18 @@ import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName, uniqueMosheName, uniqueName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.3: Appoint Owner tests',async function () {
+describe('4.3: Appoint Owner tests',function () {
 
-    var service: Service =await Service.get_instance();
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     it('avi opens store and appoints moshe to owner',async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let avi =await register_login(service,avi_sessionId, uniqueAviName(), "123456789")
@@ -32,6 +31,8 @@ describe('4.3: Appoint Owner tests',async function () {
     })
 
     it('moshe tries to appoint ali to owner without permissions',async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();
         let ali_sessionId = await service.enter();
@@ -45,6 +46,8 @@ describe('4.3: Appoint Owner tests',async function () {
 
 
     it('parallel appoint owner test',async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         // avi and moshe and ali enter the system and login
         let avi_sessionId = await service.enter();
         let moshe_sessionId = await service.enter();

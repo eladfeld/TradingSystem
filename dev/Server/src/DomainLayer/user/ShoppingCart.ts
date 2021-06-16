@@ -23,7 +23,7 @@ export class ShoppingCart
     }
 
     
-    public checkoutBasket(userId: number, user: iSubject, storeId : number, shippingInfo: tShippingInfo, userSubject: iSubject) : Promise<boolean>
+    public async checkoutBasket(userId: number, user: iSubject, storeId : number, shippingInfo: tShippingInfo, userSubject: iSubject) : Promise<boolean>
     {
         let basket : ShoppingBasket = this.baskets.get(storeId);
         if (basket === undefined)
@@ -31,6 +31,10 @@ export class ShoppingCart
             Logger.log("no such shopping basket");
             return Promise.reject("no such shopping basket");
         }
+        let store = await DB.getStoreByID(storeId)
+        if (store === undefined)
+            return Promise.reject()
+        basket.setStore(store)
         return basket.checkout(userId, user, shippingInfo, userSubject);
     }
 
@@ -55,7 +59,7 @@ export class ShoppingCart
                 }
                 let addp = basket.addProduct(productId, quantity);
                 addp.then( _ => { resolve(basket) })
-                .catch( error => { reject("error") })
+                .catch( error => { reject(error) })
             })
             .catch( error => reject(error))
         }) 

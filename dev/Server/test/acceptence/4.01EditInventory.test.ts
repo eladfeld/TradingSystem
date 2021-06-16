@@ -10,19 +10,18 @@ import { add_product, register_login, open_store } from './common';
 import { APIsWillSucceed, failIfResolved, uniqueAlufHasportName, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('4.1: edit store inventory',async function () {
-    var service: Service =await Service.get_instance();
+describe('4.1: edit store inventory',function () {
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('edit non existent product ',async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let sessionId = await service.enter();
         let avi =await register_login(service,sessionId, uniqueAviName(), "123456789")
         let store = await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");
@@ -31,6 +30,8 @@ describe('4.1: edit store inventory',async function () {
     })
 
     it('edit existing product', async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let sessionId = await service.enter();
         let avi = await register_login(service,sessionId, uniqueAviName(), "123456789")
         let store = await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel Aviv");

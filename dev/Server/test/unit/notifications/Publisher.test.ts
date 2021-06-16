@@ -9,7 +9,6 @@ describe('Publisher tests' , function()
     var publisher : Publisher = Publisher.get_instance();
     publisher.set_send_func((_userId:number,_message:{}) => Promise.reject());
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>{
             APIsWillSucceed();
             publisher.clear();
@@ -18,7 +17,6 @@ describe('Publisher tests' , function()
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
     beforeEach(function () {

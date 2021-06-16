@@ -117,17 +117,19 @@ export class MakeAppointment
         if (appointment === undefined) {
             return Promise.reject("bad argument");
         }
-        appointment.getAppointee().then ( appointee => appointee.deleteAppointment(appointment));
-        appointment.getStore().then (store=> store.deleteAppointment(appointment));
-
-        appointment.getAppointee().then(appointee => {
-            appointment.getStore().then(store => {store.getAppointments().forEach(appointment => {
-                if (appointment.getAppointerId() === appointee.getUserId()) 
-                    this.removeAppointment(appointment)
-                })
-            });
+        let appointeep = appointment.getAppointee()
+        let storep = appointment.getStore()
+        return new Promise((resolve,reject) => {
+            Promise.all([appointeep,storep]).then( ([appointee,store]) => {
+                appointee.deleteAppointment(appointment)
+                store.deleteAppointment(appointment)
+                store.getAppointments().forEach(appointment => {
+                    if (appointment.getAppointerId() === appointee.getUserId()) 
+                        this.removeAppointment(appointment)
+                    })
+                resolve("appointment removed")
+            }).catch(error => reject(error))     
         })
-    return Promise.resolve("appointmetn removed");
     }
         
 }

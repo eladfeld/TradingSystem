@@ -120,9 +120,9 @@ export class Subscriber extends User
         return new Promise( (resolve,reject) => {
             editp.then ( msg => {
                 DB.updateCart(this.userId, storeId, productId, quantity)
-                resolve(msg)
-            })
-            editp.catch( error => {
+                .then( _ => resolve(msg))
+                .catch(error => reject(error))
+            }).catch( error => {
                 reject(error)
             })
         })

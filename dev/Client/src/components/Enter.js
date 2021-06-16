@@ -23,7 +23,7 @@ const Enter = ({setAppState}) =>
 {
     instance.get(`${SERVER_BASE_URL}enter`)
     .then((res) => {
-        setAppState({... initialAppState, userId: res.data.userId});
+        setAppState({...initialAppState, userId: res.data.userId});
         history.push('/auth');
     })
     .catch(error => {console.log(error);});

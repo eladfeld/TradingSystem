@@ -1,4 +1,5 @@
 import Transaction, { TransactionStatus } from "../../DomainLayer/purchase/Transaction";
+import { Logger } from "../../Logger";
 import { sequelize } from "../connectDb";
 import { DB } from "../DBfacade";
 import { iPurchaseDB } from "../interfaces/iPurchaseDB";
@@ -8,7 +9,6 @@ export class purchaseDB implements iPurchaseDB
 {
     public async completeTransaction(transaction: Transaction):Promise<boolean>
     {
-        console.log("transaction:",transaction)
         const t = await sequelize.transaction();
         try
         {
@@ -53,7 +53,6 @@ export class purchaseDB implements iPurchaseDB
         }
         catch(e)
         {
-            console.log(e)
             await t.rollback();
             return Promise.resolve(false)
         }
@@ -93,19 +92,16 @@ export class purchaseDB implements iPurchaseDB
                     resolve(true)
                 }
                 catch(e){
-                    console.log(e)
                     await t.rollback();
                     reject("couldnt save transaction")
                 }
             })
             .catch(async (err) => {
-                console.log("guest")
                 try{
                     await t.commit();
                     resolve(true)
                 }
                 catch(e){
-                    console.log(e)
                     await t.rollback();
                     reject("couldnt save transaction")
                 }
@@ -117,49 +113,176 @@ export class purchaseDB implements iPurchaseDB
 
     public async getLastTransactionId(): Promise<number>
     {
-        let lastId = await sequelize.models.Transaction.max('id')
-        if (lastId === null)
-            return 0;
-        return lastId + 1
+        try{
+            let lastId = await sequelize.models.Transaction.max('id')
+            if (lastId === null)
+                return 0;
+            return lastId + 1
+        }
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
     }
 
     public async getAllTransactions(): Promise<Transaction[]>
     {
-        let transactionsDB = await sequelize.models.Transaction.findAll()
-        if(transactionsDB === null)
-        return Promise.resolve([]);
-
-        let transactions = [];
-        for(let transaction of transactionsDB)
-        {
-            let items = await sequelize.models.TransactionItem.findAll(
-                {
-                    where:
+        try{
+            let transactionsDB = await sequelize.models.Transaction.findAll()
+            if(transactionsDB === null)
+            return Promise.resolve([]);
+    
+            let transactions = [];
+            for(let transaction of transactionsDB)
+            {
+                let items = await sequelize.models.TransactionItem.findAll(
                     {
-                        TransactionId: transaction.id
+                        where:
+                        {
+                            TransactionId: transaction.id
+                        }
                     }
-                }
-            )
-            transactions.push(Transaction.rebuild(transaction, items));
+                )
+                transactions.push(Transaction.rebuild(transaction, items));
+            }
+            transactions.sort((a,b) => {
+                const dt:number = b.getTime() - a.getTime();
+                return dt !== 0 ? dt : a.getStatus() - b.getStatus();
+            })
+            return transactions
         }
-        transactions.sort((a,b) => {
-            const dt:number = b.getTime() - a.getTime();
-            return dt !== 0 ? dt : a.getStatus() - b.getStatus();
-        })
-        return transactions
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
     }
 
     public async getCompletedTransactions():Promise<Transaction[]>
     {
-        let transactionsDB = await sequelize.models.Transaction.findAll({
-            where:
+        try{
+            let transactionsDB = await sequelize.models.Transaction.findAll({
+                where:
+                {
+                    status: TransactionStatus.COMPLETE
+                }
+            })
+            if(transactionsDB === null)
+            return Promise.resolve([]);
+    
+            let transactions = [];
+            for(let transaction of transactionsDB)
             {
-                status: TransactionStatus.COMPLETE
+                let items = await sequelize.models.TransactionItem.findAll(
+                    {
+                        where:
+                        {
+                            TransactionId: transaction.id
+                        }
+                    }
+                )
+                transactions.push(Transaction.rebuild(transaction, items));
             }
-        })
-        if(transactionsDB === null)
-        return Promise.resolve([]);
+            transactions.sort((a,b) => {
+                const dt:number = b.getTime() - a.getTime();
+                return dt !== 0 ? dt : a.getStatus() - b.getStatus();
+            })
+            return transactions
+        }
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
+    }
 
+    public async storeTransaction(transaction: Transaction) : Promise<void>
+    {
+        try{
+            await sequelize.models.Transaction.create({
+                id: transaction.getId(),
+                userId: transaction.getUserId(),
+                storeId: transaction.getStoreId(),
+                storeName: transaction.getStoreName(),
+                total: transaction.getTotal(),
+                cardNumber: transaction.getCardNumber(),
+                status: transaction.getStatus(),
+                time: transaction.getTime(),
+                shipmentId: transaction.getShipmentId(),
+                paymentId: transaction.getPaymentId()
+            })
+            for(let [itemId, [quantity, productName, price]] of transaction.getItems())
+            {
+                await sequelize.models.TransactionItem.create({
+                    ProductId: itemId,
+                    quantity: quantity,
+                    name: productName,
+                    price: price,
+                    TransactionId: transaction.getId()
+                })
+            }
+        }
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
+    }
+    public async getTransactionInProgress(userId: number, storeId: number): Promise<Transaction>
+    {
+        try{
+            let transactions = await sequelize.models.Transaction.findAll(
+                {
+                    where:
+                    {
+                        userId: userId,
+                        storeId: storeId,
+                        status: TransactionStatus.IN_PROGRESS
+                    }
+                }
+            )
+            if(transactions === null)
+            {
+                return Promise.reject(null);
+            }
+            if(transactions.length > 1)
+            {
+                throw  (`userId: ${userId} and storeId: ${storeId} have ${transactions.length} transactions in progress.\n should be at most 1`);
+            }
+            let items = await sequelize.models.TransactionItem.findAll(
+                {
+                    where:
+                    {
+                        TransactionId: transactions[0].id
+                    }
+                }
+            )
+            return Promise.resolve(Transaction.rebuild(transactions[0], items));
+        }
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
+    }
+
+    public async getTransactionsInProgress(userId: number, storeId: number): Promise<Transaction[]>
+    {
+        try{
+            let transactionsDB = await sequelize.models.Transaction.findAll(
+                {
+                    where:
+                    {
+                        userId: userId,
+                        storeId: storeId,
+                        status: TransactionStatus.IN_PROGRESS
+                    }
+                }
+            )
+            if(transactionsDB === null)
+            return Promise.resolve([]);
+    
         let transactions = [];
         for(let transaction of transactionsDB)
         {
@@ -178,156 +301,84 @@ export class purchaseDB implements iPurchaseDB
             return dt !== 0 ? dt : a.getStatus() - b.getStatus();
         })
         return transactions
-    }
-
-    public async storeTransaction(transaction: Transaction) : Promise<void>
-    {
-        await sequelize.models.Transaction.create({
-            id: transaction.getId(),
-            userId: transaction.getUserId(),
-            storeId: transaction.getStoreId(),
-            storeName: transaction.getStoreName(),
-            total: transaction.getTotal(),
-            cardNumber: transaction.getCardNumber(),
-            status: transaction.getStatus(),
-            time: transaction.getTime(),
-            shipmentId: transaction.getShipmentId(),
-            paymentId: transaction.getPaymentId()
-        })
-        for(let [itemId, [quantity, productName, price]] of transaction.getItems())
-        {
-            await sequelize.models.TransactionItem.create({
-                ProductId: itemId,
-                quantity: quantity,
-                name: productName,
-                price: price,
-                TransactionId: transaction.getId()
-            })
         }
-    }
-    public async getTransactionInProgress(userId: number, storeId: number): Promise<Transaction>
-    {
-        let transactions = await sequelize.models.Transaction.findAll(
-            {
-                where:
-                {
-                    userId: userId,
-                    storeId: storeId,
-                    status: TransactionStatus.IN_PROGRESS
-                }
-            }
-        )
-        if(transactions === null)
+        catch(e)
         {
-            return Promise.reject(null);
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
         }
-        if(transactions.length > 1)
-        {
-            throw  (`userId: ${userId} and storeId: ${storeId} have ${transactions.length} transactions in progress.\n should be at most 1`);
-        }
-        let items = await sequelize.models.TransactionItem.findAll(
-            {
-                where:
-                {
-                    TransactionId: transactions[0].id
-                }
-            }
-        )
-
-        return Promise.resolve(Transaction.rebuild(transactions[0], items));
-    }
-
-    public async getTransactionsInProgress(userId: number, storeId: number): Promise<Transaction[]>
-    {
-        let transactionsDB = await sequelize.models.Transaction.findAll(
-            {
-                where:
-                {
-                    userId: userId,
-                    storeId: storeId,
-                    status: TransactionStatus.IN_PROGRESS
-                }
-            }
-        )
-        if(transactionsDB === null)
-        return Promise.resolve([]);
-
-    let transactions = [];
-    for(let transaction of transactionsDB)
-    {
-        let items = await sequelize.models.TransactionItem.findAll(
-            {
-                where:
-                {
-                    TransactionId: transaction.id
-                }
-            }
-        )
-        transactions.push(Transaction.rebuild(transaction, items));
-    }
-    transactions.sort((a,b) => {
-        const dt:number = b.getTime() - a.getTime();
-        return dt !== 0 ? dt : a.getStatus() - b.getStatus();
-    })
-    return transactions
     }
 
 
     public async updateTransaction(transaction: Transaction): Promise<void>
     {
-        await sequelize.models.Transaction.update(
-            {
-            userId: transaction.getUserId(),
-            storeId: transaction.getStoreId(),
-            storeName: transaction.getStoreName(),
-            total: transaction.getTotal(),
-            cardNumber: transaction.getCardNumber(),
-            status: transaction.getStatus(),
-            time: transaction.getTime(),
-            shipmentId: transaction.getShipmentId(),
-            paymentId: transaction.getPaymentId()
-            },
-            {
-            where:
-            {
-                id: transaction.getId()
-            }
-        })
+        try{
+            await sequelize.models.Transaction.update(
+                {
+                userId: transaction.getUserId(),
+                storeId: transaction.getStoreId(),
+                storeName: transaction.getStoreName(),
+                total: transaction.getTotal(),
+                cardNumber: transaction.getCardNumber(),
+                status: transaction.getStatus(),
+                time: transaction.getTime(),
+                shipmentId: transaction.getShipmentId(),
+                paymentId: transaction.getPaymentId()
+                },
+                {
+                where:
+                {
+                    id: transaction.getId()
+                }
+            })
+        }
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
     }
 
 
     public async getUserStoreHistory(userId: number, storeId: number): Promise<Transaction[]>
     {
-        let transactionsDB = await sequelize.models.Transaction.findAll(
-            {
-                where:
-                {
-                    userId: userId,
-                    storeId: storeId,
-                }
-            }
-        )
-        if(transactionsDB === null)
-            return Promise.resolve([]);
-
-        let transactions = [];
-        for(let transaction of transactionsDB)
-        {
-            let items = await sequelize.models.TransactionItem.findAll(
+        try{
+            let transactionsDB = await sequelize.models.Transaction.findAll(
                 {
                     where:
                     {
-                        TransactionId: transaction.id
+                        userId: userId,
+                        storeId: storeId,
                     }
                 }
             )
-            transactions.push(Transaction.rebuild(transaction, items));
+            if(transactionsDB === null)
+                return Promise.resolve([]);
+    
+            let transactions = [];
+            for(let transaction of transactionsDB)
+            {
+                let items = await sequelize.models.TransactionItem.findAll(
+                    {
+                        where:
+                        {
+                            TransactionId: transaction.id
+                        }
+                    }
+                )
+                transactions.push(Transaction.rebuild(transaction, items));
+            }
+            transactions.sort((a,b) => {
+                const dt:number = b.getTime() - a.getTime();
+                return dt !== 0 ? dt : a.getStatus() - b.getStatus();
+            })
+            return transactions
         }
-        transactions.sort((a,b) => {
-            const dt:number = b.getTime() - a.getTime();
-            return dt !== 0 ? dt : a.getStatus() - b.getStatus();
-        })
-        return transactions
+        catch(e)
+        {
+            Logger.error("database error, please try again later")
+            return Promise.reject("database error, please try again later")
+        }
     }
 
 

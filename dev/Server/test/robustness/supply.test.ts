@@ -8,19 +8,20 @@ import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from '../acce
 import {APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName} from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('API fail',async function () {
+describe('API fail',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
+        console.log("done")
         setReady(true);
     });
     it('buy shopping basket with supply system down', async function () {
+        this.timeout(50000)
+        var service: Service =await Service.get_instance();
         SupplySystem.willFail();
         PaymentSystem.willSucceed();
         let avi_sessionId = await service.enter()
@@ -35,6 +36,7 @@ describe('API fail',async function () {
         await failIfResolved(()=>service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO))
         SupplySystem.willSucceed();
         await service.completeOrder(avi_sessionId, store.getStoreId(), PAYMENT_INFO, SHIPPING_INFO)
+        console.log("done")
     })
    
 });

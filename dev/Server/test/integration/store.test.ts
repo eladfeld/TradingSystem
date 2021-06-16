@@ -2,12 +2,8 @@ import {expect} from 'chai';
 import { Store } from '../../src/DomainLayer/store/Store';
 import { Subscriber } from '../../src/DomainLayer/user/Subscriber';
 import { Login } from '../../src/DomainLayer/user/Login';
-import { SystemFacade } from '../../src/DomainLayer/SystemFacade';
-import { isFailure, isOk, Result } from '../../src/Result';
-import { StoreProductInfo } from '../../src/DomainLayer/store/StoreInfo';
 import { Service } from '../../src/ServiceLayer/Service';
 import { ShoppingBasket } from '../../src/DomainLayer/user/ShoppingBasket';
-import BuyingPolicy from '../../src/DomainLayer/policy/buying/BuyingPolicy';
 import { tPredicate } from '../../src/DomainLayer/discount/logic/Predicate';
 import BuyingSubject from '../../src/DomainLayer/policy/buying/BuyingSubject';
 import { tPaymentInfo, tShippingInfo } from '../../src/DomainLayer/purchase/Purchase';
@@ -24,12 +20,11 @@ import {setReady, waitToRun} from '../testUtil';
 describe('view store products' , () => {
 
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
-    
+
     afterEach(function () {
-        //console.log('finish');        
+        //console.log('finish');
         setReady(true);
     });
 

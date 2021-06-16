@@ -9,16 +9,14 @@ import { register_login, open_store, SHIPPING_INFO, PAYMENT_INFO } from '../acce
 import {APIsWillSucceed, failIfResolved, uniqueAviName, uniqueMegaName} from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('Auth fail',async function () {
+describe('Auth fail',function () {
 
-    var service: Service =await Service.get_instance();
+    
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
@@ -26,6 +24,7 @@ describe('Auth fail',async function () {
     ************ subscriber DB *******************
     */
     it('subscriber db fails on register', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter()
         DB.willFail();
         const aviName = uniqueAviName();
@@ -35,6 +34,7 @@ describe('Auth fail',async function () {
     });
 
     it('subscriber db fails on login', async function () {
+        var service: Service =await Service.get_instance();
         let avi_sessionId = await service.enter()
         const aviName = uniqueAviName();
         await service.register(aviName,"123",25);

@@ -12,37 +12,37 @@ import { Service } from '../../src/ServiceLayer/Service';
 import { register_login, open_store } from './common';
 import { APIsWillSucceed, failIfRejected, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
+import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
+import { doesNotMatch } from 'assert';
 
-describe('2.6: find product',async function () {
+describe('2.6: find product',function () {
 
 
-    var service: Service =await Service.get_instance();
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
-    afterEach(function () {
-        //console.log('finish');        
+    afterEach(async function () {
         setReady(true);
     });
     it('find product by name', async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const megaName = uniqueMegaName();
         let sessionId = await service.enter();
         let avi = await register_login(service,sessionId,aviName,"123456");
         let store =await open_store(service,sessionId,avi,megaName,123456,"Tel Aviv");
         await store.addCategoryToRoot('Food')
-        let banana = service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Food'], 156, 50,"");
-        let apple = service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Food'], 1, 10,"");
+        let banana =await service.addNewProduct(sessionId, store.getStoreId(), "banana", ['Food'], 156, 50,"");
+        let apple =await service.addNewProduct(sessionId, store.getStoreId(), "apple", ['Food'], 1, 10,"");
         let products = await service.getPruductInfoByName(sessionId, "banana")
-        //console.log('[t] res:',JSON.parse(products));
         expect(JSON.parse(products)['products'].length).to.greaterThanOrEqual(1)
-        // .then(products => expect(JSON.parse(products)['products'].length).to.equal(1))
-        // .catch(assert.fail)
     })
 
     it('find product by category', async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         const aviName = uniqueAviName();
         const megaName = uniqueMegaName();
         let sessionId = await failIfRejected(()=> service.enter());

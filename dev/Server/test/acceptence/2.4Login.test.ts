@@ -6,31 +6,41 @@ import {SystemFacade} from '../../src/DomainLayer/SystemFacade'
 import { Service } from '../../src/ServiceLayer/Service';
 import { APIsWillSucceed, check, uniqueAviName, uniqueName} from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
+import { truncate_tables } from '../../src/DataAccessLayer/connectDb';
 
-describe('2.4: login system test' ,async function() {
+describe('2.4: login system test' ,function() {
 
-    var service : Service =await Service.get_instance();
+    
 
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
 
-    afterEach(function () {
-        //console.log('finish');        
+    afterEach(async function () {
         setReady(true);
     });
 
     it('user login' ,async function() {
+        this.timeout(100000)
+
+        var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         let id =await service.enter();
         await service.register(aviName, "123456789",13);
-        let subscriber = service.login(id,aviName,"123456789");
-        subscriber.then( value => {assert.ok("login subceeded")})
-        .catch( reason => {assert.fail("failed test")})
+        try{
+            let subscriber =await service.login(id,aviName,"123456789");
+        }
+        catch(e){
+            assert.fail(e)
+        }
+
+        // subscriber.then( value => {assert.ok("login suceeded")})
+        // .catch( reason => {assert.fail("failed test")})
     })
 
     it('user false password login' ,async function() {
+        this.timeout(100000)
+        var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         let id =await service.enter();
         await service.register(aviName, "123456789",13);
@@ -45,11 +55,14 @@ describe('2.4: login system test' ,async function() {
     })
 
     it('user false username login' ,async function() {
+        this.timeout(100000)
+        var service : Service =await Service.get_instance();
         const aviName = uniqueAviName();
         let id =await service.enter();
         await service.register(aviName, "123456789",13);
         try {
         let subscriber =await service.login(id, "yogev ha'melech","123456789");
+        assert.fail("should throw exception")
         } catch {
             assert.ok(1)
         }

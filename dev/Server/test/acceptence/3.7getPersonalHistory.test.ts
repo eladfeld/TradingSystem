@@ -18,20 +18,19 @@ import { PAYMENT_INFO, SHIPPING_INFO } from './common';
 import { APIsWillSucceed, uniqueAviName, uniqueMegaName } from '../testUtil';
 import {setReady, waitToRun} from '../testUtil';
 
-describe('3.7: get subscriber history',async function () {
+describe('3.7: get subscriber history',function () {
 
-    var service: Service =await Service.get_instance();
     beforeEach( () => {
-        //console.log('start')
         return waitToRun(()=>APIsWillSucceed());
     });
     
     afterEach(function () {
-        //console.log('finish');        
         setReady(true);
     });
 
     it('get personal purchase history',async function () {
+        this.timeout(100000)
+        var service: Service =await Service.get_instance();
         let sessionId = await service.enter()
         let avi =await register_login(service,sessionId, uniqueAviName(), "1234");
         let store = await open_store(service,sessionId, avi, uniqueMegaName(), 123456, "Tel aviv");
