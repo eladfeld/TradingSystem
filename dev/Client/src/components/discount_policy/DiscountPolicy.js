@@ -16,6 +16,7 @@ const DiscountPolicy = ({getAppState, setAppState, disc, discountName, isNew}) =
     const {userId, storeId} = getAppState();
 
     const onAddClick = async() => {//TODO: fix
+        convertDiscountTypes(discount);
         const response = await axios.post(SERVER_BASE_URL+'addDiscountPolicy', {
             userId,
             storeId,
@@ -26,6 +27,19 @@ const DiscountPolicy = ({getAppState, setAppState, disc, discountName, isNew}) =
         if(response.status == 200){
             setName("");
             setDiscount({});
+        }
+    }
+
+    const convertDiscountTypes = (d) =>{
+        if(d.type.endsWith("conditional")){
+            if(parseInt(d.category) !== NaN){
+                d.category = parseInt(d.category)
+            }
+        }
+        else{
+            d.discounts.forEach(dis => {
+                convertDiscountTypes(dis)
+            });
         }
     }
 

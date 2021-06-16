@@ -280,6 +280,7 @@ export class Store implements iCategorizer
         //let fixedPrice = this.applyDiscountPolicy(pricesToQuantity);
         const discountRes = this.discountPolicy.getDiscount(buyingSubject.getBasket(),this);
         if(isFailure(discountRes)) return Promise.reject(discountRes.message);
+        console.log(`prediscount price: ${price}, discount: ${discountRes.value}`)
         price -= discountRes.value;
         return Purchase.checkout(this.storeId, price, buyerId, reservedProducts, this.storeName,() => {
             onFail();

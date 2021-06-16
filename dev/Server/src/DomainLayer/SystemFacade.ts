@@ -27,10 +27,10 @@ import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
-import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
 import { OfferManager } from "./offer/OfferManager";
 import { Offer } from "./offer/Offer";
 import { StoreProduct } from "./store/StoreProduct";
+import UniversalPolicy,{initUniversalPolicy} from "./policy/buying/UniversalPolicy";
 export class SystemFacade
 {
 

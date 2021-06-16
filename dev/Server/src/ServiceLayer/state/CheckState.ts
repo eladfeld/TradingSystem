@@ -17,14 +17,20 @@ const state:systemState = {
                 managers:[sb.manager("u3","u2", 63)]
             },
             buying_policies:[],
-            discounts:[]  
+            discounts:[
+                sb.discountWithName("50% off bamaba", sb.unconditionalDiscount(0.50,`${PRODUCT_PREF}Bamba`)),
+            ]  
         }
     ],
     subscribers:[
         sb.subscriber("u2", "123", false, [sb.basket("s1", [sb.item("Bamba", 1)])] ),
         sb.subscriber("u3")
     ],
-    history:[]
+    history:[
+        sb.transaction("s1", "u3", [
+            sb.item("Bamba", 100)
+        ])
+    ]
 };
 export default state;
 
