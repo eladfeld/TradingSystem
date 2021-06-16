@@ -17,6 +17,7 @@ export class Service
 {
 
 
+
     private static singletone: Service = undefined;
     private facade: SystemFacade;
 
@@ -47,6 +48,10 @@ export class Service
             Service.singletone.clear();
         }
         return Service.singletone;
+    }
+
+    public isSystemManager(sessionId: any) {
+        return this.facade.isSystemManager(sessionId);
     }
 
     public complain = (sessionId:string, title:string, body:string):Promise<string> =>{

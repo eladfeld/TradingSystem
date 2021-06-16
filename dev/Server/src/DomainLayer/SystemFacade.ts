@@ -156,6 +156,12 @@ export class SystemFacade
     //     return new Promise((resolve, reject) => reject("user not found"));
     // }
 
+
+    isSystemManager(sessionId: any) {
+        return Promise.resolve(this.logged_system_managers.has(sessionId));
+    }
+
+
     public replyToComplaint = (sessionId:string, title:string, body:string, id:number):Promise<string> =>{
         return new Promise((resolve, reject) => resolve("replying not yet supported"));
     }

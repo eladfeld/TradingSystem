@@ -426,11 +426,19 @@ export const SearchByKeyword=({getAppState, setAppState, intersect})=>{
     {
         return axios.post(`${SERVER_BASE_URL}getPruductInfoByName`, {userId, productName} )
         .then(res => {
-            let productsByName = JSON.parse(res.data)['products']
-            if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0){
-                setProductsByKeyword(productsByName)
+            console.log(res);
+            if(res.status == 200)
+            {
+                let productsByName = JSON.parse(res.data)['products']
+                if(productsByName !== null && productsByName !== undefined && productsByName.length !== 0){
+                    setProductsByKeyword(productsByName)
+                }
+                return productsByName
             }
-            return productsByName
+            else
+            {
+                alert(res.data)
+            }
         }
         ).catch(error =>{
             alert(error)
