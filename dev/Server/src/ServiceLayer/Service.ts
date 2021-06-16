@@ -9,7 +9,7 @@ import StateInitializer from './state/StateInitializer';
 import {tPaymentInfo, tShippingInfo} from "../DomainLayer/purchase/Purchase";
 import { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { login_stats } from "../DataAccessLayer/interfaces/iLoginStatsDB";
-import { truncate_tables } from "../DataAccessLayer/connectDb";
+//import { truncate_tables } from "../DataAccessLayer/connectDb";
 import { Offer } from "../DomainLayer/offer/Offer";
 import { off } from "process";
 
@@ -39,7 +39,7 @@ export class Service
             if(SHOULD_INIT_STATE)
             {
                 const res = await new StateInitializer().initState();
-                console.log(`init state was succesful: ${res}`)
+                console.log(`\n\ninit state was succesful: ${res}\n\n`)
             }
         }
         if (TEST_MODE)

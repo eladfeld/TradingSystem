@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 import checkState from "./src/ServiceLayer/state/CheckState";
 import state from './src/ServiceLayer/state/MyInitialState';
+import myState from "./src/ServiceLayer/state/MyInitialState";
+import fakePaymentSystemAdapter from "./src/DomainLayer/purchase/fakePaymentSystemAdapter";
+import fakeSupplySystemAdapter from "./src/DomainLayer/purchase/fakeSupplySystemAdapter";
+import { iPaymentAdapter, iSupplyAdapter } from "./src/DomainLayer/purchase/iAPI";
+import sli_2_state from './test/load/sli_2/state'
 
 
 //server configurations:
@@ -30,6 +35,7 @@ export const CHECKOUT_TIMEOUT = 3000000;     //5 minutes
 export const CACHE_SIZE = -1;               //how much memory we want to cache (in bytes?)
 
 //init configurations
+export const TEST_MODE = true;
 export const SHOULD_RESET_DATABASE = true //delete all tables if exists and add system managers
 export const SHOULD_INIT_STATE = false;    //initialize state from file?
 export const INITIAL_STATE = checkState;
@@ -61,7 +67,6 @@ export const setSupplySystemURL = (s:any) => {
 }
 
 
-export const TEST_MODE = false;
 //database configurations:
 
     //modes:

@@ -18,7 +18,6 @@ import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
-import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { PATH_TO_SYSTEM_MANAGERS, SHOULD_RESET_DATABASE } from "../../config";
 import { initTables } from "../DataAccessLayer/connectDb";
 import { initLastStoreId } from "./store/Common";
@@ -27,10 +26,10 @@ import DiscountPolicy from "./discount/DiscountPolicy";
 import BuyingPolicy from "./policy/buying/BuyingPolicy";
 import { login_stats, userType } from "../DataAccessLayer/interfaces/iLoginStatsDB";
 import { DB } from "../DataAccessLayer/DBfacade";
-import { initUniversalPolicy } from "./policy/buying/UniversalPolicy";
 import { OfferManager } from "./offer/OfferManager";
 import { Offer } from "./offer/Offer";
 import { StoreProduct } from "./store/StoreProduct";
+import UniversalPolicy,{initUniversalPolicy} from "./policy/buying/UniversalPolicy";
 export class SystemFacade
 {
 
@@ -119,43 +118,43 @@ export class SystemFacade
         return str !== '' && str !== undefined && str !== null;
     }
 
-    public complain= async(sessionId:string, title:string, body:string):Promise<string> => {
-        Logger.log(`complain : sessionId:${sessionId} , title: ${title} , body:${body.substring(0,20)}...`);
-        if(!this.isNonEmptyString(title))
-            return new Promise((resolve,reject) => { reject("invalid message title")})
-        if(!this.isNonEmptyString(body))
-            return new Promise((resolve,reject) => { reject("invalid message body")})
+    // public complain= async(sessionId:string, title:string, body:string):Promise<string> => {
+    //     Logger.log(`complain : sessionId:${sessionId} , title: ${title} , body:${body.substring(0,20)}...`);
+    //     if(!this.isNonEmptyString(title))
+    //         return new Promise((resolve,reject) => { reject("invalid message title")})
+    //     if(!this.isNonEmptyString(body))
+    //         return new Promise((resolve,reject) => { reject("invalid message body")})
 
-        let user: User = this.logged_guest_users.get(sessionId);
-        if (user !== undefined)
-        {
-            ComplaintsDBDummy.addComplaint(user.getUserId(), title, body);
-            return new Promise((resolve, reject) => resolve("Your complaint has been received."));
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
-    }
+    //     let user: User = this.logged_guest_users.get(sessionId);
+    //     if (user !== undefined)
+    //     {
+    //         ComplaintsDBDummy.addComplaint(user.getUserId(), title, body);
+    //         return new Promise((resolve, reject) => resolve("Your complaint has been received."));
+    //     }
+    //     return new Promise((resolve, reject) => reject("user not found"));
+    // }
 
-    public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
-        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);
-        let user: User = this.logged_guest_users.get(sessionId);
-        if (user !== undefined)
-        {
-            const complaints:tComplaint[][] = await ComplaintsDBDummy.getComplaints()
-            return new Promise((resolve, reject) => resolve(complaints));
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
-    }
+    // public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
+    //     Logger.log(`getSystemComplaints : sessionId:${sessionId}`);
+    //     let user: User = this.logged_guest_users.get(sessionId);
+    //     if (user !== undefined)
+    //     {
+    //         const complaints:tComplaint[][] = await ComplaintsDBDummy.getComplaints()
+    //         return new Promise((resolve, reject) => resolve(complaints));
+    //     }
+    //     return new Promise((resolve, reject) => reject("user not found"));
+    // }
 
-    public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
-        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);
-        let user: User = this.logged_guest_users.get(sessionId);
-        if (user !== undefined)
-        {
-            await ComplaintsDBDummy.deleteComplaint(messageId);
-            return new Promise((resolve, reject) => resolve("complaint successfully deleted."));
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
-    }
+    // public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
+    //     Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);
+    //     let user: User = this.logged_guest_users.get(sessionId);
+    //     if (user !== undefined)
+    //     {
+    //         await ComplaintsDBDummy.deleteComplaint(messageId);
+    //         return new Promise((resolve, reject) => resolve("complaint successfully deleted."));
+    //     }
+    //     return new Promise((resolve, reject) => reject("user not found"));
+    // }
 
     public replyToComplaint = (sessionId:string, title:string, body:string, id:number):Promise<string> =>{
         return new Promise((resolve, reject) => resolve("replying not yet supported"));
@@ -261,7 +260,7 @@ export class SystemFacade
 
     public login(sessionId: string, username: string, password: string): Promise<Subscriber>
     {
-        Logger.log(`login : sessionId:${sessionId} , username:${username}`);
+        Logger.log(`login : sessionId:${sessionId} , username:${username}`);//TODO: remove password from log
 
         if(username === '' || username === undefined || username === null)
             return Promise.reject("invalid username name")
