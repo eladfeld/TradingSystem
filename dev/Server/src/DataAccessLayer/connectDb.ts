@@ -5,7 +5,7 @@ export const Op = Sequelize.Op
 
 
 //
-export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
+export var sequelize = new Sequelize(SQLconnector.database, SQLconnector.username, SQLconnector.password, {
     host: SQLconnector.host,
     dialect: SQLconnector.dialect,
     port: SQLconnector.port, // this is the mysql port
@@ -15,7 +15,9 @@ export const sequelize = new Sequelize(SQLconnector.database, SQLconnector.usern
     }
   });
 
-
+export const set_sequelize = (s : any) => {
+  sequelize = s;
+}
 
 // Register and wrap your models:
 const Subscriber = require('./models/Subscriber')
@@ -39,8 +41,8 @@ const LoginStts = require('./models/LoginStats')
 export async function initTables (){
 
      if (SHOULD_RESET_DATABASE)
-       //await truncate_tables()  
-       await sequelize.queryInterface.dropAllTables()
+       await truncate_tables()  
+       //await sequelize.queryInterface.dropAllTables()
 
     //store connections
     sequelize.models.Store.hasMany(sequelize.models.StoreProduct) // will add storeId to storeProduct
@@ -62,7 +64,7 @@ export async function initTables (){
     sequelize.models.ShoppingBasket.hasMany(sequelize.models.BasketProduct)
     sequelize.models.SystemManager.belongsTo(sequelize.models.Subscriber)
     sequelize.models.BasketProduct.belongsTo(sequelize.models.ShoppingBasket)
-    sequelize.models.BasketProduct.belongsTo(sequelize.models.StoreProduct)
+    // sequelize.models.BasketProduct.belongsTo(sequelize.models.StoreProduct)
     sequelize.models.ShoppingBasket.belongsTo(sequelize.models.Store)
     sequelize.models.Subscriber.hasMany(sequelize.models.Offer)
 
@@ -76,7 +78,7 @@ export async function initTables (){
     sequelize.models.Transaction.hasMany(sequelize.models.TransactionItem)
     sequelize.models.TransactionItem.belongsTo(sequelize.models.Transaction)
 
-    sequelize.models.LoginStats.sync()
+    //sequelize.models.LoginStats.sync()
     await sequelize.sync()
 
 }

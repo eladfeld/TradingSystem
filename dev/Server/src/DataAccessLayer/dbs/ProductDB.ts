@@ -1,13 +1,15 @@
 import { StoreProduct } from "../../DomainLayer/store/StoreProduct";
 import { Logger } from "../../Logger";
 import { categories } from "../../ServiceLayer/state/InitialStateConstants";
-import { sequelize } from "../connectDb";
+import { sequelize, set_sequelize } from "../connectDb";
 import { DB } from "../DBfacade";
 import { iProductDB } from "../interfaces/iProductDB";
 
 
 export class productDB implements iProductDB
 {
+    sequelize_backup: any = sequelize;
+    
     public async getLastProductId(): Promise<number>
     {
         try{
@@ -148,9 +150,10 @@ export class productDB implements iProductDB
 
     clear: () => void;
     public willFail= () =>{
-        throw new Error("can not force failure outside of test mode")
+        // this.sequelize_backup = sequelize;
+        // set_sequelize(undefined)
     }
     public willSucceed= () =>{
-        throw new Error("can not force success outside of test mode")
+        // set_sequelize(this.sequelize_backup)
     }
 }

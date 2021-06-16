@@ -18,7 +18,6 @@ import { tPredicate } from "./discount/logic/Predicate";
 import { tDiscount } from "./discount/Discount";
 import SupplySystemReal from "./apis/SupplySystemReal";
 import PaymentSystemReal from "./apis/PaymentSystemReal";
-import ComplaintsDBDummy, { tComplaint } from "../db_dummy/ComplaintsDBDummy";
 import { PATH_TO_SYSTEM_MANAGERS, SHOULD_RESET_DATABASE } from "../../config";
 import { initTables } from "../DataAccessLayer/connectDb";
 import { initLastStoreId } from "./store/Common";
@@ -48,17 +47,18 @@ export class SystemFacade
     }
 
     public async init(){
+        try{
+        let init_managers = true;
         await initTables();
         await initUniversalPolicy();
+        let init_supply = await this.initSupplySystem();
+        let init_payment =  await this.initPaymentSystem()
+        if(SHOULD_RESET_DATABASE)
+        {
+            init_managers = await this.initSystemManagers();
+        }
         return new Promise<void>((resolve,reject) => {
             this.initIdisfromDB().then( async _ =>{
-                let init_managers = true;
-                if(SHOULD_RESET_DATABASE)
-                {
-                     init_managers = await this.initSystemManagers();
-                }
-                let init_supply = await this.initSupplySystem();
-                let init_payment =  await this.initPaymentSystem()
                 if(!((init_managers && init_supply  && init_payment)))
                 {
                     Logger.error("system could not initialized properly!");
@@ -69,6 +69,12 @@ export class SystemFacade
             }
             )
         })
+        }
+        catch(e){
+            Logger.error(e)
+            throw new Error("problem initializing system")
+        }
+
 
     }
 
@@ -84,13 +90,27 @@ export class SystemFacade
 
     private async initSupplySystem() : Promise<boolean>
     {
-        const initialization = await SupplySystemReal.init();
+        let initialization = undefined;
+        try{
+         initialization = await SupplySystemReal.init();
+        }
+        catch(e){
+            Logger.error("couldn't intialize suplly system")
+            throw new Error(e)
+        }
         return initialization > 0 ? true : false;
     }
 
     private async initPaymentSystem() : Promise<boolean>
     {
-        const initialization = await PaymentSystemReal.init();
+        let initialization = undefined
+        try{
+        initialization = await PaymentSystemReal.init();
+        }
+        catch(e){
+            Logger.error("couldn't intialize payment system")
+            throw new Error(e)
+        }
         return initialization > 0 ? true : false;
     }
 
@@ -98,50 +118,55 @@ export class SystemFacade
         return str !== '' && str !== undefined && str !== null;
     }
 
-    public complain= async(sessionId:string, title:string, body:string):Promise<string> => {
-        Logger.log(`complain : sessionId:${sessionId} , title: ${title} , body:${body.substring(0,20)}...`);
-        if(!this.isNonEmptyString(title))
-            return new Promise((resolve,reject) => { reject("invalid message title")})
-        if(!this.isNonEmptyString(body))
-            return new Promise((resolve,reject) => { reject("invalid message body")})
+    // public complain= async(sessionId:string, title:string, body:string):Promise<string> => {
+    //     Logger.log(`complain : sessionId:${sessionId} , title: ${title} , body:${body.substring(0,20)}...`);
+    //     if(!this.isNonEmptyString(title))
+    //         return new Promise((resolve,reject) => { reject("invalid message title")})
+    //     if(!this.isNonEmptyString(body))
+    //         return new Promise((resolve,reject) => { reject("invalid message body")})
 
-        let user: User = this.logged_guest_users.get(sessionId);
-        if (user !== undefined)
-        {
-            ComplaintsDBDummy.addComplaint(user.getUserId(), title, body);
-            return new Promise((resolve, reject) => resolve("Your complaint has been received."));
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
+    //     let user: User = this.logged_guest_users.get(sessionId);
+    //     if (user !== undefined)
+    //     {
+    //         ComplaintsDBDummy.addComplaint(user.getUserId(), title, body);
+    //         return new Promise((resolve, reject) => resolve("Your complaint has been received."));
+    //     }
+    //     return new Promise((resolve, reject) => reject("user not found"));
+    // }
+
+    // public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
+    //     Logger.log(`getSystemComplaints : sessionId:${sessionId}`);
+    //     let user: User = this.logged_guest_users.get(sessionId);
+    //     if (user !== undefined)
+    //     {
+    //         const complaints:tComplaint[][] = await ComplaintsDBDummy.getComplaints()
+    //         return new Promise((resolve, reject) => resolve(complaints));
+    //     }
+    //     return new Promise((resolve, reject) => reject("user not found"));
+    // }
+
+    // public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
+    //     Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);
+    //     let user: User = this.logged_guest_users.get(sessionId);
+    //     if (user !== undefined)
+    //     {
+    //         await ComplaintsDBDummy.deleteComplaint(messageId);
+    //         return new Promise((resolve, reject) => resolve("complaint successfully deleted."));
+    //     }
+    //     return new Promise((resolve, reject) => reject("user not found"));
+    // }
+
+
+    isSystemManager(sessionId: any) {
+        return Promise.resolve(this.logged_system_managers.has(sessionId));
     }
 
-    public getSystemComplaints = async (sessionId:string):Promise<tComplaint[][]> => {
-        Logger.log(`getSystemComplaints : sessionId:${sessionId}`);
-        let user: User = this.logged_guest_users.get(sessionId);
-        if (user !== undefined)
-        {
-            const complaints:tComplaint[][] = await ComplaintsDBDummy.getComplaints()
-            return new Promise((resolve, reject) => resolve(complaints));
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
-    }
-
-    public deleteComplaint = async (sessionId:string, messageId:number):Promise<string> => {
-        Logger.log(`deleteComplaint : sessionId:${sessionId} messageId: ${messageId}`);
-        let user: User = this.logged_guest_users.get(sessionId);
-        if (user !== undefined)
-        {
-            await ComplaintsDBDummy.deleteComplaint(messageId);
-            return new Promise((resolve, reject) => resolve("complaint successfully deleted."));
-        }
-        return new Promise((resolve, reject) => reject("user not found"));
-    }
 
     public replyToComplaint = (sessionId:string, title:string, body:string, id:number):Promise<string> =>{
         return new Promise((resolve, reject) => resolve("replying not yet supported"));
     }
 
     public getUsernames = async(sessionId:string):Promise<string[]> =>{
-        //TODO: IMPLEMENT!!!
         return ["feature","not", "yet", "supported"];
     }
     public closeStore = (sessionId:string, storeName:string):Promise<string> =>{
@@ -158,20 +183,26 @@ export class SystemFacade
 
     public async initSystemManagers() : Promise<boolean>
     {
-        const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
-        let arr: any[] = JSON.parse(data);
-        if (arr.length === 0)
-        {
-            Logger.error("no system managers found!");
-            return false;
+        try{
+            const data = fs.readFileSync(path.resolve(PATH_TO_SYSTEM_MANAGERS) ,  {encoding:'utf8', flag:'r'});
+            let arr: any[] = JSON.parse(data);
+            if (arr.length === 0)
+            {
+                Logger.error("no system managers found!");
+                return false;
+            }
+            for (var i in arr)
+            {
+                let manager: any = arr[i];
+                let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
+                await Authentication.addSystemManager(sub);
+            }
+            return true
         }
-        for (var i in arr)
-        {
-            let manager: any = arr[i];
-            let sub: Subscriber = Subscriber.buildSubscriber(manager["username"], manager["hashpassword"], manager["age"] )
-            await Authentication.addSystemManager(sub);
+        catch(e){
+            Logger.error("couldnt initalize system managers")
+            throw new Error(e)
         }
-        return true
     }
 
     //++user enter the system
@@ -848,7 +879,10 @@ export class SystemFacade
                 storep.then(store =>
                     {
                         let appownerp = store.appointStoreOwner(appointer, newOwner );
-                        appownerp.then( msg => { resolve(msg)})
+                        appownerp.then( msg => { 
+                            resolve(msg)
+                            Publisher.get_instance().register_store(store.getStoreId(), newOwner)
+                        })
                         .catch( error => reject(error))
                     }
                 )

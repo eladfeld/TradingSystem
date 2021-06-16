@@ -30,6 +30,7 @@ import { iSubscriberDB } from "./interfaces/iSubscriberDB";
 
 class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscriberDB, iOfferDB
 {
+    
     private subscriberDB : iSubscriberDB;
     private loginDB : iLoginStatsDB;
     private productDB : iProductDB;
@@ -219,6 +220,10 @@ class DBfacade implements iLoginStatsDB,iProductDB,iPurchaseDB,iStoreDB, iSubscr
 
     public getRecievingOffers(storeId: number) : Promise<boolean>{
         return this.storeDB.getRecievingOffers(storeId)
+    }
+
+    StoreUpdateCache(storeId: number){
+        this.storeDB.StoreUpdateCache(storeId)
     }
     //-------------------------Transaction DB-----------------------------
 

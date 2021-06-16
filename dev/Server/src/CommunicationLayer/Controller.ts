@@ -53,7 +53,6 @@ const register = (req: Request, res: Response, next: NextFunction) =>
 
 
 
-//TODO: change the result so it wont sand back a subscriber
 const login = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
@@ -226,7 +225,6 @@ const completeOrder = (req: Request, res: Response, next: NextFunction) =>
 }
 
 
-//TODO: change the result so it wont sand back a store
 const openStore = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
@@ -308,7 +306,6 @@ const getMyPurchaseHistory = (req: Request, res: Response, next: NextFunction) =
 }
 
 
-//TODO: change transaction to any
 const getStorePurchaseHistory = (req: Request, res: Response, next: NextFunction) =>
 {
     let sessionId: string = req.body.userId;
@@ -666,6 +663,15 @@ const getOffersByUser = (req: Request, res: Response, next: NextFunction) => {
     .catch(error => res.status(FAILSTATUS).json(error))
 }
 
+const isSystemManager = (req: Request, res: Response, next: NextFunction) => 
+{
+    let sessionId = req.body.userId;
+
+    service.isSystemManager(sessionId)
+    .then(message => res.status(OKSTATUS).json(message))
+    .catch(error => res.status(FAILSTATUS).json(error))
+}
+
 
 
 export default {
@@ -731,4 +737,5 @@ export default {
     counterOffer,
     buyAcceptedOffer,
     getOffersByUser,
+    isSystemManager,
     };

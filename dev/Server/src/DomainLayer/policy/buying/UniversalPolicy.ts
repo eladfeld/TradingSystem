@@ -15,7 +15,7 @@ export const initUniversalPolicy = () =>{ const res = UniversalPolicy.addPolicy(
 , -1);
 res.then( _ => console.log(""))
 .catch( error => {
-    console.log("already inserted policy")
+    console.log("")
 })
 }
 export default UniversalPolicy;

@@ -18,8 +18,12 @@ export class StoreCache implements iStoreDB
         this.storeDb = new storeDB()
     }
     
-    willFail: () => void;
-    willSucceed: () => void;
+    public willFail() : void{
+        this.storeDb.willFail()
+    }
+    public willSucceed() : void{
+        this.storeDb.willSucceed()
+    }
 
     private getStore(storeId: number): Promise<Store>
     {
@@ -50,7 +54,7 @@ export class StoreCache implements iStoreDB
         this.stores.set(store.getStoreId(), [false, store]);
     }
 
-    private StoreUpdateCache(storeId: number): void
+    public StoreUpdateCache(storeId: number): void
     {
         if(this.stores.has(storeId))
         {

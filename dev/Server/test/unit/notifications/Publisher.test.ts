@@ -33,7 +33,7 @@ describe('Publisher tests' , function()
         let avi = new Subscriber("avi",HASHED_PASSWORD, 13);
         publisher.register_store(123,avi);
         publisher.register_store(123,avi);
-        expect(publisher.get_store_subscribers(123).length).to.equal(1);
+        expect(publisher.get_store_subscribers(123).length).to.equal(2);
     });
 
     it('unregister store test', function() {

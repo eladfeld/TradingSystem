@@ -83,7 +83,6 @@ export default class BuyingPolicy{
     }
 
     public removePolicy = (id: number):Promise<string> =>{
-        //TODO: #saveDB
         const policy = this.rules.get(id);
         if(policy === undefined)return Promise.reject("polcy does not exist");
         this.rules.delete(id);

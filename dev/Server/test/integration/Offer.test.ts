@@ -90,7 +90,7 @@ describe('create and accept offers' , () => {
     });
 
     it('create and get offer', async function() {
-        this.timeout(100000)
+        this.timeout(10000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let manager = await Login.login("michael", '1234')
@@ -118,7 +118,7 @@ describe('create and accept offers' , () => {
     })
 
     it('accept offer', async function()  {
-        this.timeout(100000)
+        this.timeout(10000)
         let service = await Service.get_instance();
         let offerManager = OfferManager.get_instance();
         let manager = await Login.login("michael", '1234')

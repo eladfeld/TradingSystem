@@ -49,8 +49,8 @@ export class Publisher
         }
         else
         {
-            if (!registered.filter( sub => sub.getUserId() === subscriber.getUserId()))
-                registered.push(subscriber);
+            //if (!registered.filter( sub => sub.getUserId() === subscriber.getUserId()))
+            registered.push(subscriber);
             this.store_subscribers.set(storeId,registered);
         }
     }

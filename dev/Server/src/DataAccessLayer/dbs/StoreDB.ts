@@ -8,13 +8,17 @@ import { ManagerAppointment } from "../../DomainLayer/user/ManagerAppointment";
 import { OwnerAppointment } from "../../DomainLayer/user/OwnerAppointment";
 import { Permission } from "../../DomainLayer/user/Permission";
 import { Logger } from "../../Logger";
-import { sequelize } from "../connectDb";
+import { sequelize, set_sequelize } from "../connectDb";
 import { DB } from "../DBfacade";
 import { iStoreDB } from "../interfaces/iStoreDB";
 const Storedb = require('../models/Store')
 
 export class storeDB implements iStoreDB
 {
+    sequelize_backup: any = sequelize;
+    StoreUpdateCache(storeId: number): void {
+        //empty on purpose
+    }
 
     //add functions:
     public async addStore(store: Store): Promise<void>
@@ -36,7 +40,7 @@ export class storeDB implements iStoreDB
         catch(e)
         {
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -94,7 +98,7 @@ export class storeDB implements iStoreDB
         catch(e)
         {
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
 
     }
@@ -174,7 +178,7 @@ export class storeDB implements iStoreDB
     }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
     public async deleteStore(storeId: number): Promise<void>
@@ -191,7 +195,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     };
 
@@ -222,7 +226,7 @@ export class storeDB implements iStoreDB
     }
     catch(e){
         Logger.error(e)
-        return Promise.reject(e)
+        return Promise.reject("data base error")
     }
     }
 
@@ -238,7 +242,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -254,7 +258,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -292,7 +296,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -328,7 +332,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -396,7 +400,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -430,7 +434,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -452,7 +456,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -493,7 +497,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
 
     }
@@ -512,7 +516,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
 
@@ -532,7 +536,7 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
     }
     public async getCategoriesOfProduct(productId: number) : Promise<string[]>
@@ -547,15 +551,16 @@ export class storeDB implements iStoreDB
         }
         catch(e){
             Logger.error(e)
-            return Promise.reject(e)
+            return Promise.reject("data base error")
         }
 
     }
     clear: () => void;
-    public willFail= () =>{
-        throw new Error("can not force failure outside of test mode")
+    public willFail() : void{
+        // this.sequelize_backup = sequelize;
+        // set_sequelize(undefined)
     }
-    public willSucceed= () =>{
-        throw new Error("can not force success outside of test mode")
+    public willSucceed() : void {
+        // set_sequelize(this.sequelize_backup)
     }
 }

@@ -1,8 +1,9 @@
-import { sequelize } from "../connectDb";
+import { sequelize, set_sequelize } from "../connectDb";
 import { iLoginStatsDB, login_stats, userType } from "../interfaces/iLoginStatsDB";
 
 export class LoginStatsDB implements iLoginStatsDB
 {
+    sequelize_backup: any = sequelize;
     public async updateLoginStats(user_type: userType):Promise<void> 
     {
         try{
@@ -106,10 +107,11 @@ export class LoginStatsDB implements iLoginStatsDB
     }
     }
     public willFail= () =>{
-        throw new Error("can not force failure outside of test mode")
+        this.sequelize_backup = sequelize;
+        set_sequelize(undefined)
     }
     public willSucceed= () =>{
-        throw new Error("can not force success outside of test mode")
+        set_sequelize(this.sequelize_backup)
     }
 
 }

@@ -76,7 +76,6 @@ export default class DiscountPolicy{
     }
 
     public removePolicy = (id: number):Promise<string> =>{
-        //TODO: #saveDB
         const policy = this.discounts.get(id);
         if(policy === undefined)return Promise.reject("polcy does not exist");
         this.discounts.delete(id);

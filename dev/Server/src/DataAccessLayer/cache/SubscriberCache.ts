@@ -1,8 +1,10 @@
 import { SUBSCRIBERS_CACHE_SIZE } from "../../../config";
 import { Appointment } from "../../DomainLayer/user/Appointment";
 import { Subscriber } from "../../DomainLayer/user/Subscriber";
+import { DB } from "../DBfacade";
 import { subscriberDB } from "../dbs/SubscriberDB";
 import { iSubscriberDB } from "../interfaces/iSubscriberDB";
+import { StoreCache } from "./StoreCache";
 
 
 export class SubscriberCache implements iSubscriberDB
@@ -186,7 +188,7 @@ export class SubscriberCache implements iSubscriberDB
 
         this.subscriberDb.deleteAppointment(appointee, appointer, storeId);
         this.updateCache(appointee);
-        //TODO: update the store cache too!!
+        DB.StoreUpdateCache(storeId)
     }
     public addPendingMessage (userId: number, message: string):void
     {

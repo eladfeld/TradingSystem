@@ -1,7 +1,6 @@
 import { DB } from "../../DataAccessLayer/DBfacade";
 
-//     var privateID = ID();
-let current_id: number = 0 //TODO: get biggest id from DB
+let current_id: number = 0 
 
 export function initLastStoreId(): Promise<number>
 {

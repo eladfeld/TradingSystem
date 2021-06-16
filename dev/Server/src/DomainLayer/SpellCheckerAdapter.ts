@@ -9,7 +9,6 @@ export class SpellCheckerAdapter
     storeSpellChecker: SpellChecker;
     usernameSpellChcker: SpellChecker;
 
-//TODO: make sure to apply case insensative 
     private constructor()
     {
         this.productSpellCheck = new SpellChecker(
