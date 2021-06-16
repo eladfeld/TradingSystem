@@ -1,0 +1,46 @@
+config:
+  target: "https://localhost:3333/command"
+  http:
+    timeout: 5
+  phases:
+    - duration: 3000
+      arrivalRate: 2
+      name: guests_phase
+
+scenarios:
+  - name: "guests"
+    flow:
+      - get:
+          url: "/enter"
+          capture:
+            json: "$.userId"
+            as: userId
+      - loop:
+        - think: 0.1
+        - post:
+            url: "/addProductTocart"
+            json:
+              userId: "{{ userId }}"
+              storeId: 0
+              productId: 0
+              quantity: 1
+        - think: 0.1
+        - post:
+            url: "/checkoutBasket"
+            json:
+              userId: "{{ userId }}"
+              storeId: 0
+              shippingInfo: "myInfo"
+        - think: 0.1
+        - post:
+            url: "/completeOrder"
+            json:
+              userId: "{{ userId }}"
+              storeId: 0
+              shippingInfo: {}
+              paymentInfo: {}
+        count: 12
+      # - post:
+      #     url: "/exit"
+      #     json:
+      #       userId: "{{ userId }}"

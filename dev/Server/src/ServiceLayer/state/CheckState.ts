@@ -18,7 +18,7 @@ const state:systemState = {
             },
             buying_policies:[],
             discounts:[
-                sb.discountWithName("50% off bamaba", sb.unconditionalDiscount(0.50,`${PRODUCT_PREF}Bamba`)),
+                //sb.discountWithName("50% off bamaba", sb.unconditionalDiscount(0.50,`${PRODUCT_PREF}Bamba`)),
             ]  
         }
     ],

@@ -23,14 +23,14 @@ scenarios:
           capture:
             json: "$.userId"
             as: userId
-      - think: 1
+      - think: 2
       - post:
           url: "/register"
           json:
             username: "{{ username }}"
             password: "{{ password }}"
             age: "{{ age }}"
-      - think: 1
+      - think: 2
       - post:
           url: "/login"
           json:
@@ -40,7 +40,7 @@ scenarios:
           capture:
             json: "$.userId"
             as: userId
-      - think: 1
+      - think: 2
       - post:
           url: "/openStore"
           json:

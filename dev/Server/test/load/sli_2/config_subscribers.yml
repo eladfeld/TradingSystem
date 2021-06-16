@@ -1,8 +1,10 @@
 config:
   target: "https://localhost:3333/command"
+  http:
+    timeout: 5
   phases:
-    - duration: 60
-      arrivalRate: 10
+    - duration: 3000
+      arrivalRate: 1
       name: subscribers_phase
   payload:
     path: "subscribers.csv"
@@ -24,12 +26,14 @@ scenarios:
           capture:
             json: "$.userId"
             as: userId
+      - think: 0.1
       - post:
           url: "/register"
           json:
             username: "{{ username }}"
             password: "{{ password }}"
             age: "{{ age }}"
+      - think: 0.1
       - post:
           url: "/login"
           json:
@@ -40,6 +44,7 @@ scenarios:
             json: "$.userId"
             as: userId
       - loop:
+        - think: 0.1
         - post:
             url: "/addProductTocart"
             json:
@@ -47,12 +52,14 @@ scenarios:
               storeId: 0
               productId: 0
               quantity: 1
+        - think: 0.1
         - post:
             url: "/checkoutBasket"
             json:
               userId: "{{ userId }}"
               storeId: 0
               shippingInfo: "myInfo"
+        - think: 0.1
         - post:
             url: "/completeOrder"
             json:
@@ -61,6 +68,7 @@ scenarios:
               shippingInfo: {}
               paymentInfo: {}
         count: 12
+      - think: 0.1
       - post:
           url: "/logout"
           json:
